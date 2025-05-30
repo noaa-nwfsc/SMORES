@@ -7,14 +7,8 @@ library(dplyr)
 library(caret) #for 0-1 normalization function "preProcess"
 library(normalize)
 library(magrittr)
-#plotting
-library(ggplot2)
-library(marmap) #for getNOAA.bathy function
-library(ggOceanMaps)
-library(ggnewscale)
-library(tigris)
-library(arcgis)
-library(leaflet)
+library(tidyr)
+
 
 ## set working directory
 grid.2km <- sf::st_read(dsn = "Z:\\GIS_Base\\OSW\\Grid.gdb", layer = "grid2km")
@@ -45,6 +39,11 @@ NorCal <- st_transform(NorCal, crs=crsOut)
 st_crs(NorCal) == st_crs(grid.2km)
 #grid for regions of interest less than full coast
 grd.norcal <- st_crop(grid.2km, NorCal)
+
+saveRDS(grd.norcal, "U:\\Github\\SMORES\\data\\2km_grid_norcal.rds")
+
+grid_test <- grd.norcal %>% 
+  st_drop_geometry()
 
 #NCCOS values to run in modeling
 HAPC.RR.Score = 0.001
@@ -82,11 +81,17 @@ canyon_scored <- grd.norcal %>%
          "0.7" = 0.7,
          "0.8" = 0.8,
          "0.9" = 0.9,
-         "1" = 1
-  ) %>%
-  sf::st_transform('+proj=longlat +datum=WGS84')
+         "1" = 1) 
 
-saveRDS(canyon_scored, "U:\\Github\\SMORES\\data\\canyon_scored.rds")
+#this approach would let us know which score is associated with which layer 
+canyons_scored_long <- pivot_longer(canyon_scored, cols = starts_with(c("0.", "1")), names_to = "Canyon", values_to = "Score.Canyon") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-Canyon)
+
+saveRDS(canyons_scored_long, "U:\\Github\\SMORES\\data\\canyon_scored.rds")
+
+canyon_score_full_df <- canyons_scored_long %>% 
+  st_drop_geometry()
 
 #Deep sea coral robust high
 DSC.RobustHigh.grid <- sf::st_intersection(DSC.RobustHigh, grd.norcal) %>%
@@ -112,11 +117,17 @@ DSC_RH_scored <- grd.norcal %>%
          "0.7" = 0.7,
          "0.8" = 0.8,
          "0.9" = 0.9,
-         "1" = 1
-  ) %>%
-  sf::st_transform('+proj=longlat +datum=WGS84')
+         "1" = 1) 
 
-saveRDS(DSC_RH_scored, "U:\\Github\\SMORES\\data\\DSC_RH_scored.rds")
+#this approach would let us know which score is associated with which layer 
+DSC_RH_scored_long <- pivot_longer(DSC_RH_scored, cols = starts_with(c("0.", "1")), names_to = "DSC_RH", values_to = "Score.DSC_RH") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-DSC_RH)
+
+saveRDS(DSC_RH_scored_long, "U:\\Github\\SMORES\\data\\DSC_RH_scored.rds")
+
+DSC_RH_score_full_df <- DSC_RH_scored_long %>% 
+  st_drop_geometry()
 
 #Surveys fixed
 Surveys.fixed.grid <- sf::st_intersection(Surveys.fixed, grd.norcal) %>%
@@ -144,11 +155,28 @@ Surveys_fixed_scored <- grd.norcal %>%
          "0.6" = 0.6,
          "0.7" = 0.7,
          "0.8" = 0.8,
-         "0.9" = 0.9
-  ) %>%
+         "0.9" = 0.9) 
+
+Surveys_fixed_scored_long <- pivot_longer(Surveys_fixed_scored, cols = starts_with(c("0.", "1")), names_to = "Surveys_fixed", values_to = "Score.Surveys_fixed") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-Surveys_fixed)
+
+
+st_crs(DSC_RH_scored_long) == st_crs(Surveys_fixed_scored_long)
+
+saveRDS(Surveys_fixed_scored_long, "U:\\Github\\SMORES\\data\\Surveys_fixed_scored.rds")
+
+Surveys_fixed_score_full_df <- Surveys_fixed_scored_long %>% 
+  st_drop_geometry()
+
+#how would I want to make the data look so I could calculate the geometric mean
+#I need it to be in long format so that the scoring addition is tied to the individual columns 
+
+full_data <- grid_test %>% 
+  full_join(canyon_score_full_df) %>% 
+  full_join(DSC_RH_score_full_df) %>% 
+  full_join(Surveys_fixed_score_full_df) %>% 
   sf::st_transform('+proj=longlat +datum=WGS84')
 
-saveRDS(Surveys_fixed_scored, "U:\\Github\\SMORES\\data\\Surveys_fixed_scored.rds")
-
-
+saveRDS(full_data, "U:\\Github\\SMORES\\data\\full_data.rds")
 

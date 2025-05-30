@@ -1,263 +1,341 @@
 function(input, output, session) {
   
-  # Function to filter dataframe by weight
-  # This function keeps columns that don't contain other weight values
-  filter_by_weight <- function(df, selected_weight) {
-    if(is.null(df) || is.null(selected_weight) || selected_weight == "None") {
+  # Define a qualitative color palette for scores
+  score_colors <- list(
+    "0.1" = "#E41A1C",  # red
+    "0.2" = "#377EB8",  # blue
+    "0.3" = "#4DAF4A",  # green
+    "0.4" = "#984EA3",  # purple
+    "0.5" = "#FF7F00",  # orange
+    "0.6" = "#FFFF33",  # yellow
+    "0.7" = "#A65628",  # brown
+    "0.8" = "#F781BF",  # pink
+    "0.9" = "#999999",  # grey
+    "1" = "#000000"     # black
+  )
+  
+  # filter dataframe by score for long format data
+  filter_by_score <- function(df, selected_score) {
+    if(is.null(df) || is.null(selected_score) || selected_score == "None") {
       return(df)
     }
     
-    # Get all column names
-    all_cols <- names(df)
+    # Find the score column for this layer
+    score_cols <- names(df)[grep("^Score\\.", names(df))]
     
-    # Create a list of weights to exclude (all weights except the selected one)
-    exclude_weights <- setdiff(weight_values, selected_weight)
+    if(length(score_cols) == 0) {
+      warning("No score columns found in the dataset")
+      return(df)
+    }
     
-    # Find columns to keep (those that don't contain any of the excluded weights in their names)
-    cols_to_keep <- all_cols[!sapply(all_cols, function(col_name) {
-      any(sapply(exclude_weights, function(w) grepl(w, col_name)))
-    })]
+    # Create a filter condition for the selected score
+    rows_to_keep <- rep(FALSE, nrow(df))
     
-    # Return filtered dataframe with only the kept columns
-    return(df[, cols_to_keep, drop = FALSE])
+    for(col in score_cols) {
+      rows_to_keep <- rows_to_keep | (df[[col]] == selected_score)
+    }
+    
+    # Return the filtered dataframe
+    filtered_df <- df[rows_to_keep, ]
+    
+    return(filtered_df)
   }
   
-  # Create reactive dataset based on user selection
-  selected_data <- reactive({
-    # Get the map index (could be from an input or other reactive value)
-    # For demonstration, let's use the first valid config
-    valid_configs <- get_valid_configs()
-    if(length(valid_configs) > 0) {
-      map_index <- valid_configs[[1]]$index
-    } else {
-      # Default to first map if no valid configs
-      map_index <- 1
-    }
-    
-    layer_input_name <- paste0("layerPicker", map_index)
-    selected_layer <- input[[layer_input_name]]
-    
-    # Return the selected dataset from our list if it exists
-    if(!is.null(selected_layer) && selected_layer != "None" && selected_layer %in% names(layer)) {
-      return(layer[[selected_layer]])
-    }
-    # Return NULL if nothing selected
-    return(NULL)
-  })
-  
-  # Update weight pickerInput based on available columns in the selected dataset
-  observe({
-    data <- selected_data()
-    
-    # Get column names from the dataset that match our weight patterns
-    avail_weights <- weight_values[weight_values %in% names(data)]
-    
-    # Update the weight pickerInput
-    updatePickerInput(
-      session = session,
-      inputId = "weight",
-      choices = avail_weights,
-      selected = if(length(avail_weights) > 0) avail_weights[1] else NULL
-    )
-  })
-  
-  
-  # Create 5 map configuration sets
-  map_configs <- 1:5
-  
-  # Dynamic sidebar content based on selected tab
-  output$dynamicSidebar <- renderUI({
-    # Get current tab
-    current_tab <- input$dataTabs
-    
-    if (is.null(current_tab)) {
-      current_tab <- "habitat"  # Default to first tab
-    }
-    
-    # Return different picker inputs based on tab
-    switch(current_tab,
-           "habitat" = tagList(
-             h4("Habitat Map Settings"),
-             # Create 5 sets of layer and weight pickers
-             lapply(map_configs, function(i) {
-               tagList(
-                 hr(),
-                 h5(paste("Map", i, "Configuration")),
-                 # Add a checkbox to enable/disable this map configuration
-                 checkboxInput(
-                   inputId = paste0("enableMap", i),
-                   label = paste("Enable Map", i),
-                   # indicates whether a user sees all options or just enable at first
-                   value = FALSE
-                 ),
-                 # Only show these inputs if the map is enabled
-                 conditionalPanel(
-                   condition = paste0("input.enableMap", i, " == true"),
-                   pickerInput(
-                     inputId = paste0("layerPicker", i),
-                     label = paste("Select Layer to view for Map", i),
-                     choices = c("None", names(layer)),
-                     multiple = FALSE,
-                     selected = "None"
-                   ),
-                   pickerInput(
-                     inputId = paste0("weightPicker", i),
-                     label = paste("Select Scoring Weight for Map", i),
-                     choices = c("None", weight_values),
-                     multiple = FALSE,
-                     selected = "None"
-                   )
-                 )
-               )
-             })
-           ),
-           
-           # "species" = tagList(...),
-           # "fisheries" = tagList(...)
-    )
-  })
-  
-  # Helper function to check if a configuration is valid and should be displayed
+  # Helper function to check if a configuration is valid
   is_valid_config <- function(i) {
-    # Check if map is enabled
     enable_input <- input[[paste0("enableMap", i)]]
-    if (is.null(enable_input) || !enable_input) {
-      return(FALSE)
-    }
-    
-    # Check if both layer and weight are selected and not "None"
     layer_input <- input[[paste0("layerPicker", i)]]
-    weight_input <- input[[paste0("weightPicker", i)]]
+    score_input <- input[[paste0("scorePicker", i)]]
     
-    if (is.null(layer_input) || is.null(weight_input) ||
-        layer_input == "None" || weight_input == "None") {
-      return(FALSE)
-    }
-    
-    # Check if layer exists in our list
-    if (!(layer_input %in% names(layer))) {
-      return(FALSE)
-    }
-    
-    return(TRUE)
+    !is.null(enable_input) && enable_input &&
+      !is.null(layer_input) && layer_input != "None" &&
+      !is.null(score_input) && score_input != "None" &&
+      layer_input %in% names(layer)
   }
   
-  # Modify get_valid_configs to use the filter_by_weight function
+  # Get valid map configurations
   get_valid_configs <- reactive({
-    valid_configs <- lapply(map_configs, function(i) {
-      if (is_valid_config(i)) {
-        layer_input <- input[[paste0("layerPicker", i)]]
-        weight_input <- input[[paste0("weightPicker", i)]]
-        
-        # Get the full dataset
-        full_dataset <- layer[[layer_input]]
-        
-        # Filter the dataset to include only columns related to the selected weight
-        filtered_data <- filter_by_weight(full_dataset, weight_input)
-        
-        return(list(
-          index = i,
-          layer = layer_data,
-          weight = weight_input
-        ))
-      } else {
-        return(NULL)
-      }
-    })
+    valid_configs <- list()
     
-    # Filter out NULL entries
-    valid_configs[!sapply(valid_configs, is.null)]
+    for(i in 1:5) {
+      if(is_valid_config(i)) {
+        layer_name <- input[[paste0("layerPicker", i)]]
+        score_name <- input[[paste0("scorePicker", i)]]
+        dataset <- layer[[layer_name]]
+        filtered_data <- filter_by_score(dataset, score_name)
+        
+        # Get the color for this score
+        color <- score_colors[[score_name]]
+        
+        valid_configs[[length(valid_configs) + 1]] <- list(
+          index = i,
+          layer = layer_name,
+          score = score_name,
+          data = filtered_data,
+          color = color
+        )
+      }
+    }
+    
+    return(valid_configs)
   })
   
-  
-  # Container for multiple maps
-  output$multipleMapsContainer <- renderUI({
-    # Create map cards for all configured maps
-    map_cards <- lapply(map_configs, function(i) {
-      # Check if this configuration is valid
-      if (is_valid_config(i)) {
-        layer_input <- input[[paste0("layerPicker", i)]]
-        weight_input <- input[[paste0("weightPicker", i)]]
-        
-        # Map ID for this specific map
-        map_id <- paste0("map_", i)
-        
-        card(
-          card_header(paste0("Map ", i, ": ", layer_input, " - ", weight_input)),
-          card_body(
-            leafletOutput(map_id, height = 250)
+  # Dynamic sidebar content
+  output$dynamicSidebar <- renderUI({
+    current_tab <- input$dataTabs %||% "habitat"
+    
+    if(current_tab == "habitat") {
+      map_inputs <- lapply(1:5, function(i) {
+        tagList(
+          hr(),
+          h5(paste("Map", i, "Configuration")),
+          checkboxInput(paste0("enableMap", i), paste("Enable Map", i), value = FALSE),
+          conditionalPanel(
+            condition = paste0("input.enableMap", i, " == true"),
+            pickerInput(
+              paste0("layerPicker", i),
+              paste("Select Layer for Map", i),
+              choices = c("None", names(layer)),
+              selected = "None"
+            ),
+            pickerInput(
+              paste0("scorePicker", i),
+              paste("Select score for Map", i),
+              choices = c("None", score_values),
+              selected = "None"
+            )
           )
         )
-      } else {
-        NULL
-      }
-    })
-    
-    # Filter out NULL entries (unconfigured maps)
-    map_cards <- map_cards[!sapply(map_cards, is.null)]
-    
-    # If no maps configured, return message
-    if (length(map_cards) == 0) {
-      return(
-        card(
-          card_body(
-            p("No maps configured yet. Please enable and configure maps in the sidebar.")
-          )
-        )
+      })
+      
+      tagList(
+        h4("Habitat Map Settings"),
+        map_inputs,
+        hr(),
+        h4("Combined Map Settings"),
+        helpText("The combined map will calculate the geometric mean"),
+        actionButton("generateCombinedMap", "Generate Combined Map", 
+                     class = "btn-primary btn-block")
       )
     }
+  })
+  
+  # Multiple maps container
+  output$multipleMapsContainer <- renderUI({
+    valid_configs <- get_valid_configs()
     
-    # Calculate how many maps per row (max 2 maps per row for better visibility)
-    maps_per_row <- 2
-    num_maps <- length(map_cards)
+    if(length(valid_configs) == 0) {
+      return(card(
+        card_body(
+          p("No maps configured yet. Please enable and configure maps in the sidebar.")
+        )
+      ))
+    }
     
-    # Group the cards into rows using layout_columns
-    if (num_maps <= maps_per_row) {
-      # If we have fewer or equal to maps_per_row, just put them all in one row
-      do.call(layout_columns, map_cards)
-    } else {
-      # Otherwise, create multiple rows
-      rows <- list()
-      for(i in seq(1, num_maps, by = maps_per_row)) {
-        end_idx <- min(i + maps_per_row - 1, num_maps)
-        row_cards <- map_cards[i:end_idx]
-        rows[[length(rows) + 1]] <- do.call(layout_columns, row_cards)
-      }
+    # Create map cards
+    map_cards <- lapply(valid_configs, function(config) {
+      i <- config$index
+      map_id <- paste0("map_", i)
       
-      # Return all rows
-      tagList(rows)
+      card(
+        card_header(paste0("Map ", i, ": ", config$layer, " - ", config$score)),
+        card_body(
+          leafletOutput(map_id, height = 250)
+        )
+      )
+    })
+    
+    # Arrange cards in rows of 2
+    rows <- list()
+    for(i in seq(1, length(map_cards), by = 2)) {
+      row_cards <- map_cards[i:min(i+1, length(map_cards))]
+      rows[[length(rows) + 1]] <- do.call(layout_columns, row_cards)
+    }
+    
+    # Add combined map at the bottom
+    rows[[length(rows) + 1]] <- card(
+      card_header(h3("Combined Map Result (Geometric Mean)")),
+      card_body(
+        leafletOutput("combinedMap", height = 400)
+      )
+    )
+    
+    tagList(rows)
+  })
+  
+  # create individual maps
+  observe({
+    valid_configs <- get_valid_configs()
+    
+    for(config in valid_configs) {
+      local({
+        local_config <- config  # Create local copy to avoid issues with loop variables
+        map_id <- paste0("map_", local_config$index)
+        
+        output[[map_id]] <- renderLeaflet({
+          # Ensure we have data to display
+          if(nrow(local_config$data) == 0) {
+            return(leaflet() %>%
+                     addProviderTiles("Esri.OceanBasemap",
+                                      options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
+                     addProviderTiles("Esri.OceanBasemap",
+                                      options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
+                     setView(lng = -70, lat = 40, zoom = 5) %>%
+                     addControl("No data matching selected score", position = "topright"))
+          }
+          
+          # Create the map with legend
+          leaflet() %>%
+            addProviderTiles("Esri.OceanBasemap",
+                             options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
+            addProviderTiles("Esri.OceanBasemap",
+                             options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
+            addPolygons(
+              data = local_config$data, 
+              color = "#333333",     # Border color
+              weight = 1,            # Border width
+              fillColor = local_config$color,
+              fillOpacity = 0.7,
+              popup = ~paste("Score:", local_config$score)
+            ) %>%
+            # Add a legend
+            addLegend(
+              position = "bottomright",
+              colors = local_config$color,
+              labels = paste("Score:", local_config$score),
+              opacity = 0.7,
+              title = local_config$layer
+            )
+        })
+      })
     }
   })
   
-  # Create the observe events for all possible maps (1-5)
-  lapply(map_configs, function(i) {
-    map_id <- paste0("map_", i)
+  # Combined map logic
+  observeEvent(input$generateCombinedMap, {
+    valid_configs <- get_valid_configs()
     
-    # Observer for this specific map
-    observe({
-      # Only render if configuration is valid
-      if (is_valid_config(i)) {
-        layer_input <- input[[paste0("layerPicker", i)]]
-        weight_input <- input[[paste0("weightPicker", i)]]
+    if(length(valid_configs) > 0) {
+      # Create a data frame to track which layers and scores are selected
+      selected_layers_scores <- data.frame(
+        layer = sapply(valid_configs, function(config) config$layer),
+        score = sapply(valid_configs, function(config) config$score),
+        stringsAsFactors = FALSE
+      )
+      
+      # Start with the full dataset
+      filtered_data <- full_data
+      
+      # Filter the full dataset based on selected layer-score combinations
+      for(i in 1:nrow(selected_layers_scores)) {
+        layer_name <- selected_layers_scores$layer[i]
+        score_value <- selected_layers_scores$score[i]
         
-        # Get the full dataset
-        full_dataset <- layer[[layer_input]]
+        # Determine the score column based on the layer name
+        if(layer_name == "Canyon") {
+          score_column <- "Score.Canyon"
+        } else if(layer_name == "DSC_RH") {
+          score_column <- "Score.DSC_RH"
+        } else if(layer_name == "Fixed Surveys") {
+          score_column <- "Score.Surveys_fixed"
+        } else {
+          next  # Skip if layer name doesn't match
+        }
         
-        # Filter the dataset based on selected weight
-        filtered_data <- filter_by_weight(full_dataset, weight_input)
+        # Filter the dataset for this layer-score combination
+        filtered_data <- filtered_data[filtered_data[[score_column]] == score_value, ]
+      }
+      
+      # If we have results, calculate geometric mean and create map
+      if(nrow(filtered_data) > 0) {
+        # Get score columns from selected layers
+        selected_score_columns <- c()
+        for(layer_name in selected_layers_scores$layer) {
+          if(layer_name == "Canyon") selected_score_columns <- c(selected_score_columns, "Score.Canyon")
+          else if(layer_name == "DSC_RH") selected_score_columns <- c(selected_score_columns, "Score.DSC_RH")
+          else if(layer_name == "Fixed Surveys") selected_score_columns <- c(selected_score_columns, "Score.Surveys_fixed")
+        }
+        selected_score_columns <- unique(selected_score_columns)
         
-        # Render the map with filtered data
-        output[[map_id]] <- renderLeaflet({
+        # Calculate geometric mean
+        filtered_data$Geo_mean <- apply(filtered_data[, selected_score_columns, drop = FALSE], 1, function(x) {
+          exp(mean(log(as.numeric(x)), na.rm = TRUE))
+        })
+        
+        # Determine colors based on the geometric mean
+        geo_mean_colors <- sapply(filtered_data$Geo_mean, function(score) {
+          score_str <- as.character(round(score, 1))
+          if(score_str %in% names(score_colors)) {
+            return(score_colors[[score_str]])
+          } else {
+            closest_score <- names(score_colors)[which.min(abs(as.numeric(names(score_colors)) - score))]
+            return(score_colors[[closest_score]])
+          }
+        })
+        
+        # Create a unique palette for the legend
+        unique_scores <- sort(unique(round(filtered_data$Geo_mean, 1)))
+        unique_colors <- sapply(unique_scores, function(score) {
+          score_str <- as.character(score)
+          if(score_str %in% names(score_colors)) {
+            return(score_colors[[score_str]])
+          } else {
+            closest_score <- names(score_colors)[which.min(abs(as.numeric(names(score_colors)) - score))]
+            return(score_colors[[closest_score]])
+          }
+        })
+        
+        # # Transform the spatial data to WGS84 if it's an sf object
+        # if(inherits(filtered_data, "sf")) {
+        #   # Transform to WGS84 for leaflet
+        #   filtered_data <- st_transform(filtered_data, '+proj=longlat +datum=WGS84')
+        # }
+        
+        output$combinedMap <- renderLeaflet({
           leaflet() %>%
-            # add ESRI Ocean basemap
             addProviderTiles("Esri.OceanBasemap",
-                             options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>% 
-            # add ESRI Ocean placename labels and borders to basemap
+                             options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
             addProviderTiles("Esri.OceanBasemap",
-                             options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>% 
-            addPolygons(data = filtered_data, color = "lightpink", fillOpacity = 0.5)
+                             options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
+            addPolygons(
+              data = filtered_data, 
+              color = "#333333", 
+              weight = 1, 
+              fillColor = geo_mean_colors, 
+              fillOpacity = 0.7,
+              popup = ~paste("Geometric Mean Score:", round(Geo_mean, 2))
+            ) %>%
+            addLegend(
+              position = "bottomright",
+              colors = unique_colors,
+              labels = paste("Score:", unique_scores),
+              opacity = 0.7,
+              title = "Combined Geometric Mean"
+            )
+        })
+      } else {
+        # If we couldn't create combined data, show an empty map with a message
+        output$combinedMap <- renderLeaflet({
+          leaflet() %>%
+            addProviderTiles("Esri.OceanBasemap",
+                             options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
+            addProviderTiles("Esri.OceanBasemap",
+                             options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
+            setView(lng = -70, lat = 40, zoom = 5) %>%
+            addControl("No matching data found with the selected combination of scores.", position = "topright")
         })
       }
-    })
+    } else {
+      # No valid configurations
+      output$combinedMap <- renderLeaflet({
+        leaflet() %>%
+          addProviderTiles("Esri.OceanBasemap",
+                           options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
+          addProviderTiles("Esri.OceanBasemap",
+                           options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
+          setView(lng = -70, lat = 40, zoom = 5) %>%
+          addControl("Please configure at least one map to generate a combined map.", position = "topright")
+      })
+    }
   })
 }

@@ -18,7 +18,7 @@ page_navbar(
   
   # Tab 2: Data Table with Inset Tabs
   nav_panel(
-    title = "Submodels",
+    title = " Natural Resources Submodel",
     icon = icon("sliders"),
     
     # Layout with sidebar for picker inputs and main area for tabs
@@ -41,16 +41,17 @@ page_navbar(
           card(
             card_header("Map Configuration"),
             card_body(
-              p("Select layers and weights in the sidebar to generate individual maps."),
-              p("You can configure up to 5 different maps with their own settings.")
+              p("Select layers and scores in the sidebar to generate individual maps."),
+              p("You can configure up to 5 different maps with their own settings."),
+              p("Click 'Generate Combined Map' to calculate the geometric mean of all selected maps.")
             )
           ),
           
           # Container for multiple maps
-          uiOutput("multipleMapsContainer"),
+          uiOutput("multipleMapsContainer")
           
-          # Combined map at the bottom
-          uiOutput("combinedMapContainer")
+          # Note: The combinedMapContainer is removed since the combined map is 
+          # already included in the multipleMapsContainer in the server code
         ),
         
         # Inset Tab 2
@@ -69,14 +70,28 @@ page_navbar(
         ),
         # Inset Tab 3
         nav_panel(
-          title = "Fisheries",
-          icon = icon("fish-fins"),
-          value = "fisheries",
+          title = "Birds",
+          icon = icon("crow"),
+          value = "birds",
           layout_columns(
             card(
-              card_header("Fisheries Submodel"),
+              card_header("Birds Submodel"),
               card_body(
-                p("we love fish")
+                p("we love birds")
+              )
+            )
+          )
+        ),
+        # Inset Tab 4
+        nav_panel(
+          title = "Combined Submodel",
+          icon = icon("object-group"),
+          value = "combined_model",
+          layout_columns(
+            card(
+              card_header("Combined Submodel"),
+              card_body(
+                p("we love everybody loading together")
               )
             )
           )
@@ -84,6 +99,17 @@ page_navbar(
       )
     )
   ),
+  # Tab 3: Methods
+  nav_panel(
+    title = "Methods",
+    icon = icon("route"),
+    card(
+      card_header("Methods"),
+      card_body(
+        p("how did we come up with any of this."),
+      )
+    )
+  ), 
   # Tab 3: Data
   nav_panel(
     title = "Data",
@@ -91,7 +117,6 @@ page_navbar(
     card(
       card_header("Data Sources"),
       card_body(
-        # h3("data sources"),
         p("What data was used in order to create these modeling outputs."),
         p("Data Sources:"),
         tags$ul(
