@@ -1,6 +1,6 @@
 page_navbar(
   title = "Suitability Modeling",
-  theme = bs_theme(bootswatch = "cerulean"),
+  theme = bs_theme(),
   
   # Tab 1: Overview
   nav_panel(
@@ -16,17 +16,17 @@ page_navbar(
     )
   ),
   
-  # Tab 2: Data Table with Inset Tabs
+  # Tab 2: Natural Resources Submodel Tab with Inset Tabs
   nav_panel(
     title = " Natural Resources Submodel",
-    icon = icon("sliders"),
+    icon = icon("cloud-sun"),
     
-    # Layout with sidebar for picker inputs and main area for tabs
+    # Layout with sidebar for tabs
     layout_sidebar(
       # Sidebar for picker inputs that change based on tab selection
       sidebar = sidebar(
-        # Container for dynamic picker inputs
-        uiOutput("dynamicSidebar")
+        # Dynamic picker inputs
+        uiOutput("dynamicSidebar") # Seetings for dynamic sidebar live in server.R
       ),
       # Main area with the tab navigation
       navset_tab(
@@ -50,8 +50,6 @@ page_navbar(
           # Container for multiple maps
           uiOutput("multipleMapsContainer")
           
-          # Note: The combinedMapContainer is removed since the combined map is 
-          # already included in the multipleMapsContainer in the server code
         ),
         
         # Inset Tab 2
@@ -91,7 +89,7 @@ page_navbar(
             card(
               card_header("Combined Submodel"),
               card_body(
-                p("we love everybody loading together")
+                p("we love everybody playing nice with one another together")
               )
             )
           )
@@ -99,7 +97,29 @@ page_navbar(
       )
     )
   ),
-  # Tab 3: Methods
+  # Tab 3: Fisheries Submodel
+  nav_panel(
+    title = "Fisheries Submodel",
+    icon = icon("fish-fins"),
+    card(
+      card_header("Fisheries Submodel"),
+      card_body(
+        p("we would like the ocean to have healthy fish."),
+      )
+    )
+  ), 
+  # Tab 4: Industry & Operations Submodel
+  nav_panel(
+    title = "Industry & Operations Submodel",
+    icon = icon("industry"),
+    card(
+      card_header("Industry & Operations Submodel"),
+      card_body(
+        p("we love indsutry and operations details."),
+      )
+    )
+  ), 
+  # Tab 5: Methods
   nav_panel(
     title = "Methods",
     icon = icon("route"),
@@ -110,7 +130,7 @@ page_navbar(
       )
     )
   ), 
-  # Tab 3: Data
+  # Tab 6: Data
   nav_panel(
     title = "Data",
     icon = icon("database"),

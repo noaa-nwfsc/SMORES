@@ -42,8 +42,7 @@ grd.norcal <- st_crop(grid.2km, NorCal)
 
 saveRDS(grd.norcal, "U:\\Github\\SMORES\\data\\2km_grid_norcal.rds")
 
-grid_test <- grd.norcal %>% 
-  st_drop_geometry()
+grid_test <- grd.norcal
 
 #NCCOS values to run in modeling
 HAPC.RR.Score = 0.001

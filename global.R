@@ -24,8 +24,22 @@ layer <- list(
   "Fixed Surveys" = surveys_fixed
 )
 
-# Define possible weight values
+# Weight values
 score_values <- c("0.1", "0.2", "0.3", "0.4", "0.5" ,"0.6", "0.7", "0.8", "0.9", "1")
 
 # Add a null coalescing operator helper since R doesn't have one built-in
 `%||%` <- function(x, y) if(is.null(x)) y else x
+
+# Color palette for scores
+score_colors <- list(
+  "0.1" = "#E41A1C",  # red
+  "0.2" = "#377EB8",  # blue
+  "0.3" = "#4DAF4A",  # green
+  "0.4" = "#984EA3",  # purple
+  "0.5" = "#FF7F00",  # orange
+  "0.6" = "#FFFF33",  # yellow
+  "0.7" = "#A65628",  # brown
+  "0.8" = "#F781BF",  # pink
+  "0.9" = "#999999",  # grey
+  "1" = "#000000"     # black
+)
