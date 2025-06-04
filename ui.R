@@ -1,6 +1,6 @@
 page_navbar(
   title = "Suitability Modeling",
-  theme = bs_theme(),
+  theme = theme,
   
   # Tab 1: Overview
   nav_panel(

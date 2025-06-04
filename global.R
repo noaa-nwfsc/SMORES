@@ -9,6 +9,10 @@ library(bslib)
 library(shinyWidgets)
 library(mapview)
 library(sf)
+library(yaml)
+
+theme <- bslib::bs_theme()
+brand <- attr(theme, "brand")
 
 # Load datasets
 canyon_data <- readRDS("data\\canyon_scored.rds")

@@ -2,7 +2,8 @@ meta:
   name: 
     full: National Marine Fisheries Service
     short: NOAA Fisheries
-  link: https://fisheries.noaa.gov
+  link:
+    home: https://fisheries.noaa.gov
 
 color:
   palette:
@@ -114,83 +115,94 @@ color:
     purple: urchin
     teal: fisheries-teal
     white: gull-white
-
-    ## Slide background colors from PPT templates
-    dark-blue: '#003155'
-    light-teal: "#13B9C2"
-
-  #this is the section that I think is controlling the colors
-  # I need to figure out what these are controlling in shiny or if i need to manually set
-  # Theme colors
-  background: noaa-sea
-  foreground: gull-white
-  primary: noaa-sea
-  secondary: noaa-sea
-
+  
+  #	main background color (close to white and must have high contrast with the foreground color)
+  background: light-sea-blue
+  # main text color (close to black and must have high contrast with the background color)
+  foreground: vivid-orange
+  # used for hyperlinks, active states, and primary action buttons
+  primary: urchin
+  # used for lighter text or disabled states
+  secondary: teal
+  #	used for hover states, accents, and wells
+  tertiary: blue
+  # positive or successful actions and information
+  success: green
+  # neutral or informational actions and information
+  info: light-sea-blue
+  # warning or cautionary actions and information
+  warning: vivid-orange
+  # errors, dangerous actions, or negative information
+  danger: red
+  # bright color, high-contrast foreground color on dark elements or low-contrast background color on light elements
+  light: sky-tint-3
+  # dark color, high-contrast foreground color on light elements or high-contrast background color on light elements
+  dark: dark-navy
+  
 logo: 
   images: 
     noaa-emblem:
-      path: logos/emblem.png
+      path: www/logos/emblem.png
       alt: NOAA emblem
     noaa-emblem-whitespace:
-      path: logos/emblem-withspace.png
+      path: www/logos/emblem-withspace.png
       alt: NOAA emblem with whitespace
     noaa-emblem-white:
-      path: logos/emblem-white.png
+      path: www/logos/emblem-white.png
       alt: NOAA emblem, monochrome white
     noaa-emblem-blue:
-      path: logos/emblem-blue.png
+      path: www/logos/emblem-blue.png
       alt: NOAA emblem, monochrome blue
     noaa-emblem-agency-name-horiz:
-      path: logos/condensed-lockup-h.png
+      path: www/logos/condensed-lockup-h.png
       alt: NOAA emblem with agency name
     noaa-emblem-agency-name-vert:
-      path: logos/condensed-lockup-v.png
+      path: www/logos/condensed-lockup-v.png
       alt: NOAA emblem with agency name
     noaa-logo:
-      path: logos/logo.png
+      path: www/logos/logo.png
       alt: NOAA logo
     noaa-logo-whitespace:
-      path: logos/logo-withspace.png
+      path: www/logos/logo-withspace.png
       alt: NOAA logo with whitespace
     noaa-logo-white:
       path: logos/logo-white.png
       alt: NOAA logo, monochrome white
     noaa-logo-blue:
-      path: logos/logo-blue.png
+      path: www/logos/logo-blue.png
       alt: NOAA logo, monochrome blue
     noaa-logo-whiteline:
       path: logos/logo-white-line.png
       alt: NOAA logo, white outline
     noaa-logo-agency-name:
-      path: logos/logo-agency.png
+      path: www/logos/logo-agency.png
       alt: NOAA logo with agency name
     noaa-logo-agency-name-condensed:
-      path: logos/logo-agency-condensed.png
+      path: www/logos/logo-agency-condensed.png
       alt: NOAA logo with condensed agency name
     noaa-wordmark:
-      path: logos/wordmark.png
+      path: www/logos/wordmark.png
       alt: NOAA wordmark logo
     noaa-wordmark-whitespace:
-      path: logos/wordmark-withspace.png
+      path: www/logos/wordmark-withspace.png
       alt: NOAA wordmark logo with whitespace
     noaa-wordmark-white:
-      path: logos/wordmark-white.png
+      path: www/logos/wordmark-white.png
       alt: NOAA wordmark logo, monochrome white
     noaa-wordmark-blue:
       path: logos/wordmark-blue.png
       alt: NOAA wordmark logo, monochrome blue
     fisheries-emblem-horiz:
-      path: logos/fisheries-emblem-h.png
+      path: www/logos/fisheries-emblem-h.png
       alt: NOAA Fisheries emblem
     fisheries-emblem-vert:
-      path: logos/fisheries-emblem-v.png
+      path: www/logos/fisheries-emblem-v.png
       alt: NOAA Fisheries emblem
     fisheries-logo-horiz:
-      path: logos/fisheries-logo-h.png
+      path: www/logos/fisheries-logo-h.png
       alt: NOAA Fisheries logo
     fisheries-logo-vert:
-      path: logos/fisheries-logo-v.png
+      path: www/logos/fisheries-logo-v.png
       alt: NOAA Fisheries logo
     
   small: noaa-logo  
@@ -200,12 +212,12 @@ logo:
 typography:
   fonts:
     # NOAA general
-    - family: Arial
-      source: google
-    - family: Calibri
-      source: google
-    - family: Helvetica Neue
-      source: google
+    # - family: Arial
+    #   source: google
+    # - family: Calibri
+    #   source: google
+    # - family: Helvetica Neue
+    #   source: google
     - family: Lexend
       source: google
     - family: Noto Sans
@@ -218,33 +230,34 @@ typography:
       source: google
     - family: Roboto
       source: google
-    - family: Source Sans Pro
-      source: google
+    # - family: Source Sans Pro
+    #   source: google
     - family: Source Sans 3
       source: google
-    
-    # Fisheries (Open Sans from above as well)
-    - family: Arial Narrow
-      source: google
-    - family: Helvetica Neue Condensed
-      source: google
-    - family: Minion # Serif
-      source: google
-    - family: Cambria # Serif
-      source: google
 
-    
-  base: Open Sans
-  headings: 
-    family: Open Sans
-    color: dark-teal
-  link: 
-    color: 
-    background-color:
-    decoration: "underline"
+    # Fisheries (Open Sans from above as well)
+    # - family: Arial Narrow
+    #   source: google
+    # - family: Helvetica Neue Condensed
+    #   source: google
+    # - family: Minion # Serif
+    #   source: google
+    # - family: Cambria # Serif
+    #   source: google
+
+  base:
+    color: foreground
+  headings:
+    color: primary
+  link:
+    color: success
+    decoration: "overline" # switches the tab to highlight the one selected
     
 defaults:
   bootstrap:
     defaults:
-      
+      navbar-bg: navy # controls title banner
+      navbar-fg: white # controls navbar text color
+      navbar-hl: success # appeared to not update will need to keep working on this one 
+      nav--tabs-link-active-color: success #should have made tab green not orange?
   
