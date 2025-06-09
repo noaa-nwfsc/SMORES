@@ -23,7 +23,7 @@ color:
     ## Fisheries Web Only
     navy-blend: "#004391"
     shark-gray: "#44545F"
-    
+
     ## Fisheries Complementary
     # Oceans (National)
     oceans-midnight-sky: midnight-sky
@@ -38,7 +38,7 @@ color:
     fisheries-teal: "#00797F"
     waves: "#1EBEC7"
     pale-teal: "#90DFE3"
-    
+
     # Seagrass (Southeast)
     dark-seagrass: "#365E17"
     seagrass: "#4B8320"
@@ -117,97 +117,86 @@ color:
     white: gull-white
   
   #	main background color (close to white and must have high contrast with the foreground color)
-  background: light-sea-blue
+  background: white
   # main text color (close to black and must have high contrast with the background color)
-  foreground: vivid-orange
+  foreground: dark-navy
   # used for hyperlinks, active states, and primary action buttons
-  primary: urchin
+  primary: blue
   # used for lighter text or disabled states
-  secondary: teal
-  #	used for hover states, accents, and wells
-  tertiary: blue
-  # positive or successful actions and information
-  success: green
+  secondary: purple
   # neutral or informational actions and information
-  info: light-sea-blue
-  # warning or cautionary actions and information
-  warning: vivid-orange
-  # errors, dangerous actions, or negative information
-  danger: red
-  # bright color, high-contrast foreground color on dark elements or low-contrast background color on light elements
-  light: sky-tint-3
-  # dark color, high-contrast foreground color on light elements or high-contrast background color on light elements
-  dark: dark-navy
-  
-logo: 
-  images: 
-    noaa-emblem:
-      path: www/logos/emblem.png
-      alt: NOAA emblem
-    noaa-emblem-whitespace:
-      path: www/logos/emblem-withspace.png
-      alt: NOAA emblem with whitespace
-    noaa-emblem-white:
-      path: www/logos/emblem-white.png
-      alt: NOAA emblem, monochrome white
-    noaa-emblem-blue:
-      path: www/logos/emblem-blue.png
-      alt: NOAA emblem, monochrome blue
-    noaa-emblem-agency-name-horiz:
-      path: www/logos/condensed-lockup-h.png
-      alt: NOAA emblem with agency name
-    noaa-emblem-agency-name-vert:
-      path: www/logos/condensed-lockup-v.png
-      alt: NOAA emblem with agency name
-    noaa-logo:
-      path: www/logos/logo.png
-      alt: NOAA logo
-    noaa-logo-whitespace:
-      path: www/logos/logo-withspace.png
-      alt: NOAA logo with whitespace
-    noaa-logo-white:
-      path: logos/logo-white.png
-      alt: NOAA logo, monochrome white
-    noaa-logo-blue:
-      path: www/logos/logo-blue.png
-      alt: NOAA logo, monochrome blue
-    noaa-logo-whiteline:
-      path: logos/logo-white-line.png
-      alt: NOAA logo, white outline
-    noaa-logo-agency-name:
-      path: www/logos/logo-agency.png
-      alt: NOAA logo with agency name
-    noaa-logo-agency-name-condensed:
-      path: www/logos/logo-agency-condensed.png
-      alt: NOAA logo with condensed agency name
-    noaa-wordmark:
-      path: www/logos/wordmark.png
-      alt: NOAA wordmark logo
-    noaa-wordmark-whitespace:
-      path: www/logos/wordmark-withspace.png
-      alt: NOAA wordmark logo with whitespace
-    noaa-wordmark-white:
-      path: www/logos/wordmark-white.png
-      alt: NOAA wordmark logo, monochrome white
-    noaa-wordmark-blue:
-      path: logos/wordmark-blue.png
-      alt: NOAA wordmark logo, monochrome blue
-    fisheries-emblem-horiz:
-      path: www/logos/fisheries-emblem-h.png
-      alt: NOAA Fisheries emblem
-    fisheries-emblem-vert:
-      path: www/logos/fisheries-emblem-v.png
-      alt: NOAA Fisheries emblem
-    fisheries-logo-horiz:
-      path: www/logos/fisheries-logo-h.png
-      alt: NOAA Fisheries logo
-    fisheries-logo-vert:
-      path: www/logos/fisheries-logo-v.png
-      alt: NOAA Fisheries logo
-    
-  small: noaa-logo  
-  medium: noaa-logo
-  large: noaa-emblem
+  info: teal
+
+# logo capability is being debated as active currently for Shiny. Appears to be coded for Shiny but still waiting for Shiny
+# logo: 
+#   images: 
+#     noaa-emblem:
+#       path: www/logos/emblem.png
+#       alt: NOAA emblem
+#     noaa-emblem-whitespace:
+#       path: www/logos/emblem-withspace.png
+#       alt: NOAA emblem with whitespace
+#     noaa-emblem-white:
+#       path: www/logos/emblem-white.png
+#       alt: NOAA emblem, monochrome white
+#     noaa-emblem-blue:
+#       path: www/logos/emblem-blue.png
+#       alt: NOAA emblem, monochrome blue
+#     noaa-emblem-agency-name-horiz:
+#       path: www/logos/condensed-lockup-h.png
+#       alt: NOAA emblem with agency name
+#     noaa-emblem-agency-name-vert:
+#       path: www/logos/condensed-lockup-v.png
+#       alt: NOAA emblem with agency name
+#     noaa-logo:
+#       path: www/logos/logo.png
+#       alt: NOAA logo
+#     noaa-logo-whitespace:
+#       path: www/logos/logo-withspace.png
+#       alt: NOAA logo with whitespace
+#     noaa-logo-white:
+#       path: logos/logo-white.png
+#       alt: NOAA logo, monochrome white
+#     noaa-logo-blue:
+#       path: www/logos/logo-blue.png
+#       alt: NOAA logo, monochrome blue
+#     noaa-logo-whiteline:
+#       path: logos/logo-white-line.png
+#       alt: NOAA logo, white outline
+#     noaa-logo-agency-name:
+#       path: www/logos/logo-agency.png
+#       alt: NOAA logo with agency name
+#     noaa-logo-agency-name-condensed:
+#       path: www/logos/logo-agency-condensed.png
+#       alt: NOAA logo with condensed agency name
+#     noaa-wordmark:
+#       path: www/logos/wordmark.png
+#       alt: NOAA wordmark logo
+#     noaa-wordmark-whitespace:
+#       path: www/logos/wordmark-withspace.png
+#       alt: NOAA wordmark logo with whitespace
+#     noaa-wordmark-white:
+#       path: www/logos/wordmark-white.png
+#       alt: NOAA wordmark logo, monochrome white
+#     noaa-wordmark-blue:
+#       path: logos/wordmark-blue.png
+#       alt: NOAA wordmark logo, monochrome blue
+#     fisheries-emblem-horiz:
+#       path: www/logos/fisheries-emblem-h.png
+#       alt: NOAA Fisheries emblem
+#     fisheries-emblem-vert:
+#       path: www/logos/fisheries-emblem-v.png
+#       alt: NOAA Fisheries emblem
+#     fisheries-logo-horiz:
+#       path: www/logos/fisheries-logo-h.png
+#       alt: NOAA Fisheries logo
+#     fisheries-logo-vert:
+#       path: www/logos/fisheries-logo-v.png
+#       alt: NOAA Fisheries logo
+#     
+#   small: noaa-logo  
+#   medium: noaa-logo
+#   large: noaa-emblem
 
 typography:
   fonts:
@@ -246,18 +235,24 @@ typography:
     #   source: google
 
   base:
-    color: foreground
+    color: navy
   headings:
-    color: primary
+    color:
   link:
-    color: success
-    decoration: "overline" # switches the tab to highlight the one selected
+    color: noaa-sea
+    decoration: "underline" # switches the tab to highlight the one selected
     
 defaults:
   bootstrap:
-    defaults:
-      navbar-bg: navy # controls title banner
-      navbar-fg: white # controls navbar text color
-      navbar-hl: success # appeared to not update will need to keep working on this one 
-      nav--tabs-link-active-color: success #should have made tab green not orange?
-  
+    defaults: # https://quarto.org/docs/output-formats/html-themes.html#fonts
+      navbar-bg: navy #background color of the navbar
+      navbar-fg: white #color of foreground elements
+      # navbar-hl: yellow #this did not update; highlight color for links on the navbar
+      # this updates the nav panels in the inset tabs
+      nav-tabs-link-active-color: navy
+      nav-tabs-link-active-bg: "#C6E6F0"
+
+      
+      
+      
+

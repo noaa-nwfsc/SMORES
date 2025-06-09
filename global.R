@@ -10,22 +10,30 @@ library(shinyWidgets)
 library(mapview)
 library(sf)
 library(yaml)
+library(shinyscreenshot)
+library(webshot)
 
 theme <- bslib::bs_theme()
-brand <- attr(theme, "brand")
 
 # Load datasets
-canyon_data <- readRDS("data\\canyon_scored.rds")
-DSC_RH_data <- readRDS("data\\DSC_RH_scored.rds")
-surveys_fixed <- readRDS("data\\Surveys_fixed_scored.rds")
-
-full_data <- readRDS("data\\full_data.rds")
+canyon_data <- readRDS("data/canyon_scored.rds")
+DSC_RH_data <- readRDS("data/DSC_RH_scored.rds")
+surveys_fixed <- readRDS("data/Surveys_fixed_scored.rds")
+grid_test <- readRDS("data/2km_grid_norcal.rds")
 
 # Create a list of all datasets
-layer <- list(
+habitat_layer <- list(
   "Canyon" = canyon_data,
   "DSC_RH" = DSC_RH_data,
   "Fixed Surveys" = surveys_fixed
+)
+
+species_layer <- list(
+  "whale1", "whale2"
+)
+
+bird_layer <- list (
+  "bird1", "bird2"
 )
 
 # Weight values

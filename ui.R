@@ -1,152 +1,172 @@
-page_navbar(
-  title = "Suitability Modeling",
-  theme = theme,
-  
-  # Tab 1: Overview
-  nav_panel(
-    title = "Overview",
-    icon = icon("house-chimney"),
-    layout_columns(
-      card(
-        card_header("Overview"),
-        card_body(
-          p("Information about project and/or maybe information about how to use tool")
-        )
-      )
+tagList(
+  # Custom header with logo
+  div(
+    class = "container-fluid",
+    style = "margin: 10px 0; display: flex; justify-content: space-between; align-items: center;",
+    
+    # Left side blank with a placeholder
+    div(style = "visibility: hidden;", "Placeholder"),
+    
+    # Right side will have NOAA logo
+    div(
+      # note do not include www folder in file path or link will appear broken
+      img(src = "logos/NOAA_FISHERIES_logoH_web.png", height = "60px", alt = "NOAA Fisheries Logo")
     )
   ),
   
-  # Tab 2: Natural Resources Submodel Tab with Inset Tabs
-  nav_panel(
-    title = " Natural Resources Submodel",
-    icon = icon("cloud-sun"),
+  # Navbar
+  page_navbar(
+    theme = theme,
+    title = "Suitability Modeling", # title text
     
-    # Layout with sidebar for tabs
-    layout_sidebar(
-      # Sidebar for picker inputs that change based on tab selection
-      sidebar = sidebar(
-        # Dynamic picker inputs
-        uiOutput("dynamicSidebar") # Seetings for dynamic sidebar live in server.R
-      ),
-      # Main area with the tab navigation
-      navset_tab(
-        id = "dataTabs",
-        # Inset Tab 1
-        nav_panel(
-          title = "Habitat",
-          icon = icon("earth-oceania"),
-          value = "habitat",
-          
-          # Info about map settings
-          card(
-            card_header("Map Configuration"),
-            card_body(
-              p("Select layers and scores in the sidebar to generate individual maps."),
-              p("You can configure up to 5 different maps with their own settings."),
-              p("Click 'Generate Combined Map' to calculate the geometric mean of all selected maps.")
-            )
+    # Tab 1: Overview
+    nav_panel(
+      title = "Overview",
+      icon = icon("house-chimney"),
+      layout_columns(
+        card(
+          card_header("Overview"),
+          card_body(
+            p("Information about project and/or maybe information about how to use tool")
+          )
+        )
+      )
+    ),
+    
+    # Tab 2: Natural Resources Submodel Tab with Inset Tabs
+    nav_panel(
+      title = "Natural Resources Submodel",
+      icon = icon("cloud-sun"),
+      
+      # Layout with sidebar for tabs
+      layout_sidebar(
+        # Sidebar for picker inputs that change based on tab selection
+        sidebar = sidebar(
+          # Dynamic picker inputs
+          uiOutput("dynamicSidebar") # Settings for dynamic sidebar live in server.R
+        ),
+        # Main area with the tab navigation
+        navset_tab(
+          id = "dataTabs",
+          # Inset Tab 1
+          nav_panel(
+            title = "Habitat",
+            icon = icon("earth-oceania"),
+            value = "habitat",
+            
+            # Info about map settings
+            card(
+              card_header("Map Configuration"),
+              card_body(
+                p("Select layers and scores in the sidebar to generate individual maps."),
+                p("You can configure up to 5 different maps with their own settings."),
+                p("Click 'Generate Combined Map' to calculate the geometric mean of all selected maps.")
+              )
+            ),
+            
+            # Container for multiple maps
+            uiOutput("multipleMapsContainer")
+        
           ),
           
-          # Container for multiple maps
-          uiOutput("multipleMapsContainer")
-          
-        ),
-        
-        # Inset Tab 2
-        nav_panel(
-          title = "Species",
-          icon = icon("otter"),
-          value = "species",
-          layout_columns(
-            card(
-              card_header("Species Submodel"),
-              card_body(
-                p("we love cetaceans and other species")
+          # Inset Tab 2
+          nav_panel(
+            title = "Species",
+            icon = icon("otter"),
+            value = "species",
+            layout_columns(
+              card(
+                card_header("Species Submodel"),
+                card_body(
+                  p("we love cetaceans and other species")
+                )
               )
             )
-          )
-        ),
-        # Inset Tab 3
-        nav_panel(
-          title = "Birds",
-          icon = icon("crow"),
-          value = "birds",
-          layout_columns(
-            card(
-              card_header("Birds Submodel"),
-              card_body(
-                p("we love birds")
+          ),
+          # Inset Tab 3
+          nav_panel(
+            title = "Birds",
+            icon = icon("crow"),
+            value = "birds",
+            layout_columns(
+              card(
+                card_header("Birds Submodel"),
+                card_body(
+                  p("we love birds")
+                )
               )
             )
-          )
-        ),
-        # Inset Tab 4
-        nav_panel(
-          title = "Combined Submodel",
-          icon = icon("object-group"),
-          value = "combined_model",
-          layout_columns(
-            card(
-              card_header("Combined Submodel"),
-              card_body(
-                p("we love everybody playing nice with one another together")
+          ),
+          # Inset Tab 4
+          nav_panel(
+            title = "Combined Submodel",
+            icon = icon("object-group"),
+            value = "combined_model",
+            layout_columns(
+              card(
+                card_header("Combined Submodel"),
+                card_body(
+                  p("we love everybody playing nice with one another together")
+                )
               )
             )
           )
         )
       )
-    )
-  ),
-  # Tab 3: Fisheries Submodel
-  nav_panel(
-    title = "Fisheries Submodel",
-    icon = icon("fish-fins"),
-    card(
-      card_header("Fisheries Submodel"),
-      card_body(
-        p("we would like the ocean to have healthy fish."),
+    ),
+    # Tab 3: Fisheries Submodel
+    nav_panel(
+      title = "Fisheries Submodel",
+      icon = icon("fish-fins"),
+      card(
+        card_header("Fisheries Submodel"),
+        card_body(
+          p("we would like the ocean to have healthy fish."),
+        )
       )
-    )
-  ), 
-  # Tab 4: Industry & Operations Submodel
-  nav_panel(
-    title = "Industry & Operations Submodel",
-    icon = icon("industry"),
-    card(
-      card_header("Industry & Operations Submodel"),
-      card_body(
-        p("we love indsutry and operations details."),
+    ), 
+    # Tab 4: Industry & Operations Submodel
+    nav_panel(
+      title = "Industry & Operations Submodel",
+      icon = icon("industry"),
+      card(
+        card_header("Industry & Operations Submodel"),
+        card_body(
+          p("we love indsutry and operations details."),
+        )
       )
-    )
-  ), 
-  # Tab 5: Methods
-  nav_panel(
-    title = "Methods",
-    icon = icon("route"),
-    card(
-      card_header("Methods"),
-      card_body(
-        p("how did we come up with any of this."),
+    ), 
+    # Tab 5: Methods
+    nav_panel(
+      title = "Methods",
+      icon = icon("route"),
+      card(
+        card_header("Methods"),
+        card_body(
+          p("how did we come up with any of this."),
+        )
       )
-    )
-  ), 
-  # Tab 6: Data
-  nav_panel(
-    title = "Data",
-    icon = icon("database"),
-    card(
-      card_header("Data Sources"),
-      card_body(
-        p("What data was used in order to create these modeling outputs."),
-        p("Data Sources:"),
-        tags$ul(
-          tags$li("Data Source"),
-          tags$li("Data Source"),
-          tags$li("Data Source")
-        ),
-        hr(),
-        p("Created to help inform modeling processes.")
+    ), 
+    # Tab 6: Data
+    nav_panel(
+      title = "Data",
+      icon = icon("database"),
+      card(
+        card_header("Data Sources"),
+        card_body(
+          p("What data was used in order to create these modeling outputs."),
+          p("Data Sources:"),
+          tags$ul(
+            tags$li("Data Source"),
+            tags$li("Data Source"),
+            tags$li("Data Source")
+          ),
+          hr(),
+          p("Created to help inform modeling processes.")
+        )
       )
     )
   )
 )
+  
+  

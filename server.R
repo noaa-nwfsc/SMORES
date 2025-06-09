@@ -1,5 +1,5 @@
 function(input, output, session) {
-
+  
   # filter dataframes by score 
   filter_by_score <- function(df, selected_score) {
     if(is.null(df) || is.null(selected_score) || selected_score == "None") {
@@ -29,37 +29,83 @@ function(input, output, session) {
   
   # Helper function to check if a configuration is valid
   is_valid_config <- function(i) {
-    enable_input <- input[[paste0("enableMap", i)]]
-    layer_input <- input[[paste0("layerPicker", i)]]
-    score_input <- input[[paste0("scorePicker", i)]]
+    # Determine which tab we're on
+    current_tab <- input$dataTabs %||% "habitat"
     
+    # Set the prefix based on the tab
+    prefix <- switch(current_tab,
+                     "habitat" = "Habitat",
+                     "species" = "Species",
+                     "birds" = "Bird",
+                     "")
+    
+    if(prefix == "") return(FALSE) # Invalid tab
+    
+    # Get the input values with the appropriate prefix
+    enable_input <- input[[paste0("Enable", prefix, "Map", i)]]
+    layer_input <- input[[paste0(prefix, "LayerPicker", i)]]
+    score_input <- input[[paste0(prefix, "ScorePicker", i)]]
+    
+    # Get the appropriate layer data based on the tab
+    layer_data <- switch(current_tab,
+                         "habitat" = habitat_layer,
+                         "species" = species_layer,
+                         "birds" = bird_layer,
+                         NULL)
+    
+    if(is.null(layer_data)) return(FALSE) # Invalid layer data
+    
+    # Check if configuration is valid
     !is.null(enable_input) && enable_input &&
       !is.null(layer_input) && layer_input != "None" &&
       !is.null(score_input) && score_input != "None" &&
-      layer_input %in% names(layer)
+      layer_input %in% names(layer_data)
   }
   
   # Get valid map configurations
   get_valid_configs <- reactive({
     valid_configs <- list()
+    current_tab <- input$dataTabs %||% "habitat"
+    
+    # Set the prefix and layer data based on the tab
+    prefix <- switch(current_tab,
+                     "habitat" = "Habitat",
+                     "species" = "Species",
+                     "birds" = "Bird",
+                     "")
+    
+    layer_data <- switch(current_tab,
+                         "habitat" = habitat_layer,
+                         "species" = species_layer,
+                         "birds" = bird_layer,
+                         NULL)
+    
+    if(prefix == "" || is.null(layer_data)) return(valid_configs) # Empty list if invalid
     
     for(i in 1:5) {
-      if(is_valid_config(i)) {
-        layer_name <- input[[paste0("layerPicker", i)]]
-        score_name <- input[[paste0("scorePicker", i)]]
-        dataset <- layer[[layer_name]]
-        filtered_data <- filter_by_score(dataset, score_name)
+      enable_input <- input[[paste0("Enable", prefix, "Map", i)]]
+      if(!is.null(enable_input) && enable_input) {
+        layer_name <- input[[paste0(prefix, "LayerPicker", i)]]
+        score_name <- input[[paste0(prefix, "ScorePicker", i)]]
         
-        # Get the color for this score
-        color <- score_colors[[score_name]]
-        
-        valid_configs[[length(valid_configs) + 1]] <- list(
-          index = i,
-          layer = layer_name,
-          score = score_name,
-          data = filtered_data,
-          color = color
-        )
+        if(!is.null(layer_name) && layer_name != "None" && 
+           !is.null(score_name) && score_name != "None" &&
+           layer_name %in% names(layer_data)) {
+          
+          dataset <- layer_data[[layer_name]]
+          filtered_data <- filter_by_score(dataset, score_name)
+          
+          # Get the color for this score
+          color <- score_colors[[score_name]]
+          
+          valid_configs[[length(valid_configs) + 1]] <- list(
+            index = i,
+            layer = layer_name,
+            score = score_name,
+            data = filtered_data,
+            color = color
+          )
+        }
       }
     }
     
@@ -86,17 +132,17 @@ function(input, output, session) {
         tagList(
           hr(),
           h5(paste("Map", i, "Configuration")),
-          checkboxInput(paste0("enableMap", i), paste("Enable Map", i), value = FALSE),
+          checkboxInput(paste0("EnableHabitatMap", i), paste("Enable Map", i), value = FALSE),
           conditionalPanel(
-            condition = paste0("input.enableMap", i, " == true"),
+            condition = paste0("input.EnableHabitatMap", i, " == true"),
             pickerInput(
-              paste0("layerPicker", i),
+              paste0("HabitatLayerPicker", i),
               paste("Select Layer for Map", i),
-              choices = c("None", names(layer)),
+              choices = c("None", names(habitat_layer)),
               selected = "None"
             ),
             pickerInput(
-              paste0("scorePicker", i),
+              paste0("HabitatScorePicker", i),
               paste("Select score for Map", i),
               choices = c("None", score_values),
               selected = "None"
@@ -105,15 +151,135 @@ function(input, output, session) {
         )
       })
       
-      #this currently does not have active functionality: need to update
+      # generate combined map
       tagList(
         h4("Habitat Map Settings"),
         map_inputs,
         hr(),
         h4("Combined Map Settings"),
-        helpText("The combined map will calculate the geometric mean"),
+        # helpText("The combined map will calculate the geometric mean"),
         actionButton("generateCombinedMap", "Generate Combined Map", 
-                     class = "btn-primary btn-block")
+                     class = "btn-primary btn-block"),
+        # Export button
+        hr(),
+        h4("Export"),
+        downloadButton("habitatExportRmd", "Export to R Markdown",
+                       icon = icon("file-export"),
+                       class = "btn-info btn-block")
+
+      )
+      # Species tab sidebar content
+    } else if (current_tab == "species") {
+      map_inputs <- lapply(1:5, function(i) {
+        tagList(
+          hr(),
+          h5(paste("Map", i, "Configuration")),
+          checkboxInput(paste0("EnableSpeciesMap", i), paste("Enable Map", i), value = FALSE),
+          conditionalPanel(
+            condition = paste0("input.EnableSpeciesMap", i, " == true"),
+            pickerInput(
+              paste0("SpeciesLayerPicker", i),
+              paste("Select Layer for Map", i),
+              choices = c("None", names(species_layer)),
+              selected = "None"
+            ),
+            pickerInput(
+              paste0("SpeciesScorePicker", i),
+              paste("Select score for Map", i),
+              choices = c("None", score_values),
+              selected = "None"
+            )
+          )
+        )
+      })
+      
+      # generate combined map
+      tagList(
+        h4("Species Map Settings"),
+        map_inputs,
+        hr(),
+        h4("Combined Species Map Settings"),
+        # helpText("The combined map will calculate the geometric mean"),
+        actionButton("generateCombinedSpeciesMap", "Generate Combined Species Map", 
+                     class = "btn-primary btn-block"),
+        # Export button
+        hr(), 
+        h4("Export"),
+        downloadButton("speciesExportRmd", "Export to R Markdown",
+                       icon = icon("file-export"),
+                       class = "btn-info btn-block")
+      )
+      
+      # Bird tab sidebar content
+    } else if (current_tab == "birds") {
+      map_inputs <- lapply(1:5, function(i) {
+        tagList(
+          hr(),
+          h5(paste("Map", i, "Configuration")),
+          checkboxInput(paste0("EnableBirdMap", i), paste("Enable Map", i), value = FALSE),
+          conditionalPanel(
+            condition = paste0("input.EnableBirdMap", i, " == true"),
+            pickerInput(
+              paste0("BirdLayerPicker", i),
+              paste("Select Layer for Map", i),
+              choices = c("None", names(bird_layer)),
+              selected = "None"
+            ),
+            pickerInput(
+              paste0("BirdScorePicker", i),
+              paste("Select score for Map", i),
+              choices = c("None", score_values),
+              selected = "None"
+            )
+          )
+        )
+      })
+      
+      # generate combined map
+      tagList(
+        h4("Bird Map Settings"),
+        map_inputs,
+        hr(),
+        h4("Combined Bird Map Settings"),
+        # helpText("The combined map will calculate the geometric mean"),
+        actionButton("GenerateCombinedBirdMap", "Generate Combined Bird Map", 
+                     class = "btn-primary btn-block"),
+        # Export button
+        hr(),
+        h4("Export"),
+        downloadButton("birdsExportRmd", "Export to R Markdown",
+                       icon = icon("file-export"),
+                       class = "btn-info btn-block")
+      )
+      
+      # Combined Model Tab
+    } else if(current_tab == "combined_model") {
+      # Combined model tab sidebar content
+      tagList(
+        h4("Combined Model Settings"),
+        hr(),
+        h5("Model Weights"),
+        
+        # Sliders for model weights
+        sliderInput("HabitatWeight", "Habitat Weight", 
+                    min = 0, max = 1, value = 0.33, step = 0.01),
+        sliderInput("SpeciesWeight", "Species Weight", 
+                    min = 0, max = 1, value = 0.33, step = 0.01),
+        sliderInput("BirdsWeight", "Birds Weight", 
+                    min = 0, max = 1, value = 0.34, step = 0.01),
+        
+        # Ensure weights sum to 1
+        htmlOutput("weightValidation"),
+        hr(),
+        # Button to generate the combined model
+        actionButton("generateCombinedModel", "Generate Combined Model", 
+                     class = "btn-primary btn-block"),
+        # Export Button
+        hr(), 
+        h4("Export"),
+        downloadButton("combinedModelExportRmd", "Export to R Markdown",
+                       icon = icon("file-export"),
+                       class = "btn-info btn-block")
       )
     }
   })
@@ -357,8 +523,108 @@ function(input, output, session) {
       })
     }
     
-    # Remove modal spinner once combined map is finished being generated
+    # Removes modal spinner after combined map is finished being generated
     removeModal()
     
   })
+  
+  #
+  
+  # function to create map image file
+  saveMapAsImage <- function(map_id, file_path) {
+    # Create a temporary HTML file for the map
+    temp_html <- tempfile(fileext = ".html")
+    
+    # Save the leaflet map as HTML
+    saveWidget(isolate(leafletProxy(map_id)), temp_html, selfcontained = TRUE)
+    
+    # Use webshot to capture the HTML as an image
+    webshot::webshot(temp_html, file = file_path, delay = 0.5)
+    
+    # Return the file path
+    return(file_path)
+  }
+  
+  # Habitat export = not working yet
+  output$habitatExportRmd <- downloadHandler(
+    filename = function() {
+      paste("habitat_analysis_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".Rmd", sep = "")
+    },
+    content = function(file) {
+      # Create temporary directory for images
+      img_dir <- file.path(tempdir(), "habitat_images")
+      dir.create(img_dir, showWarnings = FALSE, recursive = TRUE)
+      
+      # Capture the combined map image
+      combined_map_img <- file.path(img_dir, "combined_habitat_map.png")
+      saveMapAsImage("combinedMap", combined_map_img)
+      
+      # Get enabled maps
+      enabled_maps <- c()
+      map_images <- c()
+      
+      for(i in 1:5) {
+        map_enabled <- isolate(input[[paste0("EnableHabitatMap", i)]])
+        if(!is.null(map_enabled) && map_enabled) {
+          enabled_maps[i] <- TRUE
+          # Capture individual map image
+          map_img <- file.path(img_dir, paste0("habitat_map_", i, ".png"))
+          saveMapAsImage(paste0("map_", i), map_img)
+          map_images[i] <- map_img
+        } else {
+          enabled_maps[i] <- FALSE
+        }
+      }
+      
+      # Create Rmd content
+      rmd_content <- c(
+        "---",
+        "title: \"Habitat Analysis Report\"",
+        paste0("date: \"", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\""),
+        "output: html_document",
+        "---",
+        "",
+        "```{r setup, include=FALSE}",
+        "knitr::opts_chunk$set(echo = FALSE)",
+        "```",
+        "",
+        "## Habitat Analysis",
+        "",
+        "This report was generated from the Habitat tab of the application.",
+        "",
+        "### Map Configurations",
+        ""
+      )
+      
+      # Add configuration details for each enabled map
+      for(i in 1:5) {
+        if(enabled_maps[i]) {
+          layer <- isolate(input[[paste0("HabitatLayerPicker", i)]])
+          score <- isolate(input[[paste0("HabitatScorePicker", i)]])
+          
+          rmd_content <- c(rmd_content,
+                           paste0("#### Map ", i),
+                           paste0("- Layer: ", layer),
+                           paste0("- Score: ", score),
+                           "",
+                           paste0("![Map ", i, "](", map_images[i], ")"),
+                           ""
+          )
+        }
+      }
+      
+      # Add combined map section
+      rmd_content <- c(rmd_content,
+                       "### Combined Habitat Map",
+                       "",
+                       "The combined map uses a geometric mean to combine all enabled map layers.",
+                       "",
+                       paste0("![Combined Habitat Map](", combined_map_img, ")"),
+                       ""
+      )
+      
+      # Write the Rmd file
+      writeLines(rmd_content, file)
+    }
+  )
 }
