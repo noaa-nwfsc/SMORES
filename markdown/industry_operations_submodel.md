@@ -1,0 +1,1 @@
+Industry and operations details.

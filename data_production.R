@@ -21,12 +21,13 @@ melissa_file_path <- "Z:\\ArcGIS\\Projects\\OWEC\\p30\\nccos_share_CA2.gdb"
 
 Canyons <- sf::st_read(dsn = melissa_file_path, layer = "SubmarineCanyons_WestCoast_diss") %>%
   st_transform(crsOut)
-
 DSC.RobustHigh <- sf::st_read(dsn = melissa_file_path, layer = "DSC_HabitatSuitability_RobustHigh") %>%
   st_transform(crsOut)
 Surveys.fixed <- sf::st_read(dsn = melissa_file_path, layer = "Surveys_Operation_Area_fixed") %>%
   st_transform(crsOut)
 Surveys.per <- sf::st_read(dsn = melissa_file_path, layer = "Surveys_Operation_Area_periodic") %>%
+  st_transform(crsOut)
+Seeps <- sf::st_read(dsn = melissa_file_path, layer = "CascadiaSeeps_wBuffer") %>%
   st_transform(crsOut)
 
 
@@ -165,17 +166,77 @@ st_crs(DSC_RH_scored_long) == st_crs(Surveys_fixed_scored_long)
 
 saveRDS(Surveys_fixed_scored_long, "U:\\Github\\SMORES\\data\\Surveys_fixed_scored.rds")
 
-Surveys_fixed_score_full_df <- Surveys_fixed_scored_long %>% 
-  st_drop_geometry()
+#Surveys periodic grid
+Surveys.per <- sf::st_intersection(Surveys.per, grd.norcal) %>%
+  mutate(Score.Surveys.Per = Surveys.per.Score) %>%
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid 
+  #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.Surveys.Per) #use for 2km grid
 
-#how would I want to make the data look so I could calculate the geometric mean
-#I need it to be in long format so that the scoring addition is tied to the individual columns 
+Surveys_periodic <- Surveys.per %>%
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
 
-full_data <- grid_test %>% 
-  full_join(canyon_score_full_df) %>% 
-  full_join(DSC_RH_score_full_df) %>% 
-  full_join(Surveys_fixed_score_full_df) %>% 
-  sf::st_transform('+proj=longlat +datum=WGS84')
+Surveys_periodic_scored <- grd.norcal %>%
+  full_join(Surveys_periodic, by = "CellID_2km") %>%
+  filter(Score.Surveys.Per == 1) %>%
+  rename("1" = Score.Surveys.Per) %>%
+  mutate("0.1" = 0.1,
+         "0.2" = 0.2,
+         "0.3" = 0.3,
+         "0.4" = 0.4,
+         "0.5" = 0.5,
+         "0.6" = 0.6,
+         "0.7" = 0.7,
+         "0.8" = 0.8,
+         "0.9" = 0.9) 
 
-saveRDS(full_data, "U:\\Github\\SMORES\\data\\full_data.rds")
+Surveys_periodic_scored_long <- pivot_longer(Surveys_periodic_scored, cols = starts_with(c("0.", "1")), names_to = "Surveys_periodic", values_to = "Score.Surveys_periodic") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-Surveys_periodic)
+
+
+st_crs(DSC_RH_scored_long) == st_crs(Surveys_periodic_scored_long)
+
+saveRDS(Surveys_periodic_scored_long, "U:\\Github\\SMORES\\data\\Surveys_periodic_scored.rds")
+
+#Seeps
+Seeps.grid <- sf::st_intersection(Seeps, grd.norcal) %>%
+  mutate(Score.Seeps = Seeps.Score) %>%
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid 
+  #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.Seeps) #use for 2km grid
+
+Seeps_score <- Seeps.grid %>%
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+
+Seeps_scored <- grd.norcal %>%
+  full_join(Seeps_score, by = "CellID_2km") %>%
+  filter(Score.Seeps == 1) %>%
+  rename("1" = Score.Seeps) %>%
+  mutate("0.1" = 0.1,
+         "0.2" = 0.2,
+         "0.3" = 0.3,
+         "0.4" = 0.4,
+         "0.5" = 0.5,
+         "0.6" = 0.6,
+         "0.7" = 0.7,
+         "0.8" = 0.8,
+         "0.9" = 0.9) 
+
+Seeps_scored_long <- pivot_longer(Seeps_scored, cols = starts_with(c("0.", "1")), names_to = "Seeps", values_to = "Score.Seeps") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-Seeps)
+
+
+st_crs(DSC_RH_scored_long) == st_crs(Seeps_scored_long)
+
+saveRDS(Seeps_scored_long, "U:\\Github\\SMORES\\data\\Seeps_scored.rds")
 

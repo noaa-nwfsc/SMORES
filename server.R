@@ -429,6 +429,12 @@ function(input, output, session) {
         } else if(layer_name == "Fixed Surveys") {
           dataset <- surveys_fixed
           score_column <- "Score.Surveys_fixed"
+        } else if(layer_name == "Periodic Surveys") {
+          dataset <- surveys_periodic
+          score_column <- "Score.Surveys_periodic"
+        } else if(layer_name == "Seeps") {
+          dataset <- seeps
+          score_column <- "Score.Seeps"
         } else {
           next  # Skip if layer name doesn't match
         }
@@ -528,64 +534,27 @@ function(input, output, session) {
     
   })
   
-  #
-  
-  # function to create map image file
-  saveMapAsImage <- function(map_id, file_path) {
-    # Create a temporary HTML file for the map
-    temp_html <- tempfile(fileext = ".html")
-    
-    # Save the leaflet map as HTML
-    saveWidget(isolate(leafletProxy(map_id)), temp_html, selfcontained = TRUE)
-    
-    # Use webshot to capture the HTML as an image
-    webshot::webshot(temp_html, file = file_path, delay = 0.5)
-    
-    # Return the file path
-    return(file_path)
-  }
-  
-  # Habitat export = not working yet
+  # Habitat export handler
   output$habitatExportRmd <- downloadHandler(
     filename = function() {
-      paste("habitat_analysis_", format(Sys.time(), "%Y%m%d_%H%M%S"), ".Rmd", sep = "")
+      paste("habitat_analysis_", format(Sys.time(), "%Y%m%d"), ".Rmd", sep = "")
     },
     content = function(file) {
-      # Create temporary directory for images
-      img_dir <- file.path(tempdir(), "habitat_images")
-      dir.create(img_dir, showWarnings = FALSE, recursive = TRUE)
-      
-      # Capture the combined map image
-      combined_map_img <- file.path(img_dir, "combined_habitat_map.png")
-      saveMapAsImage("combinedMap", combined_map_img)
-      
-      # Get enabled maps
-      enabled_maps <- c()
-      map_images <- c()
-      
-      for(i in 1:5) {
-        map_enabled <- isolate(input[[paste0("EnableHabitatMap", i)]])
-        if(!is.null(map_enabled) && map_enabled) {
-          enabled_maps[i] <- TRUE
-          # Capture individual map image
-          map_img <- file.path(img_dir, paste0("habitat_map_", i, ".png"))
-          saveMapAsImage(paste0("map_", i), map_img)
-          map_images[i] <- map_img
-        } else {
-          enabled_maps[i] <- FALSE
-        }
-      }
+      # Get valid configurations
+      valid_configs <- isolate(get_valid_configs())
       
       # Create Rmd content
       rmd_content <- c(
         "---",
         "title: \"Habitat Analysis Report\"",
-        paste0("date: \"", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\""),
+        paste0("date: \"", format(Sys.time(), "%Y-%m-%d"), "\""),
         "output: html_document",
         "---",
         "",
         "```{r setup, include=FALSE}",
         "knitr::opts_chunk$set(echo = FALSE)",
+        "library(leaflet)",
+        "library(sf)",
         "```",
         "",
         "## Habitat Analysis",
@@ -598,16 +567,27 @@ function(input, output, session) {
       
       # Add configuration details for each enabled map
       for(i in 1:5) {
-        if(enabled_maps[i]) {
+        map_enabled <- isolate(input[[paste0("EnableHabitatMap", i)]])
+        if(!is.null(map_enabled) && map_enabled) {
           layer <- isolate(input[[paste0("HabitatLayerPicker", i)]])
           score <- isolate(input[[paste0("HabitatScorePicker", i)]])
           
+          # Add map configuration text
           rmd_content <- c(rmd_content,
                            paste0("#### Map ", i),
                            paste0("- Layer: ", layer),
                            paste0("- Score: ", score),
                            "",
-                           paste0("![Map ", i, "](", map_images[i], ")"),
+                           "```{r map", i, ", fig.width=8, fig.height=6}",
+                           "# Code to generate map", i,
+                           "leaflet() %>%",
+                           "  addProviderTiles(\"Esri.OceanBasemap\",",
+                           "                   options = providerTileOptions(variant = \"Ocean/World_Ocean_Base\")) %>%",
+                           "  addProviderTiles(\"Esri.OceanBasemap\",",
+                           "                   options = providerTileOptions(variant = \"Ocean/World_Ocean_Reference\")) %>%",
+                           "  setView(lng = -70, lat = 40, zoom = 5) %>%",
+                           "  addControl(\"Map would display ", layer, " with score ", score, " here\", position = \"topright\")",
+                           "```",
                            ""
           )
         }
@@ -619,7 +599,16 @@ function(input, output, session) {
                        "",
                        "The combined map uses a geometric mean to combine all enabled map layers.",
                        "",
-                       paste0("![Combined Habitat Map](", combined_map_img, ")"),
+                       "```{r combined_map, fig.width=10, fig.height=8}",
+                       "# Code to generate combined map",
+                       "leaflet() %>%",
+                       "  addProviderTiles(\"Esri.OceanBasemap\",",
+                       "                   options = providerTileOptions(variant = \"Ocean/World_Ocean_Base\")) %>%",
+                       "  addProviderTiles(\"Esri.OceanBasemap\",",
+                       "                   options = providerTileOptions(variant = \"Ocean/World_Ocean_Reference\")) %>%",
+                       "  setView(lng = -70, lat = 40, zoom = 5) %>%",
+                       "  addControl(\"Combined habitat map would be displayed here\", position = \"topright\")",
+                       "```",
                        ""
       )
       

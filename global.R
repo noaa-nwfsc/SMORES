@@ -10,8 +10,7 @@ library(shinyWidgets)
 library(mapview)
 library(sf)
 library(yaml)
-library(shinyscreenshot)
-library(webshot)
+library(markdown)
 
 theme <- bslib::bs_theme()
 
@@ -19,13 +18,19 @@ theme <- bslib::bs_theme()
 canyon_data <- readRDS("data/canyon_scored.rds")
 DSC_RH_data <- readRDS("data/DSC_RH_scored.rds")
 surveys_fixed <- readRDS("data/Surveys_fixed_scored.rds")
+surveys_periodic <- readRDS("data/Surveys_periodic_scored.rds")
+seeps <- readRDS("data/Seeps_scored.rds")
+
+
 grid_test <- readRDS("data/2km_grid_norcal.rds")
 
 # Create a list of all datasets
 habitat_layer <- list(
   "Canyon" = canyon_data,
   "DSC_RH" = DSC_RH_data,
-  "Fixed Surveys" = surveys_fixed
+  "Fixed Surveys" = surveys_fixed,
+  "Periodic Surveys" = surveys_periodic,
+  "Seeps" = seeps
 )
 
 species_layer <- list(

@@ -17,6 +17,13 @@ tagList(
   # Navbar
   page_navbar(
     theme = theme,
+    # %>%
+    # bs_add_rules(
+    #     # # Custom CSS to directly target the active nav link
+    #     # ".nav-item .nav-link.active { color: #0085CA !important; }
+    #     # .nav-item .nav-link:not(.active) { color: #004391 !important; }
+    #     # .navbar-brand { color: #0085CA !important; }
+    #   ".nav-tabs .nav-link:not(.active) {background-color: #287CB8 !important; }"),
     title = "Suitability Modeling", # title text
     
     # Tab 1: Overview
@@ -27,7 +34,7 @@ tagList(
         card(
           card_header("Overview"),
           card_body(
-            p("Information about project and/or maybe information about how to use tool")
+            includeMarkdown("markdown/overview.md")
           )
         )
       )
@@ -58,9 +65,7 @@ tagList(
             card(
               card_header("Map Configuration"),
               card_body(
-                p("Select layers and scores in the sidebar to generate individual maps."),
-                p("You can configure up to 5 different maps with their own settings."),
-                p("Click 'Generate Combined Map' to calculate the geometric mean of all selected maps.")
+               includeMarkdown("markdown/habitat_map_settings.md")
               )
             ),
             
@@ -78,7 +83,7 @@ tagList(
               card(
                 card_header("Species Submodel"),
                 card_body(
-                  p("we love cetaceans and other species")
+                  includeMarkdown("markdown/species.md")
                 )
               )
             )
@@ -92,7 +97,7 @@ tagList(
               card(
                 card_header("Birds Submodel"),
                 card_body(
-                  p("we love birds")
+                  includeMarkdown("markdown/birds.md")
                 )
               )
             )
@@ -106,7 +111,7 @@ tagList(
               card(
                 card_header("Combined Submodel"),
                 card_body(
-                  p("we love everybody playing nice with one another together")
+                  includeMarkdown("markdown/combined_natural_resources_submodel.md")
                 )
               )
             )
@@ -121,7 +126,7 @@ tagList(
       card(
         card_header("Fisheries Submodel"),
         card_body(
-          p("we would like the ocean to have healthy fish."),
+          includeMarkdown("markdown/fisheries.md")
         )
       )
     ), 
@@ -132,7 +137,7 @@ tagList(
       card(
         card_header("Industry & Operations Submodel"),
         card_body(
-          p("we love indsutry and operations details."),
+          includeMarkdown("markdown/industry_operations_submodel.md")
         )
       )
     ), 
@@ -143,7 +148,7 @@ tagList(
       card(
         card_header("Methods"),
         card_body(
-          p("how did we come up with any of this."),
+          includeMarkdown("markdown/methods.md")
         )
       )
     ), 
@@ -154,19 +159,13 @@ tagList(
       card(
         card_header("Data Sources"),
         card_body(
-          p("What data was used in order to create these modeling outputs."),
-          p("Data Sources:"),
-          tags$ul(
-            tags$li("Data Source"),
-            tags$li("Data Source"),
-            tags$li("Data Source")
-          ),
-          hr(),
-          p("Created to help inform modeling processes.")
+          includeMarkdown("markdown/data.md")
         )
       )
     )
   )
 )
+
+
   
   
