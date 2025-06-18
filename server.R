@@ -37,6 +37,7 @@ function(input, output, session) {
                      "habitat" = "Habitat",
                      "species" = "Species",
                      "birds" = "Bird",
+                     "industry_operations" = "Industry",
                      "")
     
     if(prefix == "") return(FALSE) # Invalid tab
@@ -51,6 +52,7 @@ function(input, output, session) {
                          "habitat" = habitat_layer,
                          "species" = species_layer,
                          "birds" = bird_layer,
+                         "industry_operations" = industry_layer,
                          NULL)
     
     if(is.null(layer_data)) return(FALSE) # Invalid layer data
@@ -64,52 +66,18 @@ function(input, output, session) {
   
   # Get valid map configurations
   get_valid_configs <- reactive({
-    valid_configs <- list()
     current_tab <- input$dataTabs %||% "habitat"
     
-    # Set the prefix and layer data based on the tab
-    prefix <- switch(current_tab,
-                     "habitat" = "Habitat",
-                     "species" = "Species",
-                     "birds" = "Bird",
-                     "")
-    
+    # Set the layer data based on the tab
     layer_data <- switch(current_tab,
                          "habitat" = habitat_layer,
                          "species" = species_layer,
                          "birds" = bird_layer,
+                         "industry_operations" = industry_layer,
                          NULL)
     
-    if(prefix == "" || is.null(layer_data)) return(valid_configs) # Empty list if invalid
-    
-    for(i in 1:5) {
-      enable_input <- input[[paste0("Enable", prefix, "Map", i)]]
-      if(!is.null(enable_input) && enable_input) {
-        layer_name <- input[[paste0(prefix, "LayerPicker", i)]]
-        score_name <- input[[paste0(prefix, "ScorePicker", i)]]
-        
-        if(!is.null(layer_name) && layer_name != "None" && 
-           !is.null(score_name) && score_name != "None" &&
-           layer_name %in% names(layer_data)) {
-          
-          dataset <- layer_data[[layer_name]]
-          filtered_data <- filter_by_score(dataset, score_name)
-          
-          # Get the color for this score
-          color <- score_colors[[score_name]]
-          
-          valid_configs[[length(valid_configs) + 1]] <- list(
-            index = i,
-            layer = layer_name,
-            score = score_name,
-            data = filtered_data,
-            color = color
-          )
-        }
-      }
-    }
-    
-    return(valid_configs)
+    # use function to get valid configurations
+    get_valid_configs_for_tab(input, current_tab, layer_data, score_colors, filter_by_score)
   })
   
   # combined map placeholder with message indicating that you need to hit the button
@@ -119,7 +87,6 @@ function(input, output, session) {
                        options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
       addProviderTiles("Esri.OceanBasemap",
                        options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
-      setView(lng = -70, lat = 40, zoom = 5) %>%
       addControl("Click 'Generate Combined Map' button to create the combined map.", position = "topright")
   })
   
@@ -128,7 +95,7 @@ function(input, output, session) {
     current_tab <- input$dataTabs %||% "habitat"
     
     if(current_tab == "habitat") {
-      map_inputs <- lapply(1:5, function(i) {
+      map_inputs <- lapply(1:6, function(i) {
         tagList(
           hr(),
           h5(paste("Map", i, "Configuration")),
@@ -166,11 +133,11 @@ function(input, output, session) {
         downloadButton("habitatExportRmd", "Export to R Markdown",
                        icon = icon("file-export"),
                        class = "btn-info btn-block")
-
+        
       )
       # Species tab sidebar content
     } else if (current_tab == "species") {
-      map_inputs <- lapply(1:5, function(i) {
+      map_inputs <- lapply(1:6, function(i) {
         tagList(
           hr(),
           h5(paste("Map", i, "Configuration")),
@@ -212,7 +179,7 @@ function(input, output, session) {
       
       # Bird tab sidebar content
     } else if (current_tab == "birds") {
-      map_inputs <- lapply(1:5, function(i) {
+      map_inputs <- lapply(1:6, function(i) {
         tagList(
           hr(),
           h5(paste("Map", i, "Configuration")),
@@ -327,293 +294,286 @@ function(input, output, session) {
     tagList(rows)
   })
   
-  # create individual maps
+  #create individual maps
   observe({
     valid_configs <- get_valid_configs()
-    
-    for(config in valid_configs) {
-      local({
-        local_config <- config
-        map_id <- paste0("map_", local_config$index)
-        
-        output[[map_id]] <- renderLeaflet({
-          # Ensure we have data to display
-          if(nrow(local_config$data) == 0) {
-            return(leaflet() %>%
-                     addProviderTiles("Esri.OceanBasemap",
-                                      options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
-                     addProviderTiles("Esri.OceanBasemap",
-                                      options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
-                     setView(lng = -70, lat = 40, zoom = 5) %>%
-                     addControl("No data matching selected score", position = "topright"))
-          }
-          
-          # Create the map with legend
-          leaflet() %>%
-            addProviderTiles("Esri.OceanBasemap",
-                             options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
-            addProviderTiles("Esri.OceanBasemap",
-                             options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
-            addPolygons(
-              data = local_config$data, 
-              color = "#33333300",  
-              weight = 1,            
-              fillColor = local_config$color,
-              fillOpacity = 0.7,
-              popup = ~paste("Score:", local_config$score)
-            ) %>%
-            # Add a legend
-            addLegend(
-              position = "bottomright",
-              colors = local_config$color,
-              labels = paste("Score:", local_config$score),
-              opacity = 0.7,
-              title = local_config$layer
-            )
-        })
-      })
-    }
+    create_individual_maps(valid_configs, output)
   })
   
   # Combined map logic
   observeEvent(input$generateCombinedMap, {
     # Show modal with spinner that covers the whole tab
-    showModal(modalDialog(
-      title = "Generating Combined Map",
-      div(
-        style = "text-align: center; padding: 40px;",
-        tags$div(
-          style = "position: relative; min-height: 100px;",
-          shinycssloaders::withSpinner(
-            uiOutput("modalSpinnerPlaceholder"),
-            type = 3, 
-            color = "#033c73", 
-            color.background = "#FFFFFF",
-            size = 2
-          )
-        ),
-        p("Please wait while the combined map is being generated...")
-      ),
-      footer = NULL,
-      size = "l",
-      easyClose = FALSE,
-      fade = TRUE
-    ))
-    
-    # Render a placeholder for the spinner
-    output$modalSpinnerPlaceholder <- renderUI({
-      div(style = "height: 100px;")
-    })
+    show_spinner_modal("Generating Combined Map", 
+                       "Please wait while the combined map is being generated...")
     
     # Add a small delay to ensure the modal is visible before proceeding
     Sys.sleep(0.5)
     
+    # Define dataset mapping for habitat tab
+    habitat_dataset_mapping <- list(
+      "Canyon" = list(data = canyon_data, score_column = "Score.Canyon"),
+      "DSC_RH" = list(data = DSC_RH_data, score_column = "Score.DSC_RH"),
+      "Fixed Surveys" = list(data = surveys_fixed, score_column = "Score.Surveys_fixed"),
+      "Periodic Surveys" = list(data = surveys_periodic, score_column = "Score.Surveys_periodic"),
+      "Seeps" = list(data = seeps, score_column = "Score.Seeps"),
+      "Shelf Break" = list(data = shlfbrk, score_column = "Score.ShlfBrk")
+    )
+    
+    # Get valid configurations
     valid_configs <- get_valid_configs()
     
-    if(length(valid_configs) > 0) {
-      # Use grid_test as the base spatial grid for combining data this will ensure that all grid cells are retained
-      combined_data <- grid_test
-      
-      # For each valid configuration, extract the data and join with the base grid
-      for(config in valid_configs) {
-        layer_name <- config$layer
-        score_value <- config$score
-        
-        # Determine which dataset and score columns to use
-        if(layer_name == "Canyon") {
-          dataset <- canyon_data
-          score_column <- "Score.Canyon"
-        } else if(layer_name == "DSC_RH") {
-          dataset <- DSC_RH_data
-          score_column <- "Score.DSC_RH"
-        } else if(layer_name == "Fixed Surveys") {
-          dataset <- surveys_fixed
-          score_column <- "Score.Surveys_fixed"
-        } else if(layer_name == "Periodic Surveys") {
-          dataset <- surveys_periodic
-          score_column <- "Score.Surveys_periodic"
-        } else if(layer_name == "Seeps") {
-          dataset <- seeps
-          score_column <- "Score.Seeps"
-        } else {
-          next  # Skip if layer name doesn't match
-        }
-        
-        # Filter for the selected score value and prepare for joining
-        temp_data <- dataset %>%
-          filter(.data[[score_column]] == score_value) %>%
-          st_drop_geometry() %>%
-          select(CellID_2km, !!score_column)
-        
-        # Convert the score column to numeric (explicit conversion)
-        temp_data[[score_column]] <- as.numeric(temp_data[[score_column]])
-        
-        # Join with the combined data
-        combined_data <- left_join(combined_data, temp_data, by = "CellID_2km")
-      }
-      
-      # Find all score columns in the combined data
-      score_cols <- names(combined_data)[grep("^Score\\.", names(combined_data))]
-      
-      if(length(score_cols) > 0) {
-        # geometric mean calculation that handles all edge cases
-        combined_data$Geo_mean <- sapply(1:nrow(combined_data), function(i) {
-          # Get the row of data
-          row_data <- combined_data[i, score_cols, drop = TRUE]
-          
-          # Convert to numeric and remove NAs
-          values <- as.numeric(unlist(row_data))
-          values <- values[!is.na(values)]
-          
-          # Check if we have any values
-          if(length(values) == 0) {
-            return(NA)
-          }
-          
-          # Check for zeros or negative values
-          if(any(values <= 0)) {
-            return(0)
-          }
-          
-          # Calculate geometric mean
-          exp(mean(log(values)))
-        })
-        
-        # Make sure geometry is set properly for leaflet
-        combined_data <- st_transform(combined_data, '+proj=longlat +datum=WGS84')
-        
-        # Create color palette for the geometric mean
-        pal <- colorNumeric("viridis", domain = c(min(combined_data$Geo_mean, na.rm = TRUE), 
-                                                  max(combined_data$Geo_mean, na.rm = TRUE)), 
-                            na.color = "transparent")
-        
-        # Create the map
-        output$combinedMap <- renderLeaflet({
-          leaflet() %>%
-            addProviderTiles("Esri.OceanBasemap",
-                             options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
-            addProviderTiles("Esri.OceanBasemap",
-                             options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
-            addPolygons(
-              data = combined_data, 
-              color = "#33333300", #adding 00 at the end makes this color transparent
-              weight = 1, 
-              fillColor = ~pal(Geo_mean), 
-              fillOpacity = 1,
-              popup = ~paste("Geometric Mean Score:", round(Geo_mean, 2))
-            ) %>%
-            addLegend(
-              position = "bottomright",
-              pal = pal,
-              values = combined_data$Geo_mean,
-              title = "Combined Geometric Mean",
-              opacity = 1
-            )
-        })
-      } else {
-        # No score columns found
-        output$combinedMap <- renderLeaflet({
-          leaflet() %>%
-            addProviderTiles("Esri.OceanBasemap") %>%
-            setView(lng = -70, lat = 40, zoom = 5) %>%
-            addControl("No score data available for the selected layers.", position = "topright")
-        })
-      }
-    } else {
-      # No valid configurations
-      output$combinedMap <- renderLeaflet({
-        leaflet() %>%
-          addProviderTiles("Esri.OceanBasemap") %>%
-          setView(lng = -70, lat = 40, zoom = 5) %>%
-          addControl("Please configure at least one map to generate a combined map.", position = "topright")
-      })
-    }
+    # Generate the combined map
+    result <- generate_combined_map(
+      valid_configs = valid_configs,
+      dataset_mapping = habitat_dataset_mapping,
+      map_title = "Combined Habitat Score"
+    )
     
-    # Removes modal spinner after combined map is finished being generated
+    # Use the result
+    output$combinedMap <- renderLeaflet(result$map)
+    
+    # Remove modal spinner
     removeModal()
-    
   })
   
-  # Habitat export handler
+  # Habitat tab RMarkdown export handler
   output$habitatExportRmd <- downloadHandler(
     filename = function() {
-      paste("habitat_analysis_", format(Sys.time(), "%Y%m%d"), ".Rmd", sep = "")
+      paste("Natural_Resources_Submodel_Report_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
     },
     content = function(file) {
+      # Show modal with spinner
+      show_spinner_modal("Generating Report", 
+                         "Please wait while the report is being generated...")
+      
       # Get valid configurations
-      valid_configs <- isolate(get_valid_configs())
+      valid_configs <- get_valid_configs()
       
-      # Create Rmd content
-      rmd_content <- c(
-        "---",
-        "title: \"Habitat Analysis Report\"",
-        paste0("date: \"", format(Sys.time(), "%Y-%m-%d"), "\""),
-        "output: html_document",
-        "---",
-        "",
-        "```{r setup, include=FALSE}",
-        "knitr::opts_chunk$set(echo = FALSE)",
-        "library(leaflet)",
-        "library(sf)",
-        "```",
-        "",
-        "## Habitat Analysis",
-        "",
-        "This report was generated from the Habitat tab of the application.",
-        "",
-        "### Map Configurations",
-        ""
-      )
-      
-      # Add configuration details for each enabled map
-      for(i in 1:5) {
-        map_enabled <- isolate(input[[paste0("EnableHabitatMap", i)]])
-        if(!is.null(map_enabled) && map_enabled) {
-          layer <- isolate(input[[paste0("HabitatLayerPicker", i)]])
-          score <- isolate(input[[paste0("HabitatScorePicker", i)]])
-          
-          # Add map configuration text
-          rmd_content <- c(rmd_content,
-                           paste0("#### Map ", i),
-                           paste0("- Layer: ", layer),
-                           paste0("- Score: ", score),
-                           "",
-                           "```{r map", i, ", fig.width=8, fig.height=6}",
-                           "# Code to generate map", i,
-                           "leaflet() %>%",
-                           "  addProviderTiles(\"Esri.OceanBasemap\",",
-                           "                   options = providerTileOptions(variant = \"Ocean/World_Ocean_Base\")) %>%",
-                           "  addProviderTiles(\"Esri.OceanBasemap\",",
-                           "                   options = providerTileOptions(variant = \"Ocean/World_Ocean_Reference\")) %>%",
-                           "  setView(lng = -70, lat = 40, zoom = 5) %>%",
-                           "  addControl(\"Map would display ", layer, " with score ", score, " here\", position = \"topright\")",
-                           "```",
-                           ""
-          )
+      # Make sure each valid_config has valid spatial data
+      for(i in seq_along(valid_configs)) {
+        # Ensure data is transformed to WGS84 for leaflet
+        if(!is.null(valid_configs[[i]]$data) && inherits(valid_configs[[i]]$data, "sf")) {
+          valid_configs[[i]]$data <- st_transform(valid_configs[[i]]$data, '+proj=longlat +datum=WGS84')
         }
       }
       
-      # Add combined map section
-      rmd_content <- c(rmd_content,
-                       "### Combined Habitat Map",
-                       "",
-                       "The combined map uses a geometric mean to combine all enabled map layers.",
-                       "",
-                       "```{r combined_map, fig.width=10, fig.height=8}",
-                       "# Code to generate combined map",
-                       "leaflet() %>%",
-                       "  addProviderTiles(\"Esri.OceanBasemap\",",
-                       "                   options = providerTileOptions(variant = \"Ocean/World_Ocean_Base\")) %>%",
-                       "  addProviderTiles(\"Esri.OceanBasemap\",",
-                       "                   options = providerTileOptions(variant = \"Ocean/World_Ocean_Reference\")) %>%",
-                       "  setView(lng = -70, lat = 40, zoom = 5) %>%",
-                       "  addControl(\"Combined habitat map would be displayed here\", position = \"topright\")",
-                       "```",
-                       ""
+      # Calculate combined data if needed
+      combined_data <- NULL
+      if(length(valid_configs) > 0) {
+        # Use grid_test as the base spatial grid for combining data
+        combined_data <- grid_test
+        
+        # For each valid configuration, extract the data and join with the base grid
+        for(config in valid_configs) {
+          layer_name <- config$layer
+          score_value <- config$score
+          
+          # Determine which dataset and score columns to use
+          if(layer_name == "Canyon") {
+            dataset <- canyon_data
+            score_column <- "Score.Canyon"
+          } else if(layer_name == "DSC_RH") {
+            dataset <- DSC_RH_data
+            score_column <- "Score.DSC_RH"
+          } else if(layer_name == "Fixed Surveys") {
+            dataset <- surveys_fixed
+            score_column <- "Score.Surveys_fixed"
+          } else if(layer_name == "Periodic Surveys") {
+            dataset <- surveys_periodic
+            score_column <- "Score.Surveys_periodic"
+          } else if(layer_name == "Seeps") {
+            dataset <- seeps
+            score_column <- "Score.Seeps"
+          } else if(layer_name == "Shelf Break") {
+            dataset <- shlfbrk
+            score_column <- "Score.ShlfBrk"
+          } else {
+            next  # Skip if layer name doesn't match
+          }
+          
+          # Filter for the selected score value and prepare for joining
+          temp_data <- dataset %>%
+            filter(.data[[score_column]] == score_value) %>%
+            st_drop_geometry() %>%
+            select(CellID_2km, !!score_column)
+          
+          # Convert the score column to numeric (explicit conversion)
+          temp_data[[score_column]] <- as.numeric(temp_data[[score_column]])
+          
+          # Join with the combined data
+          combined_data <- left_join(combined_data, temp_data, by = "CellID_2km")
+        }
+        
+        # Find all score columns in the combined data
+        score_cols <- names(combined_data)[grep("^Score\\.", names(combined_data))]
+        
+        if(length(score_cols) > 0) {
+          # geometric mean calculation that handles all edge cases
+          combined_data$Geo_mean <- sapply(1:nrow(combined_data), function(i) {
+            # Get the row of data
+            row_data <- combined_data[i, score_cols, drop = TRUE]
+            
+            # Convert to numeric and remove NAs
+            values <- as.numeric(unlist(row_data))
+            values <- values[!is.na(values)]
+            
+            # Check if we have any values
+            if(length(values) == 0) {
+              return(NA)
+            }
+            
+            # Check for zeros or negative values
+            if(any(values <= 0)) {
+              return(0)
+            }
+            
+            # Calculate geometric mean
+            exp(mean(log(values)))
+          })
+          
+          # Make sure geometry is set properly for leaflet
+          combined_data <- st_transform(combined_data, '+proj=longlat +datum=WGS84')
+        }
+      }
+      
+      # Create a temporary directory for debugging output
+      debug_dir <- tempdir()
+      write(paste("Number of valid configs:", length(valid_configs)), 
+            file = file.path(debug_dir, "debug_info.txt"))
+      
+      # If we have valid configs, write some details to debug
+      if(length(valid_configs) > 0) {
+        for(i in seq_along(valid_configs)) {
+          config <- valid_configs[[i]]
+          write(paste("Config", i, "- Layer:", config$layer, "Score:", config$score, 
+                      "Rows:", nrow(config$data), 
+                      "Is SF:", inherits(config$data, "sf")),
+                file = file.path(debug_dir, "debug_info.txt"), 
+                append = TRUE)
+        }
+      }
+      
+      # Output combined data info as well
+      if(!is.null(combined_data)) {
+        write(paste("Combined data rows:", nrow(combined_data), 
+                    "Has Geo_mean:", "Geo_mean" %in% names(combined_data)),
+              file = file.path(debug_dir, "debug_info.txt"), 
+              append = TRUE)
+      }
+      
+      # Render the RMarkdown report with both valid_configs and combined_data
+      rmarkdown::render(
+        input = "Natural_Resources_Submodel.Rmd", 
+        output_file = file,
+        params = list(
+          map_configs = valid_configs,
+          combined_data = combined_data
+        ),
+        envir = new.env(parent = globalenv())
       )
       
-      # Write the Rmd file
-      writeLines(rmd_content, file)
+      # Remove the modal when done
+      removeModal()
     }
   )
+  
+  # Dynamic sidebar content for Industry & Operations tab
+  output$industryOperationsSidebar <- renderUI({
+    map_inputs <- lapply(1:2, function(i) {
+      tagList(
+        hr(),
+        h5(paste("Map", i, "Configuration")),
+        checkboxInput(paste0("EnableIndustryMap", i), paste("Enable Map", i), value = FALSE),
+        conditionalPanel(
+          condition = paste0("input.EnableIndustryMap", i, " == true"),
+          pickerInput(
+            paste0("IndustryLayerPicker", i),
+            paste("Select Layer for Map", i),
+            choices = c("None", names(industry_layer)),
+            selected = "None"
+          ),
+          pickerInput(
+            paste0("IndustryScorePicker", i),
+            paste("Select score for Map", i),
+            choices = c("None", score_values),
+            selected = "None"
+          )
+        )
+      )
+    })
+    
+    # Generate combined map
+    tagList(
+      h4("Industry & Operations Map Settings"),
+      map_inputs,
+      hr(),
+      h4("Combined Map Settings"),
+      actionButton("generateIndustryMap", "Generate Combined Industry Map", 
+                   class = "btn-primary btn-block"),
+      # Export button
+      hr(),
+      h4("Export"),
+      downloadButton("industryExportRmd", "Export to R Markdown",
+                     icon = icon("file-export"),
+                     class = "btn-info btn-block")
+    )
+  })
+  
+  # Industry map container
+  output$industryMapContainer <- renderUI({
+    card(
+      card_header("Industry & Operations Maps"),
+      card_body(
+        leafletOutput("industryMap", height = 400)
+      )
+    )
+  })
+  
+  # create industry individual maps
+  observe({
+    valid_configs <- get_valid_configs()
+    create_individual_maps(valid_configs, output)
+  })
+  
+  # Industry combined map logic
+  observeEvent(input$generateIndustryMap, {
+    # Show modal with spinner
+    show_spinner_modal("Generating Combined Map", 
+                       "Please wait while the combined map is being generated...")
+    
+    # Add a small delay to ensure the modal is visible before proceeding
+    Sys.sleep(0.5)
+    
+    # Define dataset mapping for industry tab
+    industry_dataset_mapping <- list(
+      "Fixed Surveys" = list(data = surveys_fixed, score_column = "Score.Surveys_fixed"),
+      "Periodic Surveys" = list(data = surveys_periodic, score_column = "Score.Surveys_periodic")
+    )
+    
+    # Get valid configurations
+    valid_configs <- get_valid_configs()
+    
+    # Generate the combined map
+    result <- generate_combined_map(
+      valid_configs = valid_configs,
+      dataset_mapping = industry_dataset_mapping,
+      map_title = "Combined Industry Score"
+    )
+    
+    # Use the result
+    output$industryMap <- renderLeaflet(result$map)
+    
+    # Remove modal spinner
+    removeModal()
+  })
+  
+  # Data tab timestamp table
+  output$data_timestamps_table <- renderTable({
+    data_timestamps %>%
+      select(dataset_name, formatted_date) %>%
+      rename(
+        "Dataset" = dataset_name,
+        "Last Updated" = formatted_date
+      )
+  })
 }
