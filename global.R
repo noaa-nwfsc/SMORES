@@ -14,23 +14,37 @@ library(markdown)
 
 theme <- bslib::bs_theme()
 
+#load custom functions 
+source("R/modal.R")
+source("R/get_valid_configs_for_tab.R")
+source("R/create_individual_maps.R")
+source("R/create_combined_maps.R")
+source("R/data_timestamps.R")
+
+# Get data timestamps information
+timestamp_info <- get_data_timestamps()
+data_timestamps <- timestamp_info$data_timestamps
+most_recent_update <- timestamp_info$most_recent_update
+
 # Load datasets
 canyon_data <- readRDS("data/canyon_scored.rds")
 DSC_RH_data <- readRDS("data/DSC_RH_scored.rds")
 surveys_fixed <- readRDS("data/Surveys_fixed_scored.rds")
 surveys_periodic <- readRDS("data/Surveys_periodic_scored.rds")
 seeps <- readRDS("data/Seeps_scored.rds")
+shlfbrk <- readRDS("data/ShlfBrk_scored.rds")
 
 
 grid_test <- readRDS("data/2km_grid_norcal.rds")
 
+
+## Natural Resources Submodel
 # Create a list of all datasets
 habitat_layer <- list(
   "Canyon" = canyon_data,
   "DSC_RH" = DSC_RH_data,
-  "Fixed Surveys" = surveys_fixed,
-  "Periodic Surveys" = surveys_periodic,
-  "Seeps" = seeps
+  "Seeps" = seeps, 
+  "Shelf Break" = shlfbrk
 )
 
 species_layer <- list(
@@ -39,6 +53,14 @@ species_layer <- list(
 
 bird_layer <- list (
   "bird1", "bird2"
+)
+
+##Fisheries Submodel
+
+##Industry & Operations Submodel
+industry_layer <- list(
+  "Fixed Surveys" = surveys_fixed,
+  "Periodic Surveys" = surveys_periodic
 )
 
 # Weight values
