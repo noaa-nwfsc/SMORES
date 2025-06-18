@@ -29,6 +29,9 @@ Surveys.per <- sf::st_read(dsn = melissa_file_path, layer = "Surveys_Operation_A
   st_transform(crsOut)
 Seeps <- sf::st_read(dsn = melissa_file_path, layer = "CascadiaSeeps_wBuffer") %>%
   st_transform(crsOut)
+ShlfBrk <- sf::st_read(dsn = melissa_file_path, layer = "ContinentalShelfBreak_wBuffer") %>%
+  st_transform(crsOut)
+
 
 
 #area of Interest for analysis - this is the area that data will be cropped and summarized across
@@ -65,10 +68,8 @@ Canyons.grid <- sf::st_intersection(Canyons, grd.norcal) %>%
   #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
   slice_max(area.part, n = 1) %>%
   select(CellID_2km, Score.Canyons) #use for 2km grid
-
 canyon <- Canyons.grid %>%
   st_drop_geometry()
-
 canyon_scored <- grd.norcal %>%
   full_join(canyon, by = "CellID_2km") %>%
   filter(Score.Canyons == 0.1) %>%
@@ -82,14 +83,11 @@ canyon_scored <- grd.norcal %>%
          "0.8" = 0.8,
          "0.9" = 0.9,
          "1" = 1) 
-
 #this approach would let us know which score is associated with which layer 
 canyons_scored_long <- pivot_longer(canyon_scored, cols = starts_with(c("0.", "1")), names_to = "Canyon", values_to = "Score.Canyon") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-Canyon)
-
 saveRDS(canyons_scored_long, "U:\\Github\\SMORES\\data\\canyon_scored.rds")
-
 canyon_score_full_df <- canyons_scored_long %>% 
   st_drop_geometry()
 
@@ -101,10 +99,8 @@ DSC.RobustHigh.grid <- sf::st_intersection(DSC.RobustHigh, grd.norcal) %>%
   #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
   slice_max(area.part, n = 1) %>%
   select(CellID_2km, Score.DSC.RH) #use for 2km grid
-
 DSC_RH <- DSC.RobustHigh.grid %>%
   st_drop_geometry()
-
 DSC_RH_scored <- grd.norcal %>%
   full_join(DSC_RH, by = "CellID_2km") %>%
   filter(Score.DSC.RH == 0.1) %>%
@@ -118,14 +114,11 @@ DSC_RH_scored <- grd.norcal %>%
          "0.8" = 0.8,
          "0.9" = 0.9,
          "1" = 1) 
-
 #this approach would let us know which score is associated with which layer 
 DSC_RH_scored_long <- pivot_longer(DSC_RH_scored, cols = starts_with(c("0.", "1")), names_to = "DSC_RH", values_to = "Score.DSC_RH") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-DSC_RH)
-
 saveRDS(DSC_RH_scored_long, "U:\\Github\\SMORES\\data\\DSC_RH_scored.rds")
-
 DSC_RH_score_full_df <- DSC_RH_scored_long %>% 
   st_drop_geometry()
 
@@ -137,12 +130,10 @@ Surveys.fixed.grid <- sf::st_intersection(Surveys.fixed, grd.norcal) %>%
   #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
   slice_max(area.part, n = 1) %>%
   select(CellID_2km, Score.Surveys.Fixed) #use for 2km grid
-
 Surveys_fixed <- Surveys.fixed.grid %>%
   st_drop_geometry() %>% 
   group_by(CellID_2km) %>% 
   distinct(CellID_2km, .keep_all = TRUE)
-
 Surveys_fixed_scored <- grd.norcal %>%
   full_join(Surveys_fixed, by = "CellID_2km") %>%
   filter(Score.Surveys.Fixed == 1) %>%
@@ -156,14 +147,10 @@ Surveys_fixed_scored <- grd.norcal %>%
          "0.7" = 0.7,
          "0.8" = 0.8,
          "0.9" = 0.9) 
-
 Surveys_fixed_scored_long <- pivot_longer(Surveys_fixed_scored, cols = starts_with(c("0.", "1")), names_to = "Surveys_fixed", values_to = "Score.Surveys_fixed") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-Surveys_fixed)
-
-
 st_crs(DSC_RH_scored_long) == st_crs(Surveys_fixed_scored_long)
-
 saveRDS(Surveys_fixed_scored_long, "U:\\Github\\SMORES\\data\\Surveys_fixed_scored.rds")
 
 #Surveys periodic grid
@@ -174,12 +161,10 @@ Surveys.per <- sf::st_intersection(Surveys.per, grd.norcal) %>%
   #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
   slice_max(area.part, n = 1) %>%
   select(CellID_2km, Score.Surveys.Per) #use for 2km grid
-
 Surveys_periodic <- Surveys.per %>%
   st_drop_geometry() %>% 
   group_by(CellID_2km) %>% 
   distinct(CellID_2km, .keep_all = TRUE)
-
 Surveys_periodic_scored <- grd.norcal %>%
   full_join(Surveys_periodic, by = "CellID_2km") %>%
   filter(Score.Surveys.Per == 1) %>%
@@ -193,14 +178,10 @@ Surveys_periodic_scored <- grd.norcal %>%
          "0.7" = 0.7,
          "0.8" = 0.8,
          "0.9" = 0.9) 
-
 Surveys_periodic_scored_long <- pivot_longer(Surveys_periodic_scored, cols = starts_with(c("0.", "1")), names_to = "Surveys_periodic", values_to = "Score.Surveys_periodic") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-Surveys_periodic)
-
-
 st_crs(DSC_RH_scored_long) == st_crs(Surveys_periodic_scored_long)
-
 saveRDS(Surveys_periodic_scored_long, "U:\\Github\\SMORES\\data\\Surveys_periodic_scored.rds")
 
 #Seeps
@@ -211,12 +192,10 @@ Seeps.grid <- sf::st_intersection(Seeps, grd.norcal) %>%
   #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
   slice_max(area.part, n = 1) %>%
   select(CellID_2km, Score.Seeps) #use for 2km grid
-
 Seeps_score <- Seeps.grid %>%
   st_drop_geometry() %>% 
   group_by(CellID_2km) %>% 
   distinct(CellID_2km, .keep_all = TRUE)
-
 Seeps_scored <- grd.norcal %>%
   full_join(Seeps_score, by = "CellID_2km") %>%
   filter(Score.Seeps == 1) %>%
@@ -230,13 +209,41 @@ Seeps_scored <- grd.norcal %>%
          "0.7" = 0.7,
          "0.8" = 0.8,
          "0.9" = 0.9) 
-
 Seeps_scored_long <- pivot_longer(Seeps_scored, cols = starts_with(c("0.", "1")), names_to = "Seeps", values_to = "Score.Seeps") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-Seeps)
-
-
 st_crs(DSC_RH_scored_long) == st_crs(Seeps_scored_long)
-
 saveRDS(Seeps_scored_long, "U:\\Github\\SMORES\\data\\Seeps_scored.rds")
+
+#Shelfbreaks
+ShlfBrk.grid <- sf::st_intersection(ShlfBrk, grd.norcal) %>%
+  mutate(Score.ShlfBrk = ShlfBrk.Score) %>%
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid 
+  #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.ShlfBrk) #use for 2km grid
+ShlfBrk_score <- ShlfBrk.grid %>%
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+ShlfBrk_scored <- grd.norcal %>%
+  full_join(ShlfBrk_score, by = "CellID_2km") %>%
+  filter(Score.ShlfBrk == 1) %>%
+  rename("1" = Score.ShlfBrk) %>%
+  mutate("0.1" = 0.1,
+         "0.2" = 0.2,
+         "0.3" = 0.3,
+         "0.4" = 0.4,
+         "0.5" = 0.5,
+         "0.6" = 0.6,
+         "0.7" = 0.7,
+         "0.8" = 0.8,
+         "0.9" = 0.9) 
+ShlfBrk_scored_long <- pivot_longer(ShlfBrk_scored, cols = starts_with(c("0.", "1")), names_to = "ShlfBrk", values_to = "Score.ShlfBrk") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-ShlfBrk)
+st_crs(DSC_RH_scored_long) == st_crs(ShlfBrk_scored_long)
+saveRDS(ShlfBrk_scored_long, "U:\\Github\\SMORES\\data\\ShlfBrk_scored.rds")
+
 
