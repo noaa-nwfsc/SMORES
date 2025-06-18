@@ -316,7 +316,11 @@ function(input, output, session) {
       "Fixed Surveys" = list(data = surveys_fixed, score_column = "Score.Surveys_fixed"),
       "Periodic Surveys" = list(data = surveys_periodic, score_column = "Score.Surveys_periodic"),
       "Seeps" = list(data = seeps, score_column = "Score.Seeps"),
-      "Shelf Break" = list(data = shlfbrk, score_column = "Score.ShlfBrk")
+      "Shelf Break" = list(data = shlfbrk, score_column = "Score.ShlfBrk"),
+      "EFHCA" = list(data = efhca, score_column = "Score.EFHCA"), 
+      "EFHCA 700 fathom" = list(data = efhca_700, score_column = "Score.EFHCA.700"), 
+      "HAPC AOI" = list(data = HAPCaoi, score_column = "Score.HAPC.AOI"), 
+      "HAPC Rocky Reef" = list(data = HAPCreef, score_column = "Score.HAPC.Reef")
     )
     
     # Get valid configurations
