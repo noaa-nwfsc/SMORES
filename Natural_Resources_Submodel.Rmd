@@ -1,0 +1,161 @@
+---
+title: "Natural Resources Submodel Report"
+date: "`r format(Sys.time(), '%B %d, %Y at %H:%M:%S')`"
+output: 
+  html_document:
+    theme: cosmo
+    toc: true
+    toc_float: true
+    self_contained: true
+params:
+  map_configs: NULL
+  combined_data: NULL
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(leaflet)
+library(sf)
+library(dplyr)
+library(bslib)
+library(htmltools)
+
+# Color palette for scores
+score_colors <- list(
+  "0.1" = "#E41A1C",  # red
+  "0.2" = "#377EB8",  # blue
+  "0.3" = "#4DAF4A",  # green
+  "0.4" = "#984EA3",  # purple
+  "0.5" = "#FF7F00",  # orange
+  "0.6" = "#FFFF33",  # yellow
+  "0.7" = "#A65628",  # brown
+  "0.8" = "#F781BF",  # pink
+  "0.9" = "#999999",  # grey
+  "1" = "#000000"     # black
+)
+
+# Create a function to generate map sections
+create_map_section <- function(config, map_num) {
+  if(is.null(config) || is.null(config$data) || nrow(config$data) == 0) {
+    return(paste0("No data available for Map ", map_num, "."))
+  }
+  
+  if(!inherits(config$data, "sf")) {
+    return(paste0("Data for Map ", map_num, " is not in the correct format for mapping."))
+  }
+  
+  map <- leaflet() %>%
+    addProviderTiles("Esri.OceanBasemap",
+                   options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
+    addProviderTiles("Esri.OceanBasemap",
+                   options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
+    addPolygons(
+      data = config$data, 
+      color = "#33333300",  
+      weight = 1,            
+      fillColor = config$color,
+      fillOpacity = 0.7,
+      popup = paste("Score:", config$score)
+    ) %>%
+    addLegend(
+      position = "bottomright",
+      colors = config$color,
+      labels = paste("Score:", config$score),
+      opacity = 0.7,
+      title = config$layer
+    )
+  
+  return(map)
+}
+
+# Generate headers and descriptions for each map
+if (!is.null(params$map_configs) && length(params$map_configs) > 0) {
+  for (i in seq_along(params$map_configs)) {
+    config <- params$map_configs[[i]]
+    cat(paste0("### Map ", i, ": ", config$layer, " - Score: ", config$score, "\n\n"))
+    
+    # We'll add descriptions here, but maps will be in separate chunks
+    cat("**Layer Description:**\n\n")
+    cat(paste0("This map shows areas with a score of ", config$score, " for the ", config$layer, " layer.\n\n"))
+  }
+} else {
+  cat("No individual layers were configured for this report.")
+}
+```
+
+```{r}
+# Map 1
+if (!is.null(params$map_configs) && length(params$map_configs) >= 1) {
+  create_map_section(params$map_configs[[1]], 1)
+}
+```
+
+```{r}
+# Map 2
+if (!is.null(params$map_configs) && length(params$map_configs) >= 2) {
+  create_map_section(params$map_configs[[2]], 2)
+}
+```
+
+```{r}
+# Map 3
+if (!is.null(params$map_configs) && length(params$map_configs) >= 3) {
+  create_map_section(params$map_configs[[3]], 3)
+}
+```
+
+```{r}
+# Map 4
+if (!is.null(params$map_configs) && length(params$map_configs) >= 4) {
+  create_map_section(params$map_configs[[4]], 4)
+}
+```
+
+```{r}
+# Map 5
+if (!is.null(params$map_configs) && length(params$map_configs) >= 5) {
+  create_map_section(params$map_configs[[5]], 5)
+}
+```
+
+```{r}
+# Map 6
+if (!is.null(params$map_configs) && length(params$map_configs) >= 6) {
+  create_map_section(params$map_configs[[6]], 6)
+}
+```
+
+```{r}
+if (!is.null(params$combined_data) && "Geo_mean" %in% names(params$combined_data)) {
+  # Create color palette for the geometric mean
+  pal <- colorNumeric("viridis", domain = c(min(params$combined_data$Geo_mean, na.rm = TRUE), 
+                                           max(params$combined_data$Geo_mean, na.rm = TRUE)), 
+                     na.color = "transparent")
+  
+  # Create the map
+  leaflet() %>%
+    addProviderTiles("Esri.OceanBasemap",
+                    options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
+    addProviderTiles("Esri.OceanBasemap",
+                    options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
+    addPolygons(
+      data = params$combined_data, 
+      color = "#33333300", #adding 00 at the end makes this color transparent
+      weight = 1, 
+      fillColor = ~pal(Geo_mean), 
+      fillOpacity = 1,
+      popup = ~paste("Geometric Mean Score:", round(Geo_mean, 2))
+    ) %>%
+    addLegend(
+      position = "bottomright",
+      pal = pal,
+      values = params$combined_data$Geo_mean,
+      title = "Combined Geometric Mean",
+      opacity = 1
+    )
+} else {
+  leaflet() %>%
+    addProviderTiles("Esri.OceanBasemap") %>%
+    addControl("No combined data available for this report.", position = "topright")
+}
+```
