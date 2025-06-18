@@ -16,14 +16,97 @@ tagList(
   
   # Navbar
   page_navbar(
-    theme = theme,
-    # %>%
-    # bs_add_rules(
-    #     # # Custom CSS to directly target the active nav link
-    #     # ".nav-item .nav-link.active { color: #0085CA !important; }
-    #     # .nav-item .nav-link:not(.active) { color: #004391 !important; }
-    #     # .navbar-brand { color: #0085CA !important; }
-    #   ".nav-tabs .nav-link:not(.active) {background-color: #287CB8 !important; }"),
+    theme = theme %>% 
+      bs_add_rules(
+        # Custom CSS to style the navbar
+        ".navbar-brand { color: white !important; }
+       
+       /* Style for top-level navbar links only - blue background with white text */
+       .navbar .nav-item .nav-link:not(.active) { 
+         color: white !important; 
+         background-color: #003087 !important;
+       }
+       
+       /* Style for active top-level navbar links only - white background with blue text*/
+       .navbar .nav-item .nav-link.active { 
+         color: #003087 !important;
+         background-color: white !important;
+         border-radius: 4px 4px 0 0;
+       }
+       
+       /* Background for the nav-tabs container but NOT for the main navbar - light gray*/
+       .navset-tab > .nav-tabs,
+       #dataTabs > .nav-tabs,
+       .card .nav-tabs,
+       div:not(.navbar) .nav-tabs {
+         display: flex;
+         justify-content: center;
+         background-color: #F1F2F3 !important;
+         padding-top: 4px !important;
+         border-bottom: none !important;
+       }
+       
+       /* Non-active inset tab links but NOT navbar links -  */
+       .navset-tab > .nav-tabs .nav-link:not(.active),
+       #dataTabs > .nav-tabs .nav-link:not(.active),
+       .card .nav-tabs .nav-link:not(.active),
+       div:not(.navbar) .nav-tabs .nav-link:not(.active) {
+         background-color: #F1F2F3 !important;
+         color: #323C46 !important;
+         border: none !important;
+         margin-right: 2px !important;
+         border-radius: 4px 4px 0 0 !important;
+       }
+       
+       /* Active inset tab links but NOT navbar links */
+       .navset-tab > .nav-tabs .nav-link.active,
+       #dataTabs > .nav-tabs .nav-link.active,
+       .card .nav-tabs .nav-link.active,
+       div:not(.navbar) .nav-tabs .nav-link.active {
+         background-color: white !important;
+         color: black !important;
+         border: none !important;
+         border-top: 3px solid #0085CA !important;
+         margin-right: 2px !important;
+         border-radius: 4px 4px 0 0 !important;
+       }
+       
+       /* Fix tab content area background */
+       .navset-tab > .tab-content,
+       #dataTabs > .tab-content,
+       .card .tab-content,
+       div:not(.navbar) .tab-content {
+         background-color: white !important;
+         padding: 15px !important;
+         border-radius: 0 0 4px 4px !important;
+       }
+       
+       /* Hover effect for inset tabs */
+       .navset-tab > .nav-tabs .nav-link:hover:not(.active),
+       #dataTabs > .nav-tabs .nav-link:hover:not(.active),
+       .card .nav-tabs .nav-link:hover:not(.active),
+       div:not(.navbar) .nav-tabs .nav-link:hover:not(.active) {
+         background-color: #E0E0E0 !important;
+       }
+       
+       /* Direct targeting for dynamically created tabs in the UI */
+       #dataTabs .nav-tabs {
+         background-color: #F1F2F3 !important;
+       }
+       
+       #dataTabs .nav-tabs .nav-item .nav-link:not(.active) - gray background with black text {
+         background-color: #F1F2F3 !important;
+         color: #323C46 !important;
+         border: #E0E0E0 !important;
+       }
+       
+       #dataTabs .nav-tabs .nav-item .nav-link.active - white background with black text and blue border {
+         background-color: white !important;
+         color: black !important;
+         border: none !important;
+         border-top: 3px solid #0085CA !important;
+       }"
+      ),
     title = "Suitability Modeling", # title text
     
     # Tab 1: Overview
@@ -65,13 +148,13 @@ tagList(
             card(
               card_header("Map Configuration"),
               card_body(
-               includeMarkdown("markdown/habitat_map_settings.md")
+                includeMarkdown("markdown/habitat_map_settings.md")
               )
             ),
             
             # Container for multiple maps
             uiOutput("multipleMapsContainer")
-        
+            
           ),
           
           # Inset Tab 2
@@ -134,13 +217,24 @@ tagList(
     nav_panel(
       title = "Industry & Operations Submodel",
       icon = icon("industry"),
-      card(
-        card_header("Industry & Operations Submodel"),
-        card_body(
-          includeMarkdown("markdown/industry_operations_submodel.md")
-        )
+      
+      # Layout with sidebar for tabs
+      layout_sidebar(
+        # Sidebar for picker inputs
+        sidebar = sidebar(
+          # Dynamic picker inputs
+          uiOutput("industryOperationsSidebar")
+        ),
+        card(
+          card_header("Industry & Operations Submodel"),
+          card_body(
+            includeMarkdown("markdown/industry_operations_submodel.md")
+          )
+        ),
+        # Container for multiple maps
+        uiOutput("industryMapContainer")
       )
-    ), 
+    ),
     # Tab 5: Methods
     nav_panel(
       title = "Methods",
@@ -157,9 +251,12 @@ tagList(
       title = "Data",
       icon = icon("database"),
       card(
-        card_header("Data Sources"),
+        card_header("Dataset Information"),
         card_body(
-          includeMarkdown("markdown/data.md")
+          p("This application uses multiple datasets that are updated periodically."),
+          p(strong("Most recent data update: "), most_recent_update),
+          br(),
+          tableOutput("data_timestamps_table")
         )
       )
     )
@@ -167,5 +264,4 @@ tagList(
 )
 
 
-  
-  
+
