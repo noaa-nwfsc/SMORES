@@ -33,6 +33,10 @@ surveys_fixed <- readRDS("data/Surveys_fixed_scored.rds")
 surveys_periodic <- readRDS("data/Surveys_periodic_scored.rds")
 seeps <- readRDS("data/Seeps_scored.rds")
 shlfbrk <- readRDS("data/ShlfBrk_scored.rds")
+efhca <- readRDS("data/efhca_scored.rds")
+efhca_700 <- readRDS("data/efhca_700_scored.rds")
+HAPCaoi <- readRDS("data/HAPCaoi_scored.rds")
+HAPCreef <- readRDS("data/HAPCreef_scored.rds")
 
 
 grid_test <- readRDS("data/2km_grid_norcal.rds")
@@ -44,7 +48,11 @@ habitat_layer <- list(
   "Canyon" = canyon_data,
   "DSC_RH" = DSC_RH_data,
   "Seeps" = seeps, 
-  "Shelf Break" = shlfbrk
+  "Shelf Break" = shlfbrk, 
+  "EFHCA" = efhca,
+  "EFHCA 700 fathom" = efhca_700, 
+  "HAPC AOI" = HAPCaoi,
+  "HAPC Rocky Reef" = HAPCreef
 )
 
 species_layer <- list(
