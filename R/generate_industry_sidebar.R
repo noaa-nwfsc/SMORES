@@ -9,7 +9,7 @@ generate_industry_sidebar <- function(industry_layers, score_values){
       hr(), 
       h5(layer_name), 
       checkboxInput(paste0("EnableIndustryLayer_", layer_id),
-                    paste("Incldue", layer_name),
+                    paste("Include", layer_name),
                     value = FALSE),
       conditionalPanel(
         condition = paste0("input.EnableIndustryLayer_", layer_id, "== true"), 

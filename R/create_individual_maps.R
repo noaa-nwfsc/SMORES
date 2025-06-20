@@ -7,14 +7,15 @@
 #'
 #' @param configs A list of valid map configurations
 #' @param output The Shiny output object
+#' @param namespace A string prefix to use for map IDs (default: NULL)
 #'
 #' @return NULL (creates maps as a side effect)
 #'
 #' @examples
 #' # Get valid configurations and create maps
 #' valid_configs <- get_valid_configs()
-#' create_individual_maps(valid_configs, output)
-create_individual_maps <- function(configs, output) {
+#' create_individual_maps(valid_configs, output, "naturalresources")
+create_individual_maps <- function(configs, output, namespace = NULL) {
   # Early return if no configs
   if(length(configs) == 0) {
     return(invisible(NULL))
@@ -24,7 +25,12 @@ create_individual_maps <- function(configs, output) {
   for(config in configs) {
     local({
       local_config <- config
-      map_id <- paste0("map_", local_config$index)
+      # Create namespaced map ID if namespace is provided
+      map_id <- if (!is.null(namespace)) {
+        paste0(namespace, "_map_", local_config$index)
+      } else {
+        paste0("map_", local_config$index)
+      }
       
       output[[map_id]] <- renderLeaflet({
         # Ensure we have data to display

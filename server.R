@@ -74,20 +74,88 @@ function(input, output, session) {
       layer_input %in% names(layer_data)
   }
   
-  # Get valid map configurations
-  get_valid_configs <- reactive({
+  # Reactive expression for Natural Resources tab valid configs
+  natural_resources_valid_configs <- reactive({
+    # Debug output
+    cat("Natural Resources reactive called. Navbar:", input$navbar, "dataTabs:", input$dataTabs, "\n")
+    
+    # For Natural Resources, we check if we have dataTabs (which means we're on the Natural Resources section)
+    # OR if navbar is explicitly set to Natural Resources
+    is_natural_resources <- (!is.null(input$dataTabs) && 
+                               input$dataTabs %in% c("habitat", "species", "birds", "combined_model")) ||
+      (!is.null(input$navbar) && input$navbar == "Natural Resources Submodel")
+    
+    if(!is_natural_resources) {
+      return(list())
+    }
+    
+    # Default to habitat if dataTabs is not set
     current_tab <- input$dataTabs %||% "habitat"
     
-    # Set the layer data based on the tab
+    cat("Processing Natural Resources - dataTabs:", current_tab, "\n")
+    
+    # Set the layer data based on the current data tab
     layer_data <- switch(current_tab,
                          "habitat" = habitat_layer,
                          "species" = species_layer,
                          "birds" = bird_layer,
-                         "industry_operations" = industry_layer,
                          NULL)
     
-    # use function to get valid configurations
-    get_valid_configs_for_tab(input, current_tab, layer_data, score_colors, filter_by_score)
+    if(is.null(layer_data)) {
+      cat("Layer data is NULL for tab:", current_tab, "\n")
+      return(list())
+    }
+    
+    # Use your existing function to get valid configurations
+    configs <- get_valid_configs_for_tab(input, current_tab, layer_data, score_colors, filter_by_score)
+    cat("Natural Resources configs count:", length(configs), "\n")
+    
+    return(configs)
+  })
+  
+  # Reactive expression for Industry tab valid configs
+  industry_valid_configs <- reactive({
+    cat("Industry reactive called. Navbar:", input$navbar, "\n")
+    
+    # Check if we have any industry-related inputs (this means the sidebar has been rendered)
+    industry_input_names <- names(input)[grepl("^EnableIndustryMap", names(input))]
+    has_industry_inputs <- length(industry_input_names) > 0
+    
+    cat("Industry debug - has_industry_inputs:", has_industry_inputs, "\n")
+    
+    # Only process if we have industry inputs (meaning we're on the industry tab)
+    if(!has_industry_inputs) {
+      return(list())
+    }
+    
+    cat("Processing Industry tab\n")
+    
+    # Use your existing function with the industry tab specifically
+    configs <- get_valid_configs_for_tab(input, "industry_operations", industry_layer, score_colors, filter_by_score)
+    cat("Industry configs count:", length(configs), "\n")
+    return(configs)
+  })
+  
+  # Natural Resources maps
+  observe({
+    # Remove the req() condition and let the reactive handle the logic
+    valid_configs <- natural_resources_valid_configs()
+    
+    if(length(valid_configs) > 0) {
+      cat("Creating", length(valid_configs), "Natural Resources maps\n")
+      create_individual_maps(valid_configs, output, namespace = "naturalresources")
+    }
+  })
+  
+  # Industry maps
+  observe({
+    # Get valid configs without navbar condition check
+    valid_configs <- industry_valid_configs()
+    
+    if(length(valid_configs) > 0) {
+      cat("Creating", length(valid_configs), "Industry maps\n")
+      create_individual_maps(valid_configs, output, namespace = "industry")
+    }
   })
   
   # Dynamic sidebar content
@@ -221,7 +289,7 @@ function(input, output, session) {
   
   # Multiple maps container for habitat
   output$multipleMapsContainer_habitat <- renderUI({
-    valid_configs <- get_valid_configs()
+    valid_configs <- natural_resources_valid_configs()
     
     if(length(valid_configs) == 0) {
       return(card(
@@ -234,7 +302,7 @@ function(input, output, session) {
     # Create map cards
     map_cards <- lapply(valid_configs, function(config) {
       i <- config$index
-      map_id <- paste0("map_", i)
+      map_id <- paste0("naturalresources_map_", i)
       
       card(
         card_header(paste0("Map ", i, ": ", config$layer, " - ", config$score)),
@@ -262,17 +330,6 @@ function(input, output, session) {
     }
     
     tagList(rows)
-  })
-  
-  #create individual maps based on the active tab
-  observe({
-    #get the current main tab and sub-tab
-    current_main_tab <- input$navbar
-    current_sub_tab <- input$dataTabs %||% "habitat"
-    
-    #get configs based on current tab
-    valid_configs <- get_valid_configs()
-    create_individual_maps(valid_configs, output)
   })
   
   # Combined map logic
@@ -516,7 +573,7 @@ function(input, output, session) {
   
   # Industry map container
   output$industryMapContainer <- renderUI({
-    valid_configs <- get_valid_configs()
+    valid_configs <- industry_valid_configs()
     
     if(length(valid_configs) == 0) {
       return(card(
@@ -529,7 +586,7 @@ function(input, output, session) {
     # Create map cards
     map_cards <- lapply(valid_configs, function(config) {
       i <- config$index
-      map_id <- paste0("map_", i)
+      map_id <- paste0("industry_map_", i)
       
       card(
         card_header(paste0("Map ", i, ": ", config$layer, " - ", config$score)),
@@ -559,15 +616,6 @@ function(input, output, session) {
     tagList(rows)
   })
   
-  # #create individual maps for industry tab
-  # observe({
-  #   # trigger if we are on the industry tab
-  #   if(input$navbar != "Industry & Operations Submodel") return()
-  #     
-  #     valid_configs <- get_valid_configs()
-  #     create_individual_maps(valid_configs, output)
-  # })
-  # 
   # Add a message to inform users when submodels aren't generated
   output$combinedModelStatus <- renderUI({
     # Check which submodels have been generated
