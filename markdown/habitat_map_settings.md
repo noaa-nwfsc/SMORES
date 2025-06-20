@@ -1,5 +1,3 @@
-Select layers and scores in the sidebar to generate individual maps.
+Select whether you would like to include each layer and then choose a score to generate an individual map.
 
-You can configure up to 5 different maps with their own settings.
-
-Click 'Generate Combined Map' to calculate the geometric mean of all selected maps.
+After you have configured each of the layers you would like to include in your combined score click 'Generate Combined Map' to calculate the geometric mean of all selected maps.

@@ -1,55 +1,86 @@
-#' Get valid map configurations for a specific tab
-#'
-#' This function examines all map configurations for a specified tab and returns
-#' a list of valid configurations with their associated data, colors, and other properties.
-#'
-#' @param input The Shiny input object containing user selections
-#' @param tab_name The name of the tab to get configurations for (e.g., "habitat", "species", "birds", "industry_operations")
-#' @param layer_data A list of data layers available for the specified tab
-#' @param score_colors A list mapping score values to colors
-#' @param filter_func The function to use for filtering data by score
-#'
-#' @return A list of valid map configurations
-#'
-#' @examples
-#' # Get valid configurations for the habitat tab
-#' habitat_configs <- get_valid_configs_for_tab(input, "habitat", habitat_layer, score_colors, filter_by_score)
-get_valid_configs_for_tab <- function(input, tab_name, layer_data, score_colors, filter_func) {
+get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colors, filter_by_score) {
   valid_configs <- list()
+  index <- 1
   
-  # Set the prefix based on the tab name
-  prefix <- switch(tab_name,
-                   "habitat" = "Habitat",
-                   "species" = "Species",
-                   "birds" = "Bird",
-                   "industry_operations" = "Industry",
-                   "")
-  
-  if(prefix == "" || is.null(layer_data)) return(valid_configs) # Empty list if invalid
-  
-  for(i in 1:6) {
-    enable_input <- input[[paste0("Enable", prefix, "Map", i)]]
-    if(!is.null(enable_input) && enable_input) {
-      layer_name <- input[[paste0(prefix, "LayerPicker", i)]]
-      score_name <- input[[paste0(prefix, "ScorePicker", i)]]
+  if(current_tab == "habitat") {
+    # Special handling for habitat tab which uses different input naming pattern
+    habitat_layers <- names(layer_data)
+    
+    for(layer_name in habitat_layers) {
+      # Create consistent IDs
+      layer_id <- gsub(" ", "_", layer_name)
+      layer_id <- gsub("[^A-Za-z0-9_]", "", layer_id)
       
-      if(!is.null(layer_name) && layer_name != "None" && 
-         !is.null(score_name) && score_name != "None" &&
-         layer_name %in% names(layer_data)) {
+      enable_input_id <- paste0("EnableLayer_", layer_id)
+      score_input_id <- paste0("ScorePicker_", layer_id)
+      
+      # Check if this layer is enabled
+      is_enabled <- !is.null(input[[enable_input_id]]) && input[[enable_input_id]]
+      
+      if(is_enabled) {
+        score_value <- input[[score_input_id]]
         
-        dataset <- layer_data[[layer_name]]
-        filtered_data <- filter_func(dataset, score_name)
+        if(!is.null(score_value) && score_value != "None") {
+          # Get score color
+          score_color <- score_colors[[score_value]]
+          
+          # Filter data by score
+          if(layer_name %in% names(layer_data)) {
+            filtered_data <- filter_by_score(layer_data[[layer_name]], score_value)
+            
+            # Add to valid configs
+            valid_configs[[length(valid_configs) + 1]] <- list(
+              index = index,
+              layer = layer_name,
+              score = score_value,
+              color = score_color,
+              data = filtered_data
+            )
+            
+            index <- index + 1
+          }
+        }
+      }
+    }
+  } else {
+    # Handling for other tabs (species, birds, industry)
+    # Set the prefix based on the tab
+    prefix <- switch(current_tab,
+                     "species" = "Species",
+                     "birds" = "Bird",
+                     "industry_operations" = "Industry",
+                     "")
+    
+    if(prefix != "") {
+      for(i in 1:6) {
+        # Check if this configuration is enabled and has valid selections
+        enable_input <- input[[paste0("Enable", prefix, "Map", i)]]
+        layer_input <- input[[paste0(prefix, "LayerPicker", i)]]
+        score_input <- input[[paste0(prefix, "ScorePicker", i)]]
         
-        # Get the color for this score
-        color <- score_colors[[score_name]]
-        
-        valid_configs[[length(valid_configs) + 1]] <- list(
-          index = i,
-          layer = layer_name,
-          score = score_name,
-          data = filtered_data,
-          color = color
-        )
+        # Only process if all required inputs exist and are valid
+        if(!is.null(enable_input) && enable_input &&
+           !is.null(layer_input) && layer_input != "None" &&
+           !is.null(score_input) && score_input != "None" &&
+           layer_input %in% names(layer_data)) {
+          
+          # Get score color
+          score_color <- score_colors[[score_input]]
+          
+          # Filter data by score
+          filtered_data <- filter_by_score(layer_data[[layer_input]], score_input)
+          
+          # Add to valid configs
+          valid_configs[[length(valid_configs) + 1]] <- list(
+            index = index,
+            layer = layer_input,
+            score = score_input,
+            color = score_color,
+            data = filtered_data
+          )
+          
+          index <- index + 1
+        }
       }
     }
   }

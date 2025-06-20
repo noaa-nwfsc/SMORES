@@ -6,7 +6,11 @@ get_data_timestamps <- function(data_dir = "data") {
     "Surveys_fixed_scored.rds",
     "Surveys_periodic_scored.rds",
     "Seeps_scored.rds",
-    "ShlfBrk_scored.rds"
+    "ShlfBrk_scored.rds", 
+    "EFHCA_scored.rds",
+    "EFHCA_700_scored.rds", 
+    "HAPCaoi_scored.rds",
+    "HAPCreef_scored.rds"
   )
   
   # Create a data frame to store file information
@@ -32,7 +36,11 @@ get_data_timestamps <- function(data_dir = "data") {
     "Fixed Surveys", 
     "Periodic Surveys", 
     "Seeps Data", 
-    "Shelf Break Data"
+    "Shelf Break Data", 
+    "EFHCA",
+    "EFHCA 700 fathoms",
+    "HAPC AOI",
+    "HAPC Rocky Reef"
   )
   
   # Format the timestamps for display

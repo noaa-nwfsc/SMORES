@@ -246,4 +246,114 @@ ShlfBrk_scored_long <- pivot_longer(ShlfBrk_scored, cols = starts_with(c("0.", "
 st_crs(DSC_RH_scored_long) == st_crs(ShlfBrk_scored_long)
 saveRDS(ShlfBrk_scored_long, "U:\\Github\\SMORES\\data\\ShlfBrk_scored.rds")
 
+#EFHCA
+EFHCA.grid <- readRDS("U:\\Github\\OWEC\\data\\Lyr_EFHCA.rds")
+saveRDS(EFHCA.grid, "U:\\Github\\SMORES\\data\\EFHCA_grid.rds" )
+EFHCA_score <- EFHCA.grid %>%
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+EFHCA_scored <- grd.norcal %>%
+  full_join(EFHCA_score, by = "CellID_2km") %>%
+  filter(Score.EFHCA == 0.01) %>%
+  rename("0.01" = Score.EFHCA) %>%
+  mutate("0.1" = 0.1,
+         "0.2" = 0.2,
+         "0.3" = 0.3,
+         "0.4" = 0.4,
+         "0.5" = 0.5,
+         "0.6" = 0.6,
+         "0.7" = 0.7,
+         "0.8" = 0.8,
+         "0.9" = 0.9,
+         "1" = 1) %>% 
+  select(-"0.01")
+EFHCA_scored_long <- pivot_longer(EFHCA_scored, cols = starts_with(c("0.", "1")), names_to = "EFHCA", values_to = "Score.EFHCA") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-EFHCA)
+st_crs(DSC_RH_scored_long) == st_crs(EFHCA_scored_long)
+saveRDS(EFHCA_scored_long, "U:\\Github\\SMORES\\data\\EFHCA_scored.rds")
 
+#EFHCA.700
+EFHCA_700.grid <- readRDS("U:\\Github\\OWEC\\data\\Lyr_EFHCA700.rds")
+saveRDS(EFHCA_700.grid, "U:\\Github\\SMORES\\data\\EFHCA_grid.rds" )
+EFHCA_700_score <- EFHCA_700.grid %>%
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+EFHCA_700_scored <- grd.norcal %>%
+  full_join(EFHCA_700_score, by = "CellID_2km") %>%
+  filter(Score.EFHCA.700 == 0.01) %>%
+  rename("0.01" = Score.EFHCA.700) %>%
+  mutate("0.1" = 0.1,
+         "0.2" = 0.2,
+         "0.3" = 0.3,
+         "0.4" = 0.4,
+         "0.5" = 0.5,
+         "0.6" = 0.6,
+         "0.7" = 0.7,
+         "0.8" = 0.8,
+         "0.9" = 0.9,
+         "1" = 1) %>% 
+  select(-"0.01")
+EFHCA_700_scored_long <- pivot_longer(EFHCA_700_scored, cols = starts_with(c("0.", "1")), names_to = "EFHCA_700", values_to = "Score.EFHCA.700") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-EFHCA_700)
+st_crs(DSC_RH_scored_long) == st_crs(EFHCA_700_scored_long)
+saveRDS(EFHCA_700_scored_long, "U:\\Github\\SMORES\\data\\EFHCA_700_scored.rds")
+
+# HAPCAOI
+HAPCaoi.grid <- readRDS("U:\\Github\\OWEC\\data\\Lyr_HAPCaoi.rds")
+saveRDS(HAPCaoi.grid, "U:\\Github\\SMORES\\data\\HAPCaoi_grid.rds" )
+HAPCaoi_score <- HAPCaoi.grid %>%
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+HAPCaoi_scored <- grd.norcal %>%
+  full_join(HAPCaoi_score, by = "CellID_2km") %>%
+  filter(Score.HAPC.AOI == 0.01) %>%
+  rename("0.01" = Score.HAPC.AOI) %>%
+  mutate("0.1" = 0.1,
+         "0.2" = 0.2,
+         "0.3" = 0.3,
+         "0.4" = 0.4,
+         "0.5" = 0.5,
+         "0.6" = 0.6,
+         "0.7" = 0.7,
+         "0.8" = 0.8,
+         "0.9" = 0.9,
+         "1" = 1) %>% 
+  select(-"0.01")
+HAPCaoi_scored_long <- pivot_longer(HAPCaoi_scored, cols = starts_with(c("0.", "1")), names_to = "HAPCaoi", values_to = "Score.HAPC.AOI") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-HAPCaoi)
+st_crs(DSC_RH_scored_long) == st_crs(HAPCaoi_scored_long)
+saveRDS(HAPCaoi_scored_long, "U:\\Github\\SMORES\\data\\HAPCaoi_scored.rds")
+
+#HAPCReef
+HAPCreef.grid <- readRDS("U:\\Github\\OWEC\\data\\Lyr_HAPCReef.rds")
+saveRDS(HAPCreef.grid, "U:\\Github\\SMORES\\data\\HAPCreef_grid.rds" )
+HAPCreef_score <- HAPCreef.grid %>%
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+HAPCreef_scored <- grd.norcal %>%
+  full_join(HAPCreef_score, by = "CellID_2km") %>%
+  filter(Score.HAPC.Reef == 0.001) %>%
+  rename("0.001" = Score.HAPC.Reef) %>%
+  mutate("0.1" = 0.1,
+         "0.2" = 0.2,
+         "0.3" = 0.3,
+         "0.4" = 0.4,
+         "0.5" = 0.5,
+         "0.6" = 0.6,
+         "0.7" = 0.7,
+         "0.8" = 0.8,
+         "0.9" = 0.9,
+         "1" = 1) %>% 
+  select(-"0.001")
+HAPCreef_scored_long <- pivot_longer(HAPCreef_scored, cols = starts_with(c("0.", "1")), names_to = "HAPCreef", values_to = "Score.HAPC.Reef") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-HAPCreef)
+st_crs(DSC_RH_scored_long) == st_crs(HAPCreef_scored_long)
+saveRDS(HAPCreef_scored_long, "U:\\Github\\SMORES\\data\\HAPCreef_scored.rds")

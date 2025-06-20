@@ -1,5 +1,15 @@
 function(input, output, session) {
   
+  # Create a reactive values object to store combined maps data
+  combined_maps_data <- reactiveValues(
+    habitat = NULL,
+    species = NULL,
+    birds = NULL,
+    industry = NULL, 
+    habitat_combined_map_generated = FALSE,
+    industry_combined_map_generated = FALSE
+  )
+  
   # filter dataframes by score 
   filter_by_score <- function(df, selected_score) {
     if(is.null(df) || is.null(selected_score) || selected_score == "None") {
@@ -80,62 +90,17 @@ function(input, output, session) {
     get_valid_configs_for_tab(input, current_tab, layer_data, score_colors, filter_by_score)
   })
   
-  # combined map placeholder with message indicating that you need to hit the button
-  output$combinedMap <- renderLeaflet({
-    leaflet() %>%
-      addProviderTiles("Esri.OceanBasemap",
-                       options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
-      addProviderTiles("Esri.OceanBasemap",
-                       options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
-      addControl("Click 'Generate Combined Map' button to create the combined map.", position = "topright")
-  })
-  
   # Dynamic sidebar content
   output$dynamicSidebar <- renderUI({
     current_tab <- input$dataTabs %||% "habitat"
     
     if(current_tab == "habitat") {
-      map_inputs <- lapply(1:6, function(i) {
-        tagList(
-          hr(),
-          h5(paste("Map", i, "Configuration")),
-          checkboxInput(paste0("EnableHabitatMap", i), paste("Enable Map", i), value = FALSE),
-          conditionalPanel(
-            condition = paste0("input.EnableHabitatMap", i, " == true"),
-            pickerInput(
-              paste0("HabitatLayerPicker", i),
-              paste("Select Layer for Map", i),
-              choices = c("None", names(habitat_layer)),
-              selected = "None"
-            ),
-            pickerInput(
-              paste0("HabitatScorePicker", i),
-              paste("Select score for Map", i),
-              choices = c("None", score_values),
-              selected = "None"
-            )
-          )
-        )
-      })
+      # Get the layer names for habitat
+      habitat_layers <- names(habitat_layer)
       
-      # generate combined map
-      tagList(
-        h4("Habitat Map Settings"),
-        map_inputs,
-        hr(),
-        h4("Combined Map Settings"),
-        # helpText("The combined map will calculate the geometric mean"),
-        actionButton("generateCombinedMap", "Generate Combined Map", 
-                     class = "btn-primary btn-block"),
-        # Export button
-        hr(),
-        h4("Export"),
-        downloadButton("habitatExportRmd", "Export to R Markdown",
-                       icon = icon("file-export"),
-                       class = "btn-info btn-block")
-        
-      )
-      # Species tab sidebar content
+      #use function to make habitat sidebar
+      generate_habitat_sidebar(habitat_layers, score_values)
+      
     } else if (current_tab == "species") {
       map_inputs <- lapply(1:6, function(i) {
         tagList(
@@ -225,6 +190,9 @@ function(input, output, session) {
       tagList(
         h4("Combined Model Settings"),
         hr(),
+        h5("Submodel Status"),
+        htmlOutput("combinedModelStatus"),
+        hr(),
         h5("Model Weights"),
         
         # Sliders for model weights
@@ -251,8 +219,8 @@ function(input, output, session) {
     }
   })
   
-  # Multiple maps container
-  output$multipleMapsContainer <- renderUI({
+  # Multiple maps container for habitat
+  output$multipleMapsContainer_habitat <- renderUI({
     valid_configs <- get_valid_configs()
     
     if(length(valid_configs) == 0) {
@@ -283,19 +251,26 @@ function(input, output, session) {
       rows[[length(rows) + 1]] <- do.call(layout_columns, row_cards)
     }
     
-    # Add combined map at the bottom
-    rows[[length(rows) + 1]] <- card(
-      card_header(h3("Combined Map Result (Geometric Mean)")),
-      card_body(
-        leafletOutput("combinedMap", height = 400) 
+    # Add combined map at the bottom if it has been generated
+    if(combined_maps_data$habitat_combined_map_generated) {
+      rows[[length(rows) + 1]] <- card(
+        card_header(h3("Combined Map Result (Geometric Mean)")),
+        card_body(
+          leafletOutput("combinedMap", height = 400) 
+        )
       )
-    )
+    }
     
     tagList(rows)
   })
   
-  #create individual maps
+  #create individual maps based on the active tab
   observe({
+    #get the current main tab and sub-tab
+    current_main_tab <- input$navbar
+    current_sub_tab <- input$dataTabs %||% "habitat"
+    
+    #get configs based on current tab
     valid_configs <- get_valid_configs()
     create_individual_maps(valid_configs, output)
   })
@@ -311,10 +286,8 @@ function(input, output, session) {
     
     # Define dataset mapping for habitat tab
     habitat_dataset_mapping <- list(
-      "Canyon" = list(data = canyon_data, score_column = "Score.Canyon"),
-      "DSC_RH" = list(data = DSC_RH_data, score_column = "Score.DSC_RH"),
-      "Fixed Surveys" = list(data = surveys_fixed, score_column = "Score.Surveys_fixed"),
-      "Periodic Surveys" = list(data = surveys_periodic, score_column = "Score.Surveys_periodic"),
+      "Canyon" = list(data = canyon, score_column = "Score.Canyon"),
+      "Deep Sea Coral Robust High Suitability" = list(data = DSC_RH, score_column = "Score.DSC_RH"),
       "Seeps" = list(data = seeps, score_column = "Score.Seeps"),
       "Shelf Break" = list(data = shlfbrk, score_column = "Score.ShlfBrk"),
       "EFHCA" = list(data = efhca, score_column = "Score.EFHCA"), 
@@ -335,6 +308,12 @@ function(input, output, session) {
     
     # Use the result
     output$combinedMap <- renderLeaflet(result$map)
+    
+    # store the combined habitat data for use in the combined model
+    combined_maps_data$habitat <- result$combined_data
+    
+    # set flag to indicate combined map has been generated
+    combined_maps_data$habitat_combined_map_generated <- TRUE
     
     # Remove modal spinner
     removeModal()
@@ -374,23 +353,29 @@ function(input, output, session) {
           
           # Determine which dataset and score columns to use
           if(layer_name == "Canyon") {
-            dataset <- canyon_data
+            dataset <- canyon
             score_column <- "Score.Canyon"
-          } else if(layer_name == "DSC_RH") {
-            dataset <- DSC_RH_data
+          } else if(layer_name == "Deep Sea Coral Robust High Suitability") {
+            dataset <- DSC_RH
             score_column <- "Score.DSC_RH"
-          } else if(layer_name == "Fixed Surveys") {
-            dataset <- surveys_fixed
-            score_column <- "Score.Surveys_fixed"
-          } else if(layer_name == "Periodic Surveys") {
-            dataset <- surveys_periodic
-            score_column <- "Score.Surveys_periodic"
           } else if(layer_name == "Seeps") {
             dataset <- seeps
             score_column <- "Score.Seeps"
           } else if(layer_name == "Shelf Break") {
             dataset <- shlfbrk
             score_column <- "Score.ShlfBrk"
+          } else if(layer_name == "EFHCA") {
+            dataset <- efhca
+            score_column <- "Score.EFHCA"
+          } else if(layer_name == "EFHCA 700 fathom") {
+            dataset <- efhca_700
+            score_column <- "Score.EFHCA.700"
+          } else if(layer_name == "HAPC AOI") {
+            dataset <- HAPCaoi
+            score_column <- "Score.HAPC.AOI"
+          } else if(layer_name == "HAPC Rocky Reef") {
+            dataset <- HAPCreef
+            score_column <- "Score.HAPC.Reef"
           } else {
             next  # Skip if layer name doesn't match
           }
@@ -483,60 +468,12 @@ function(input, output, session) {
   
   # Dynamic sidebar content for Industry & Operations tab
   output$industryOperationsSidebar <- renderUI({
-    map_inputs <- lapply(1:2, function(i) {
-      tagList(
-        hr(),
-        h5(paste("Map", i, "Configuration")),
-        checkboxInput(paste0("EnableIndustryMap", i), paste("Enable Map", i), value = FALSE),
-        conditionalPanel(
-          condition = paste0("input.EnableIndustryMap", i, " == true"),
-          pickerInput(
-            paste0("IndustryLayerPicker", i),
-            paste("Select Layer for Map", i),
-            choices = c("None", names(industry_layer)),
-            selected = "None"
-          ),
-          pickerInput(
-            paste0("IndustryScorePicker", i),
-            paste("Select score for Map", i),
-            choices = c("None", score_values),
-            selected = "None"
-          )
-        )
-      )
-    })
+    # Get the layer names for industry
+    industry_layers <- names(industry_layer)
     
-    # Generate combined map
-    tagList(
-      h4("Industry & Operations Map Settings"),
-      map_inputs,
-      hr(),
-      h4("Combined Map Settings"),
-      actionButton("generateIndustryMap", "Generate Combined Industry Map", 
-                   class = "btn-primary btn-block"),
-      # Export button
-      hr(),
-      h4("Export"),
-      downloadButton("industryExportRmd", "Export to R Markdown",
-                     icon = icon("file-export"),
-                     class = "btn-info btn-block")
-    )
-  })
-  
-  # Industry map container
-  output$industryMapContainer <- renderUI({
-    card(
-      card_header("Industry & Operations Maps"),
-      card_body(
-        leafletOutput("industryMap", height = 400)
-      )
-    )
-  })
-  
-  # create industry individual maps
-  observe({
-    valid_configs <- get_valid_configs()
-    create_individual_maps(valid_configs, output)
+    #use the generate industry sidebar function 
+    generate_industry_sidebar(industry_layers, score_values)
+    
   })
   
   # Industry combined map logic
@@ -567,8 +504,123 @@ function(input, output, session) {
     # Use the result
     output$industryMap <- renderLeaflet(result$map)
     
+    # store the combined industry data for use in the combined model
+    combined_maps_data$industry <- result$combined_data
+    
+    # set flag to indicate combined map has been clicked
+    combined_maps_data$industry_combined_map_generated <- TRUE
+    
     # Remove modal spinner
     removeModal()
+  })
+  
+  # Industry map container
+  output$industryMapContainer <- renderUI({
+    valid_configs <- get_valid_configs()
+    
+    if(length(valid_configs) == 0) {
+      return(card(
+        card_body(
+          p("No maps configured yet. Please enable and configure maps in the sidebar.")
+        )
+      ))
+    }
+    
+    # Create map cards
+    map_cards <- lapply(valid_configs, function(config) {
+      i <- config$index
+      map_id <- paste0("map_", i)
+      
+      card(
+        card_header(paste0("Map ", i, ": ", config$layer, " - ", config$score)),
+        card_body(
+          leafletOutput(map_id, height = 250)
+        )
+      )
+    })
+    
+    # Arrange cards in rows of 2
+    rows <- list()
+    for(i in seq(1, length(map_cards), by = 2)) {
+      row_cards <- map_cards[i:min(i+1, length(map_cards))]
+      rows[[length(rows) + 1]] <- do.call(layout_columns, row_cards)
+    }
+    
+    # Add combined map at the bottom if it has been generated
+  if(combined_maps_data$industry_combined_map_generated) {
+    rows[[length(rows) + 1]] <- card(
+      card_header(h4("Combined Industry & Operations Map Result (Geometric Mean")),
+      card_body(
+        leafletOutput("industryMap", height = 400)
+      )
+    )
+  }
+    
+    tagList(rows)
+  })
+  
+  # #create individual maps for industry tab
+  # observe({
+  #   # trigger if we are on the industry tab
+  #   if(input$navbar != "Industry & Operations Submodel") return()
+  #     
+  #     valid_configs <- get_valid_configs()
+  #     create_individual_maps(valid_configs, output)
+  # })
+  # 
+  # Add a message to inform users when submodels aren't generated
+  output$combinedModelStatus <- renderUI({
+    # Check which submodels have been generated
+    habitat_ready <- !is.null(combined_maps_data$habitat)
+    species_ready <- !is.null(combined_maps_data$species)
+    birds_ready <- !is.null(combined_maps_data$birds)
+    
+    if(!habitat_ready && !species_ready && !birds_ready) {
+      div(
+        class = "alert alert-warning",
+        icon("exclamation-triangle"), 
+        " No submodels have been generated yet. Please go to each tab (Habitat, Species, Birds) and generate the combined maps first."
+      )
+    } else {
+      status_items <- list()
+      
+      # Add status for each submodel
+      if(habitat_ready) {
+        status_items <- c(status_items, list(
+          div(icon("check-circle", class = "text-success"), " Habitat submodel ready")
+        ))
+      } else {
+        status_items <- c(status_items, list(
+          div(icon("times-circle", class = "text-danger"), " Habitat submodel not ready")
+        ))
+      }
+      
+      if(species_ready) {
+        status_items <- c(status_items, list(
+          div(icon("check-circle", class = "text-success"), " Species submodel ready")
+        ))
+      } else {
+        status_items <- c(status_items, list(
+          div(icon("times-circle", class = "text-danger"), " Species submodel not ready")
+        ))
+      }
+      
+      if(birds_ready) {
+        status_items <- c(status_items, list(
+          div(icon("check-circle", class = "text-success"), " Birds submodel ready")
+        ))
+      } else {
+        status_items <- c(status_items, list(
+          div(icon("times-circle", class = "text-danger"), " Birds submodel not ready")
+        ))
+      }
+      
+      div(
+        class = "alert alert-info",
+        h5("Submodel Status:"),
+        status_items
+      )
+    }
   })
   
   # Data tab timestamp table

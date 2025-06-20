@@ -28,7 +28,7 @@ create_individual_maps <- function(configs, output) {
       
       output[[map_id]] <- renderLeaflet({
         # Ensure we have data to display
-        if(nrow(local_config$data) == 0) {
+        if(is.null(local_config$data) || nrow(local_config$data) == 0) {
           return(leaflet() %>%
                    addProviderTiles("Esri.OceanBasemap",
                                     options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%

@@ -153,7 +153,7 @@ tagList(
             ),
             
             # Container for multiple maps
-            uiOutput("multipleMapsContainer")
+            uiOutput("multipleMapsContainer_habitat")
             
           ),
           
@@ -256,6 +256,7 @@ tagList(
           p("This application uses multiple datasets that are updated periodically."),
           p(strong("Most recent data update: "), most_recent_update),
           br(),
+          # data table that shows when data has been edited 
           tableOutput("data_timestamps_table")
         )
       )

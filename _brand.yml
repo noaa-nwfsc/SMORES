@@ -108,7 +108,7 @@ color:
     bright-green: bright-seagrass
 
     ## Basic colors
-    blue: noaa-sky
+    blue: oceans-noaa-sky
     dark-navy: midnight-sky
     navy: navy-blend
     gray: whale-gray
@@ -119,13 +119,13 @@ color:
   #	main background color (close to white and must have high contrast with the foreground color)
   background: white
   # main text color (close to black and must have high contrast with the background color)
-  foreground: dark-navy
+  foreground: "#333333"
   # used for hyperlinks, active states, and primary action buttons
   primary: blue
   # used for lighter text or disabled states
   secondary: purple
   # neutral or informational actions and information
-  info: teal
+  info: oceans-noaa-sea
 
 # logo capability is being debated as active currently for Shiny.
 # logo: 
@@ -235,7 +235,7 @@ typography:
     #   source: google
 
   base:
-    color: navy
+    color:
   headings:
     color:
   link:
@@ -245,21 +245,21 @@ typography:
 defaults:
   bootstrap:
     defaults: # https://quarto.org/docs/output-formats/html-themes.html#fonts
-      navbar-bg: "#050505" #background color of the navbar
-      navbar-fg: white #color of foreground elements #did not work, added css rule instead
-      nav-link-active-color: noaa-sea #did not work, added css rule instead
-      nav-link-hover-color: light-sea-blue #did not work, added css rule instead
-      nav-tabs-link-active-color: "#050505" # nav panels, inset tabs text color when active
-      nav-tabs-link-active-bg: noaa-sea # nav panels, inset tabs background tab color when active, works
-      nav-tabs-link-bg: "#287CB8" #should have controlled inset tabs background color when not active, did not work
-      navbar-brand: "#004391" #did not work
+      navbar-bg: "#003087" #background color of the navbar; working
+      navbar-fg: white #color of foreground elements; working
+      # nav-link-active-color: noaa-sea #did not work, added css rule instead
+      # nav-link-hover-color: light-sea-blue #did not work, added css rule instead
+      # nav-tabs-link-active-color: "#050505" # nav panels, inset tabs text color when active
+      # nav-tabs-link-active-bg: noaa-sea # nav panels, inset tabs background tab color when active, works
+      # nav-tabs-link-bg: "#287CB8" #should have controlled inset tabs background color when not active, did not work
+      # navbar-brand: "#004391" #did not work
       
       #card controls
-      # card-bg: - For card background
-      # card-color: - For card text color
-      # card-border-color: - For card border
-      # card-cap-bg: - For card header background
-      # card-cap-color: - For card header text color
+      card-bg: white #- For card background
+      card-color: black #- For card text color
+      #card-border-color: - For card border
+      card-cap-bg: "#F1F2F3" # For card header background
+      card-cap-color: "#003087" #card header text color
       
       #navbar 
       # navbar-bg: Controls the background color of the navbar (currently set to "#050505")
@@ -268,7 +268,6 @@ defaults:
       # nav-link-active-color: Controls the color of active navigation links (set to "noaa-sea" but noted as not working)
       # nav-link-hover-color: Controls the color of navigation links on hover (set to "light-sea-blue" but noted as not working)
 
-# will need to make a comment on the github repo because a lot of these are seemingly not working correctly. Therefore I am thinking user error at this stage so will keep trying.  
       
       
 
