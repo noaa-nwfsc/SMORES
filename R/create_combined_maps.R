@@ -67,33 +67,79 @@ generate_combined_map <- function(valid_configs, dataset_mapping, base_grid = gr
     # Make sure geometry is set properly for leaflet
     combined_data <- st_transform(combined_data, '+proj=longlat +datum=WGS84')
     
-    # Create color palette for the geometric mean
-    pal <- colorNumeric("viridis", 
-                        domain = c(min(combined_data$Geo_mean, na.rm = TRUE), 
-                                   max(combined_data$Geo_mean, na.rm = TRUE)), 
-                        na.color = "transparent")
+    # Get the bounding box of the data to set initial view
+    # Convert named vector to individual numeric values to avoid JSON serialization issues
+    bbox <- st_bbox(combined_data)
+    min_lng <- as.numeric(bbox["xmin"])
+    min_lat <- as.numeric(bbox["ymin"])  
+    max_lng <- as.numeric(bbox["xmax"])
+    max_lat <- as.numeric(bbox["ymax"])
     
-    # Create the map
-    result$map <- leaflet() %>%
-      addProviderTiles("Esri.OceanBasemap",
-                       options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
-      addProviderTiles("Esri.OceanBasemap",
-                       options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
-      addPolygons(
-        data = combined_data, 
-        color = "#33333300", # adding 00 at the end makes this color transparent
-        weight = 1, 
-        fillColor = ~pal(Geo_mean), 
-        fillOpacity = 1,
-        popup = ~paste("Geometric Mean Score:", round(Geo_mean, 2))
-      ) %>%
-      addLegend(
-        position = "bottomright",
-        pal = pal,
-        values = combined_data$Geo_mean,
-        title = map_title,
-        opacity = 1
-      )
+    # Get the range of geometric mean values
+    geo_mean_values <- combined_data$Geo_mean[!is.na(combined_data$Geo_mean)]
+    min_val <- min(geo_mean_values, na.rm = TRUE)
+    max_val <- max(geo_mean_values, na.rm = TRUE)
+    
+    # Check if all values are the same (constant values)
+    if(min_val == max_val) {
+      # When all values are the same, create a single-color palette
+      # Use a middle color from viridis palette
+      single_color <- viridis::viridis(1, begin = 0.5, end = 0.5)
+      
+      # Create the map with constant color
+      result$map <- leaflet() %>%
+        addProviderTiles("Esri.OceanBasemap",
+                         options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
+        addProviderTiles("Esri.OceanBasemap",
+                         options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
+        addPolygons(
+          data = combined_data, 
+          color = "#33333300", # adding 00 at the end makes this color transparent
+          weight = 1, 
+          fillColor = single_color, 
+          fillOpacity = 1,
+          popup = ~paste("Geometric Mean Score:", round(Geo_mean, 2))
+        ) %>%
+        addLegend(
+          position = "bottomright",
+          colors = single_color,
+          labels = paste("Score:", round(min_val, 2)),
+          title = map_title,
+          opacity = 1
+        ) %>%
+        fitBounds(lng1 = min_lng, lat1 = min_lat, 
+                  lng2 = max_lng, lat2 = max_lat)
+    } else {
+      # Normal case with varying values - use continuous palette
+      # Create color palette for the geometric mean
+      pal <- colorNumeric("viridis", 
+                          domain = c(min_val, max_val), 
+                          na.color = "transparent")
+      
+      # Create the map
+      result$map <- leaflet() %>%
+        addProviderTiles("Esri.OceanBasemap",
+                         options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
+        addProviderTiles("Esri.OceanBasemap",
+                         options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
+        addPolygons(
+          data = combined_data, 
+          color = "#33333300", # adding 00 at the end makes this color transparent
+          weight = 1, 
+          fillColor = ~pal(Geo_mean), 
+          fillOpacity = 1,
+          popup = ~paste("Geometric Mean Score:", round(Geo_mean, 2))
+        ) %>%
+        addLegend(
+          position = "bottomright",
+          pal = pal,
+          values = combined_data$Geo_mean,
+          title = map_title,
+          opacity = 1
+        ) %>%
+        fitBounds(lng1 = min_lng, lat1 = min_lat, 
+                  lng2 = max_lng, lat2 = max_lat)
+    }
   } else {
     # No score data available
     result$map <- leaflet() %>%
