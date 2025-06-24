@@ -1,5 +1,3 @@
-# R/map_functions.R
-
 #' Create individual maps for each configuration
 #'
 #' This function creates individual Leaflet maps for each valid configuration
