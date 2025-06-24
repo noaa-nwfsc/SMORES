@@ -11,6 +11,8 @@ library(mapview)
 library(sf)
 library(yaml)
 library(markdown)
+library(rmarkdown)
+library(viridis)
 
 theme <- bslib::bs_theme()
 
@@ -22,6 +24,8 @@ source("R/create_combined_maps.R")
 source("R/data_timestamps.R")
 source("R/generate_habitat_sidebar.R")
 source("R/generate_industry_sidebar.R")
+source("R/create_maps_container.R")
+#source("R/create_rmd_export.R")
 
 # Get data timestamps information
 timestamp_info <- get_data_timestamps()
