@@ -118,7 +118,7 @@ function(input, output, session) {
     cat("Industry reactive called. Navbar:", input$navbar, "\n")
     
     # Check if we have any industry-related inputs (this means the sidebar has been rendered)
-    industry_input_names <- names(input)[grepl("^EnableIndustryMap", names(input))]
+    industry_input_names <- names(input)[grepl("^EnableIndustryLayer_", names(input))]
     has_industry_inputs <- length(industry_input_names) > 0
     
     cat("Industry debug - has_industry_inputs:", has_industry_inputs, "\n")
@@ -291,45 +291,13 @@ function(input, output, session) {
   output$multipleMapsContainer_habitat <- renderUI({
     valid_configs <- natural_resources_valid_configs()
     
-    if(length(valid_configs) == 0) {
-      return(card(
-        card_body(
-          p("No maps configured yet. Please enable and configure maps in the sidebar.")
-        )
-      ))
-    }
-    
-    # Create map cards
-    map_cards <- lapply(valid_configs, function(config) {
-      i <- config$index
-      map_id <- paste0("naturalresources_map_", i)
-      
-      card(
-        card_header(paste0("Map ", i, ": ", config$layer, " - ", config$score)),
-        card_body(
-          leafletOutput(map_id, height = 250)
-        )
-      )
-    })
-    
-    # Arrange cards in rows of 2
-    rows <- list()
-    for(i in seq(1, length(map_cards), by = 2)) {
-      row_cards <- map_cards[i:min(i+1, length(map_cards))]
-      rows[[length(rows) + 1]] <- do.call(layout_columns, row_cards)
-    }
-    
-    # Add combined map at the bottom if it has been generated
-    if(combined_maps_data$habitat_combined_map_generated) {
-      rows[[length(rows) + 1]] <- card(
-        card_header(h3("Combined Map Result (Geometric Mean)")),
-        card_body(
-          leafletOutput("combinedMap", height = 400) 
-        )
-      )
-    }
-    
-    tagList(rows)
+    create_maps_container(
+      configs = valid_configs,
+      namespace = "naturalresources",
+      combined_map_output_id = "combinedMap",
+      combined_map_generated = combined_maps_data$habitat_combined_map_generated,
+      combined_map_title = "Combined Map Result (Geometric Mean)"
+    )
   })
   
   # Combined map logic
@@ -354,7 +322,7 @@ function(input, output, session) {
     )
     
     # Get valid configurations
-    valid_configs <- get_valid_configs()
+    valid_configs <- natural_resources_valid_configs()
     
     # Generate the combined map
     result <- generate_combined_map(
@@ -376,7 +344,7 @@ function(input, output, session) {
     removeModal()
   })
   
-  # Habitat tab RMarkdown export handler
+  # Habitat/Natural Resources tab export
   output$habitatExportRmd <- downloadHandler(
     filename = function() {
       paste("Natural_Resources_Submodel_Report_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
@@ -384,10 +352,10 @@ function(input, output, session) {
     content = function(file) {
       # Show modal with spinner
       show_spinner_modal("Generating Report", 
-                         "Please wait while the report is being generated...")
+                         "Please wait while the Natural Resources report is being generated...")
       
       # Get valid configurations
-      valid_configs <- get_valid_configs()
+      valid_configs <- natural_resources_valid_configs()
       
       # Make sure each valid_config has valid spatial data
       for(i in seq_along(valid_configs)) {
@@ -397,123 +365,25 @@ function(input, output, session) {
         }
       }
       
-      # Calculate combined data if needed
+      # Get combined data if available
       combined_data <- NULL
-      if(length(valid_configs) > 0) {
-        # Use grid_test as the base spatial grid for combining data
-        combined_data <- grid_test
-        
-        # For each valid configuration, extract the data and join with the base grid
-        for(config in valid_configs) {
-          layer_name <- config$layer
-          score_value <- config$score
-          
-          # Determine which dataset and score columns to use
-          if(layer_name == "Canyon") {
-            dataset <- canyon
-            score_column <- "Score.Canyon"
-          } else if(layer_name == "Deep Sea Coral Robust High Suitability") {
-            dataset <- DSC_RH
-            score_column <- "Score.DSC_RH"
-          } else if(layer_name == "Seeps") {
-            dataset <- seeps
-            score_column <- "Score.Seeps"
-          } else if(layer_name == "Shelf Break") {
-            dataset <- shlfbrk
-            score_column <- "Score.ShlfBrk"
-          } else if(layer_name == "EFHCA") {
-            dataset <- efhca
-            score_column <- "Score.EFHCA"
-          } else if(layer_name == "EFHCA 700 fathom") {
-            dataset <- efhca_700
-            score_column <- "Score.EFHCA.700"
-          } else if(layer_name == "HAPC AOI") {
-            dataset <- HAPCaoi
-            score_column <- "Score.HAPC.AOI"
-          } else if(layer_name == "HAPC Rocky Reef") {
-            dataset <- HAPCreef
-            score_column <- "Score.HAPC.Reef"
-          } else {
-            next  # Skip if layer name doesn't match
-          }
-          
-          # Filter for the selected score value and prepare for joining
-          temp_data <- dataset %>%
-            filter(.data[[score_column]] == score_value) %>%
-            st_drop_geometry() %>%
-            select(CellID_2km, !!score_column)
-          
-          # Convert the score column to numeric (explicit conversion)
-          temp_data[[score_column]] <- as.numeric(temp_data[[score_column]])
-          
-          # Join with the combined data
-          combined_data <- left_join(combined_data, temp_data, by = "CellID_2km")
-        }
-        
-        # Find all score columns in the combined data
-        score_cols <- names(combined_data)[grep("^Score\\.", names(combined_data))]
-        
-        if(length(score_cols) > 0) {
-          # geometric mean calculation that handles all edge cases
-          combined_data$Geo_mean <- sapply(1:nrow(combined_data), function(i) {
-            # Get the row of data
-            row_data <- combined_data[i, score_cols, drop = TRUE]
-            
-            # Convert to numeric and remove NAs
-            values <- as.numeric(unlist(row_data))
-            values <- values[!is.na(values)]
-            
-            # Check if we have any values
-            if(length(values) == 0) {
-              return(NA)
-            }
-            
-            # Check for zeros or negative values
-            if(any(values <= 0)) {
-              return(0)
-            }
-            
-            # Calculate geometric mean
-            exp(mean(log(values)))
-          })
-          
-          # Make sure geometry is set properly for leaflet
+      if(combined_maps_data$habitat_combined_map_generated) {
+        combined_data <- combined_maps_data$habitat
+        # Ensure combined data is also in WGS84
+        if(!is.null(combined_data) && inherits(combined_data, "sf")) {
           combined_data <- st_transform(combined_data, '+proj=longlat +datum=WGS84')
         }
       }
       
-      # Create a temporary directory for debugging output
-      debug_dir <- tempdir()
-      write(paste("Number of valid configs:", length(valid_configs)), 
-            file = file.path(debug_dir, "debug_info.txt"))
-      
-      # If we have valid configs, write some details to debug
-      if(length(valid_configs) > 0) {
-        for(i in seq_along(valid_configs)) {
-          config <- valid_configs[[i]]
-          write(paste("Config", i, "- Layer:", config$layer, "Score:", config$score, 
-                      "Rows:", nrow(config$data), 
-                      "Is SF:", inherits(config$data, "sf")),
-                file = file.path(debug_dir, "debug_info.txt"), 
-                append = TRUE)
-        }
-      }
-      
-      # Output combined data info as well
-      if(!is.null(combined_data)) {
-        write(paste("Combined data rows:", nrow(combined_data), 
-                    "Has Geo_mean:", "Geo_mean" %in% names(combined_data)),
-              file = file.path(debug_dir, "debug_info.txt"), 
-              append = TRUE)
-      }
-      
-      # Render the RMarkdown report with both valid_configs and combined_data
+      # Render the RMarkdown report
       rmarkdown::render(
         input = "Natural_Resources_Submodel.Rmd", 
         output_file = file,
         params = list(
           map_configs = valid_configs,
-          combined_data = combined_data
+          combined_data = combined_data,
+          tab_name = "Natural Resources",
+          combined_map_title = "Combined Habitat Geometric Mean"
         ),
         envir = new.env(parent = globalenv())
       )
@@ -549,7 +419,7 @@ function(input, output, session) {
     )
     
     # Get valid configurations
-    valid_configs <- get_valid_configs()
+    valid_configs <- industry_valid_configs()
     
     # Generate the combined map
     result <- generate_combined_map(
@@ -575,47 +445,64 @@ function(input, output, session) {
   output$industryMapContainer <- renderUI({
     valid_configs <- industry_valid_configs()
     
-    if(length(valid_configs) == 0) {
-      return(card(
-        card_body(
-          p("No maps configured yet. Please enable and configure maps in the sidebar.")
-        )
-      ))
-    }
-    
-    # Create map cards
-    map_cards <- lapply(valid_configs, function(config) {
-      i <- config$index
-      map_id <- paste0("industry_map_", i)
-      
-      card(
-        card_header(paste0("Map ", i, ": ", config$layer, " - ", config$score)),
-        card_body(
-          leafletOutput(map_id, height = 250)
-        )
-      )
-    })
-    
-    # Arrange cards in rows of 2
-    rows <- list()
-    for(i in seq(1, length(map_cards), by = 2)) {
-      row_cards <- map_cards[i:min(i+1, length(map_cards))]
-      rows[[length(rows) + 1]] <- do.call(layout_columns, row_cards)
-    }
-    
-    # Add combined map at the bottom if it has been generated
-  if(combined_maps_data$industry_combined_map_generated) {
-    rows[[length(rows) + 1]] <- card(
-      card_header(h4("Combined Industry & Operations Map Result (Geometric Mean")),
-      card_body(
-        leafletOutput("industryMap", height = 400)
-      )
+    create_maps_container(
+      configs = valid_configs, 
+      namespace = "industry",
+      combined_map_output_id = "industryMap",
+      combined_map_generated = combined_maps_data$industry_combined_map_generated,
+      combined_map_title = "Combined Industry & Operations Map Result (Geometric Mean)"
     )
-  }
-    
-    tagList(rows)
   })
   
+  # Industry & Operations tab export
+  output$industryExportRmd <- downloadHandler(
+    filename = function() {
+      paste("Industry_Operations_Submodel_Report_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+    },
+    content = function(file) {
+      # Show modal with spinner
+      show_spinner_modal("Generating Report", 
+                         "Please wait while the Industry & Operations report is being generated...")
+      
+      # Get valid configurations
+      valid_configs <- industry_valid_configs()
+      
+      # Make sure each valid_config has valid spatial data
+      for(i in seq_along(valid_configs)) {
+        # Ensure data is transformed to WGS84 for leaflet
+        if(!is.null(valid_configs[[i]]$data) && inherits(valid_configs[[i]]$data, "sf")) {
+          valid_configs[[i]]$data <- st_transform(valid_configs[[i]]$data, '+proj=longlat +datum=WGS84')
+        }
+      }
+      
+      # Get combined data if available
+      combined_data <- NULL
+      if(combined_maps_data$industry_combined_map_generated) {
+        combined_data <- combined_maps_data$industry
+        # Ensure combined data is also in WGS84
+        if(!is.null(combined_data) && inherits(combined_data, "sf")) {
+          combined_data <- st_transform(combined_data, '+proj=longlat +datum=WGS84')
+        }
+      }
+      
+      # Render the RMarkdown report
+      rmarkdown::render(
+        input = "Industry_Operations_Submodel.Rmd", 
+        output_file = file,
+        params = list(
+          map_configs = valid_configs,
+          combined_data = combined_data,
+          tab_name = "Industry & Operations",
+          combined_map_title = "Combined Industry & Operations Geometric Mean"
+        ),
+        envir = new.env(parent = globalenv())
+      )
+      
+      # Remove the modal when done
+      removeModal()
+    }
+  )
+   
   # Add a message to inform users when submodels aren't generated
   output$combinedModelStatus <- renderUI({
     # Check which submodels have been generated
@@ -627,7 +514,7 @@ function(input, output, session) {
       div(
         class = "alert alert-warning",
         icon("exclamation-triangle"), 
-        " No submodels have been generated yet. Please go to each tab (Habitat, Species, Birds) and generate the combined maps first."
+        "No submodels have been generated yet. Please go to each tab (Habitat, Species, Birds) and generate the combined maps first."
       )
     } else {
       status_items <- list()
