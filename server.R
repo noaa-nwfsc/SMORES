@@ -7,7 +7,8 @@ function(input, output, session) {
     birds = NULL,
     industry = NULL, 
     habitat_combined_map_generated = FALSE,
-    industry_combined_map_generated = FALSE
+    species_combined_map_generated = FALSE,
+    surveys_combined_map_generated = FALSE
   )
   
   # filter dataframes by score 
@@ -47,7 +48,7 @@ function(input, output, session) {
                      "habitat" = "Habitat",
                      "species" = "Species",
                      "birds" = "Bird",
-                     "industry_operations" = "Industry",
+                     "surveys" = "Scientific Surveys",
                      "")
     
     if(prefix == "") return(FALSE) # Invalid tab
@@ -62,7 +63,7 @@ function(input, output, session) {
                          "habitat" = habitat_layer,
                          "species" = species_layer,
                          "birds" = bird_layer,
-                         "industry_operations" = industry_layer,
+                         "surveys" = surveys_layer,
                          NULL)
     
     if(is.null(layer_data)) return(FALSE) # Invalid layer data
@@ -76,13 +77,11 @@ function(input, output, session) {
   
   # Reactive expression for Natural Resources tab valid configs
   natural_resources_valid_configs <- reactive({
-    # Debug output
-    cat("Natural Resources reactive called. Navbar:", input$navbar, "dataTabs:", input$dataTabs, "\n")
-    
+  
     # For Natural Resources, we check if we have dataTabs (which means we're on the Natural Resources section)
     # OR if navbar is explicitly set to Natural Resources
-    is_natural_resources <- (!is.null(input$dataTabs) && 
-                               input$dataTabs %in% c("habitat", "species", "birds", "combined_model")) ||
+    is_natural_resources <- (!is.null(input$dataTabs_natural_resources) && 
+                               input$dataTabs_natural_resources %in% c("habitat", "species", "birds", "combined_model_natural_resources")) ||
       (!is.null(input$navbar) && input$navbar == "Natural Resources Submodel")
     
     if(!is_natural_resources) {
@@ -90,49 +89,46 @@ function(input, output, session) {
     }
     
     # Default to habitat if dataTabs is not set
-    current_tab <- input$dataTabs %||% "habitat"
-    
-    cat("Processing Natural Resources - dataTabs:", current_tab, "\n")
+    current_tab_natural_resources <- input$dataTabs_natural_resources %||% "habitat"
     
     # Set the layer data based on the current data tab
-    layer_data <- switch(current_tab,
+    layer_data <- switch(current_tab_natural_resources,
                          "habitat" = habitat_layer,
                          "species" = species_layer,
                          "birds" = bird_layer,
                          NULL)
     
-    if(is.null(layer_data)) {
-      cat("Layer data is NULL for tab:", current_tab, "\n")
-      return(list())
-    }
-    
     # Use your existing function to get valid configurations
-    configs <- get_valid_configs_for_tab(input, current_tab, layer_data, score_colors, filter_by_score)
-    cat("Natural Resources configs count:", length(configs), "\n")
-    
+    configs <- get_valid_configs_for_tab(input, current_tab_natural_resources, layer_data, score_colors, filter_by_score)
+
     return(configs)
   })
   
-  # Reactive expression for Industry tab valid configs
-  industry_valid_configs <- reactive({
-    cat("Industry reactive called. Navbar:", input$navbar, "\n")
+  # Reactive expression for Industry & Operations tab valid configs
+  industry_operations_valid_configs <- reactive({
+   
+    # For Industry & Operations, we check if we have dataTabs (which means we're on the Natural Resources section)
+    # OR if navbar is explicitly set to Industry & Operations
+    is_industry_operations <- (!is.null(input$dataTabs_industry_operations) && 
+                               input$dataTabs_industry_operations %in% c("surveys", "misc", "combined_model_industry_operations")) ||
+      (!is.null(input$navbar) && input$navbar == "Industry & Operations Submodel")
     
-    # Check if we have any industry-related inputs (this means the sidebar has been rendered)
-    industry_input_names <- names(input)[grepl("^EnableIndustryLayer_", names(input))]
-    has_industry_inputs <- length(industry_input_names) > 0
-    
-    cat("Industry debug - has_industry_inputs:", has_industry_inputs, "\n")
-    
-    # Only process if we have industry inputs (meaning we're on the industry tab)
-    if(!has_industry_inputs) {
+    if(!is_industry_operations) {
       return(list())
     }
     
-    cat("Processing Industry tab\n")
+    # Default to surveys if dataTabs is not set
+    current_tab_industry_operations <- input$dataTabs_industry_operations %||% "surveys"
     
-    # Use your existing function with the industry tab specifically
-    configs <- get_valid_configs_for_tab(input, "industry_operations", industry_layer, score_colors, filter_by_score)
-    cat("Industry configs count:", length(configs), "\n")
+    # Set the layer data based on the current data tab
+    layer_data <- switch(current_tab_industry_operations,
+                         "surveys" = surveys_layer,
+                        # "misc" = misc_layer,
+                         NULL)
+    
+    # Use your existing function to get valid configurations
+    configs <- get_valid_configs_for_tab(input, current_tab_industry_operations, layer_data, score_colors, filter_by_score)
+   
     return(configs)
   })
   
@@ -142,7 +138,6 @@ function(input, output, session) {
     valid_configs <- natural_resources_valid_configs()
     
     if(length(valid_configs) > 0) {
-      cat("Creating", length(valid_configs), "Natural Resources maps\n")
       create_individual_maps(valid_configs, output, namespace = "naturalresources")
     }
   })
@@ -150,68 +145,45 @@ function(input, output, session) {
   # Industry maps
   observe({
     # Get valid configs without navbar condition check
-    valid_configs <- industry_valid_configs()
+    valid_configs <- industry_operations_valid_configs()
     
     if(length(valid_configs) > 0) {
-      cat("Creating", length(valid_configs), "Industry maps\n")
       create_individual_maps(valid_configs, output, namespace = "industry")
     }
   })
   
   # Dynamic sidebar content
-  output$dynamicSidebar <- renderUI({
-    current_tab <- input$dataTabs %||% "habitat"
+  output$dynamicSidebar_natural_resources <- renderUI({
+    current_tab_natural_resources <- input$dataTabs_natural_resources %||% "habitat"
     
-    if(current_tab == "habitat") {
+    if (current_tab_natural_resources == "habitat") {
       # Get the layer names for habitat
       habitat_layers <- names(habitat_layer)
+      natural_resources_config <- get_natural_resources_config()
       
       #use function to make habitat sidebar
-      generate_habitat_sidebar(habitat_layers, score_values)
-      
-    } else if (current_tab == "species") {
-      map_inputs <- lapply(1:6, function(i) {
-        tagList(
-          hr(),
-          h5(paste("Map", i, "Configuration")),
-          checkboxInput(paste0("EnableSpeciesMap", i), paste("Enable Map", i), value = FALSE),
-          conditionalPanel(
-            condition = paste0("input.EnableSpeciesMap", i, " == true"),
-            pickerInput(
-              paste0("SpeciesLayerPicker", i),
-              paste("Select Layer for Map", i),
-              choices = c("None", names(species_layer)),
-              selected = "None"
-            ),
-            pickerInput(
-              paste0("SpeciesScorePicker", i),
-              paste("Select score for Map", i),
-              choices = c("None", score_values),
-              selected = "None"
-            )
-          )
-        )
-      })
-      
-      # generate combined map
-      tagList(
-        h4("Species Map Settings"),
-        map_inputs,
-        hr(),
-        h4("Combined Species Map Settings"),
-        # helpText("The combined map will calculate the geometric mean"),
-        actionButton("generateCombinedSpeciesMap", "Generate Combined Species Map", 
-                     class = "btn-primary btn-block"),
-        # Export button
-        hr(), 
-        h4("Export"),
-        downloadButton("speciesExportRmd", "Export to R Markdown",
-                       icon = icon("file-export"),
-                       class = "btn-info btn-block")
+      generate_habitat_sidebar(
+        habitat_layers, 
+        score_values, 
+        current_tab = current_tab_natural_resources,
+        submodel_config = natural_resources_config
       )
       
+    } else if (current_tab_natural_resources == "species") {
+      # Get the layer names for species
+      species_layers <- names(species_layer)
+      natural_resources_config <- get_natural_resources_config()
+      
+      #use function to make species sidebar
+      generate_species_sidebar(
+        species_layers, 
+        score_values, 
+        current_tab = current_tab_natural_resources,
+        submodel_config = natural_resources_config
+      )
+  
       # Bird tab sidebar content
-    } else if (current_tab == "birds") {
+    } else if (current_tab_natural_resources == "birds") {
       map_inputs <- lapply(1:6, function(i) {
         tagList(
           hr(),
@@ -251,39 +223,43 @@ function(input, output, session) {
                        icon = icon("file-export"),
                        class = "btn-info btn-block")
       )
-      
+   
       # Combined Model Tab
-    } else if(current_tab == "combined_model") {
-      # Combined model tab sidebar content
-      tagList(
-        h4("Combined Model Settings"),
-        hr(),
-        h5("Submodel Status"),
-        htmlOutput("combinedModelStatus"),
-        hr(),
-        h5("Model Weights"),
-        
-        # Sliders for model weights
-        sliderInput("HabitatWeight", "Habitat Weight", 
-                    min = 0, max = 1, value = 0.33, step = 0.01),
-        sliderInput("SpeciesWeight", "Species Weight", 
-                    min = 0, max = 1, value = 0.33, step = 0.01),
-        sliderInput("BirdsWeight", "Birds Weight", 
-                    min = 0, max = 1, value = 0.34, step = 0.01),
-        
-        # Ensure weights sum to 1
-        htmlOutput("weightValidation"),
-        hr(),
-        # Button to generate the combined model
-        actionButton("generateCombinedModel", "Generate Combined Model", 
-                     class = "btn-primary btn-block"),
-        # Export Button
-        hr(), 
-        h4("Export"),
-        downloadButton("combinedModelExportRmd", "Export to R Markdown",
-                       icon = icon("file-export"),
-                       class = "btn-info btn-block")
+    } else if(current_tab_natural_resources == "combined_model_natural_resources") {
+      natural_resources_config <- get_natural_resources_config()
+      generate_combined_model_sidebar(natural_resources_config)
+    }
+  })
+  
+  # Dynamic sidebar content for industry and operations
+  output$dynamicSidebar_industry_operations <- renderUI({
+    current_tab_industry_operations <- input$dataTabs_industry_operations %||% "surveys"
+    
+    if (current_tab_natural_resources == "surveys") {
+      # Get the layer names for habitat
+      surveys_layers <- names(surveys_layer)
+      industry_operations_config <- get_industry_operations_config()
+      
+      #use function to make habitat sidebar
+      generate_surveys_sidebar(
+        surveys_layers, 
+        score_values, 
+        current_tab = current_tab_industry_operations,
+        submodel_config = industry_operations_config
       )
+      
+    } else if (current_tab_industry_operations == "misc") {
+      # Get the layer names for species
+      misc_layers <- names(misc_layer)
+      
+      #use function to make species sidebar
+      generate_misc_sidebar(misc_layers, score_values)
+      
+
+      # Combined Model Tab
+    } else if(current_tab_industry_operations == "combined_model_industry_operations") {
+      industry_operations_config <- get_industry_operations_config()
+      generate_combined_model_sidebar(industry_operations_config)
     }
   })
   
@@ -294,14 +270,14 @@ function(input, output, session) {
     create_maps_container(
       configs = valid_configs,
       namespace = "naturalresources",
-      combined_map_output_id = "combinedMap",
+      combined_map_output_id = "combinedHabitatMap",
       combined_map_generated = combined_maps_data$habitat_combined_map_generated,
       combined_map_title = "Combined Map Result (Geometric Mean)"
     )
   })
   
   # Combined map logic
-  observeEvent(input$generateCombinedMap, {
+  observeEvent(input$generateCombinedHabitatMap, {
     # Show modal with spinner that covers the whole tab
     show_spinner_modal("Generating Combined Map", 
                        "Please wait while the combined map is being generated...")
@@ -332,7 +308,7 @@ function(input, output, session) {
     )
     
     # Use the result
-    output$combinedMap <- renderLeaflet(result$map)
+    output$combinedHabitatMap <- renderLeaflet(result$map)
     
     # store the combined habitat data for use in the combined model
     combined_maps_data$habitat <- result$combined_data
@@ -353,9 +329,13 @@ function(input, output, session) {
       # Show modal with spinner
       show_spinner_modal("Generating Report", 
                          "Please wait while the Natural Resources report is being generated...")
+
       
       # Get valid configurations
       valid_configs <- natural_resources_valid_configs()
+      
+      # Get filtered timestamp information for the selected layers
+      timestamp_info <- get_filtered_timestamp_data(valid_configs, "habitat")
       
       # Make sure each valid_config has valid spatial data
       for(i in seq_along(valid_configs)) {
@@ -383,7 +363,8 @@ function(input, output, session) {
           map_configs = valid_configs,
           combined_data = combined_data,
           tab_name = "Natural Resources",
-          combined_map_title = "Combined Habitat Geometric Mean"
+          combined_map_title = "Combined Habitat Geometric Mean",
+          data_timestamps = timestamp_info
         ),
         envir = new.env(parent = globalenv())
       )
@@ -393,18 +374,60 @@ function(input, output, session) {
     }
   )
   
-  # Dynamic sidebar content for Industry & Operations tab
-  output$industryOperationsSidebar <- renderUI({
-    # Get the layer names for industry
-    industry_layers <- names(industry_layer)
+  # Multiple maps container for species
+  output$multipleMapsContainer_species <- renderUI({
+    valid_configs <- natural_resources_valid_configs()
     
-    #use the generate industry sidebar function 
-    generate_industry_sidebar(industry_layers, score_values)
-    
+    create_maps_container(
+      configs = valid_configs,
+      namespace = "naturalresources",
+      combined_map_output_id = "combinedSpeciesMap",
+      combined_map_generated = combined_maps_data$species_combined_map_generated,
+      combined_map_title = "Combined Map Result (Geometric Mean)"
+    )
   })
   
-  # Industry combined map logic
-  observeEvent(input$generateIndustryMap, {
+  # Combined map logic
+  observeEvent(input$generateCombinedSpeciesMap, {
+    # Show modal with spinner that covers the whole tab
+    show_spinner_modal("Generating Combined Map", 
+                       "Please wait while the combined map is being generated...")
+    
+    # Add a small delay to ensure the modal is visible before proceeding
+    Sys.sleep(0.5)
+    
+    # Define dataset mapping for species tab
+    species_dataset_mapping <- list(
+      "ESA Critical Habitat for Southern Resident Killer Whales" = list(data = killer_whale, score_column = "Score.killer_whale"),
+      "ESA Critical Habitat for Leatherback Sea Turtles"  = list(data = leatherback_turtle, score_column = "Score.leatherback_turtle"),
+      "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS" = list(data = humpback_whale, score_column = "Score.humpback_whale")
+    )
+    
+    # Get valid configurations
+    valid_configs <- natural_resources_valid_configs()
+    
+    # Generate the combined map
+    result <- generate_combined_map(
+      valid_configs = valid_configs,
+      dataset_mapping = species_dataset_mapping,
+      map_title = "Combined Species Score"
+    )
+    
+    # Use the result
+    output$combinedSpeciesMap <- renderLeaflet(result$map)
+    
+    # store the combined habitat data for use in the combined model
+    combined_maps_data$species <- result$combined_data
+    
+    # set flag to indicate combined map has been generated
+    combined_maps_data$species_combined_map_generated <- TRUE
+    
+    # Remove modal spinner
+    removeModal()
+  })
+  
+  # Surveys combined map logic
+  observeEvent(input$generateSurveysMap, {
     # Show modal with spinner
     show_spinner_modal("Generating Combined Map", 
                        "Please wait while the combined map is being generated...")
@@ -413,151 +436,175 @@ function(input, output, session) {
     Sys.sleep(0.5)
     
     # Define dataset mapping for industry tab
-    industry_dataset_mapping <- list(
+    surveys_dataset_mapping <- list(
       "Fixed Surveys" = list(data = surveys_fixed, score_column = "Score.Surveys_fixed"),
       "Periodic Surveys" = list(data = surveys_periodic, score_column = "Score.Surveys_periodic")
     )
     
     # Get valid configurations
-    valid_configs <- industry_valid_configs()
+    valid_configs <- industry_operations_valid_configs()
     
     # Generate the combined map
     result <- generate_combined_map(
       valid_configs = valid_configs,
-      dataset_mapping = industry_dataset_mapping,
-      map_title = "Combined Industry Score"
+      dataset_mapping = surveys_dataset_mapping,
+      map_title = "Combined Scientific Surveys Score"
     )
     
     # Use the result
-    output$industryMap <- renderLeaflet(result$map)
+    output$surveysMap <- renderLeaflet(result$map)
     
     # store the combined industry data for use in the combined model
-    combined_maps_data$industry <- result$combined_data
+    combined_maps_data$surveys <- result$combined_data
     
     # set flag to indicate combined map has been clicked
-    combined_maps_data$industry_combined_map_generated <- TRUE
+    combined_maps_data$surveys_combined_map_generated <- TRUE
     
     # Remove modal spinner
     removeModal()
   })
+   
+  # Natural Resources submodel status
+  output$combinedModelStatus_natural_resources <- renderUI({
+    check_submodel_status("natural_resources", combined_maps_data)
+  })
   
-  # Industry map container
-  output$industryMapContainer <- renderUI({
-    valid_configs <- industry_valid_configs()
+  # Industry & Operations submodel status  
+  output$combinedModelStatus_industry_operations <- renderUI({
+    check_submodel_status("industry_operations", combined_maps_data)
+  })
+  
+  # Dynamic sidebar content for overall model tab
+  output$dynamicSidebar_overall_model <- renderUI({
+    generate_overall_model_sidebar()
+  })
+  
+  # Weight validation for overall model
+  output$overallWeightValidation <- renderUI({
+    # Get the current weight values
+    natural_resources_weight <- input$weightNaturalResources %||% 0
+    fisheries_weight <- input$weightFisheries %||% 0
+    industry_weight <- input$weightIndustryOperations %||% 0
     
-    create_maps_container(
-      configs = valid_configs, 
-      namespace = "industry",
-      combined_map_output_id = "industryMap",
-      combined_map_generated = combined_maps_data$industry_combined_map_generated,
-      combined_map_title = "Combined Industry & Operations Map Result (Geometric Mean)"
+    # Get which submodels are enabled
+    nr_enabled <- input$enableNaturalResources %||% FALSE
+    fisheries_enabled <- input$enableFisheries %||% FALSE
+    industry_enabled <- input$enableIndustryOperations %||% FALSE
+    
+    # Calculate total weight for enabled submodels only
+    enabled_weights <- c()
+    if(nr_enabled) enabled_weights <- c(enabled_weights, natural_resources_weight)
+    if(fisheries_enabled) enabled_weights <- c(enabled_weights, fisheries_weight)
+    if(industry_enabled) enabled_weights <- c(enabled_weights, industry_weight)
+    
+    total_weight <- sum(enabled_weights)
+    num_enabled <- length(enabled_weights)
+    
+    # Validation messages
+    if(num_enabled == 0) {
+      div(class = "alert alert-warning", 
+          "No submodels selected. Please enable at least one submodel.")
+    } else if(total_weight == 0) {
+      div(class = "alert alert-warning", 
+          "Total weight is 0. Please set weights greater than 0.")
+    } else if(abs(total_weight - 1) > 0.01) {
+      div(class = "alert alert-info", 
+          paste("Total weight:", round(total_weight, 3), "- Weights will be normalized to sum to 1.0"))
+    } else {
+      div(class = "alert alert-success", 
+          paste("✓ Total weight:", round(total_weight, 3), "- Ready to generate combined model"))
+    }
+  })
+  
+  # Check if submodels have generated combined maps
+  submodel_status <- reactive({
+    list(
+      natural_resources = list(
+        available = combined_maps_data$habitat_combined_map_generated || 
+          combined_maps_data$species_combined_map_generated,
+        habitat_ready = combined_maps_data$habitat_combined_map_generated,
+        species_ready = combined_maps_data$species_combined_map_generated,
+        birds_ready = FALSE  # Add this when birds is implemented
+      ),
+      fisheries = list(
+        available = FALSE,  # Update this when fisheries is implemented
+        ready_components = c()
+      ),
+      industry_operations = list(
+        available = combined_maps_data$surveys_combined_map_generated,
+        surveys_ready = combined_maps_data$surveys_combined_map_generated,
+        misc_ready = FALSE  # Update this when misc is implemented
+      )
     )
   })
   
-  # Industry & Operations tab export
-  output$industryExportRmd <- downloadHandler(
-    filename = function() {
-      paste("Industry_Operations_Submodel_Report_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
-    },
-    content = function(file) {
-      # Show modal with spinner
-      show_spinner_modal("Generating Report", 
-                         "Please wait while the Industry & Operations report is being generated...")
-      
-      # Get valid configurations
-      valid_configs <- industry_valid_configs()
-      
-      # Make sure each valid_config has valid spatial data
-      for(i in seq_along(valid_configs)) {
-        # Ensure data is transformed to WGS84 for leaflet
-        if(!is.null(valid_configs[[i]]$data) && inherits(valid_configs[[i]]$data, "sf")) {
-          valid_configs[[i]]$data <- st_transform(valid_configs[[i]]$data, '+proj=longlat +datum=WGS84')
-        }
-      }
-      
-      # Get combined data if available
-      combined_data <- NULL
-      if(combined_maps_data$industry_combined_map_generated) {
-        combined_data <- combined_maps_data$industry
-        # Ensure combined data is also in WGS84
-        if(!is.null(combined_data) && inherits(combined_data, "sf")) {
-          combined_data <- st_transform(combined_data, '+proj=longlat +datum=WGS84')
-        }
-      }
-      
-      # Render the RMarkdown report
-      rmarkdown::render(
-        input = "Industry_Operations_Submodel.Rmd", 
-        output_file = file,
-        params = list(
-          map_configs = valid_configs,
-          combined_data = combined_data,
-          tab_name = "Industry & Operations",
-          combined_map_title = "Combined Industry & Operations Geometric Mean"
-        ),
-        envir = new.env(parent = globalenv())
-      )
-      
-      # Remove the modal when done
-      removeModal()
-    }
-  )
-   
-  # Add a message to inform users when submodels aren't generated
-  output$combinedModelStatus <- renderUI({
-    # Check which submodels have been generated
-    habitat_ready <- !is.null(combined_maps_data$habitat)
-    species_ready <- !is.null(combined_maps_data$species)
-    birds_ready <- !is.null(combined_maps_data$birds)
+  # Update checkbox availability based on submodel status
+  observe({
+    status <- submodel_status()
     
-    if(!habitat_ready && !species_ready && !birds_ready) {
-      div(
-        class = "alert alert-warning",
-        icon("exclamation-triangle"), 
-        "No submodels have been generated yet. Please go to each tab (Habitat, Species, Birds) and generate the combined maps first."
-      )
+    # Enable/disable checkboxes based on submodel availability
+    if(status$natural_resources$available) {
+      updateCheckboxInput(session, "enableNaturalResources", value = TRUE)
     } else {
-      status_items <- list()
-      
-      # Add status for each submodel
-      if(habitat_ready) {
-        status_items <- c(status_items, list(
-          div(icon("check-circle", class = "text-success"), " Habitat submodel ready")
-        ))
-      } else {
-        status_items <- c(status_items, list(
-          div(icon("times-circle", class = "text-danger"), " Habitat submodel not ready")
-        ))
-      }
-      
-      if(species_ready) {
-        status_items <- c(status_items, list(
-          div(icon("check-circle", class = "text-success"), " Species submodel ready")
-        ))
-      } else {
-        status_items <- c(status_items, list(
-          div(icon("times-circle", class = "text-danger"), " Species submodel not ready")
-        ))
-      }
-      
-      if(birds_ready) {
-        status_items <- c(status_items, list(
-          div(icon("check-circle", class = "text-success"), " Birds submodel ready")
-        ))
-      } else {
-        status_items <- c(status_items, list(
-          div(icon("times-circle", class = "text-danger"), " Birds submodel not ready")
-        ))
-      }
-      
-      div(
-        class = "alert alert-info",
-        h5("Submodel Status:"),
-        status_items
-      )
+      updateCheckboxInput(session, "enableNaturalResources", value = FALSE)
+    }
+    
+    if(status$fisheries$available) {
+      updateCheckboxInput(session, "enableFisheries", value = FALSE)  # Default off
+    } else {
+      updateCheckboxInput(session, "enableFisheries", value = FALSE)
+    }
+    
+    if(status$industry_operations$available) {
+      updateCheckboxInput(session, "enableIndustryOperations", value = TRUE)
+    } else {
+      updateCheckboxInput(session, "enableIndustryOperations", value = FALSE)
     }
   })
   
+  # Display detailed status for each submodel
+  output$overallModelSubmodelStatus <- renderUI({
+    status <- submodel_status()
+    
+    tagList(
+      # Natural Resources Status
+      div(class = if(status$natural_resources$available) "alert alert-success" else "alert alert-warning",
+          h6("Natural Resources Submodel"),
+          if(status$natural_resources$available) {
+            tagList(
+              "✓ Available",
+              if(status$natural_resources$habitat_ready) div("• Habitat combined map ready"),
+              if(status$natural_resources$species_ready) div("• Species combined map ready")
+            )
+          } else {
+            "⚠ Not ready - Generate combined maps in Natural Resources tabs first"
+          }
+      ),
+      
+      # Fisheries Status  
+      div(class = if(status$fisheries$available) "alert alert-success" else "alert alert-warning",
+          h6("Fisheries Submodel"),
+          if(status$fisheries$available) {
+            "✓ Available"
+          } else {
+            "⚠ Not implemented yet"
+          }
+      ),
+      
+      # Industry & Operations Status
+      div(class = if(status$industry_operations$available) "alert alert-success" else "alert alert-warning",
+          h6("Industry & Operations Submodel"),
+          if(status$industry_operations$available) {
+            tagList(
+              "✓ Available",
+              if(status$industry_operations$surveys_ready) div("• Scientific Surveys combined map ready")
+            )
+          } else {
+            "⚠ Not ready - Generate combined maps in Industry & Operations tabs first"
+          }
+      )
+    )
+  })
   # Data tab timestamp table
   output$data_timestamps_table <- renderTable({
     data_timestamps %>%

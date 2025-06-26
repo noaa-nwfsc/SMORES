@@ -133,11 +133,11 @@ tagList(
         # Sidebar for picker inputs that change based on tab selection
         sidebar = sidebar(
           # Dynamic picker inputs
-          uiOutput("dynamicSidebar") # Settings for dynamic sidebar live in server.R
+          uiOutput("dynamicSidebar_natural_resources") # Settings for dynamic sidebar live in server.R
         ),
         # Main area with the tab navigation
         navset_tab(
-          id = "dataTabs",
+          id = "dataTabs_natural_resources",
           # Inset Tab 1
           nav_panel(
             title = "Habitat",
@@ -162,14 +162,18 @@ tagList(
             title = "Species",
             icon = icon("otter"),
             value = "species",
-            layout_columns(
-              card(
-                card_header("Species Submodel"),
-                card_body(
-                  includeMarkdown("markdown/species.md")
-                )
+            
+            # Info about map settings
+            card(
+              card_header("Map Configuration"),
+              card_body(
+                includeMarkdown("markdown/species_map_settings.md")
               )
-            )
+            ),
+            
+            # Container for multiple maps
+            uiOutput("multipleMapsContainer_species")
+            
           ),
           # Inset Tab 3
           nav_panel(
@@ -189,7 +193,7 @@ tagList(
           nav_panel(
             title = "Combined Submodel",
             icon = icon("object-group"),
-            value = "combined_model",
+            value = "combined_model_natural_resources",
             layout_columns(
               card(
                 card_header("Combined Submodel"),
@@ -220,19 +224,100 @@ tagList(
       
       # Layout with sidebar for tabs
       layout_sidebar(
-        # Sidebar for picker inputs
+        # Sidebar for picker inputs that change based on tab selection
         sidebar = sidebar(
           # Dynamic picker inputs
-          uiOutput("industryOperationsSidebar")
+          uiOutput("dynamicSidebar_industry_operations") # Settings for dynamic sidebar live in server.R
         ),
-        card(
-          card_header("Industry & Operations Submodel"),
-          card_body(
-            includeMarkdown("markdown/industry_operations_submodel.md")
+        # Main area with the tab navigation
+        navset_tab(
+          id = "dataTabs_industry_operations",
+          # Inset Tab 1
+          nav_panel(
+            title = "Scientific Surveys",
+            icon = icon("earth-oceania"),
+            value = "surveys",
+            
+            # Info about map settings
+            card(
+              card_header("Map Configuration"),
+              card_body(
+                includeMarkdown("markdown/surveys_map_settings.md")
+              )
+            ),
+            
+            # Container for multiple maps
+            uiOutput("multipleMapsContainer_surveys")
+            
+          ),
+          
+          # Inset Tab 2
+          nav_panel(
+            title = "Misc",
+            icon = icon("otter"),
+            value = "misc",
+            
+            # Info about map settings
+            card(
+              card_header("Map Configuration"),
+              card_body(
+                includeMarkdown("markdown/misc_map_settings.md")
+              )
+            ),
+            
+            # Container for multiple maps
+            uiOutput("multipleMapsContainer_misc")
+            
+          ),
+          # Inset Tab 3
+          nav_panel(
+            title = "Combined Submodel",
+            icon = icon("object-group"),
+            value = "combined_model_industry_operations",
+            layout_columns(
+              card(
+                card_header("Combined Submodel"),
+                card_body(
+                  includeMarkdown("markdown/combined_industry_operations_submodel.md")
+                )
+              )
+            )
           )
+        )
+      )
+    ),
+    # Tab 4: Model Output
+    nav_panel(
+      title = "Model Output",
+      icon = icon("route"),
+      
+      # Layout with sidebar
+      layout_sidebar(
+        sidebar = sidebar(
+          uiOutput("dynamicSidebar_overall_model")
         ),
-        # Container for multiple maps
-        uiOutput("industryMapContainer")
+        
+        # Main content area
+        card(
+          card_header("Overall Combined Model"),
+          card_body(
+            # Display individual submodel maps when available
+            conditionalPanel(
+              condition = "output.overallModelSubmodelStatus",
+              h5("Available Submodel Maps"),
+              htmlOutput("availableSubmodelMaps")
+            ),
+            
+            hr(),
+            
+            # Overall combined map result
+            conditionalPanel(
+              condition = "output.overallCombinedMap",
+              h5("Overall Combined Model Result"),
+              leafletOutput("overallCombinedMap", height = "600px")
+            )
+          )
+        )
       )
     ),
     # Tab 5: Methods

@@ -23,9 +23,14 @@ source("R/create_individual_maps.R")
 source("R/create_combined_maps.R")
 source("R/data_timestamps.R")
 source("R/generate_habitat_sidebar.R")
-source("R/generate_industry_sidebar.R")
+source("R/generate_species_sidebar.R")
+source("R/generate_surveys_sidebar.R")
 source("R/create_maps_container.R")
-#source("R/create_rmd_export.R")
+source("R/filtered_data_timestamps.R")
+source("R/check_submodel_status.R")
+source("R/sidebar_helpers.R")
+source("R/submodel_configurations.R")
+source("R/generate_overall_model_sidebar.R")
 
 # Get data timestamps information
 timestamp_info <- get_data_timestamps()
@@ -33,6 +38,8 @@ data_timestamps <- timestamp_info$data_timestamps
 most_recent_update <- timestamp_info$most_recent_update
 
 # Load datasets
+## Natural Resources Layers
+### Habitat Layers
 canyon <- readRDS("data/canyon_scored.rds")
 DSC_RH <- readRDS("data/DSC_RH_scored.rds")
 surveys_fixed <- readRDS("data/Surveys_fixed_scored.rds")
@@ -43,7 +50,15 @@ efhca <- readRDS("data/efhca_scored.rds")
 efhca_700 <- readRDS("data/efhca_700_scored.rds")
 HAPCaoi <- readRDS("data/HAPCaoi_scored.rds")
 HAPCreef <- readRDS("data/HAPCreef_scored.rds")
-
+### Species Layers
+killer_whale <- readRDS("data/killer_whale_scored.rds")
+leatherback_turtle <- readRDS("data/leatherback_turtle_scored.rds")
+humpback_whale <- readRDS("data/humpback_whale_scored.rds")
+### Birds Layers
+## Industry & Operations Layers
+###Survey Layers
+surveys_fixed <- readRDS("data/Surveys_fixed_scored.rds")
+surveys_periodic <- readRDS("data/Surveys_periodic_scored.rds")
 
 grid_test <- readRDS("data/2km_grid_norcal.rds")
 
@@ -62,7 +77,9 @@ habitat_layer <- list(
 )
 
 species_layer <- list(
-  "whale1", "whale2"
+  "ESA Critical Habitat for Southern Resident Killer Whales" = killer_whale,
+  "ESA Critical Habitat for Leatherback Sea Turtles" = leatherback_turtle,
+  "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS" = humpback_whale
 )
 
 bird_layer <- list (
@@ -72,7 +89,7 @@ bird_layer <- list (
 ##Fisheries Submodel
 
 ##Industry & Operations Submodel
-industry_layer <- list(
+surveys_layer <- list(
   "Fixed Surveys" = surveys_fixed,
   "Periodic Surveys" = surveys_periodic
 )
