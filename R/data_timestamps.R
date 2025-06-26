@@ -10,7 +10,10 @@ get_data_timestamps <- function(data_dir = "data") {
     "EFHCA_scored.rds",
     "EFHCA_700_scored.rds", 
     "HAPCaoi_scored.rds",
-    "HAPCreef_scored.rds"
+    "HAPCreef_scored.rds",
+    "killer_whale_scored.rds",
+    "leatherback_turtle_scored.rds",
+    "humpback_whale_scored.rds"
   )
   
   # Create a data frame to store file information
@@ -40,7 +43,10 @@ get_data_timestamps <- function(data_dir = "data") {
     "EFHCA",
     "EFHCA 700 fathoms",
     "HAPC AOI",
-    "HAPC Rocky Reef"
+    "HAPC Rocky Reef",
+    "ESA Critical Habitat for Southern Resident Killer Whales",
+    "ESA Critical Habitat for Leatherback Sea Turtles",
+    "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS"
   )
   
   # Format the timestamps for display
