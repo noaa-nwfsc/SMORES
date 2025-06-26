@@ -12,7 +12,97 @@ params:
   combined_data: NULL
   tab_name: "Natural Resources"
   combined_map_title: "Combined Map"
+  data_timestamps: NULL
 ---
+<style>
+body {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+}
+
+.main-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.leaflet-container {
+  margin: 20px auto;
+  display: block;
+}
+
+table {
+  margin: 20px auto;
+  max-width: 800px;
+}
+
+.table {
+  margin: 20px auto;
+}
+
+p {
+  text-align: justify;
+  margin: 15px 0;
+}
+
+.tocify-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100%;
+  overflow: auto;
+  z-index: 1000;
+}
+
+.col-md-9 {
+  margin-left: 280px;
+  max-width: calc(100% - 300px);
+}
+
+/* Center specific elements */
+.centered-content {
+  text-align: center;
+  margin: 20px auto;
+}
+
+/* Map container centering */
+.map-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+/* Ensure leaflet maps are responsive and centered */
+.leaflet {
+  max-width: 100%;
+  height: 400px;
+  margin: 0 auto;
+}
+
+/* Style for configuration table */
+.config-table {
+  margin: 20px auto;
+  max-width: 600px;
+}
+
+/* Center all chunk outputs */
+.chunk-output {
+  text-align: center;
+}
+
+/* Center kable tables */
+.kable-table {
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.width = 12, fig.height = 8)
@@ -133,6 +223,14 @@ create_combined_map <- function(combined_data, title) {
       opacity = 1
     )
 }
+
+# Source the data timestamps function if not provided as parameter
+if (is.null(params$data_timestamps)) {
+  source("data_timestamps.R")
+  timestamp_info <- get_data_timestamps()
+} else {
+  timestamp_info <- params$data_timestamps
+}
 ```
 
 ```{r}
@@ -145,19 +243,24 @@ if (!is.null(params$map_configs) && length(params$map_configs) > 0) {
     stringsAsFactors = FALSE
   )
   
-  kable(config_df, caption = paste(params$tab_name, 'Layer Configuration Details'))
+ # Create centered table
+  cat('<div class="config-table">')
+  print(kable(config_df, caption = paste(params$tab_name, 'Layer Configuration Details'), format = "html", table.attr = "class='table table-striped'"))
+  cat('</div>')
 } else {
-  cat("No individual layers were configured for this report.")
+  cat('<div class="centered-content">No individual layers were configured for this report.</div>')
 }
 ```
 
 ```{r}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 1) {
   config <- params$map_configs[[1]]
+   cat('<div class="centered-content">')
   cat("### Map 1:", config$layer, "(Score:", config$score, ")\n\n")
   cat("**Layer:** ", config$layer, "  \n")
   cat("**Score:** ", config$score, "  \n") 
   cat("**Data Points:** ", nrow(config$data), "  \n\n")
+  cat('</div>')
 }
 ```
 
@@ -348,3 +451,28 @@ if (!is.null(params$combined_data)) {
 }
 ```
 
+## Data Layers Information
+
+This report includes data from the following selected layers, with their last update timestamps:
+
+```{r}
+if (!is.null(params$data_timestamps) && !is.null(params$data_timestamps$data_timestamps)) {
+  display_table <- params$data_timestamps$data_timestamps %>%
+    filter(!is.na(formatted_date)) %>%
+    select(dataset_name, formatted_date) %>%
+    rename(
+      "Dataset" = dataset_name,
+      "Last Updated" = formatted_date
+    )
+  
+  if (nrow(display_table) > 0) {
+    kable(display_table, 
+          caption = "Selected Data Layer Update Information",
+          format = "html",
+          table.attr = "class='table table-striped'")
+  } else {
+    cat("No timestamp information available for the selected data layers.")
+  }
+} else {
+  cat("Timestamp information not available.")
+}
