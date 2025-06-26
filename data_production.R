@@ -10,7 +10,7 @@ library(magrittr)
 library(tidyr)
 
 
-## set working directory
+# set working directory
 grid.2km <- sf::st_read(dsn = "Z:\\GIS_Base\\OSW\\Grid.gdb", layer = "grid2km")
 
 #set standard coordinate reference system if using 2 km square grid
@@ -357,3 +357,141 @@ HAPCreef_scored_long <- pivot_longer(HAPCreef_scored, cols = starts_with(c("0.",
   select(-HAPCreef)
 st_crs(DSC_RH_scored_long) == st_crs(HAPCreef_scored_long)
 saveRDS(HAPCreef_scored_long, "U:\\Github\\SMORES\\data\\HAPCreef_scored.rds")
+
+## Species Layers
+ESA_Critical_Habitat <- sf::st_read(dsn = "Z:\\ArcGIS\\Projects\\OWEC\\p30\\protected_species_density_layers\\nmfs_combined\\Critical_Habitat_Areas_by_the_National_Marine_Fisheries_Service\\Critical_Habitat_Areas_by_the_National_Marine_Fisheries_Service.shp")  
+
+#killer whale 
+killer_whale <- ESA_Critical_Habitat %>% 
+  filter(commonName == "Whale, killer") %>% 
+  select(-c(statusType, scientific, listingSta, federalReg)) %>% 
+  st_transform(crsOut) 
+killer_whale.grid <- sf::st_intersection(killer_whale, grd.norcal) %>%
+  mutate(Score.killer_whale = 1) %>% 
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid 
+  #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.killer_whale) #use for 2km grid
+killer_whale_score <- killer_whale.grid %>% #no duplicates
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+killer_whale_scored <- grd.norcal %>%
+  full_join(killer_whale_score, by = "CellID_2km") %>%
+  filter(Score.killer_whale == 1) %>%
+  rename("1" = Score.killer_whale) %>%
+  mutate("0.1" = 0.1,
+         "0.2" = 0.2,
+         "0.3" = 0.3,
+         "0.4" = 0.4,
+         "0.5" = 0.5,
+         "0.6" = 0.6,
+         "0.7" = 0.7,
+         "0.8" = 0.8,
+         "0.9" = 0.9) 
+killer_whale_scored_long <- pivot_longer(killer_whale_scored, cols = starts_with(c("0.", "1")), names_to = "killer_whale", values_to = "Score.killer_whale") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-killer_whale)
+st_crs(DSC_RH_scored_long) == st_crs(killer_whale_scored_long)
+saveRDS(killer_whale_scored_long, "U:\\Github\\SMORES\\data\\killer_whale_scored.rds")
+
+# leatherback sea turtle 
+leatherback_turtle <- ESA_Critical_Habitat %>% 
+  filter(commonName == "Sea turtle, leatherback") %>% 
+  select(-c(statusType, scientific, listingSta, federalReg)) %>% 
+  st_transform(crsOut) 
+leatherback_turtle.grid <- sf::st_intersection(leatherback_turtle, grd.norcal) %>%
+  mutate(Score.leatherback_turtle = 1) %>% 
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid 
+  #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.leatherback_turtle) #use for 2km grid
+leatherback_turtle_score <- leatherback_turtle.grid %>% #no duplicates
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+leatherback_turtle_scored <- grd.norcal %>%
+  full_join(leatherback_turtle_score, by = "CellID_2km") %>%
+  filter(Score.leatherback_turtle == 1) %>%
+  rename("1" = Score.leatherback_turtle) %>%
+  mutate("0.1" = 0.1,
+         "0.2" = 0.2,
+         "0.3" = 0.3,
+         "0.4" = 0.4,
+         "0.5" = 0.5,
+         "0.6" = 0.6,
+         "0.7" = 0.7,
+         "0.8" = 0.8,
+         "0.9" = 0.9) 
+leatherback_turtle_scored_long <- pivot_longer(leatherback_turtle_scored, cols = starts_with(c("0.", "1")), names_to = "leatherback_turtle", values_to = "Score.leatherback_turtle") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-leatherback_turtle)
+st_crs(DSC_RH_scored_long) == st_crs(leatherback_turtle_scored_long)
+saveRDS(leatherback_turtle_scored_long, "U:\\Github\\SMORES\\data\\leatherback_turtle_scored.rds")
+
+#humpback whale - mexico and central dps
+#killer whale 
+humpback_whale <- ESA_Critical_Habitat %>% 
+  filter(commonName == "Whale, humpback") %>% 
+  select(-c(statusType, scientific, listingSta, federalReg)) %>% 
+  st_transform(crsOut) 
+# humpback_whale.grid <- sf::st_intersection(humpback_whale, grd.norcal) %>%
+#   mutate(Score.humpback_whale = 1) %>%
+#   mutate(area.part = st_area(.)) %>%
+#   group_by(CellID_2km) %>% #use for 2km grid
+#   #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
+#   slice_max(area.part, n = 1) %>%
+#   select(CellID_2km, Score.humpback_whale) #use for 2km grid
+
+#Error: 
+# Error in scan(text = lst[[length(lst)]], quiet = TRUE) : 
+# scan() expected 'a real', got '936246.12987604213.'
+# Error in (function (msg)  : 
+# TopologyException: side location conflict at 92746.754168340936 936246.12987604213. This can occur if the input geometry is invalid.
+
+# returns false for row 5 and 17 of data
+st_is_valid(humpback_whale)
+
+# returns that the two false rows have a self-intersection [92746.7541682779 936246.129876046]
+st_is_valid(humpback_whale, reason = TRUE)
+
+# suggestion is to apply a buffer of 0 to force the creation of a new geometry -> stack overflow article https://stackoverflow.com/questions/66584191/sfst-intersection-virtually-random-error-action
+humpback_whale_buffer <- humpback_whale %>% 
+  st_buffer(0)
+
+# buffer has made all geometries valid
+st_is_valid(humpback_whale_buffer, reason = TRUE)
+
+humpback_whale.grid <- sf::st_intersection(humpback_whale_buffer, grd.norcal) %>%
+  mutate(Score.humpback_whale = 1) %>%
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid
+  #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.humpback_whale) #use for 2km grid
+
+humpback_whale_score <- humpback_whale.grid %>% #had 16354 duplicates
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+
+humpback_whale_scored <- grd.norcal %>%
+  full_join(humpback_whale_score, by = "CellID_2km") %>%
+  filter(Score.humpback_whale == 1) %>%
+  rename("1" = Score.humpback_whale) %>%
+  mutate("0.1" = 0.1,
+         "0.2" = 0.2,
+         "0.3" = 0.3,
+         "0.4" = 0.4,
+         "0.5" = 0.5,
+         "0.6" = 0.6,
+         "0.7" = 0.7,
+         "0.8" = 0.8,
+         "0.9" = 0.9) 
+humpback_whale_scored_long <- pivot_longer(humpback_whale_scored, cols = starts_with(c("0.", "1")), names_to = "humpback_whale", values_to = "Score.humpback_whale") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-humpback_whale)
+st_crs(DSC_RH_scored_long) == st_crs(humpback_whale_scored_long)
+saveRDS(humpback_whale_scored_long, "U:\\Github\\SMORES\\data\\humpback_whale_scored.rds")
