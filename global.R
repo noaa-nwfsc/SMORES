@@ -90,7 +90,7 @@ bird_layer <- list (
 ##Fisheries Submodel
 
 ##Industry & Operations Submodel
-surveys_layer <- list(
+surveys_layers <- list(
   "Fixed Surveys" = surveys_fixed,
   "Periodic Surveys" = surveys_periodic
 )
