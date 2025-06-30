@@ -485,23 +485,33 @@ function(input, output, session) {
   # Multiple maps container for surveys
   output$multipleMapsContainer_surveys <- renderUI({
     valid_configs <- industry_operations_valid_configs()
+    selected_methods <- input$surveysCalculationMethods %||% character(0)
     
     create_maps_container(
       configs = valid_configs,
       namespace = "industryoperations",
       combined_map_output_id = "combinedSurveysMap",
       combined_map_generated = combined_maps_data$surveys_combined_map_generated,
-      combined_map_title = "Combined Map Result (Geometric Mean)"
+      combined_map_title = "Combined Map Result",
+      selected_methods = selected_methods
     )
   })
   
-  # Surveys combined map logic
-  observeEvent(input$generateSurveysMap, {
-    # Show modal with spinner
-    show_spinner_modal("Generating Combined Map", 
-                       "Please wait while the combined map is being generated...")
+  # Combined map logic
+  observeEvent(input$generateCombinedSurveysMap, {
+    # Get selected calculation methods
+    selected_methods <- input$surveysCalculationMethods
     
-    # Add a small delay to ensure the modal is visible before proceeding
+    if(is.null(selected_methods) || length(selected_methods) == 0) {
+      showNotification("Please select at least one calculation method.", type = "warning")
+      return()
+    }
+    
+    # Show modal with spinner
+    show_spinner_modal("Generating Combined Map(s)", 
+                       paste("Please wait while", length(selected_methods), "combined map(s) are being generated..."))
+    
+    # Add a small delay to ensure the modal is visible
     Sys.sleep(0.5)
     
     # Define dataset mapping for industry tab
@@ -513,20 +523,38 @@ function(input, output, session) {
     # Get valid configurations
     valid_configs <- industry_operations_valid_configs()
     
-    # Generate the combined map
-    result <- generate_combined_map(
+    # Generate all maps at once
+    all_results <- generate_combined_maps_all_methods(
       valid_configs = valid_configs,
       dataset_mapping = surveys_dataset_mapping,
-      map_title = "Combined Scientific Surveys Score"
+      selected_methods = selected_methods,
+      map_type = "Surveys"
     )
     
-    # Use the result
-    output$surveysMap <- renderLeaflet(result$map)
+    # IMPORTANT: Render each map individually
+    if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
+      local({
+        result <- all_results[["geometric_mean"]]
+        output$combinedSurveysMap <- renderLeaflet({ result$map })
+        combined_maps_data$surveys <- result$combined_data
+      })
+    }
     
-    # store the combined industry data for use in the combined model
-    combined_maps_data$surveys <- result$combined_data
+    if("lowest" %in% selected_methods && "lowest" %in% names(all_results)) {
+      local({
+        result <- all_results[["lowest"]]
+        output$combinedSurveysMap_lowest <- renderLeaflet({ result$map })
+      })
+    }
     
-    # set flag to indicate combined map has been clicked
+    if("product" %in% selected_methods && "product" %in% names(all_results)) {
+      local({
+        result <- all_results[["product"]]
+        output$combinedSurveysMap_product <- renderLeaflet({ result$map })
+      })
+    }
+    
+    # Set flag to indicate combined map has been generated
     combined_maps_data$surveys_combined_map_generated <- TRUE
     
     # Remove modal spinner
