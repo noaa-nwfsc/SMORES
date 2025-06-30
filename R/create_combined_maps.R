@@ -53,7 +53,9 @@ calculate_product <- function(combined_data) {
 }
 
 # Modified function to generate multiple maps at once
-generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, base_grid = grid_test, selected_methods = c("geometric_mean")) {
+generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, base_grid = grid_test, 
+                                               selected_methods = c("geometric_mean"), 
+                                               map_type = "Combined") {
   
   # Initialize result structure for all methods
   results <- list()
@@ -106,32 +108,29 @@ generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, b
     # Make a copy of the base combined data for this method
     combined_data <- base_combined_data
     
-    # Apply the specific calculation method
+    # Apply the specific calculation method and set method-specific variables
     if(method == "geometric_mean") {
       combined_data <- calculate_geometric_mean(combined_data)
       score_column <- "Geo_mean"
       popup_prefix <- "Geometric Mean Score:"
-      map_title <- "Combined Habitat Score - Geometric Mean"
+      map_title <- paste("Combined", map_type, "Score - Geometric Mean")
     } else if(method == "lowest") {
       combined_data <- calculate_lowest_value(combined_data)
       score_column <- "Lowest_value"
       popup_prefix <- "Lowest Value Score:"
-      map_title <- "Combined Habitat Score - Lowest Value"
+      map_title <- paste("Combined", map_type, "Score - Lowest Value")
     } else if(method == "product") {
       combined_data <- calculate_product(combined_data)
       score_column <- "Product_value"
       popup_prefix <- "Product Score:"
-      map_title <- "Combined Habitat Score - Product"
+      map_title <- paste("Combined", map_type, "Score - Product")
     } else {
       # Default to geometric mean if unknown method
       combined_data <- calculate_geometric_mean(combined_data)
       score_column <- "Geo_mean"
       popup_prefix <- "Geometric Mean Score:"
-      map_title <- "Combined Habitat Score - Geometric Mean"
+      map_title <- paste("Combined", map_type, "Score - Geometric Mean")
     }
-    
-    # Debug print to verify which method is being used
-    print(paste("Processing method:", method, "with score column:", score_column))
     
     # Check if we have valid score data
     if(!is.null(score_column) && score_column %in% names(combined_data) && 
@@ -152,7 +151,7 @@ generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, b
       min_val <- min(score_values, na.rm = TRUE)
       max_val <- max(score_values, na.rm = TRUE)
       
-      # Create popup text column directly in the data
+      # Create popup text column directly in the data using the method-specific prefix
       combined_data$popup_display <- paste(popup_prefix, round(combined_data[[score_column]], 2))
       
       # Check if all values are the same (constant values)
@@ -178,7 +177,7 @@ generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, b
             position = "bottomright",
             colors = single_color,
             labels = paste("Score:", round(min_val, 2)),
-            title = map_title,
+            title = map_title,  # Use the method-specific title
             opacity = 1
           ) %>%
           fitBounds(lng1 = min_lng, lat1 = min_lat, 
@@ -210,7 +209,7 @@ generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, b
             position = "bottomright",
             pal = pal,
             values = combined_data[[score_column]],
-            title = map_title,
+            title = map_title,  # Use the method-specific title
             opacity = 1
           ) %>%
           fitBounds(lng1 = min_lng, lat1 = min_lat, 
