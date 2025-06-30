@@ -49,6 +49,23 @@ get_data_timestamps <- function(data_dir = "data") {
     "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS"
   )
   
+  # Add dataset descriptions (need to be in same order as earlier lists)
+  data_timestamps$description <- c(
+    "Submarine canyons",
+    "Deep sea coral areas with robust high suitability",
+    "Scientific survey locations with fixed monitoring stations",
+    "Scientific survey areas with periodic monitoring schedules",
+    "Methane Seeps",
+    "Continental shelf break features important for marine habitat",
+    "Essential Fish Habitat Conservation Areas",
+    "Essential Fish Habitat Conservation Areas, 700 fathoms",
+    "Habitat Areas of Particular Concern - Areas of Interest",
+    "Habitat Areas of Particular Concern - Rocky Reef areas",
+    "Critical habitat for endangered Southern Resident Killer Whales",
+    "Critical habitat for endangered Leatherback Sea Turtles",
+    "Critical habitat for Humpback Whales (Mexico and Central Distinct Population Segments)"
+  )
+  
   # Format the timestamps for display
   data_timestamps$formatted_date <- format(data_timestamps$last_modified, "%B %d, %Y at %H:%M:%S")
   
