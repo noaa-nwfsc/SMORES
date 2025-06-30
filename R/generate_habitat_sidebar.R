@@ -36,7 +36,6 @@ generate_habitat_sidebar <- function(habitat_layers, score_values, current_tab =
     p("Select which habitat layers to include and their scores:"),
     layer_inputs,
     hr(),
-    hr(),
     h4("Calculation Methods"),
     checkboxGroupInput("habitatCalculationMethods",
                        "Select calculation methods to generate:",
