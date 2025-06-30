@@ -220,7 +220,7 @@ tagList(
     # Tab 4: Industry & Operations Submodel
     nav_panel(
       title = "Industry & Operations Submodel",
-      icon = icon("industry"),
+      icon = icon("ship"),
       
       # Layout with sidebar for tabs
       layout_sidebar(
@@ -235,7 +235,7 @@ tagList(
           # Inset Tab 1
           nav_panel(
             title = "Scientific Surveys",
-            icon = icon("earth-oceania"),
+            icon = icon("microscope"),
             value = "surveys",
             
             # Info about map settings
@@ -254,7 +254,7 @@ tagList(
           # Inset Tab 2
           nav_panel(
             title = "Misc",
-            icon = icon("otter"),
+            icon = icon("industry"),
             value = "misc",
             
             # Info about map settings
@@ -288,8 +288,8 @@ tagList(
     ),
     # Tab 4: Model Output
     nav_panel(
-      title = "Model Output",
-      icon = icon("route"),
+      title = "Full Model",
+      icon = icon("calculator"),
       
       # Layout with sidebar
       layout_sidebar(

@@ -148,7 +148,7 @@ function(input, output, session) {
     valid_configs <- industry_operations_valid_configs()
     
     if(length(valid_configs) > 0) {
-      create_individual_maps(valid_configs, output, namespace = "industry")
+      create_individual_maps(valid_configs, output, namespace = "industryoperations")
     }
   })
   
@@ -227,7 +227,7 @@ function(input, output, session) {
       # Combined Model Tab
     } else if(current_tab_natural_resources == "combined_model_natural_resources") {
       natural_resources_config <- get_natural_resources_config()
-      generate_combined_model_sidebar(natural_resources_config)
+      generate_natural_resources_combined_sidebar(natural_resources_config, combined_maps_data)
     }
   })
   
@@ -235,12 +235,12 @@ function(input, output, session) {
   output$dynamicSidebar_industry_operations <- renderUI({
     current_tab_industry_operations <- input$dataTabs_industry_operations %||% "surveys"
     
-    if (current_tab_natural_resources == "surveys") {
-      # Get the layer names for habitat
+    if (current_tab_industry_operations == "surveys") {
+      # Get the layer names for surveys
       surveys_layers <- names(surveys_layer)
       industry_operations_config <- get_industry_operations_config()
       
-      #use function to make habitat sidebar
+      #use function to make surveys sidebar
       generate_surveys_sidebar(
         surveys_layers, 
         score_values, 
@@ -249,10 +249,10 @@ function(input, output, session) {
       )
       
     } else if (current_tab_industry_operations == "misc") {
-      # Get the layer names for species
+      # Get the layer names for misc
       misc_layers <- names(misc_layer)
       
-      #use function to make species sidebar
+      #use function to make misc sidebar
       generate_misc_sidebar(misc_layers, score_values)
       
 
@@ -266,23 +266,33 @@ function(input, output, session) {
   # Multiple maps container for habitat
   output$multipleMapsContainer_habitat <- renderUI({
     valid_configs <- natural_resources_valid_configs()
+    selected_methods <- input$habitatCalculationMethods %||% character(0)
     
     create_maps_container(
       configs = valid_configs,
       namespace = "naturalresources",
       combined_map_output_id = "combinedHabitatMap",
       combined_map_generated = combined_maps_data$habitat_combined_map_generated,
-      combined_map_title = "Combined Map Result (Geometric Mean)"
+      combined_map_title = "Combined Map Result",
+      selected_methods = selected_methods
     )
   })
   
   # Combined map logic
   observeEvent(input$generateCombinedHabitatMap, {
-    # Show modal with spinner that covers the whole tab
-    show_spinner_modal("Generating Combined Map", 
-                       "Please wait while the combined map is being generated...")
+    # Get selected calculation methods
+    selected_methods <- input$habitatCalculationMethods
     
-    # Add a small delay to ensure the modal is visible before proceeding
+    if(is.null(selected_methods) || length(selected_methods) == 0) {
+      showNotification("Please select at least one calculation method.", type = "warning")
+      return()
+    }
+    
+    # Show modal with spinner
+    show_spinner_modal("Generating Combined Map(s)", 
+                       paste("Please wait while", length(selected_methods), "combined map(s) are being generated..."))
+    
+    # Add a small delay to ensure the modal is visible
     Sys.sleep(0.5)
     
     # Define dataset mapping for habitat tab
@@ -300,20 +310,31 @@ function(input, output, session) {
     # Get valid configurations
     valid_configs <- natural_resources_valid_configs()
     
-    # Generate the combined map
-    result <- generate_combined_map(
+    # Generate all maps at once using the new function
+    all_results <- generate_combined_maps_all_methods(
       valid_configs = valid_configs,
       dataset_mapping = habitat_dataset_mapping,
-      map_title = "Combined Habitat Score"
+      selected_methods = selected_methods
     )
     
-    # Use the result
-    output$combinedHabitatMap <- renderLeaflet(result$map)
+    # Now assign each result to its appropriate output
+    for(method in selected_methods) {
+      if(method %in% names(all_results)) {
+        result <- all_results[[method]]
+        
+        # Create output for each method
+        if(method == "geometric_mean") {
+          output$combinedHabitatMap <- renderLeaflet(result$map)
+          # Store the combined data for the first method (for combined model use)
+          combined_maps_data$habitat <- result$combined_data
+        } else {
+          output_id <- paste0("combinedHabitatMap_", method)
+          output[[output_id]] <- renderLeaflet(result$map)
+        }
+      }
+    }
     
-    # store the combined habitat data for use in the combined model
-    combined_maps_data$habitat <- result$combined_data
-    
-    # set flag to indicate combined map has been generated
+    # Set flag to indicate combined map has been generated
     combined_maps_data$habitat_combined_map_generated <- TRUE
     
     # Remove modal spinner
@@ -424,6 +445,19 @@ function(input, output, session) {
     
     # Remove modal spinner
     removeModal()
+  })
+  
+  # Multiple maps container for surveys
+  output$multipleMapsContainer_surveys <- renderUI({
+    valid_configs <- industry_operations_valid_configs()
+    
+    create_maps_container(
+      configs = valid_configs,
+      namespace = "industryoperations",
+      combined_map_output_id = "combinedSurveysMap",
+      combined_map_generated = combined_maps_data$surveys_combined_map_generated,
+      combined_map_title = "Combined Map Result (Geometric Mean)"
+    )
   })
   
   # Surveys combined map logic
@@ -608,9 +642,10 @@ function(input, output, session) {
   # Data tab timestamp table
   output$data_timestamps_table <- renderTable({
     data_timestamps %>%
-      select(dataset_name, formatted_date) %>%
+      select(dataset_name, description, formatted_date) %>%
       rename(
         "Dataset" = dataset_name,
+        "Description" = description,
         "Last Updated" = formatted_date
       )
   })

@@ -31,6 +31,7 @@ source("R/check_submodel_status.R")
 source("R/sidebar_helpers.R")
 source("R/submodel_configurations.R")
 source("R/generate_overall_model_sidebar.R")
+source("R/generate_natural_resources_combined_sidebar.R")
 
 # Get data timestamps information
 timestamp_info <- get_data_timestamps()
