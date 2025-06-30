@@ -8,7 +8,7 @@
 #' @param session The Shiny session object (optional)
 #' @param placeholder_id The ID for the spinner placeholder UI element (defaults to "modalSpinnerPlaceholder")
 #' @param spinner_type The type of spinner to use (defaults to 3)
-#' @param spinner_color The color of the spinner (defaults to "#033c73")
+#' @param spinner_color The color of the spinner (defaults to "#003087")
 #' @param spinner_size The size of the spinner (defaults to 2)
 #'
 #' @return The modal dialog is displayed and a placeholder UI element is created
@@ -27,7 +27,7 @@ show_spinner_modal <- function(title,
                                session = getDefaultReactiveDomain(),
                                placeholder_id = "modalSpinnerPlaceholder",
                                spinner_type = 3,
-                               spinner_color = "#033c73",
+                               spinner_color = "#003087",
                                spinner_size = 2) {
   
   # Show modal with spinner
