@@ -310,28 +310,35 @@ function(input, output, session) {
     # Get valid configurations
     valid_configs <- natural_resources_valid_configs()
     
-    # Generate all maps at once using the new function
+    # Generate all maps at once
     all_results <- generate_combined_maps_all_methods(
       valid_configs = valid_configs,
       dataset_mapping = habitat_dataset_mapping,
-      selected_methods = selected_methods
+      selected_methods = selected_methods,
+      map_type = "Habitat"
     )
     
-    # Now assign each result to its appropriate output
-    for(method in selected_methods) {
-      if(method %in% names(all_results)) {
-        result <- all_results[[method]]
-        
-        # Create output for each method
-        if(method == "geometric_mean") {
-          output$combinedHabitatMap <- renderLeaflet(result$map)
-          # Store the combined data for the first method (for combined model use)
-          combined_maps_data$habitat <- result$combined_data
-        } else {
-          output_id <- paste0("combinedHabitatMap_", method)
-          output[[output_id]] <- renderLeaflet(result$map)
-        }
-      }
+    # IMPORTANT: Render each map individually
+    if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
+      local({
+        result <- all_results[["geometric_mean"]]
+        output$combinedHabitatMap <- renderLeaflet({ result$map })
+        combined_maps_data$habitat <- result$combined_data
+      })
+    }
+    
+    if("lowest" %in% selected_methods && "lowest" %in% names(all_results)) {
+      local({
+        result <- all_results[["lowest"]]
+        output$combinedHabitatMap_lowest <- renderLeaflet({ result$map })
+      })
+    }
+    
+    if("product" %in% selected_methods && "product" %in% names(all_results)) {
+      local({
+        result <- all_results[["product"]]
+        output$combinedHabitatMap_product <- renderLeaflet({ result$map })
+      })
     }
     
     # Set flag to indicate combined map has been generated
@@ -398,23 +405,33 @@ function(input, output, session) {
   # Multiple maps container for species
   output$multipleMapsContainer_species <- renderUI({
     valid_configs <- natural_resources_valid_configs()
+    selected_methods <- input$speciesCalculationMethods %||% character(0)
     
     create_maps_container(
       configs = valid_configs,
       namespace = "naturalresources",
       combined_map_output_id = "combinedSpeciesMap",
       combined_map_generated = combined_maps_data$species_combined_map_generated,
-      combined_map_title = "Combined Map Result (Geometric Mean)"
+      combined_map_title = "Combined Map Result",
+      selected_methods = selected_methods
     )
   })
   
   # Combined map logic
   observeEvent(input$generateCombinedSpeciesMap, {
-    # Show modal with spinner that covers the whole tab
-    show_spinner_modal("Generating Combined Map", 
-                       "Please wait while the combined map is being generated...")
+    # Get selected calculation methods
+    selected_methods <- input$speciesCalculationMethods
     
-    # Add a small delay to ensure the modal is visible before proceeding
+    if(is.null(selected_methods) || length(selected_methods) == 0) {
+      showNotification("Please select at least one calculation method.", type = "warning")
+      return()
+    }
+    
+    # Show modal with spinner
+    show_spinner_modal("Generating Combined Map(s)", 
+                       paste("Please wait while", length(selected_methods), "combined map(s) are being generated..."))
+    
+    # Add a small delay to ensure the modal is visible
     Sys.sleep(0.5)
     
     # Define dataset mapping for species tab
@@ -427,20 +444,38 @@ function(input, output, session) {
     # Get valid configurations
     valid_configs <- natural_resources_valid_configs()
     
-    # Generate the combined map
-    result <- generate_combined_map(
+    # Generate all maps at once
+    all_results <- generate_combined_maps_all_methods(
       valid_configs = valid_configs,
       dataset_mapping = species_dataset_mapping,
-      map_title = "Combined Species Score"
+      selected_methods = selected_methods,
+      map_type = "Species"
     )
     
-    # Use the result
-    output$combinedSpeciesMap <- renderLeaflet(result$map)
+    # IMPORTANT: Render each map individually
+    if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
+      local({
+        result <- all_results[["geometric_mean"]]
+        output$combinedSpeciesMap <- renderLeaflet({ result$map })
+        combined_maps_data$species <- result$combined_data
+      })
+    }
     
-    # store the combined habitat data for use in the combined model
-    combined_maps_data$species <- result$combined_data
+    if("lowest" %in% selected_methods && "lowest" %in% names(all_results)) {
+      local({
+        result <- all_results[["lowest"]]
+        output$combinedSpeciesMap_lowest <- renderLeaflet({ result$map })
+      })
+    }
     
-    # set flag to indicate combined map has been generated
+    if("product" %in% selected_methods && "product" %in% names(all_results)) {
+      local({
+        result <- all_results[["product"]]
+        output$combinedSpeciesMap_product <- renderLeaflet({ result$map })
+      })
+    }
+    
+    # Set flag to indicate combined map has been generated
     combined_maps_data$species_combined_map_generated <- TRUE
     
     # Remove modal spinner
