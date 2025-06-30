@@ -30,11 +30,22 @@ generate_habitat_sidebar <- function(habitat_layers, score_values, current_tab =
     )
   })
   
-  # Return the complete sidebar UI for individual species tab
+  # Return the complete sidebar UI for individual habitat tab
   tagList(
     h4("Habitat Map Settings"),
     p("Select which habitat layers to include and their scores:"),
     layer_inputs,
+    hr(),
+    hr(),
+    h4("Calculation Methods"),
+    checkboxGroupInput("habitatCalculationMethods",
+                       "Select calculation methods to generate:",
+                       choices = list(
+                         "Geometric Mean" = "geometric_mean",
+                         "Lowest Value" = "lowest",
+                         "Product" = "product"
+                       ),
+                       selected = "geometric_mean"),
     hr(),
     h4("Combined Map Settings"),
     actionButton("generateCombinedHabitatMap", "Generate Combined Map", 
