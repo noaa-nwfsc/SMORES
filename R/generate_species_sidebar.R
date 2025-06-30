@@ -36,6 +36,17 @@ generate_species_sidebar <- function(species_layers, score_values, current_tab =
     p("Select which species layers to include and their scores:"),
     layer_inputs,
     hr(),
+    hr(),
+    h4("Calculation Methods"),
+    checkboxGroupInput("speciesCalculationMethods",
+                       "Select calculation methods to generate:",
+                       choices = list(
+                         "Geometric Mean" = "geometric_mean",
+                         "Lowest Value" = "lowest",
+                         "Product" = "product"
+                       ),
+                       selected = "geometric_mean"),
+    hr(),
     h4("Combined Map Settings"),
     actionButton("generateCombinedSpeciesMap", "Generate Combined Map", 
                  class = "btn-primary btn-block"),
