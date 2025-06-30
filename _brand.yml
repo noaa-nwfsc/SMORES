@@ -126,6 +126,10 @@ color:
   secondary: purple
   # neutral or informational actions and information
   info: oceans-noaa-sea
+  
+  success: purple
+  warning: dark-orange
+  danger: dark-red
 
 # logo capability is being debated as active currently for Shiny.
 # logo: 
@@ -268,6 +272,8 @@ defaults:
       # nav-link-active-color: Controls the color of active navigation links (set to "noaa-sea" but noted as not working)
       # nav-link-hover-color: Controls the color of navigation links on hover (set to "light-sea-blue" but noted as not working)
 
-      
+      #alerts
+      alert-warning: vivid-orange
+      alert-success: purple
       
 
