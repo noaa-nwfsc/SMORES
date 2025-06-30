@@ -6,7 +6,7 @@ generate_surveys_sidebar <- function(surveys_layers, score_values, current_tab =
   }
   
   # Individual species tab logic
-  # Create inputs for each species layer
+  # Create inputs for each survey layer
   layer_inputs <- lapply(surveys_layers, function(layer_name) {
     # Create consistent IDs
     layer_id <- gsub(" ", "_", layer_name)
@@ -30,11 +30,21 @@ generate_surveys_sidebar <- function(surveys_layers, score_values, current_tab =
     )
   })
   
-  # Return the complete sidebar UI for individual species tab
+  # Return the complete sidebar UI for individual surveys tab
   tagList(
-    h4("Scientific Surveys Map Settings"),
+    h4("Surveys Map Settings"),
     p("Select which survey layers to include and their scores:"),
     layer_inputs,
+    hr(),
+    h4("Calculation Methods"),
+    checkboxGroupInput("surveysCalculationMethods",
+                       "Select calculation methods to generate:",
+                       choices = list(
+                         "Geometric Mean" = "geometric_mean",
+                         "Lowest Value" = "lowest",
+                         "Product" = "product"
+                       ),
+                       selected = "geometric_mean"),
     hr(),
     h4("Combined Map Settings"),
     actionButton("generateCombinedSurveysMap", "Generate Combined Map", 
