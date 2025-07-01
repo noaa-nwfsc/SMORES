@@ -3,6 +3,8 @@ function(input, output, session) {
   # Create a reactive values object to store combined maps data
   combined_maps_data <- reactiveValues(
     habitat = NULL,
+    habitat_lowest = NULL,
+    habitat_product = NULL,
     species = NULL,
     birds = NULL,
     industry = NULL, 
@@ -318,7 +320,7 @@ function(input, output, session) {
       map_type = "Habitat"
     )
     
-    # IMPORTANT: Render each map individually
+    # Store results for all methods
     if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
       local({
         result <- all_results[["geometric_mean"]]
@@ -331,13 +333,15 @@ function(input, output, session) {
       local({
         result <- all_results[["lowest"]]
         output$combinedHabitatMap_lowest <- renderLeaflet({ result$map })
+        combined_maps_data$habitat_lowest <- result$combined_data
       })
     }
     
-    if("product" %in% selected_methods && "product" %in% names(all_results)) {
+    if("product" %in% selected_methods && "product" %in% names(all_results)) {  
       local({
         result <- all_results[["product"]]
         output$combinedHabitatMap_product <- renderLeaflet({ result$map })
+        combined_maps_data$habitat_product <- result$combined_data  # This was already correct
       })
     }
     
@@ -351,13 +355,12 @@ function(input, output, session) {
   # Habitat/Natural Resources tab export
   output$habitatExportRmd <- downloadHandler(
     filename = function() {
-      paste("Natural_Resources_Submodel_Report_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+      paste("Habitat_Component_Natural_Resources_Submodel_Report_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
     },
     content = function(file) {
       # Show modal with spinner
       show_spinner_modal("Generating Report", 
-                         "Please wait while the Natural Resources report is being generated...")
-
+                         "Please wait while the Habitat Component of the Natural Resources report is being generated...")
       
       # Get valid configurations
       valid_configs <- natural_resources_valid_configs()
@@ -373,25 +376,35 @@ function(input, output, session) {
         }
       }
       
-      # Get combined data if available
-      combined_data <- NULL
-      if(combined_maps_data$habitat_combined_map_generated) {
-        combined_data <- combined_maps_data$habitat
-        # Ensure combined data is also in WGS84
-        if(!is.null(combined_data) && inherits(combined_data, "sf")) {
-          combined_data <- st_transform(combined_data, '+proj=longlat +datum=WGS84')
+      # Get selected calculation methods from habitat tab
+      selected_methods <- input$habitatCalculationMethods %||% character(0)
+      
+      # Get combined data for each selected method if available
+      combined_data_list <- list()
+      if(combined_maps_data$habitat_combined_map_generated && length(selected_methods) > 0) {
+        if("geometric_mean" %in% selected_methods && !is.null(combined_maps_data$habitat)) {
+          combined_data_list[["geometric_mean"]] <- combined_maps_data$habitat
+        }
+        
+        if("lowest" %in% selected_methods && !is.null(combined_maps_data$habitat_lowest)) {
+          combined_data_list[["lowest"]] <- combined_maps_data$habitat_lowest
+        }
+        
+        if("product" %in% selected_methods && !is.null(combined_maps_data$habitat_product)) {
+          combined_data_list[["product"]] <- combined_maps_data$habitat_product
         }
       }
       
-      # Render the RMarkdown report
+      # Render the RMarkdown report with updated parameters
       rmarkdown::render(
         input = "Natural_Resources_Submodel.Rmd", 
         output_file = file,
         params = list(
           map_configs = valid_configs,
-          combined_data = combined_data,
+          combined_data_list = combined_data_list,  
+          selected_methods = selected_methods,     
           tab_name = "Natural Resources",
-          combined_map_title = "Combined Habitat Geometric Mean",
+          combined_map_title = "Combined Habitat Maps",
           data_timestamps = timestamp_info
         ),
         envir = new.env(parent = globalenv())
