@@ -47,7 +47,7 @@ generate_habitat_sidebar <- function(habitat_layers, score_values, current_tab =
                        selected = "geometric_mean"),
     hr(),
     h4("Combined Map Settings"),
-    actionButton("generateCombinedHabitatMap", "Generate Combined Map", 
+    actionButton("generateCombinedHabitatMap", "Generate Combined Map(s)", 
                  class = "btn-primary btn-block"),
     # Export button
     hr(),
