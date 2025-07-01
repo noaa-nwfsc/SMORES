@@ -1,5 +1,5 @@
 ---
-title: "Natural Resources Submodel Report"
+title: "Habitat Components of the Natural Resources Submodel Report"
 date: "`r format(Sys.time(), '%B %d, %Y at %H:%M:%S')`"
 output: 
   html_document:
@@ -10,99 +10,104 @@ output:
 params:
   map_configs: NULL
   combined_data: NULL
+  combined_data_list: NULL    
+  selected_methods: NULL    
   tab_name: "Natural Resources"
   combined_map_title: "Combined Map"
   data_timestamps: NULL
 ---
+
+```{css, include = FALSE}
 <style>
 body {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: 'Arial', sans-serif;
+max-width: 1200px;
+margin: 0 auto;
+padding: 20px;
+font-family: 'Arial', sans-serif;
 }
 
 .main-container {
-  max-width: 1200px;
-  margin: 0 auto;
+max-width: 1200px;
+margin: 0 auto;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  text-align: center;
-  margin: 20px 0;
+text-align: center;
+margin: 20px 0;
 }
 
 .leaflet-container {
-  margin: 20px auto;
-  display: block;
+margin: 20px auto;
+display: block;
 }
 
 table {
-  margin: 20px auto;
-  max-width: 800px;
+margin: 20px auto;
+max-width: 800px;
 }
 
 .table {
-  margin: 20px auto;
+margin: 20px auto;
 }
 
 p {
-  text-align: justify;
-  margin: 15px 0;
+text-align: justify;
+margin: 15px 0;
 }
 
 .tocify-wrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 260px;
-  height: 100%;
-  overflow: auto;
-  z-index: 1000;
+position: fixed;
+top: 0;
+left: 0;
+width: 260px;
+height: 100%;
+overflow: auto;
+z-index: 1000;
 }
 
 .col-md-9 {
-  margin-left: 280px;
-  max-width: calc(100% - 300px);
+margin-left: 280px;
+max-width: calc(100% - 300px);
 }
 
 /* Center specific elements */
 .centered-content {
-  text-align: center;
-  margin: 20px auto;
+text-align: center;
+margin: 20px auto;
 }
 
 /* Map container centering */
 .map-container {
-  display: flex;
-  justify-content: center;
-  margin: 20px 0;
+display: flex;
+justify-content: center;
+margin: 20px 0;
 }
 
 /* Ensure leaflet maps are responsive and centered */
 .leaflet {
-  max-width: 100%;
-  height: 400px;
-  margin: 0 auto;
+max-width: 100%;
+height: 400px;
+margin: 0 auto;
 }
 
 /* Style for configuration table */
 .config-table {
-  margin: 20px auto;
-  max-width: 600px;
+margin: 20px auto;
+max-width: 600px;
 }
 
 /* Center all chunk outputs */
 .chunk-output {
-  text-align: center;
+text-align: center;
 }
 
 /* Center kable tables */
 .kable-table {
-  margin-left: auto;
-  margin-right: auto;
+margin-left: auto;
+margin-right: auto;
 }
 </style>
+```
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.width = 12, fig.height = 8)
@@ -170,12 +175,26 @@ create_individual_map <- function(data, layer_name, score_value, map_title) {
     )
 }
 
-# Function to create combined map
-create_combined_map <- function(combined_data, title) {
-  if (is.null(combined_data) || !'Geo_mean' %in% names(combined_data)) {
+# Function to create combined map based on method
+create_combined_map <- function(combined_data, title, method = "geometric_mean") {
+  if (is.null(combined_data)) {
     return(leaflet() %>%
              addProviderTiles("Esri.OceanBasemap") %>%
-             addControl("No combined data available for this report.", position = "topright"))
+             addControl("No combined data available for this method.", position = "topright"))
+  }
+  
+  # Determine the column name based on method
+  value_column <- switch(method,
+                         "geometric_mean" = "Geo_mean",
+                         "lowest" = if("Lowest" %in% names(combined_data)) "Lowest" else "Lowest_value",
+                         "product" = if("Product" %in% names(combined_data)) "Product" else "Product_value",
+                         "Geo_mean"  # default fallback
+)
+  
+  if (!value_column %in% names(combined_data)) {
+    return(leaflet() %>%
+             addProviderTiles("Esri.OceanBasemap") %>%
+             addControl(paste("No", method, "data available."), position = "topright"))
   }
   
   # Ensure data is in the correct CRS for leaflet
@@ -184,40 +203,57 @@ create_combined_map <- function(combined_data, title) {
   }
   
   # Filter out NA values for domain calculation
-  valid_values <- combined_data$Geo_mean[!is.na(combined_data$Geo_mean)]
+  valid_values <- combined_data[[value_column]][!is.na(combined_data[[value_column]])]
   
   if(length(valid_values) == 0) {
     return(leaflet() %>%
              addProviderTiles("Esri.OceanBasemap") %>%
-             addControl("No valid geometric mean data available.", position = "topright"))
+             addControl("No valid data available for this method.", position = "topright"))
   }
   
-  # Create color palette for geometric mean values
+  # Create color palette
   pal <- colorNumeric(
     palette = "viridis",
     domain = range(valid_values),
     na.color = 'transparent'
   )
   
-  leaflet(combined_data) %>%
+  # Create popup text based on method
+  popup_text <- switch(method,
+    "geometric_mean" = ~paste0(
+      '<strong>Geometric Mean:</strong> ', round(get(value_column), 3), '<br>',
+      '<strong>Cell ID:</strong> ', CellID_2km
+    ),
+    "lowest" = ~paste0(
+      '<strong>Lowest Score:</strong> ', round(get(value_column), 3), '<br>',
+      '<strong>Cell ID:</strong> ', CellID_2km
+    ),
+    "product" = ~paste0(
+      '<strong>Product:</strong> ', round(get(value_column), 3), '<br>',
+      '<strong>Cell ID:</strong> ', CellID_2km
+    ),
+    ~paste0(
+      '<strong>Value:</strong> ', round(get(value_column), 3), '<br>',
+      '<strong>Cell ID:</strong> ', CellID_2km
+    )
+  )
+  
+ leaflet(combined_data) %>%
     addProviderTiles("Esri.OceanBasemap",
                      options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
     addProviderTiles("Esri.OceanBasemap",
                      options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
     addPolygons(
-      fillColor = ~pal(Geo_mean),
+      fillColor = ~pal(get(value_column)),
       weight = 1,
       opacity = 1,
       color = '#00000000',
       fillOpacity = 0.7,
-      popup = ~paste0(
-        '<strong>Geometric Mean:</strong> ', round(Geo_mean, 3), '<br>',
-        '<strong>Cell ID:</strong> ', CellID_2km
-      )
+      popup = popup_text
     ) %>%
     addLegend(
       pal = pal,
-      values = ~Geo_mean,
+      values = ~get(value_column),
       title = title,
       position = 'bottomright',
       opacity = 1
@@ -233,38 +269,45 @@ if (is.null(params$data_timestamps)) {
 }
 ```
 
+## Data Layers Information
+
+This report includes data from the following selected layers, with their last update timestamps:
+
 ```{r}
-if (!is.null(params$map_configs) && length(params$map_configs) > 0) {
-  config_df <- data.frame(
-    'Map' = 1:length(params$map_configs),
-    'Layer Name' = sapply(params$map_configs, function(x) x$layer),
-    'Score Value' = sapply(params$map_configs, function(x) x$score),
-    'Data Points' = sapply(params$map_configs, function(x) nrow(x$data)),
-    stringsAsFactors = FALSE
-  )
+if (!is.null(params$data_timestamps) && !is.null(params$data_timestamps$data_timestamps)) {
+  display_table <- params$data_timestamps$data_timestamps %>%
+    filter(!is.na(formatted_date)) %>%
+    select(dataset_name, description, formatted_date) %>%
+    rename(
+      "Dataset" = dataset_name,
+      "Description" = description,
+      "Last Updated" = formatted_date
+    )
   
- # Create centered table
-  cat('<div class="config-table">')
-  print(kable(config_df, caption = paste(params$tab_name, 'Layer Configuration Details'), format = "html", table.attr = "class='table table-striped'"))
-  cat('</div>')
+  if (nrow(display_table) > 0) {
+    kable(display_table, 
+          caption = "Selected Data Layer Update Information",
+          format = "html",
+          table.attr = "class='table table-striped'")
+  } else {
+    "No timestamp information available for the selected data layers."
+  }
 } else {
-  cat('<div class="centered-content">No individual layers were configured for this report.</div>')
+  "Timestamp information not available."
 }
 ```
 
 ```{r}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 1) {
   config <- params$map_configs[[1]]
-   cat('<div class="centered-content">')
   cat("### Map 1:", config$layer, "(Score:", config$score, ")\n\n")
   cat("**Layer:** ", config$layer, "  \n")
   cat("**Score:** ", config$score, "  \n") 
   cat("**Data Points:** ", nrow(config$data), "  \n\n")
-  cat('</div>')
 }
 ```
 
-```{r}
+```{r, fig.align='center'}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 1) {
   config <- params$map_configs[[1]]
   create_individual_map(
@@ -430,49 +473,76 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 8) {
 }
 ```
 
+## Combined Maps
+
+### Combined Map - Geometric Mean
 ```{r}
-if (!is.null(params$combined_data)) {
-  cat("**Combined Data Points:** ", nrow(params$combined_data), "  \n")
-  cat("**Calculation Method:** Geometric Mean  \n\n")
-} else {
-  cat("No combined map data available. Please generate a combined map in the application first.\n\n")
-}
-```
-
-```{r}
-if (!is.null(params$combined_data)) {
-  # Create and display the combined map
-  combined_map <- create_combined_map(params$combined_data, params$combined_map_title)
-  combined_map
-} else {
-  leaflet() %>%
-    addProviderTiles("Esri.OceanBasemap") %>%
-    addControl("No combined map data available.", position = "topright")
-}
-```
-
-## Data Layers Information
-
-This report includes data from the following selected layers, with their last update timestamps:
-
-```{r}
-if (!is.null(params$data_timestamps) && !is.null(params$data_timestamps$data_timestamps)) {
-  display_table <- params$data_timestamps$data_timestamps %>%
-    filter(!is.na(formatted_date)) %>%
-    select(dataset_name, formatted_date) %>%
-    rename(
-      "Dataset" = dataset_name,
-      "Last Updated" = formatted_date
-    )
-  
-  if (nrow(display_table) > 0) {
-    kable(display_table, 
-          caption = "Selected Data Layer Update Information",
-          format = "html",
-          table.attr = "class='table table-striped'")
-  } else {
-    cat("No timestamp information available for the selected data layers.")
+if (!is.null(params$selected_methods) && "geometric_mean" %in% params$selected_methods && 
+    !is.null(params$combined_data_list) && "geometric_mean" %in% names(params$combined_data_list)) {
+  combined_data <- params$combined_data_list[["geometric_mean"]]
+  if(!is.null(combined_data)) {
+    cat("**Combined Data Points:** ", nrow(combined_data), "  \n")
+    cat("**Calculation Method:** Geometric Mean  \n\n")
   }
 } else {
-  cat("Timestamp information not available.")
+  cat("*Geometric mean calculation method was not selected or data is not available.*\n\n")
 }
+
+if (!is.null(params$selected_methods) && "geometric_mean" %in% params$selected_methods && 
+    !is.null(params$combined_data_list) && "geometric_mean" %in% names(params$combined_data_list)) {
+  combined_data <- params$combined_data_list[["geometric_mean"]]
+  if(!is.null(combined_data)) {
+    create_combined_map(combined_data, paste(params$combined_map_title, "- Geometric Mean"), "geometric_mean")
+  }
+}
+```
+
+### Combined Map - Lowest Score
+
+```{r}
+if (!is.null(params$selected_methods) && "lowest" %in% params$selected_methods && 
+    !is.null(params$combined_data_list) && "lowest" %in% names(params$combined_data_list)) {
+  combined_data <- params$combined_data_list[["lowest"]]
+  if(!is.null(combined_data)) {
+    cat("**Combined Data Points:** ", nrow(combined_data), "  \n")
+    cat("**Calculation Method:** Lowest Score  \n\n")
+  }
+} else {
+  cat("*Lowest score calculation method was not selected or data is not available.*\n\n")
+}
+```
+
+```{r}
+if (!is.null(params$selected_methods) && "lowest" %in% params$selected_methods && 
+    !is.null(params$combined_data_list) && "lowest" %in% names(params$combined_data_list)) {
+  combined_data <- params$combined_data_list[["lowest"]]
+  if(!is.null(combined_data)) {
+    create_combined_map(combined_data, paste(params$combined_map_title, "- Lowest Score"), "lowest")
+  }
+}
+```
+
+### Combined Map - Product
+
+```{r}
+if (!is.null(params$selected_methods) && "product" %in% params$selected_methods && 
+    !is.null(params$combined_data_list) && "product" %in% names(params$combined_data_list)) {
+  combined_data <- params$combined_data_list[["product"]]
+  if(!is.null(combined_data)) {
+    cat("**Combined Data Points:** ", nrow(combined_data), "  \n")
+    cat("**Calculation Method:** Product  \n\n")
+  }
+} else {
+  cat("*Product calculation method was not selected or data is not available.*\n\n")
+}
+```
+
+```{r}
+if (!is.null(params$selected_methods) && "product" %in% params$selected_methods && 
+    !is.null(params$combined_data_list) && "product" %in% names(params$combined_data_list)) {
+  combined_data <- params$combined_data_list[["product"]]
+  if(!is.null(combined_data)) {
+    create_combined_map(combined_data, paste(params$combined_map_title, "- Product"), "product")
+  }
+}
+```
