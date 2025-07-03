@@ -8,6 +8,7 @@ library(caret) #for 0-1 normalization function "preProcess"
 library(normalize)
 library(magrittr)
 library(tidyr)
+library(arcgis)
 
 
 # set working directory
@@ -331,7 +332,7 @@ st_crs(DSC_RH_scored_long) == st_crs(HAPCaoi_scored_long)
 saveRDS(HAPCaoi_scored_long, "U:\\Github\\SMORES\\data\\HAPCaoi_scored.rds")
 
 #HAPCReef
-HAPCreef.grid <- readRDS("U:\\Github\\OWEC\\data\\Lyr_HAPCReef.rds")
+HAPCreef.grid <- readRDS("U:\\Github\\SMORES\\data\\Lyr_20250701_HAPCReef.rds")
 saveRDS(HAPCreef.grid, "U:\\Github\\SMORES\\data\\HAPCreef_grid.rds" )
 HAPCreef_score <- HAPCreef.grid %>%
   st_drop_geometry() %>% 
@@ -495,3 +496,38 @@ humpback_whale_scored_long <- pivot_longer(humpback_whale_scored, cols = starts_
   select(-humpback_whale)
 st_crs(DSC_RH_scored_long) == st_crs(humpback_whale_scored_long)
 saveRDS(humpback_whale_scored_long, "U:\\Github\\SMORES\\data\\humpback_whale_scored.rds")
+
+#submarine cables
+furl_nms <- "https://coast.noaa.gov/arcgis/rest/services/Hosted/SubmarineCables/FeatureServer/0"
+nms_layer <- arc_read(furl_nms, where = "status = 'In Service'
+                or status = 'Under Construction'") %>% 
+  st_transform(crsOut)
+submarine_cable.grid <- sf::st_intersection(nms_layer, grd.norcal) %>%
+  mutate(Score.submarine_cable = 0) %>%
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid 
+  #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.submarine_cable, status) #use for 2km grid
+submarine_cable_score <- submarine_cable.grid %>%
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+submarine_cable_scored <- grd.norcal %>%
+  full_join(submarine_cable_score, by = "CellID_2km") %>%
+  filter(Score.submarine_cable == 0) %>%
+  rename("1" = Score.submarine_cable) %>%
+  mutate("0.1" = 0.1,
+         "0.2" = 0.2,
+         "0.3" = 0.3,
+         "0.4" = 0.4,
+         "0.5" = 0.5,
+         "0.6" = 0.6,
+         "0.7" = 0.7,
+         "0.8" = 0.8,
+         "0.9" = 0.9) 
+submarine_cable_scored_long <- pivot_longer(submarine_cable_scored, cols = starts_with(c("0.", "1")), names_to = "submarine_cable", values_to = "Score.submarine_cable") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-submarine_cable)
+st_crs(DSC_RH_scored_long) == st_crs(submarine_cable_scored_long)
+saveRDS(submarine_cable_scored_long, "U:\\Github\\SMORES\\data\\submarine_cable_scored.rds")
