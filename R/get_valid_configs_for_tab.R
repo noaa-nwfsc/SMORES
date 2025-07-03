@@ -118,6 +118,46 @@ get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colo
         }
       }
     }
+    } else if(current_tab == "cables") {
+      # Special handling for cables tab which uses different input naming pattern
+      cable_layers <- names(layer_data)
+      
+      for(layer_name in cable_layers) {
+        # Create consistent IDs
+        layer_id <- gsub(" ", "_", layer_name)
+        layer_id <- gsub("[^A-Za-z0-9_]", "", layer_id)
+        
+        enable_input_id <- paste0("EnableCablesLayer_", layer_id)
+        score_input_id <- paste0("CablesScorePicker_", layer_id)
+        
+        # Check if this layer is enabled
+        is_enabled <- !is.null(input[[enable_input_id]]) && input[[enable_input_id]]
+        
+        if(is_enabled) {
+          score_value <- input[[score_input_id]]
+          
+          if(!is.null(score_value) && score_value != "None") {
+            # Get score color
+            score_color <- score_colors[[score_value]]
+            
+            # Filter data by score
+            if(layer_name %in% names(layer_data)) {
+              filtered_data <- filter_by_score(layer_data[[layer_name]], score_value)
+              
+              # Add to valid configs
+              valid_configs[[length(valid_configs) + 1]] <- list(
+                index = index,
+                layer = layer_name,
+                score = score_value,
+                color = score_color,
+                data = filtered_data
+              )
+              
+              index <- index + 1
+            }
+          }
+        }
+      }
   } else {
     # Handling for other tabs ( birds)
     # Set the prefix based on the tab
