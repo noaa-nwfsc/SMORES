@@ -32,6 +32,8 @@ source("R/sidebar_helpers.R")
 source("R/submodel_configurations.R")
 source("R/generate_overall_model_sidebar.R")
 source("R/generate_natural_resources_combined_sidebar.R")
+source("R/create_combined_submodel_map.R")
+source("R/generate_cables_sidebar.R")
 
 # Get data timestamps information
 timestamp_info <- get_data_timestamps()
@@ -60,7 +62,8 @@ humpback_whale <- readRDS("data/humpback_whale_scored.rds")
 ###Survey Layers
 surveys_fixed <- readRDS("data/Surveys_fixed_scored.rds")
 surveys_periodic <- readRDS("data/Surveys_periodic_scored.rds")
-
+###
+submarine_cable <- readRDS("data/submarine_cable_scored.rds")
 grid_test <- readRDS("data/2km_grid_norcal.rds")
 
 
@@ -93,6 +96,9 @@ bird_layer <- list (
 surveys_layers <- list(
   "Fixed Surveys" = surveys_fixed,
   "Periodic Surveys" = surveys_periodic
+)
+submarine_cable_layer <- list(
+  "Submarine Cables" = submarine_cable
 )
 
 # Weight values
