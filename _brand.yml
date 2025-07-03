@@ -125,7 +125,7 @@ color:
   # used for lighter text or disabled states
   secondary: purple
   # neutral or informational actions and information
-  info: oceans-noaa-sea
+  info: teal
   
   success: purple
   warning: dark-orange
