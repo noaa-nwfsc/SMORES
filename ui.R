@@ -194,12 +194,21 @@ tagList(
             title = "Combined Submodel",
             icon = icon("object-group"),
             value = "combined_model_natural_resources",
-            layout_columns(
-              card(
-                card_header("Combined Submodel"),
-                card_body(
-                  includeMarkdown("markdown/combined_natural_resources_submodel.md")
-                )
+            
+            # Info card
+            card(
+              card_header("Combined Natural Resources Submodel"),
+              card_body(
+                includeMarkdown("markdown/combined_natural_resources_submodel.md")
+              )
+            ),
+            
+            # Map container - ALWAYS present, conditionally populated
+            card(
+              card_header("Combined Natural Resources Submodel Result"),
+              card_body(
+                # Placeholder that gets replaced when map is generated
+                uiOutput("naturalResourcesCombinedMapContainer")
               )
             )
           )
@@ -253,9 +262,9 @@ tagList(
           
           # Inset Tab 2
           nav_panel(
-            title = "Misc",
+            title = "Submarine Cables",
             icon = icon("industry"),
-            value = "misc",
+            value = "cables",
             
             # Info about map settings
             card(
@@ -266,7 +275,7 @@ tagList(
             ),
             
             # Container for multiple maps
-            uiOutput("multipleMapsContainer_misc")
+            uiOutput("multipleMapsContainer_cables")
             
           ),
           # Inset Tab 3
