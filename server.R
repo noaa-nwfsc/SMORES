@@ -2,15 +2,23 @@ function(input, output, session) {
   
   # Create a reactive values object to store combined maps data
   combined_maps_data <- reactiveValues(
-    habitat = NULL,
+    habitat_geo = NULL,
     habitat_lowest = NULL,
     habitat_product = NULL,
-    species = NULL,
-    birds = NULL,
-    industry = NULL, 
     habitat_combined_map_generated = FALSE,
+    species_geo = NULL,
+    species_lowest = NULL,
+    species_product = NULL,
     species_combined_map_generated = FALSE,
-    surveys_combined_map_generated = FALSE
+    birds = NULL,
+    natural_resources_combined_submodel = NULL,
+    natural_resources_combined_submodel_generated = FALSE,
+    industry = NULL, 
+    surveys_combined_map_generated = FALSE, 
+    cables_geo = NULL,
+    cables_lowest = NULL,
+    cables_product = NULL, 
+    cables_combined_map_generated = FALSE
   )
   
   # filter dataframes by score 
@@ -112,7 +120,7 @@ function(input, output, session) {
     # For Industry & Operations, we check if we have dataTabs (which means we're on the Natural Resources section)
     # OR if navbar is explicitly set to Industry & Operations
     is_industry_operations <- (!is.null(input$dataTabs_industry_operations) && 
-                               input$dataTabs_industry_operations %in% c("surveys", "misc", "combined_model_industry_operations")) ||
+                               input$dataTabs_industry_operations %in% c("surveys", "cables", "combined_model_industry_operations")) ||
       (!is.null(input$navbar) && input$navbar == "Industry & Operations Submodel")
     
     if(!is_industry_operations) {
@@ -125,7 +133,7 @@ function(input, output, session) {
     # Set the layer data based on the current data tab
     layer_data <- switch(current_tab_industry_operations,
                          "surveys" = surveys_layer,
-                        # "misc" = misc_layer,
+                         "cables" = submarine_cable_layer,
                          NULL)
     
     # Use your existing function to get valid configurations
@@ -250,13 +258,20 @@ function(input, output, session) {
         submodel_config = industry_operations_config
       )
       
-    } else if (current_tab_industry_operations == "misc") {
-      # Get the layer names for misc
-      misc_layers <- names(misc_layer)
+    } else if (current_tab_industry_operations == "cables") {
+      # Get the layer names for cables
+      cable_layers <- names(submarine_cable_layer)
       
-      #use function to make misc sidebar
-      generate_misc_sidebar(misc_layers, score_values)
+      #use function to make cables sidebar
+      generate_cables_sidebar(submarine_cable_layer, score_values)
       
+      #use function to make cables sidebar
+      generate_cables_sidebar(
+        submarine_cable_layer, 
+        score_values, 
+        current_tab = current_tab_industry_operations,
+        submodel_config = industry_operations_config
+      )
 
       # Combined Model Tab
     } else if(current_tab_industry_operations == "combined_model_industry_operations") {
@@ -324,8 +339,8 @@ function(input, output, session) {
     if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
       local({
         result <- all_results[["geometric_mean"]]
-        output$combinedHabitatMap <- renderLeaflet({ result$map })
-        combined_maps_data$habitat <- result$combined_data
+        output$combinedHabitatMap_geo <- renderLeaflet({ result$map })
+        combined_maps_data$habitat_geo <- result$combined_data
       })
     }
     
@@ -382,8 +397,8 @@ function(input, output, session) {
       # Get combined data for each selected method if available
       combined_data_list <- list()
       if(combined_maps_data$habitat_combined_map_generated && length(selected_methods) > 0) {
-        if("geometric_mean" %in% selected_methods && !is.null(combined_maps_data$habitat)) {
-          combined_data_list[["geometric_mean"]] <- combined_maps_data$habitat
+        if("geometric_mean" %in% selected_methods && !is.null(combined_maps_data$habitat_geo)) {
+          combined_data_list[["geometric_mean"]] <- combined_maps_data$habitat_geo
         }
         
         if("lowest" %in% selected_methods && !is.null(combined_maps_data$habitat_lowest)) {
@@ -405,7 +420,8 @@ function(input, output, session) {
           selected_methods = selected_methods,     
           tab_name = "Natural Resources",
           combined_map_title = "Combined Habitat Maps",
-          data_timestamps = timestamp_info
+          data_timestamps = timestamp_info, 
+          component_name = "Habitat"
         ),
         envir = new.env(parent = globalenv())
       )
@@ -465,12 +481,12 @@ function(input, output, session) {
       map_type = "Species"
     )
     
-    # IMPORTANT: Render each map individually
+    # Store results for all methods
     if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
       local({
         result <- all_results[["geometric_mean"]]
-        output$combinedSpeciesMap <- renderLeaflet({ result$map })
-        combined_maps_data$species <- result$combined_data
+        output$combinedSpeciesMap_geo <- renderLeaflet({ result$map })
+        combined_maps_data$species_geo <- result$combined_data
       })
     }
     
@@ -478,13 +494,15 @@ function(input, output, session) {
       local({
         result <- all_results[["lowest"]]
         output$combinedSpeciesMap_lowest <- renderLeaflet({ result$map })
+        combined_maps_data$species_lowest <- result$combined_data
       })
     }
     
-    if("product" %in% selected_methods && "product" %in% names(all_results)) {
+    if("product" %in% selected_methods && "product" %in% names(all_results)) {  
       local({
         result <- all_results[["product"]]
         output$combinedSpeciesMap_product <- renderLeaflet({ result$map })
+        combined_maps_data$species_product <- result$combined_data  # This was already correct
       })
     }
     
@@ -494,6 +512,70 @@ function(input, output, session) {
     # Remove modal spinner
     removeModal()
   })
+  
+  # Species/Natural Resources tab export
+  output$speciesExportRmd <- downloadHandler(
+    filename = function() {
+      paste("Species_Component_Natural_Resources_Submodel_Report_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+    },
+    content = function(file) {
+      # Show modal with spinner
+      show_spinner_modal("Generating Report", 
+                         "Please wait while the Species Component of the Natural Resources report is being generated...")
+      
+      # Get valid configurations
+      valid_configs <- natural_resources_valid_configs()
+      
+      # Get filtered timestamp information for the selected layers
+      timestamp_info <- get_filtered_timestamp_data(valid_configs, "species")
+      
+      # Make sure each valid_config has valid spatial data
+      for(i in seq_along(valid_configs)) {
+        # Ensure data is transformed to WGS84 for leaflet
+        if(!is.null(valid_configs[[i]]$data) && inherits(valid_configs[[i]]$data, "sf")) {
+          valid_configs[[i]]$data <- st_transform(valid_configs[[i]]$data, '+proj=longlat +datum=WGS84')
+        }
+      }
+      
+      # Get selected calculation methods from habitat tab
+      selected_methods <- input$speciesCalculationMethods %||% character(0)
+      
+      # Get combined data for each selected method if available
+      combined_data_list <- list()
+      if(combined_maps_data$species_combined_map_generated && length(selected_methods) > 0) {
+        if("geometric_mean" %in% selected_methods && !is.null(combined_maps_data$species_geo)) {
+          combined_data_list[["geometric_mean"]] <- combined_maps_data$species_geo
+        }
+        
+        if("lowest" %in% selected_methods && !is.null(combined_maps_data$species_lowest)) {
+          combined_data_list[["lowest"]] <- combined_maps_data$species_lowest
+        }
+        
+        if("product" %in% selected_methods && !is.null(combined_maps_data$species_product)) {
+          combined_data_list[["product"]] <- combined_maps_data$species_product
+        }
+      }
+      
+      # Render the RMarkdown report with updated parameters
+      rmarkdown::render(
+        input = "Natural_Resources_Submodel.Rmd", 
+        output_file = file,
+        params = list(
+          map_configs = valid_configs,
+          combined_data_list = combined_data_list,  
+          selected_methods = selected_methods,     
+          tab_name = "Natural Resources",
+          combined_map_title = "Combined Species Maps",
+          data_timestamps = timestamp_info, 
+          component_name = "Species"
+        ),
+        envir = new.env(parent = globalenv())
+      )
+      
+      # Remove the modal when done
+      removeModal()
+    }
+  )
   
   # Multiple maps container for surveys
   output$multipleMapsContainer_surveys <- renderUI({
@@ -569,6 +651,86 @@ function(input, output, session) {
     
     # Set flag to indicate combined map has been generated
     combined_maps_data$surveys_combined_map_generated <- TRUE
+    
+    # Remove modal spinner
+    removeModal()
+  })
+  
+  # Multiple maps container for cables
+  output$multipleMapsContainer_cables <- renderUI({
+    valid_configs <- industry_operations_valid_configs()
+    selected_methods <- input$cablesCalculationMethods %||% character(0)
+    
+    create_maps_container(
+      configs = valid_configs,
+      namespace = "industryoperations",
+      combined_map_output_id = "combinedCablesMap",
+      combined_map_generated = combined_maps_data$cables_combined_map_generated,
+      combined_map_title = "Combined Map Result",
+      selected_methods = selected_methods
+    )
+  })
+  
+  # Combined map logic
+  observeEvent(input$generateCombinedCablesMap, {
+    # Get selected calculation methods
+    selected_methods <- input$cablesCalculationMethods
+    
+    if(is.null(selected_methods) || length(selected_methods) == 0) {
+      showNotification("Please select at least one calculation method.", type = "warning")
+      return()
+    }
+    
+    # Show modal with spinner
+    show_spinner_modal("Generating Combined Map(s)", 
+                       paste("Please wait while", length(selected_methods), "combined map(s) are being generated..."))
+    
+    # Add a small delay to ensure the modal is visible
+    Sys.sleep(0.5)
+    
+    # Define dataset mapping for species tab
+    cables_dataset_mapping <- list(
+      "Submarine Cables" = list(data = submarine_cable, score_column = "Score.submarine_cable")
+    )
+    
+    # Get valid configurations
+    valid_configs <- industry_operations_valid_configs()
+    
+    # Generate all maps at once
+    all_results <- generate_combined_maps_all_methods(
+      valid_configs = valid_configs,
+      dataset_mapping = cables_dataset_mapping,
+      selected_methods = selected_methods,
+      map_type = "Cables"
+    )
+    
+    # Store results for all methods
+    if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
+      local({
+        result <- all_results[["geometric_mean"]]
+        output$combinedCablesMap_geo <- renderLeaflet({ result$map })
+        combined_maps_data$cables_geo <- result$combined_data
+      })
+    }
+    
+    if("lowest" %in% selected_methods && "lowest" %in% names(all_results)) {
+      local({
+        result <- all_results[["lowest"]]
+        output$combinedCablesMap_lowest <- renderLeaflet({ result$map })
+        combined_maps_data$cables_lowest <- result$combined_data
+      })
+    }
+    
+    if("product" %in% selected_methods && "product" %in% names(all_results)) {  
+      local({
+        result <- all_results[["product"]]
+        output$combinedCablesMap_product <- renderLeaflet({ result$map })
+        combined_maps_data$cables_product <- result$combined_data  # This was already correct
+      })
+    }
+    
+    # Set flag to indicate combined map has been generated
+    combined_maps_data$cables_combined_map_generated <- TRUE
     
     # Remove modal spinner
     removeModal()
@@ -725,4 +887,230 @@ function(input, output, session) {
         "Last Updated" = formatted_date
       )
   })
+  
+  # Add this output to handle validation messages
+  output$naturalResourcesCombinedValidation <- renderUI({
+    # Get component selections
+    include_habitat <- input$includeHabitat %||% FALSE
+    include_species <- input$includeSpecies %||% FALSE
+    include_birds <- input$includeBirds %||% FALSE
+    
+    # Check if any components are selected
+    any_selected <- include_habitat || include_species || include_birds
+    
+    if(!any_selected) {
+      div(class = "alert alert-warning", 
+          "Please select at least one component to generate the combined submodel.")
+    } else {
+      # Check if selected components have valid data
+      selected_components <- c()
+      if(include_habitat && combined_maps_data$habitat_combined_map_generated) {
+        selected_components <- c(selected_components, "Habitat")
+      }
+      if(include_species && combined_maps_data$species_combined_map_generated) {
+        selected_components <- c(selected_components, "Species")
+      }
+      if(include_birds && FALSE) {  # Update when birds is implemented
+        selected_components <- c(selected_components, "Birds")
+      }
+      
+      if(length(selected_components) == 0) {
+        div(class = "alert alert-danger", 
+            "Selected components do not have combined maps generated. Please generate component maps first.")
+      } else {
+        div(class = "alert alert-success", 
+            paste("✓ Ready to generate combined submodel using:", paste(selected_components, collapse = ", ")))
+      }
+    }
+  })
+  
+  # Add this observeEvent for the generate button
+  observeEvent(input$generateNaturalResourcesCombinedSubmodel, {
+    # Add error handling wrapper
+    tryCatch({
+      # Get component selections
+      include_habitat <- isTRUE(input$includeHabitat)
+      include_species <- isTRUE(input$includeSpecies) 
+      include_birds <- isTRUE(input$includeBirds)
+      
+      # Add debug prints
+      cat("DEBUG: Component selections - Habitat:", include_habitat, 
+          "Species:", include_species, "Birds:", include_birds, "\n")
+      
+      # Validate selections
+      if(!include_habitat && !include_species && !include_birds) {
+        showNotification("Please select at least one component.", type = "warning")
+        return()
+      }
+      
+      # Show spinner modal
+      show_spinner_modal("Generating Combined Natural Resources Submodel", 
+                         "Please wait while the combined submodel is being calculated...")
+      
+      # Add debug for data availability
+      cat("DEBUG: Data availability - Habitat generated:", 
+          combined_maps_data$habitat_combined_map_generated,
+          "Species generated:", combined_maps_data$species_combined_map_generated, "\n")
+      
+      # Collect component data based on user selections
+      component_data_list <- list()
+      
+      if(include_habitat && combined_maps_data$habitat_combined_map_generated) {
+        method <- input$habitatCalculationMethod %||% "geometric_mean"
+        cat("DEBUG: Habitat method selected:", method, "\n")
+        
+        habitat_data <- switch(method,
+                               "geometric_mean" = combined_maps_data$habitat_geo,
+                               "lowest" = combined_maps_data$habitat_lowest,
+                               "product" = combined_maps_data$habitat_product,
+                               combined_maps_data$habitat_geo)  # fallback
+        
+        cat("DEBUG: Habitat data is null:", is.null(habitat_data), "\n")
+        if(!is.null(habitat_data)) {
+          cat("DEBUG: Habitat data rows:", nrow(habitat_data), "\n")
+          component_data_list[["habitat"]] <- habitat_data
+        }
+      }
+      
+      if(include_species && combined_maps_data$species_combined_map_generated) {
+        method <- input$speciesCalculationMethod %||% "geometric_mean"
+        cat("DEBUG: Species method selected:", method, "\n")
+        
+        species_data <- switch(method,
+                               "geometric_mean" = combined_maps_data$species_geo,
+                               "lowest" = combined_maps_data$species_lowest,
+                               "product" = combined_maps_data$species_product,
+                               combined_maps_data$species_geo)  # fallback
+        
+        cat("DEBUG: Species data is null:", is.null(species_data), "\n")
+        if(!is.null(species_data)) {
+          cat("DEBUG: Species data rows:", nrow(species_data), "\n")
+          component_data_list[["species"]] <- species_data
+        }
+      }
+      
+      cat("DEBUG: Component data list length:", length(component_data_list), "\n")
+      
+      # Generate the combined submodel using geometric mean
+      if(length(component_data_list) > 0) {
+        cat("DEBUG: Calling create_combined_submodel\n")
+        
+        combined_submodel_result <- create_combined_submodel(component_data_list)
+        
+        cat("DEBUG: Combined submodel result is null:", is.null(combined_submodel_result), "\n")
+        
+        # Store the result
+        combined_maps_data$natural_resources_combined_submodel <- combined_submodel_result$combined_data
+        combined_maps_data$natural_resources_combined_submodel_generated <- TRUE
+        
+        # IMPORTANT: Store the map object for rendering
+        combined_maps_data$natural_resources_combined_map <- combined_submodel_result$map
+        
+        showNotification("Combined Natural Resources Submodel generated successfully!", type = "message")
+      } else {
+        showNotification("No valid component data available for selected components.", type = "error")
+      }
+      
+      # Remove spinner modal
+      removeModal()
+      
+    }, error = function(e) {
+      # Remove modal on error
+      removeModal()
+      
+      # Show error notification
+      showNotification(paste("Error generating combined submodel:", e$message), 
+                       type = "error", duration = 10)
+      
+      # Print full error to console
+      cat("ERROR in generateNaturalResourcesCombinedSubmodel:", e$message, "\n")
+      cat("Full error object:", str(e), "\n")
+    })
+  })
+  
+  # SEPARATE renderLeaflet - this is the key fix
+  output$naturalResourcesCombinedMap <- renderLeaflet({
+    cat("DEBUG: Rendering combined map\n")
+    
+    # Check if the map is available
+    if(!is.null(combined_maps_data$natural_resources_combined_map)) {
+      cat("DEBUG: Map object found, rendering\n")
+      combined_maps_data$natural_resources_combined_map
+    } else {
+      cat("DEBUG: No map object found\n")
+      # Return a placeholder map
+      leaflet() %>%
+        addProviderTiles("Esri.OceanBasemap") %>%
+        addControl("Generate combined submodel to see map", position = "center")
+    }
+  })
+  
+  # Render the map container content
+  output$naturalResourcesCombinedMapContainer <- renderUI({
+    cat("DEBUG: Rendering map container, generated flag:", 
+        combined_maps_data$natural_resources_combined_submodel_generated, "\n")
+    
+    if(combined_maps_data$natural_resources_combined_submodel_generated) {
+      tagList(
+        p("This map shows the combined Natural Resources submodel calculated using the geometric mean of selected components."),
+        leafletOutput("naturalResourcesCombinedMap")
+      )
+    } else {
+      div(
+        style = "text-align: center; padding: 40px; color: #666;",
+        p("Combined submodel map will appear here after generation."),
+        p("Use the sidebar to configure and generate the combined submodel.")
+      )
+    }
+  })
+  
+  # Add this downloadHandler for the combined submodel export
+  output$naturalResourcesCombinedExport <- downloadHandler(
+    filename = function() {
+      paste("Natural_Resources_Combined_Submodel_Report_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+    },
+    content = function(file) {
+      # Show spinner modal
+      show_spinner_modal("Generating Combined Submodel Report", 
+                         "Please wait while the Natural Resources Combined Submodel report is being generated...")
+      
+      # Get component selections for the report
+      selected_components <- c()
+      component_methods <- c()
+      
+      if(input$includeHabitat %||% FALSE) {
+        selected_components <- c(selected_components, "Habitat")
+        component_methods <- c(component_methods, paste("Habitat:", input$habitatCalculationMethod %||% "geometric_mean"))
+      }
+      if(input$includeSpecies %||% FALSE) {
+        selected_components <- c(selected_components, "Species")
+        component_methods <- c(component_methods, paste("Species:", input$speciesCalculationMethod %||% "geometric_mean"))
+      }
+      if(input$includeBirds %||% FALSE) {
+        selected_components <- c(selected_components, "Birds")
+        component_methods <- c(component_methods, paste("Birds:", input$birdsCalculationMethod %||% "geometric_mean"))
+      }
+      
+      # Render the report
+      rmarkdown::render(
+        input = "Natural_Resources_Submodel.Rmd", 
+        output_file = file,
+        params = list(
+          map_configs = list(),  # No individual map configs for combined submodel
+          combined_data_list = list("combined_submodel" = combined_maps_data$natural_resources_combined_submodel),
+          selected_methods = c("combined_submodel"),
+          tab_name = "Natural Resources",
+          combined_map_title = "Combined Natural Resources Submodel",
+          data_timestamps = NULL,
+          component_name = "Combined Natural Resources",
+          selected_components = selected_components,
+          component_methods = component_methods
+        ),
+        envir = new.env(parent = globalenv())
+      )
+      
+      # Remove modal
+      removeModal()
+    }
+  )
 }
