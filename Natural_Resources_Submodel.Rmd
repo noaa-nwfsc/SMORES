@@ -1,5 +1,5 @@
 ---
-title: "Habitat Components of the Natural Resources Submodel Report"
+title: " `r paste(params$component_name, 'Component of the Natural Resources Submodel Report')`"
 date: "`r format(Sys.time(), '%B %d, %Y at %H:%M:%S')`"
 output: 
   html_document:
@@ -14,7 +14,8 @@ params:
   selected_methods: NULL    
   tab_name: "Natural Resources"
   combined_map_title: "Combined Map"
-  data_timestamps: NULL
+  data_timestamps: NULL, 
+  component_name: "Natural Resources"
 ---
 
 ```{css, include = FALSE}
