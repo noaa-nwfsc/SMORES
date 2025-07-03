@@ -31,7 +31,7 @@ create_maps_container <- function(configs, namespace, combined_map_output_id, co
       
       # Create appropriate output ID for each method
       output_id <- if(method == "geometric_mean") {
-        combined_map_output_id  # Use the main output ID for geometric mean
+        paste0(combined_map_output_id, "_geo")  # Use the main output ID for geometric mean
       } else {
         paste0(combined_map_output_id, "_", method)
       }
