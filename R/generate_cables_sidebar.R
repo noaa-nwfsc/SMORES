@@ -1,4 +1,4 @@
-generate_cables_sidebar <- function(submarine_cable_layer, score_values, current_tab = NULL, submodel_config = NULL) {
+generate_cables_sidebar <- function(submarine_cables_layer, score_values, current_tab = NULL, submodel_config = NULL) {
   
   # If this is a combined model tab, delegate to the combined model sidebar
   if(!is.null(current_tab) && current_tab == "combined_model_industry_operations") {
@@ -7,7 +7,7 @@ generate_cables_sidebar <- function(submarine_cable_layer, score_values, current
   
   # Individual cables tab logic
   # Create inputs for each cable layer - use names() to get the layer names
-  layer_inputs <- lapply(names(submarine_cable_layer), function(layer_name) {
+  layer_inputs <- lapply(names(submarine_cables_layer), function(layer_name) {
     # Create consistent IDs
     layer_id <- gsub(" ", "_", layer_name)
     layer_id <- gsub("[^A-Za-z0-9_]", "", layer_id)

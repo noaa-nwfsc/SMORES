@@ -13,7 +13,10 @@ get_data_timestamps <- function(data_dir = "data") {
     "HAPCreef_scored.rds",
     "killer_whale_scored.rds",
     "leatherback_turtle_scored.rds",
-    "humpback_whale_scored.rds"
+    "humpback_whale_scored.rds", 
+    "submarine_cable_scored.rds",
+    "submarine_cable_500m_scored.rds",
+    "submarine_cable_501_1000m_scored.rds"
   )
   
   # Create a data frame to store file information
@@ -46,7 +49,10 @@ get_data_timestamps <- function(data_dir = "data") {
     "HAPC Rocky Reef",
     "ESA Critical Habitat for Southern Resident Killer Whales",
     "ESA Critical Habitat for Leatherback Sea Turtles",
-    "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS"
+    "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS", 
+    "Submarine Cables", 
+    "Submarine Cables 0-500 m setback",
+    "Submarine Cables 501-1000 m setback"
   )
   
   # Add dataset descriptions (need to be in same order as earlier lists)
@@ -63,7 +69,11 @@ get_data_timestamps <- function(data_dir = "data") {
     "Habitat Areas of Particular Concern - Rocky Reef areas",
     "Critical habitat for endangered Southern Resident Killer Whales",
     "Critical habitat for endangered Leatherback Sea Turtles",
-    "Critical habitat for Humpback Whales (Mexico and Central Distinct Population Segments)"
+    "Critical habitat for Humpback Whales (Mexico and Central Distinct Population Segments)",
+    "Submarine Cables", 
+    "Submarine Cables 0-500 m setback",
+    "Submarine Cables 501-1000 m setback"
+    
   )
   
   # Format the timestamps for display
