@@ -14,12 +14,84 @@ function(input, output, session) {
     natural_resources_combined_submodel = NULL,
     natural_resources_combined_submodel_generated = FALSE,
     industry = NULL, 
+    surveys_geo = NULL,
+    surveys_lowest = NULL, 
+    surveys_product = NULL,
     surveys_combined_map_generated = FALSE, 
     cables_geo = NULL,
     cables_lowest = NULL,
     cables_product = NULL, 
     cables_combined_map_generated = FALSE
   )
+  
+  #WEA area selector options
+  observe({
+    if(!is.null(WEA) && "Area_Name" %in% names(WEA)){
+      area_names <-sort(unique(WEA$Area_Name))
+      updatePickerInput(
+        session = session,
+        inputId = "weaAreaSelector",
+        choices = area_names, 
+        selected = NULL
+      )
+    }
+  })
+  
+  # Reactive expression for filtered WEA data with debug
+  filtered_wea_data <- reactive({
+    
+    if(is.null(input$weaAreaSelector) || input$weaAreaSelector == "") {
+
+      if(!is.null(WEA)) {
+  
+      }
+      return(WEA)
+    }
+
+    # Filter the data
+    filtered_data <- WEA[WEA$Area_Name == input$weaAreaSelector, ]
+ 
+    return(filtered_data)
+  })
+  
+  # WEA Map Output - Fixed version
+  output$weaMap <- renderLeaflet({
+    
+    tryCatch({
+      # Call the reactive expression to get the actual data
+      wea_data <- filtered_wea_data()
+      
+      if(is.null(wea_data) || nrow(wea_data) == 0) {
+        return(leaflet() %>% 
+                 addProviderTiles("Esri.OceanBasemap") %>% 
+                 addControl("No WEA data available", position = "center"))
+      }
+      
+      # Transform to WGS84 if needed
+      if(!st_is_longlat(wea_data)) {
+        wea_data <- st_transform(wea_data, 4326)
+      }
+      
+      # Remove Z & M dimensions for leaflet compatability
+      wea_data <- st_zm(wea_data)
+      
+      # Create the map
+      leaflet() %>%
+        addProviderTiles("Esri.OceanBasemap") %>%
+        addPolygons(
+          data = wea_data,
+          fillColor = "blue",
+          weight = 1,
+          color = "black",
+          fillOpacity = 0.5
+        )
+      
+    }, error = function(e) {
+      return(leaflet() %>% 
+               addProviderTiles("Esri.OceanBasemap") %>% 
+               addControl("Error loading WEA data", position = "topright"))
+    })
+  })
   
   # filter dataframes by score 
   filter_by_score <- function(df, selected_score) {
@@ -59,6 +131,7 @@ function(input, output, session) {
                      "species" = "Species",
                      "birds" = "Bird",
                      "surveys" = "Scientific Surveys",
+                     "cables" = "Submarine Cables",
                      "")
     
     if(prefix == "") return(FALSE) # Invalid tab
@@ -74,6 +147,7 @@ function(input, output, session) {
                          "species" = species_layer,
                          "birds" = bird_layer,
                          "surveys" = surveys_layer,
+                         "cables" = submarine_cables_layers,
                          NULL)
     
     if(is.null(layer_data)) return(FALSE) # Invalid layer data
@@ -87,7 +161,7 @@ function(input, output, session) {
   
   # Reactive expression for Natural Resources tab valid configs
   natural_resources_valid_configs <- reactive({
-  
+    
     # For Natural Resources, we check if we have dataTabs (which means we're on the Natural Resources section)
     # OR if navbar is explicitly set to Natural Resources
     is_natural_resources <- (!is.null(input$dataTabs_natural_resources) && 
@@ -110,17 +184,17 @@ function(input, output, session) {
     
     # Use your existing function to get valid configurations
     configs <- get_valid_configs_for_tab(input, current_tab_natural_resources, layer_data, score_colors, filter_by_score)
-
+    
     return(configs)
   })
   
   # Reactive expression for Industry & Operations tab valid configs
   industry_operations_valid_configs <- reactive({
-   
+    
     # For Industry & Operations, we check if we have dataTabs (which means we're on the Natural Resources section)
     # OR if navbar is explicitly set to Industry & Operations
     is_industry_operations <- (!is.null(input$dataTabs_industry_operations) && 
-                               input$dataTabs_industry_operations %in% c("surveys", "cables", "combined_model_industry_operations")) ||
+                                 input$dataTabs_industry_operations %in% c("surveys", "cables", "combined_model_industry_operations")) ||
       (!is.null(input$navbar) && input$navbar == "Industry & Operations Submodel")
     
     if(!is_industry_operations) {
@@ -133,12 +207,12 @@ function(input, output, session) {
     # Set the layer data based on the current data tab
     layer_data <- switch(current_tab_industry_operations,
                          "surveys" = surveys_layer,
-                         "cables" = submarine_cable_layer,
+                         "cables" = submarine_cables_layer,
                          NULL)
     
     # Use your existing function to get valid configurations
     configs <- get_valid_configs_for_tab(input, current_tab_industry_operations, layer_data, score_colors, filter_by_score)
-   
+    
     return(configs)
   })
   
@@ -191,7 +265,7 @@ function(input, output, session) {
         current_tab = current_tab_natural_resources,
         submodel_config = natural_resources_config
       )
-  
+      
       # Bird tab sidebar content
     } else if (current_tab_natural_resources == "birds") {
       map_inputs <- lapply(1:6, function(i) {
@@ -233,7 +307,7 @@ function(input, output, session) {
                        icon = icon("file-export"),
                        class = "btn-info btn-block")
       )
-   
+      
       # Combined Model Tab
     } else if(current_tab_natural_resources == "combined_model_natural_resources") {
       natural_resources_config <- get_natural_resources_config()
@@ -260,19 +334,19 @@ function(input, output, session) {
       
     } else if (current_tab_industry_operations == "cables") {
       # Get the layer names for cables
-      cable_layers <- names(submarine_cable_layer)
+      cable_layers <- names(submarine_cables_layer)
       
       #use function to make cables sidebar
-      generate_cables_sidebar(submarine_cable_layer, score_values)
+      generate_cables_sidebar(submarine_cables_layer, score_values)
       
       #use function to make cables sidebar
       generate_cables_sidebar(
-        submarine_cable_layer, 
+        submarine_cables_layer, 
         score_values, 
         current_tab = current_tab_industry_operations,
         submodel_config = industry_operations_config
       )
-
+      
       # Combined Model Tab
     } else if(current_tab_industry_operations == "combined_model_industry_operations") {
       industry_operations_config <- get_industry_operations_config()
@@ -412,7 +486,7 @@ function(input, output, session) {
       
       # Render the RMarkdown report with updated parameters
       rmarkdown::render(
-        input = "Natural_Resources_Submodel.Rmd", 
+        input = "Submodel_Component_Report_Template.Rmd", 
         output_file = file,
         params = list(
           map_configs = valid_configs,
@@ -558,7 +632,7 @@ function(input, output, session) {
       
       # Render the RMarkdown report with updated parameters
       rmarkdown::render(
-        input = "Natural_Resources_Submodel.Rmd", 
+        input = "Submodel_Component_Report_Template.Rmd", 
         output_file = file,
         params = list(
           map_configs = valid_configs,
@@ -625,36 +699,102 @@ function(input, output, session) {
       selected_methods = selected_methods,
       map_type = "Surveys"
     )
-    
-    # IMPORTANT: Render each map individually
-    if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
-      local({
-        result <- all_results[["geometric_mean"]]
-        output$combinedSurveysMap <- renderLeaflet({ result$map })
-        combined_maps_data$surveys <- result$combined_data
-      })
+      
+      # Store results for all methods
+      if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
+        local({
+          result <- all_results[["geometric_mean"]]
+          output$combinedSurveysMap_geo <- renderLeaflet({ result$map })
+          combined_maps_data$surveys_geo <- result$combined_data
+        })
+      }
+      
+      if("lowest" %in% selected_methods && "lowest" %in% names(all_results)) {
+        local({
+          result <- all_results[["lowest"]]
+          output$combinedSurveysMap_lowest <- renderLeaflet({ result$map })
+          combined_maps_data$surveys_lowest <- result$combined_data
+        })
+      }
+      
+      if("product" %in% selected_methods && "product" %in% names(all_results)) {  
+        local({
+          result <- all_results[["product"]]
+          output$combinedSurveysMap_product <- renderLeaflet({ result$map })
+          combined_maps_data$surveys_product <- result$combined_data  # This was already correct
+        })
+      }
+      
+      # Set flag to indicate combined map has been generated
+      combined_maps_data$surveys_combined_map_generated <- TRUE
+      
+      # Remove modal spinner
+      removeModal()
+    })
+  
+  # Surveys/Industry and Operations tab export
+  output$surveysExportRmd <- downloadHandler(
+    filename = function() {
+      paste("Surveys_Component_Industry_Operations_Submodel_Report_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+    },
+    content = function(file) {
+      # Show modal with spinner
+      show_spinner_modal("Generating Report", 
+                         "Please wait while the Surveys Component of the Industry and Operations report is being generated...")
+      
+      # Get valid configurations
+      valid_configs <- industry_operations_valid_configs()
+      
+      # Get filtered timestamp information for the selected layers
+      timestamp_info <- get_filtered_timestamp_data(valid_configs, "surveys")
+      
+      # Make sure each valid_config has valid spatial data
+      for(i in seq_along(valid_configs)) {
+        # Ensure data is transformed to WGS84 for leaflet
+        if(!is.null(valid_configs[[i]]$data) && inherits(valid_configs[[i]]$data, "sf")) {
+          valid_configs[[i]]$data <- st_transform(valid_configs[[i]]$data, '+proj=longlat +datum=WGS84')
+        }
+      }
+      
+      # Get selected calculation methods from surveys tab
+      selected_methods <- input$surveysCalculationMethods %||% character(0)
+      
+      # Get combined data for each selected method if available
+      combined_data_list <- list()
+      if(combined_maps_data$surveys_combined_map_generated && length(selected_methods) > 0) {
+        if("geometric_mean" %in% selected_methods && !is.null(combined_maps_data$surveys_geo)) {
+          combined_data_list[["geometric_mean"]] <- combined_maps_data$surveys_geo
+        }
+        
+        if("lowest" %in% selected_methods && !is.null(combined_maps_data$surveys_lowest)) {
+          combined_data_list[["lowest"]] <- combined_maps_data$surveys_lowest
+        }
+        
+        if("product" %in% selected_methods && !is.null(combined_maps_data$surveys_product)) {
+          combined_data_list[["product"]] <- combined_maps_data$surveys_product
+        }
+      }
+      
+      # Render the RMarkdown report with updated parameters
+      rmarkdown::render(
+        input = "Submodel_Component_Report_Template.Rmd", 
+        output_file = file,
+        params = list(
+          map_configs = valid_configs,
+          combined_data_list = combined_data_list,  
+          selected_methods = selected_methods,     
+          tab_name = "Industry and Operations",
+          combined_map_title = "Combined Surveys Maps",
+          data_timestamps = timestamp_info, 
+          component_name = "Surveys"
+        ),
+        envir = new.env(parent = globalenv())
+      )
+      
+      # Remove the modal when done
+      removeModal()
     }
-    
-    if("lowest" %in% selected_methods && "lowest" %in% names(all_results)) {
-      local({
-        result <- all_results[["lowest"]]
-        output$combinedSurveysMap_lowest <- renderLeaflet({ result$map })
-      })
-    }
-    
-    if("product" %in% selected_methods && "product" %in% names(all_results)) {
-      local({
-        result <- all_results[["product"]]
-        output$combinedSurveysMap_product <- renderLeaflet({ result$map })
-      })
-    }
-    
-    # Set flag to indicate combined map has been generated
-    combined_maps_data$surveys_combined_map_generated <- TRUE
-    
-    # Remove modal spinner
-    removeModal()
-  })
+  )
   
   # Multiple maps container for cables
   output$multipleMapsContainer_cables <- renderUI({
@@ -690,7 +830,9 @@ function(input, output, session) {
     
     # Define dataset mapping for species tab
     cables_dataset_mapping <- list(
-      "Submarine Cables" = list(data = submarine_cable, score_column = "Score.submarine_cable")
+      "Submarine Cables" = list(data = submarine_cable, score_column = "Score.submarine_cable"),
+      "Submarine Cables 0-500 m setback" = list(data = submarine_cable_500m, score_column = "Score.submarine_cable_500m"),
+      "Submarine Cables 501-1000 m setback" = list(data = submarine_cable_501_1000m, score_column = "Score.submarine_cable_501_1000m")
     )
     
     # Get valid configurations
@@ -735,7 +877,71 @@ function(input, output, session) {
     # Remove modal spinner
     removeModal()
   })
-   
+  
+  # Submarine Cables/Industry and Operations tab export
+  output$cablesExportRmd <- downloadHandler(
+    filename = function() {
+      paste("Submarine_Cables_Component_Industry_Operations_Submodel_Report_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+    },
+    content = function(file) {
+      # Show modal with spinner
+      show_spinner_modal("Generating Report", 
+                         "Please wait while the Submarine Cables Component of the Industry and Operations report is being generated...")
+      
+      # Get valid configurations
+      valid_configs <- industry_operations_valid_configs()
+      
+      # Get filtered timestamp information for the selected layers
+      timestamp_info <- get_filtered_timestamp_data(valid_configs, "cables")
+      
+      # Make sure each valid_config has valid spatial data
+      for(i in seq_along(valid_configs)) {
+        # Ensure data is transformed to WGS84 for leaflet
+        if(!is.null(valid_configs[[i]]$data) && inherits(valid_configs[[i]]$data, "sf")) {
+          valid_configs[[i]]$data <- st_transform(valid_configs[[i]]$data, '+proj=longlat +datum=WGS84')
+        }
+      }
+      
+      # Get selected calculation methods from surveys tab
+      selected_methods <- input$cablesCalculationMethods %||% character(0)
+      
+      # Get combined data for each selected method if available
+      combined_data_list <- list()
+      if(combined_maps_data$cables_combined_map_generated && length(selected_methods) > 0) {
+        if("geometric_mean" %in% selected_methods && !is.null(combined_maps_data$cables_geo)) {
+          combined_data_list[["geometric_mean"]] <- combined_maps_data$cables_geo
+        }
+        
+        if("lowest" %in% selected_methods && !is.null(combined_maps_data$cables_lowest)) {
+          combined_data_list[["lowest"]] <- combined_maps_data$cables_lowest
+        }
+        
+        if("product" %in% selected_methods && !is.null(combined_maps_data$cables_product)) {
+          combined_data_list[["product"]] <- combined_maps_data$cables_product
+        }
+      }
+      
+      # Render the RMarkdown report with updated parameters
+      rmarkdown::render(
+        input = "Submodel_Component_Report_Template.Rmd", 
+        output_file = file,
+        params = list(
+          map_configs = valid_configs,
+          combined_data_list = combined_data_list,  
+          selected_methods = selected_methods,     
+          tab_name = "Industry and Operations",
+          combined_map_title = "Combined Cables Maps",
+          data_timestamps = timestamp_info, 
+          component_name = "Cables"
+        ),
+        envir = new.env(parent = globalenv())
+      )
+      
+      # Remove the modal when done
+      removeModal()
+    }
+  )
+  
   # Natural Resources submodel status
   output$combinedModelStatus_natural_resources <- renderUI({
     check_submodel_status("natural_resources", combined_maps_data)
