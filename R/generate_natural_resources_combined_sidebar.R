@@ -8,6 +8,39 @@ generate_natural_resources_combined_sidebar <- function(submodel_config, combine
   # At least one component must be ready to enable the submodel
   any_ready <- habitat_ready || species_ready || birds_ready
   
+  # Function to get available methods based on generated data
+  get_available_methods <- function(component_type, combined_maps_data) {
+    methods <- list()
+    
+    if(component_type == "habitat") {
+      if(!is.null(combined_maps_data$habitat_geo)) {
+        methods[["Geometric Mean"]] <- "geometric_mean"
+      }
+      if(!is.null(combined_maps_data$habitat_lowest)) {
+        methods[["Lowest Value"]] <- "lowest"
+      }
+      if(!is.null(combined_maps_data$habitat_product)) {
+        methods[["Product"]] <- "product"
+      }
+    } else if(component_type == "species") {
+      if(!is.null(combined_maps_data$species_geo)) {
+        methods[["Geometric Mean"]] <- "geometric_mean"
+      }
+      if(!is.null(combined_maps_data$species_lowest)) {
+        methods[["Lowest Value"]] <- "lowest"
+      }
+      if(!is.null(combined_maps_data$species_product)) {
+        methods[["Product"]] <- "product"
+      }
+    }
+    
+    return(methods)
+  }
+  
+  # Get available methods for each component
+  habitat_methods <- get_available_methods("habitat", combined_maps_data)
+  species_methods <- get_available_methods("species", combined_maps_data)
+  
   tagList(
     h4("Natural Resources Combined Submodel Configuration"),
     p("Select which components to include and their calculation methods for the combined Natural Resources submodel."),
@@ -29,17 +62,17 @@ generate_natural_resources_combined_sidebar <- function(submodel_config, combine
                     ),
                     value = habitat_ready),
       
-      # Habitat calculation method dropdown (only show if habitat is selected)
+      # Habitat calculation method dropdown (only show if habitat is selected and methods are available)
       conditionalPanel(
         condition = "input.includeHabitat == true",
-        selectInput("habitatCalculationMethod",
-                    "Habitat Calculation Method:",
-                    choices = list(
-                      "Geometric Mean" = "geometric_mean",
-                      "Lowest Value" = "lowest",
-                      "Product" = "product"
-                    ),
-                    selected = "geometric_mean"),
+        if(length(habitat_methods) > 0) {
+          selectInput("habitatCalculationMethod",
+                      "Habitat Calculation Method:",
+                      choices = habitat_methods,
+                      selected = if("geometric_mean" %in% habitat_methods) "geometric_mean" else habitat_methods[[1]])
+        } else {
+          div(class = "text-warning", "No calculation methods available. Generate habitat combined maps first.")
+        },
         style = "margin-left: 20px; margin-top: 10px;"
       )
     ),
@@ -59,17 +92,17 @@ generate_natural_resources_combined_sidebar <- function(submodel_config, combine
                     ),
                     value = species_ready),
       
-      # Species calculation method dropdown (only show if species is selected)
+      # Species calculation method dropdown (only show if species is selected and methods are available)
       conditionalPanel(
         condition = "input.includeSpecies == true",
-        selectInput("speciesCalculationMethod",
-                    "Species Calculation Method:",
-                    choices = list(
-                      "Geometric Mean" = "geometric_mean",
-                      "Lowest Value" = "lowest",
-                      "Product" = "product"
-                    ),
-                    selected = "geometric_mean"),
+        if(length(species_methods) > 0) {
+          selectInput("speciesCalculationMethod",
+                      "Species Calculation Method:",
+                      choices = species_methods,
+                      selected = if("geometric_mean" %in% species_methods) "geometric_mean" else species_methods[[1]])
+        } else {
+          div(class = "text-warning", "No calculation methods available. Generate species combined maps first.")
+        },
         style = "margin-left: 20px; margin-top: 10px;"
       )
     ),
