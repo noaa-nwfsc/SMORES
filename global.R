@@ -41,6 +41,8 @@ data_timestamps <- timestamp_info$data_timestamps
 most_recent_update <- timestamp_info$most_recent_update
 
 # Load datasets
+#WEA
+WEA <- readRDS("data/WEA.rds")
 ## Natural Resources Layers
 ### Habitat Layers
 canyon <- readRDS("data/canyon_scored.rds")
@@ -64,6 +66,8 @@ surveys_fixed <- readRDS("data/Surveys_fixed_scored.rds")
 surveys_periodic <- readRDS("data/Surveys_periodic_scored.rds")
 ###
 submarine_cable <- readRDS("data/submarine_cable_scored.rds")
+submarine_cable_500m <- readRDS("data/submarine_cable_500m_scored.rds")
+submarine_cable_501_1000m <- readRDS("data/submarine_cable_501_1000m_scored.rds")
 grid_test <- readRDS("data/2km_grid_norcal.rds")
 
 
@@ -97,8 +101,10 @@ surveys_layers <- list(
   "Fixed Surveys" = surveys_fixed,
   "Periodic Surveys" = surveys_periodic
 )
-submarine_cable_layer <- list(
-  "Submarine Cables" = submarine_cable
+submarine_cables_layer <- list(
+  "Submarine Cables" = submarine_cable,
+  "Submarine Cables 0-500 m setback" = submarine_cable_500m, 
+  "Submarine Cables 501-1000 m setback" = submarine_cable_501_1000m
 )
 
 # Weight values

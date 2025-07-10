@@ -502,6 +502,16 @@ furl_nms <- "https://coast.noaa.gov/arcgis/rest/services/Hosted/SubmarineCables/
 nms_layer <- arc_read(furl_nms, where = "status = 'In Service'
                 or status = 'Under Construction'") %>% 
   st_transform(crsOut)
+
+submarine_cable_buffer_500 <- nms_layer %>% 
+  st_buffer(dist = 500)
+submarine_cable_buffer_1000 <- nms_layer %>% 
+  st_buffer(dist = 1000)
+submarine_cable_buffer_501_1000 <- st_difference(submarine_cable_buffer_1000, submarine_cable_buffer_500)
+
+print(crsOut)
+
+
 submarine_cable.grid <- sf::st_intersection(nms_layer, grd.norcal) %>%
   mutate(Score.submarine_cable = 0) %>%
   mutate(area.part = st_area(.)) %>%
@@ -531,3 +541,72 @@ submarine_cable_scored_long <- pivot_longer(submarine_cable_scored, cols = start
   select(-submarine_cable)
 st_crs(DSC_RH_scored_long) == st_crs(submarine_cable_scored_long)
 saveRDS(submarine_cable_scored_long, "U:\\Github\\SMORES\\data\\submarine_cable_scored.rds")
+
+##submarine cables 500 m buffer
+submarine_cable_500m.grid <- sf::st_intersection(submarine_cable_buffer_500, grd.norcal) %>%
+  mutate(Score.submarine_cable_500m = 0) %>%
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid 
+  #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.submarine_cable_500m, status) #use for 2km grid
+submarine_cable_500m_score <- submarine_cable_500m.grid %>%
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+submarine_cable_500m_scored <- grd.norcal %>%
+  full_join(submarine_cable_500m_score, by = "CellID_2km") %>%
+  filter(Score.submarine_cable_500m == 0) %>%
+  rename("1" = Score.submarine_cable_500m) %>%
+  mutate("0.1" = 0.1,
+         "0.2" = 0.2,
+         "0.3" = 0.3,
+         "0.4" = 0.4,
+         "0.5" = 0.5,
+         "0.6" = 0.6,
+         "0.7" = 0.7,
+         "0.8" = 0.8,
+         "0.9" = 0.9) 
+submarine_cable_500m_scored_long <- pivot_longer(submarine_cable_500m_scored, cols = starts_with(c("0.", "1")), names_to = "submarine_cable_500m", values_to = "Score.submarine_cable_500m") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-submarine_cable_500m)
+st_crs(DSC_RH_scored_long) == st_crs(submarine_cable_500m_scored_long)
+saveRDS(submarine_cable_500m_scored_long, "U:\\Github\\SMORES\\data\\submarine_cable_500m_scored.rds")
+
+##submarine cables 501-1000 m buffer
+submarine_cable_501_1000m.grid <- sf::st_intersection(submarine_cable_buffer_501_1000, grd.norcal) %>%
+  mutate(Score.submarine_cable_501_1000m = 0) %>%
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid 
+  #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.submarine_cable_501_1000m, status) #use for 2km grid
+submarine_cable_501_1000m_score <- submarine_cable_501_1000m.grid %>%
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+submarine_cable_501_1000m_scored <- grd.norcal %>%
+  full_join(submarine_cable_501_1000m_score, by = "CellID_2km") %>%
+  filter(Score.submarine_cable_501_1000m == 0) %>%
+  rename("1" = Score.submarine_cable_501_1000m) %>%
+  mutate("0.1" = 0.1,
+         "0.2" = 0.2,
+         "0.3" = 0.3,
+         "0.4" = 0.4,
+         "0.5" = 0.5,
+         "0.6" = 0.6,
+         "0.7" = 0.7,
+         "0.8" = 0.8,
+         "0.9" = 0.9) 
+submarine_cable_501_1000m_scored_long <- pivot_longer(submarine_cable_501_1000m_scored, cols = starts_with(c("0.", "1")), names_to = "submarine_cable_501_1000m", values_to = "Score.submarine_cable_501_1000m") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-submarine_cable_501_1000m)
+st_crs(DSC_RH_scored_long) == st_crs(submarine_cable_501_1000m_scored_long)
+saveRDS(submarine_cable_501_1000m_scored_long, "U:\\Github\\SMORES\\data\\submarine_cable_501_1000m_scored.rds")
+
+#WEA's
+BOEM.gdb <- "Z:\\ArcGIS\\Projects\\OWEC\\p30\\boem_offshorewindenergy.gdb"
+WEA <- sf::st_read(dsn = BOEM.gdb, layer = "BOEM_CA_OR_WEAs_merge_new") %>% 
+  filter(AreaType == "WEA") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84')
+saveRDS(WEA, "U:\\Github\\SMORES\\data\\WEA.rds")
