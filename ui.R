@@ -52,8 +52,8 @@ tagList(
   .navbar-nav .nav-link.active[data-value='Fisheries Submodel'],
   .navbar-nav .nav-link.active[data-value='Industry & Operations Submodel'],
   .navbar-nav .nav-link.active[data-value='Full Model'] {
-    background-color: #0085CA !important;
-    color: white !important;
+    background-color: white !important;
+    color: #0085CA !important;
   }
 
   /* Hover for model tabs */
@@ -156,13 +156,39 @@ tagList(
     nav_panel(
       title = "Area of Interest",
       icon = icon("map-location-dot"),
-      layout_columns(
-        card(
-          card_header("Area of Interest"),
-          card_body(
-            includeMarkdown("markdown/area_of_interest.md")
+      card(
+        card_header("Area of Interest"),
+        card_body(
+          includeMarkdown("markdown/area_of_interest.md")
+        )
+      ),
+      card(
+        card_header("Area Selection"),
+        card_body(
+          pickerInput(
+            "weaAreaSelector",
+            "Select Energy Area:",
+            choices = NULL,
+            selected = NULL,
+            multiple = FALSE,
+            options = list(
+              `none-selected-text` = " No area selected"
+            )
+          ),
+          p("Select one Wind Energy Area to filter the dataset. The map will update to show only the selected area."),
+          #Summary information
+          conditionalPanel(condition = "input.weaAreaSelector != null && input.weaAreaSelector != ''",
+                           div(
+                             style = "margin-top: 15px; background-color: #f8f9fa; border-radius: 5px;"
+                           )
           )
         )
+      ),
+      card(card_header("WEA Areas Map"),
+           card_body(
+             p("this map shows the Wind Energy Areas (WEA's). Use the selector above to filter areas by name."),
+             leafletOutput("weaMap", height = "500px")
+           )
       )
     ),
     # Tab 3: Natural Resources Submodel Tab with Inset Tabs
@@ -340,7 +366,7 @@ tagList(
     nav_panel(
       title = "Full Model",
       icon = icon("calculator"),
-     # Layout with sidebar
+      # Layout with sidebar
       layout_sidebar(
         sidebar = sidebar(
           uiOutput("dynamicSidebar_overall_model")
