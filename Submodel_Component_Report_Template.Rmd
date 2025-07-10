@@ -1,0 +1,549 @@
+---
+title: " `r paste(params$component_name)` Component of the `r paste(params$tab_name, 'Submodel Report')`"
+date: "`r format(Sys.time(), '%B %d, %Y at %H:%M:%S')`"
+output: 
+  html_document:
+    theme: cosmo
+    toc: true
+    toc_float: true
+    self_contained: true
+params:
+  map_configs: NULL
+  combined_data: NULL
+  combined_data_list: NULL    
+  selected_methods: NULL    
+  tab_name: NULL
+  combined_map_title: "Combined Map"
+  data_timestamps: NULL, 
+  component_name: NULL
+---
+
+```{css, include = FALSE}
+<style>
+body {
+max-width: 1200px;
+margin: 0 auto;
+padding: 20px;
+font-family: 'Arial', sans-serif;
+}
+
+.main-container {
+max-width: 1200px;
+margin: 0 auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+text-align: center;
+margin: 20px 0;
+}
+
+.leaflet-container {
+margin: 20px auto;
+display: block;
+}
+
+table {
+margin: 20px auto;
+max-width: 800px;
+}
+
+.table {
+margin: 20px auto;
+}
+
+p {
+text-align: justify;
+margin: 15px 0;
+}
+
+.tocify-wrapper {
+position: fixed;
+top: 0;
+left: 0;
+width: 260px;
+height: 100%;
+overflow: auto;
+z-index: 1000;
+}
+
+.col-md-9 {
+margin-left: 280px;
+max-width: calc(100% - 300px);
+}
+
+/* Center specific elements */
+.centered-content {
+text-align: center;
+margin: 20px auto;
+}
+
+/* Map container centering */
+.map-container {
+display: flex;
+justify-content: center;
+margin: 20px 0;
+}
+
+/* Ensure leaflet maps are responsive and centered */
+.leaflet {
+max-width: 100%;
+height: 400px;
+margin: 0 auto;
+}
+
+/* Style for configuration table */
+.config-table {
+margin: 20px auto;
+max-width: 600px;
+}
+
+/* Center all chunk outputs */
+.chunk-output {
+text-align: center;
+}
+
+/* Center kable tables */
+.kable-table {
+margin-left: auto;
+margin-right: auto;
+}
+</style>
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.width = 12, fig.height = 8)
+
+# Load required libraries
+suppressPackageStartupMessages({
+  library(leaflet)
+  library(sf)
+  library(dplyr)
+  library(knitr)
+  library(htmltools)
+})
+
+# Null coalescing operator
+`%||%` <- function(x, y) if(is.null(x)) y else x
+
+# Color palette for scores
+score_colors <- list(
+  "0.1" = "#E41A1C",  # red
+  "0.2" = "#377EB8",  # blue
+  "0.3" = "#4DAF4A",  # green
+  "0.4" = "#984EA3",  # purple
+  "0.5" = "#FF7F00",  # orange
+  "0.6" = "#FFFF33",  # yellow
+  "0.7" = "#A65628",  # brown
+  "0.8" = "#F781BF",  # pink
+  "0.9" = "#999999",  # grey
+  "1" = "#000000"     # black
+)
+
+# Function to create individual maps
+create_individual_map <- function(data, layer_name, score_value, map_title) {
+  # Ensure data is in the correct CRS for leaflet
+  if (inherits(data, 'sf') && !identical(st_crs(data)$input, '+proj=longlat +datum=WGS84')) {
+    data <- st_transform(data, '+proj=longlat +datum=WGS84')
+  }
+  
+  # Get color for the score
+  color <- score_colors[[as.character(score_value)]] %||% '#000000'
+  
+  # Create the map
+  leaflet(data) %>%
+    addProviderTiles("Esri.OceanBasemap",
+                     options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
+    addProviderTiles("Esri.OceanBasemap",
+                     options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
+    addPolygons(
+      fillColor = color,
+      weight = 1,
+      opacity = 1,
+      color = '#00000000',
+      fillOpacity = 0.7,
+      popup = ~paste0(
+        '<strong>Layer:</strong> ', layer_name, '<br>',
+        '<strong>Score:</strong> ', score_value, '<br>',
+        '<strong>Cell ID:</strong> ', CellID_2km
+      )
+    ) %>%
+    addLegend(
+      position = 'bottomright',
+      colors = color,
+      labels = paste('Score:', score_value),
+      title = layer_name,
+      opacity = 0.7
+    )
+}
+
+# Function to create combined map based on method
+create_combined_map <- function(combined_data, title, method = "geometric_mean") {
+  if (is.null(combined_data)) {
+    return(leaflet() %>%
+             addProviderTiles("Esri.OceanBasemap") %>%
+             addControl("No combined data available for this method.", position = "topright"))
+  }
+  
+  # Determine the column name based on method
+  value_column <- switch(method,
+                         "geometric_mean" = "Geo_mean",
+                         "lowest" = if("Lowest" %in% names(combined_data)) "Lowest" else "Lowest_value",
+                         "product" = if("Product" %in% names(combined_data)) "Product" else "Product_value",
+                         "Geo_mean"  # default fallback
+)
+  
+  if (!value_column %in% names(combined_data)) {
+    return(leaflet() %>%
+             addProviderTiles("Esri.OceanBasemap") %>%
+             addControl(paste("No", method, "data available."), position = "topright"))
+  }
+  
+  # Ensure data is in the correct CRS for leaflet
+  if (inherits(combined_data, 'sf') && !identical(st_crs(combined_data)$input, '+proj=longlat +datum=WGS84')) {
+    combined_data <- st_transform(combined_data, '+proj=longlat +datum=WGS84')
+  }
+  
+  # Filter out NA values for domain calculation
+  valid_values <- combined_data[[value_column]][!is.na(combined_data[[value_column]])]
+  
+  if(length(valid_values) == 0) {
+    return(leaflet() %>%
+             addProviderTiles("Esri.OceanBasemap") %>%
+             addControl("No valid data available for this method.", position = "topright"))
+  }
+  
+  # Create color palette
+  pal <- colorNumeric(
+    palette = "viridis",
+    domain = range(valid_values),
+    na.color = 'transparent'
+  )
+  
+  # Create popup text based on method
+  popup_text <- switch(method,
+    "geometric_mean" = ~paste0(
+      '<strong>Geometric Mean:</strong> ', round(get(value_column), 3), '<br>',
+      '<strong>Cell ID:</strong> ', CellID_2km
+    ),
+    "lowest" = ~paste0(
+      '<strong>Lowest Score:</strong> ', round(get(value_column), 3), '<br>',
+      '<strong>Cell ID:</strong> ', CellID_2km
+    ),
+    "product" = ~paste0(
+      '<strong>Product:</strong> ', round(get(value_column), 3), '<br>',
+      '<strong>Cell ID:</strong> ', CellID_2km
+    ),
+    ~paste0(
+      '<strong>Value:</strong> ', round(get(value_column), 3), '<br>',
+      '<strong>Cell ID:</strong> ', CellID_2km
+    )
+  )
+  
+ leaflet(combined_data) %>%
+    addProviderTiles("Esri.OceanBasemap",
+                     options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
+    addProviderTiles("Esri.OceanBasemap",
+                     options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
+    addPolygons(
+      fillColor = ~pal(get(value_column)),
+      weight = 1,
+      opacity = 1,
+      color = '#00000000',
+      fillOpacity = 0.7,
+      popup = popup_text
+    ) %>%
+    addLegend(
+      pal = pal,
+      values = ~get(value_column),
+      title = title,
+      position = 'bottomright',
+      opacity = 1
+    )
+}
+
+# Source the data timestamps function if not provided as parameter
+if (is.null(params$data_timestamps)) {
+  source("data_timestamps.R")
+  timestamp_info <- get_data_timestamps()
+} else {
+  timestamp_info <- params$data_timestamps
+}
+```
+
+## Data Layers Information
+
+This report includes data from the following selected layers, with their last update timestamps:
+
+```{r}
+if (!is.null(params$data_timestamps) && !is.null(params$data_timestamps$data_timestamps)) {
+  display_table <- params$data_timestamps$data_timestamps %>%
+    filter(!is.na(formatted_date)) %>%
+    select(dataset_name, description, formatted_date) %>%
+    rename(
+      "Dataset" = dataset_name,
+      "Description" = description,
+      "Last Updated" = formatted_date
+    )
+  
+  if (nrow(display_table) > 0) {
+    kable(display_table, 
+          caption = "Selected Data Layer Update Information",
+          format = "html",
+          table.attr = "class='table table-striped'")
+  } else {
+    "No timestamp information available for the selected data layers."
+  }
+} else {
+  "Timestamp information not available."
+}
+```
+
+```{r}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 1) {
+  config <- params$map_configs[[1]]
+  cat("### Map 1:", config$layer, "(Score:", config$score, ")\n\n")
+  cat("**Layer:** ", config$layer, "  \n")
+  cat("**Score:** ", config$score, "  \n") 
+  cat("**Data Points:** ", nrow(config$data), "  \n\n")
+}
+```
+
+```{r, fig.align='center'}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 1) {
+  config <- params$map_configs[[1]]
+  create_individual_map(
+    data = config$data,
+    layer_name = config$layer,
+    score_value = config$score,
+    map_title = "Map 1"
+  )
+}
+```
+
+```{r}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 2) {
+  config <- params$map_configs[[2]]
+  cat("### Map 2:", config$layer, "(Score:", config$score, ")\n\n")
+  cat("**Layer:** ", config$layer, "  \n")
+  cat("**Score:** ", config$score, "  \n") 
+  cat("**Data Points:** ", nrow(config$data), "  \n\n")
+}
+```
+
+```{r}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 2) {
+  config <- params$map_configs[[2]]
+  create_individual_map(
+    data = config$data,
+    layer_name = config$layer,
+    score_value = config$score,
+    map_title = "Map 2"
+  )
+}
+```
+
+```{r}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 3) {
+  config <- params$map_configs[[3]]
+  cat("### Map 3:", config$layer, "(Score:", config$score, ")\n\n")
+  cat("**Layer:** ", config$layer, "  \n")
+  cat("**Score:** ", config$score, "  \n") 
+  cat("**Data Points:** ", nrow(config$data), "  \n\n")
+}
+```
+
+```{r}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 3) {
+  config <- params$map_configs[[3]]
+  create_individual_map(
+    data = config$data,
+    layer_name = config$layer,
+    score_value = config$score,
+    map_title = "Map 3"
+  )
+}
+```
+
+```{r}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 4) {
+  config <- params$map_configs[[4]]
+  cat("### Map 4:", config$layer, "(Score:", config$score, ")\n\n")
+  cat("**Layer:** ", config$layer, "  \n")
+  cat("**Score:** ", config$score, "  \n") 
+  cat("**Data Points:** ", nrow(config$data), "  \n\n")
+}
+```
+
+```{r}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 4) {
+  config <- params$map_configs[[4]]
+  create_individual_map(
+    data = config$data,
+    layer_name = config$layer,
+    score_value = config$score,
+    map_title = "Map 4"
+  )
+}
+```
+
+```{r}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 5) {
+  config <- params$map_configs[[5]]
+  cat("### Map 5:", config$layer, "(Score:", config$score, ")\n\n")
+  cat("**Layer:** ", config$layer, "  \n")
+  cat("**Score:** ", config$score, "  \n") 
+  cat("**Data Points:** ", nrow(config$data), "  \n\n")
+}
+```
+
+```{r}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 5) {
+  config <- params$map_configs[[5]]
+  create_individual_map(
+    data = config$data,
+    layer_name = config$layer,
+    score_value = config$score,
+    map_title = "Map 5"
+  )
+}
+```
+
+```{r}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 6) {
+  config <- params$map_configs[[6]]
+  cat("### Map 6:", config$layer, "(Score:", config$score, ")\n\n")
+  cat("**Layer:** ", config$layer, "  \n")
+  cat("**Score:** ", config$score, "  \n") 
+  cat("**Data Points:** ", nrow(config$data), "  \n\n")
+}
+```
+
+```{r}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 6) {
+  config <- params$map_configs[[6]]
+  create_individual_map(
+    data = config$data,
+    layer_name = config$layer,
+    score_value = config$score,
+    map_title = "Map 6"
+  )
+}
+```
+
+```{r}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 7) {
+  config <- params$map_configs[[7]]
+  cat("### Map 7:", config$layer, "(Score:", config$score, ")\n\n")
+  cat("**Layer:** ", config$layer, "  \n")
+  cat("**Score:** ", config$score, "  \n") 
+  cat("**Data Points:** ", nrow(config$data), "  \n\n")
+}
+```
+
+```{r}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 7) {
+  config <- params$map_configs[[7]]
+  create_individual_map(
+    data = config$data,
+    layer_name = config$layer,
+    score_value = config$score,
+    map_title = "Map 7"
+  )
+}
+```
+
+```{r}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 8) {
+  config <- params$map_configs[[8]]
+  cat("### Map 8:", config$layer, "(Score:", config$score, ")\n\n")
+  cat("**Layer:** ", config$layer, "  \n")
+  cat("**Score:** ", config$score, "  \n") 
+  cat("**Data Points:** ", nrow(config$data), "  \n\n")
+}
+```
+
+```{r}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 8) {
+  config <- params$map_configs[[8]]
+  create_individual_map(
+    data = config$data,
+    layer_name = config$layer,
+    score_value = config$score,
+    map_title = "Map 8"
+  )
+}
+```
+
+## Combined Maps
+
+### Combined Map - Geometric Mean
+```{r}
+if (!is.null(params$selected_methods) && "geometric_mean" %in% params$selected_methods && 
+    !is.null(params$combined_data_list) && "geometric_mean" %in% names(params$combined_data_list)) {
+  combined_data <- params$combined_data_list[["geometric_mean"]]
+  if(!is.null(combined_data)) {
+    cat("**Combined Data Points:** ", nrow(combined_data), "  \n")
+    cat("**Calculation Method:** Geometric Mean  \n\n")
+  }
+} else {
+  cat("*Geometric mean calculation method was not selected or data is not available.*\n\n")
+}
+
+if (!is.null(params$selected_methods) && "geometric_mean" %in% params$selected_methods && 
+    !is.null(params$combined_data_list) && "geometric_mean" %in% names(params$combined_data_list)) {
+  combined_data <- params$combined_data_list[["geometric_mean"]]
+  if(!is.null(combined_data)) {
+    create_combined_map(combined_data, paste(params$combined_map_title, "- Geometric Mean"), "geometric_mean")
+  }
+}
+```
+
+### Combined Map - Lowest Score
+
+```{r}
+if (!is.null(params$selected_methods) && "lowest" %in% params$selected_methods && 
+    !is.null(params$combined_data_list) && "lowest" %in% names(params$combined_data_list)) {
+  combined_data <- params$combined_data_list[["lowest"]]
+  if(!is.null(combined_data)) {
+    cat("**Combined Data Points:** ", nrow(combined_data), "  \n")
+    cat("**Calculation Method:** Lowest Score  \n\n")
+  }
+} else {
+  cat("*Lowest score calculation method was not selected or data is not available.*\n\n")
+}
+```
+
+```{r}
+if (!is.null(params$selected_methods) && "lowest" %in% params$selected_methods && 
+    !is.null(params$combined_data_list) && "lowest" %in% names(params$combined_data_list)) {
+  combined_data <- params$combined_data_list[["lowest"]]
+  if(!is.null(combined_data)) {
+    create_combined_map(combined_data, paste(params$combined_map_title, "- Lowest Score"), "lowest")
+  }
+}
+```
+
+### Combined Map - Product
+
+```{r}
+if (!is.null(params$selected_methods) && "product" %in% params$selected_methods && 
+    !is.null(params$combined_data_list) && "product" %in% names(params$combined_data_list)) {
+  combined_data <- params$combined_data_list[["product"]]
+  if(!is.null(combined_data)) {
+    cat("**Combined Data Points:** ", nrow(combined_data), "  \n")
+    cat("**Calculation Method:** Product  \n\n")
+  }
+} else {
+  cat("*Product calculation method was not selected or data is not available.*\n\n")
+}
+```
+
+```{r}
+if (!is.null(params$selected_methods) && "product" %in% params$selected_methods && 
+    !is.null(params$combined_data_list) && "product" %in% names(params$combined_data_list)) {
+  combined_data <- params$combined_data_list[["product"]]
+  if(!is.null(combined_data)) {
+    create_combined_map(combined_data, paste(params$combined_map_title, "- Product"), "product")
+  }
+}
+```
