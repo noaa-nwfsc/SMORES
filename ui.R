@@ -19,22 +19,52 @@ tagList(
     theme = theme %>% 
       bs_add_rules(
         # Custom CSS to style the navbar
-        ".navbar-brand { color: white !important; }
+        "/* Style for all navbar links first (base styling) */
+  .navbar-nav .nav-link {
+    color: white !important;
+    background-color: #003087 !important;
+    border-radius: 4px 4px 0 0;
+    margin-right: 2px;
+  }
+
+  /* Active state for all navbar links */
+  .navbar-nav .nav-link.active {
+    color: #003087 !important;
+    background-color: white !important;
+    border-radius: 4px 4px 0 0;
+  }
+
+  /* Hover effect for all navbar links */
+  .navbar-nav .nav-link:hover {
+    background-color: #0052A3 !important;
+  }
+
+  /* Override for model tabs - use medium blue */
+  .navbar-nav .nav-link[data-value='Natural Resources Submodel'],
+  .navbar-nav .nav-link[data-value='Fisheries Submodel'],
+  .navbar-nav .nav-link[data-value='Industry & Operations Submodel'],
+  .navbar-nav .nav-link[data-value='Full Model'] {
+    background-color: #0085CA !important;
+  }
+
+  /* Active state for model tabs */
+  .navbar-nav .nav-link.active[data-value='Natural Resources Submodel'],
+  .navbar-nav .nav-link.active[data-value='Fisheries Submodel'],
+  .navbar-nav .nav-link.active[data-value='Industry & Operations Submodel'],
+  .navbar-nav .nav-link.active[data-value='Full Model'] {
+    background-color: #0085CA !important;
+    color: white !important;
+  }
+
+  /* Hover for model tabs */
+  .navbar-nav .nav-link:hover[data-value='Natural Resources Submodel'],
+  .navbar-nav .nav-link:hover[data-value='Fisheries Submodel'],
+  .navbar-nav .nav-link:hover[data-value='Industry & Operations Submodel'],
+  .navbar-nav .nav-link:hover[data-value='Full Model'] {
+    background-color: #0066B3 !important;
+  }
        
-       /* Style for top-level navbar links only - blue background with white text */
-       .navbar .nav-item .nav-link:not(.active) { 
-         color: white !important; 
-         background-color: #003087 !important;
-       }
-       
-       /* Style for active top-level navbar links only - white background with blue text*/
-       .navbar .nav-item .nav-link.active { 
-         color: #003087 !important;
-         background-color: white !important;
-         border-radius: 4px 4px 0 0;
-       }
-       
-       /* Background for the nav-tabs container but NOT for the main navbar - light gray*/
+  /* Background for the nav-tabs container but NOT for the main navbar - light gray*/
        .navset-tab > .nav-tabs,
        #dataTabs > .nav-tabs,
        .card .nav-tabs,
@@ -122,11 +152,23 @@ tagList(
         )
       )
     ),
-    
-    # Tab 2: Natural Resources Submodel Tab with Inset Tabs
+    # Tab 2: Area of Interest
+    nav_panel(
+      title = "Area of Interest",
+      icon = icon("map-location-dot"),
+      layout_columns(
+        card(
+          card_header("Area of Interest"),
+          card_body(
+            includeMarkdown("markdown/area_of_interest.md")
+          )
+        )
+      )
+    ),
+    # Tab 3: Natural Resources Submodel Tab with Inset Tabs
     nav_panel(
       title = "Natural Resources Submodel",
-      icon = icon("cloud-sun"),
+      icon = icon("sun"),
       
       # Layout with sidebar for tabs
       layout_sidebar(
@@ -215,7 +257,7 @@ tagList(
         )
       )
     ),
-    # Tab 3: Fisheries Submodel
+    # Tab 4: Fisheries Submodel
     nav_panel(
       title = "Fisheries Submodel",
       icon = icon("fish-fins"),
@@ -226,11 +268,10 @@ tagList(
         )
       )
     ), 
-    # Tab 4: Industry & Operations Submodel
+    # Tab 5: Industry & Operations Submodel
     nav_panel(
       title = "Industry & Operations Submodel",
       icon = icon("ship"),
-      
       # Layout with sidebar for tabs
       layout_sidebar(
         # Sidebar for picker inputs that change based on tab selection
@@ -295,12 +336,11 @@ tagList(
         )
       )
     ),
-    # Tab 4: Model Output
+    # Tab 5: Model Output
     nav_panel(
       title = "Full Model",
       icon = icon("calculator"),
-      
-      # Layout with sidebar
+     # Layout with sidebar
       layout_sidebar(
         sidebar = sidebar(
           uiOutput("dynamicSidebar_overall_model")
@@ -329,7 +369,7 @@ tagList(
         )
       )
     ),
-    # Tab 5: Methods
+    # Tab 6: Methods
     nav_panel(
       title = "Methods",
       icon = icon("route"),
@@ -340,7 +380,7 @@ tagList(
         )
       )
     ), 
-    # Tab 6: Data
+    # Tab 7: Data
     nav_panel(
       title = "Data",
       icon = icon("database"),
@@ -357,6 +397,3 @@ tagList(
     )
   )
 )
-
-
-
