@@ -153,44 +153,8 @@ tagList(
       )
     ),
     # Tab 2: Area of Interest
-    nav_panel(
-      title = "Area of Interest",
-      icon = icon("map-location-dot"),
-      card(
-        card_header("Area of Interest"),
-        card_body(
-          includeMarkdown("markdown/area_of_interest.md")
-        )
-      ),
-      card(
-        card_header("Area Selection"),
-        card_body(
-          pickerInput(
-            "weaAreaSelector",
-            "Select Energy Area:",
-            choices = NULL,
-            selected = NULL,
-            multiple = FALSE,
-            options = list(
-              `none-selected-text` = " No area selected"
-            )
-          ),
-          p("Select one Wind Energy Area to filter the dataset. The map will update to show only the selected area."),
-          #Summary information
-          conditionalPanel(condition = "input.weaAreaSelector != null && input.weaAreaSelector != ''",
-                           div(
-                             style = "margin-top: 15px; background-color: #f8f9fa; border-radius: 5px;"
-                           )
-          )
-        )
-      ),
-      card(card_header("WEA Areas Map"),
-           card_body(
-             p("this map shows the Wind Energy Areas (WEA's). Use the selector above to filter areas by name."),
-             leafletOutput("weaMap", height = "500px")
-           )
-      )
-    ),
+    generate_area_of_interest_sidebar(),
+    
     # Tab 3: Natural Resources Submodel Tab with Inset Tabs
     nav_panel(
       title = "Natural Resources Submodel",
@@ -350,12 +314,18 @@ tagList(
             title = "Combined Submodel",
             icon = icon("object-group"),
             value = "combined_model_industry_operations",
-            layout_columns(
-              card(
-                card_header("Combined Submodel"),
-                card_body(
-                  includeMarkdown("markdown/combined_industry_operations_submodel.md")
-                )
+            
+            # Info card
+            card(
+              card_header("Combined Industry & Operations Submodel"),
+              card_body(
+                includeMarkdown("markdown/combined_industry_operations_submodel.md")
+              )
+            ),
+            card(
+              card_header("Combined Industry & Operations Submodel Result"),
+              card_body(
+                uiOutput("industryOperationsCombinedMapContainer")
               )
             )
           )
