@@ -52,10 +52,10 @@ calculate_product <- function(combined_data) {
   return(combined_data)
 }
 
-# Modified function to generate multiple maps at once
 generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, base_grid = grid_test, 
                                                selected_methods = c("geometric_mean"), 
-                                               map_type = "Combined") {
+                                               map_type = "Combined",
+                                               wea_data_reactive = NULL) {
   
   # Initialize result structure for all methods
   results <- list()
@@ -171,7 +171,8 @@ generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, b
             weight = 1, 
             fillColor = single_color, 
             fillOpacity = 1,
-            popup = ~popup_display
+            popup = ~popup_display,
+            group = "Combined Data"
           ) %>%
           addLegend(
             position = "bottomright",
@@ -203,7 +204,8 @@ generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, b
             weight = 1, 
             fillColor = ~fill_color, 
             fillOpacity = 1,
-            popup = ~popup_display
+            popup = ~popup_display,
+            group = "Combined Data"
           ) %>%
           addLegend(
             position = "bottomright",
@@ -222,6 +224,68 @@ generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, b
         addControl("No score data available for the selected layers.", position = "topright")
     }
     
+    # Add WEA data to the map if available
+    if(!is.null(wea_data_reactive)) {
+      tryCatch({
+        wea_data <- wea_data_reactive()
+        if(!is.null(wea_data) && nrow(wea_data) > 0) {
+          # Transform WEA data if needed
+          if(!st_is_longlat(wea_data)) {
+            wea_data <- st_transform(wea_data, 4326)
+          }
+          wea_data <- st_zm(wea_data)
+          
+          map <- map %>%
+            addPolygons(
+              data = wea_data,
+              fillColor = "transparent",
+              color = "red",
+              weight = 3,
+              fillOpacity = 0,
+              popup = ~paste("Area:", Area_Name),
+              group = "WEA Area"
+            ) %>%
+            addLayersControl(
+              overlayGroups = c("Combined Data", "WEA Area"),
+              options = layersControlOptions(collapsed = FALSE)
+            )
+        }
+      }, error = function(e) {
+        # If WEA data fails, continue without it
+        message("Could not add WEA data to combined map: ", e$message)
+      })
+    } else if(exists("WEA")) {
+      # Fall back to global WEA data if no reactive provided
+      tryCatch({
+        wea_data <- WEA
+        if(!is.null(wea_data) && nrow(wea_data) > 0) {
+          # Transform WEA data if needed
+          if(!st_is_longlat(wea_data)) {
+            wea_data <- st_transform(wea_data, 4326)
+          }
+          wea_data <- st_zm(wea_data)
+          
+          map <- map %>%
+            addPolygons(
+              data = wea_data,
+              fillColor = "transparent",
+              color = "red",
+              weight = 3,
+              fillOpacity = 0,
+              popup = ~paste("Area:", Area_Name),
+              group = "WEA Area"
+            ) %>%
+            addLayersControl(
+              overlayGroups = c("Combined Data", "WEA Area"),
+              options = layersControlOptions(collapsed = FALSE)
+            )
+        }
+      }, error = function(e) {
+        # If global WEA data fails, continue without it
+        message("Could not add global WEA data to combined map: ", e$message)
+      })
+    }
+    
     # Store the result for this method
     results[[method]] <- list(
       combined_data = combined_data,
@@ -235,14 +299,16 @@ generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, b
 # Keep the original function for backward compatibility
 generate_combined_map <- function(valid_configs, dataset_mapping, base_grid = grid_test, 
                                   map_title = "Combined Map", 
-                                  calculation_method = "geometric_mean") {
+                                  calculation_method = "geometric_mean",
+                                  wea_data_reactive = NULL) {
   
   # Use the new function to generate a single method
   results <- generate_combined_maps_all_methods(
     valid_configs = valid_configs,
     dataset_mapping = dataset_mapping,
     base_grid = base_grid,
-    selected_methods = c(calculation_method)
+    selected_methods = c(calculation_method),
+    wea_data_reactive = wea_data_reactive
   )
   
   # Return the result for the requested method
