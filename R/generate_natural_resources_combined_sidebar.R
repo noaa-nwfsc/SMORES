@@ -154,12 +154,9 @@ generate_natural_resources_combined_sidebar <- function(submodel_config, combine
     hr(),
     # Export Section
     h5("Export"),
-    conditionalPanel(
-      condition = "output.naturalResourcesCombinedMap",
       downloadButton("naturalResourcesCombinedExport",
                      "Export Combined Submodel",
                      icon = icon("file-export"),
                      class = "btn-info btn-block")
-    )
   )
 }
