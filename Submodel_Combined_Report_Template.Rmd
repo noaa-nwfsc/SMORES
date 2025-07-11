@@ -1,0 +1,330 @@
+---
+title: "`r paste(params$submodel_name, 'Combined Submodel Report')`"
+date: "`r format(Sys.time(), '%B %d, %Y at %H:%M:%S')`"
+output: 
+  html_document:
+    theme: cosmo
+    toc: true
+    toc_float: true
+    self_contained: true
+params:
+  submodel_name: "Combined Submodel"
+  selected_components: NULL
+  component_methods: NULL
+  combined_data: NULL
+  combined_map_title: "Combined Submodel Map"
+  data_timestamps: NULL
+  component_data_summary: NULL
+---
+
+```{css, include = FALSE}
+<style>
+body {
+max-width: 1200px;
+margin: 0 auto;
+padding: 20px;
+font-family: 'Arial', sans-serif;
+}
+
+.main-container {
+max-width: 1200px;
+margin: 0 auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+text-align: center;
+margin: 20px 0;
+}
+
+.leaflet-container {
+margin: 20px auto;
+display: block;
+}
+
+table {
+margin: 20px auto;
+max-width: 800px;
+}
+
+.table {
+margin: 20px auto;
+}
+
+p {
+text-align: justify;
+margin: 15px 0;
+}
+
+.tocify-wrapper {
+position: fixed;
+top: 0;
+left: 0;
+width: 260px;
+height: 100%;
+overflow: auto;
+z-index: 1000;
+}
+
+.col-md-9 {
+margin-left: 280px;
+max-width: calc(100% - 300px);
+}
+
+/* Center specific elements */
+.centered-content {
+text-align: center;
+margin: 20px auto;
+}
+
+/* Map container centering */
+.map-container {
+display: flex;
+justify-content: center;
+margin: 20px 0;
+}
+
+/* Ensure leaflet maps are responsive and centered */
+.leaflet {
+max-width: 100%;
+height: 400px;
+margin: 0 auto;
+}
+
+/* Style for configuration table */
+.config-table {
+margin: 20px auto;
+max-width: 800px;
+}
+
+/* Center all chunk outputs */
+.chunk-output {
+text-align: center;
+}
+
+/* Center kable tables */
+.kable-table {
+margin-left: auto;
+margin-right: auto;
+}
+
+/* Component summary styling */
+.component-summary {
+background-color: #f8f9fa;
+border: 1px solid #dee2e6;
+border-radius: 8px;
+padding: 15px;
+margin: 15px 0;
+}
+
+.component-header {
+background-color: #e9ecef;
+border-radius: 5px;
+padding: 10px;
+margin-bottom: 10px;
+font-weight: bold;
+}
+</style>
+```
+
+```{r}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.width = 12, fig.height = 8)
+
+# Load required libraries
+suppressPackageStartupMessages({
+  library(leaflet)
+  library(sf)
+  library(dplyr)
+  library(knitr)
+  library(htmltools)
+})
+
+# Null coalescing operator
+`%||%` <- function(x, y) if(is.null(x)) y else x
+
+# Function to create combined submodel map
+create_combined_submodel_map <- function(combined_data, title) {
+  if (is.null(combined_data)) {
+    return(leaflet() %>%
+             addProviderTiles("Esri.OceanBasemap") %>%
+             addControl("No combined submodel data available.", position = "topright"))
+  }
+  
+  # Determine the value column - should be "Geo_mean" for combined submodel
+  value_column <- if("Geo_mean" %in% names(combined_data)) "Geo_mean" else "Combined_Score"
+  
+  if (!value_column %in% names(combined_data)) {
+    return(leaflet() %>%
+             addProviderTiles("Esri.OceanBasemap") %>%
+             addControl("No valid combined score data available.", position = "topright"))
+  }
+  
+  # Ensure data is in the correct CRS for leaflet
+  if (inherits(combined_data, 'sf') && !identical(st_crs(combined_data)$input, '+proj=longlat +datum=WGS84')) {
+    combined_data <- st_transform(combined_data, '+proj=longlat +datum=WGS84')
+  }
+  
+  # Filter out NA values for domain calculation
+  valid_values <- combined_data[[value_column]][!is.na(combined_data[[value_column]])]
+  
+  if(length(valid_values) == 0) {
+    return(leaflet() %>%
+             addProviderTiles("Esri.OceanBasemap") %>%
+             addControl("No valid data available for combined submodel.", position = "topright"))
+  }
+  
+  # Create color palette
+  pal <- colorNumeric(
+    palette = "viridis",
+    domain = range(valid_values),
+    na.color = 'transparent'
+  )
+  
+  # Create popup text
+  popup_text <- ~paste0(
+    '<strong>Combined Score:</strong> ', round(get(value_column), 3), '<br>',
+    '<strong>Cell ID:</strong> ', CellID_2km
+  )
+  
+  leaflet(combined_data) %>%
+    addProviderTiles("Esri.OceanBasemap",
+                     options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
+    addProviderTiles("Esri.OceanBasemap",
+                     options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
+    addPolygons(
+      fillColor = ~pal(get(value_column)),
+      weight = 1,
+      opacity = 1,
+      color = '#00000000',
+      fillOpacity = 0.7,
+      popup = popup_text
+    ) %>%
+    addLegend(
+      pal = pal,
+      values = ~get(value_column),
+      title = title,
+      position = 'bottomright',
+      opacity = 1
+    )
+}
+```
+
+```{r}
+if (!is.null(params$selected_components) && !is.null(params$component_methods)) {
+  # Create a summary table of components and their methods
+  component_summary <- data.frame(
+    Component = params$selected_components,
+    Calculation_Method = params$component_methods,
+    stringsAsFactors = FALSE
+  )
+  
+  kable(component_summary, 
+        col.names = c("Component", "Calculation Method"),
+        caption = "Components and Calculation Methods Used in Combined Submodel",
+        format = "html",
+        table.attr = "class='table table-striped config-table'")
+} else {
+  "No component information available."
+}
+```
+
+```{r}
+if (!is.null(params$selected_components) && length(params$selected_components) > 0) {
+  for (i in seq_along(params$selected_components)) {
+    component_name <- params$selected_components[i]
+    method_name <- if (!is.null(params$component_methods) && i <= length(params$component_methods)) {
+      params$component_methods[i]
+    } else {
+      "Method not specified"
+    }
+    
+    cat('<div class="component-summary">\n')
+    cat('<div class="component-header">', component_name, ' Component</div>\n')
+    cat('<p><strong>Calculation Method:</strong> ', method_name, '</p>\n')
+    
+    # Add component-specific information if available
+    if (!is.null(params$component_data_summary) && component_name %in% names(params$component_data_summary)) {
+      summary_data <- params$component_data_summary[[component_name]]
+      if (!is.null(summary_data$data_points)) {
+        cat('<p><strong>Data Points:</strong> ', summary_data$data_points, '</p>\n')
+      }
+      if (!is.null(summary_data$description)) {
+        cat('<p><strong>Description:</strong> ', summary_data$description, '</p>\n')
+      }
+    }
+    
+    cat('</div>\n\n')
+  }
+} else {
+  cat("No component details available.\n")
+}
+```
+
+```{r}
+if (!is.null(params$data_timestamps)) {
+  if (is.list(params$data_timestamps) && "data_timestamps" %in% names(params$data_timestamps)) {
+    # Handle nested structure
+    display_table <- params$data_timestamps$data_timestamps %>%
+      filter(!is.na(formatted_date)) %>%
+      select(dataset_name, description, formatted_date) %>%
+      rename(
+        "Dataset" = dataset_name,
+        "Description" = description,
+        "Last Updated" = formatted_date
+      )
+  } else if (is.data.frame(params$data_timestamps)) {
+    # Handle direct data frame
+    display_table <- params$data_timestamps %>%
+      filter(!is.na(formatted_date)) %>%
+      select(dataset_name, description, formatted_date) %>%
+      rename(
+        "Dataset" = dataset_name,
+        "Description" = description,
+        "Last Updated" = formatted_date
+      )
+  } else {
+    display_table <- NULL
+  }
+  
+  if (!is.null(display_table) && nrow(display_table) > 0) {
+    kable(display_table, 
+          caption = "Data Layer Update Information",
+          format = "html",
+          table.attr = "class='table table-striped'")
+  } else {
+    "No timestamp information available for the selected data layers."
+  }
+} else {
+  "Timestamp information not available."
+}
+```
+
+The combined submodel map represents the integration of all selected components using their specified calculation methods. The final combination is calculated using the geometric mean of the component scores to produce a unified assessment.
+
+```{r}
+if (!is.null(params$combined_data)) {
+  # Check if combined_data has the geometry and expected columns
+  if (inherits(params$combined_data, 'sf')) {
+    cat("**Combined Submodel Data Points:** ", nrow(params$combined_data), "  \n")
+    cat("**Final Combination Method:** Geometric Mean of Component Scores  \n")
+    
+    # Show value column information
+    value_column <- if("Geo_mean" %in% names(params$combined_data)) "Geo_mean" else "Combined_Score"
+    if (value_column %in% names(params$combined_data)) {
+      valid_values <- params$combined_data[[value_column]][!is.na(params$combined_data[[value_column]])]
+      if(length(valid_values) > 0) {
+        cat("**Value Range:** ", round(min(valid_values), 3), " to ", round(max(valid_values), 3), "  \n")
+      }
+    }
+    cat("\n")
+  }
+} else {
+  cat("*Combined submodel data not available.*\n\n")
+}
+
+if (!is.null(params$combined_data)) {
+  create_combined_submodel_map(params$combined_data, params$combined_map_title %||% "Combined Submodel")
+} else {
+  # Show placeholder message
+  cat("*Combined submodel was not generated.*\n")
+}
+```
