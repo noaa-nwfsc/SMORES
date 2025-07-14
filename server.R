@@ -29,12 +29,12 @@ function(input, output, session) {
   #WEA area selector options
   observe({
     if(!is.null(WEA) && "Area_Name" %in% names(WEA)){
-      area_names <-sort(unique(WEA$Area_Name))
-      updatePickerInput(
+      area_names <- sort(unique(WEA$Area_Name))
+      updateRadioButtons(
         session = session,
         inputId = "weaAreaSelector",
-        choices = area_names, 
-        selected = NULL
+        choices = c("All Areas" = "all", area_names),  # Add "All Areas" option
+        selected = "all"  # Select "All Areas" by default
       )
     }
   })
@@ -42,18 +42,19 @@ function(input, output, session) {
   # Reactive expression for filtered WEA data with debug
   filtered_wea_data <- reactive({
     
-    # If no area is selected, return NULL instead of all WEA data
-    if(is.null(input$weaAreaSelector) || input$weaAreaSelector == "") {
-      return(NULL)  # Changed from return(WEA) to return(NULL)
+    # If no area is selected or "All Areas" is selected, return all WEA data
+    if(is.null(input$weaAreaSelector) || input$weaAreaSelector == "" || 
+       input$weaAreaSelector == "loading" || input$weaAreaSelector == "all") {
+      return(WEA)  # Return all WEAs
     }
     
-    # Filter the data only when an area is selected
+    # Filter the data when a specific area is selected
     filtered_data <- WEA[WEA$Area_Name == input$weaAreaSelector, ]
     
     return(filtered_data)
   })
   
-  # WEA Map Output - Fixed version
+  # WEA Map Output - Modified to show all WEAs initially
   output$weaMap <- renderLeaflet({
     
     tryCatch({
@@ -74,16 +75,42 @@ function(input, output, session) {
       # Remove Z & M dimensions for leaflet compatability
       wea_data <- st_zm(wea_data)
       
-      # Create the map
-      leaflet() %>%
-        addProviderTiles("Esri.OceanBasemap") %>%
-        addPolygons(
-          data = wea_data,
-          fillColor = "blue",
-          weight = 1,
-          color = "black",
-          fillOpacity = 0.5
-        )
+      # Create the map with different styling based on selection
+      map <- leaflet() %>%
+        addProviderTiles("Esri.OceanBasemap")
+      
+      # Check if showing all areas or just one
+      if(is.null(input$weaAreaSelector) || input$weaAreaSelector == "" || input$weaAreaSelector == "loading") {
+        # Show all WEAs with lighter styling
+        map <- map %>%
+          addPolygons(
+            data = wea_data,
+            fillColor = "lightblue",
+            weight = 1,
+            color = "navy",
+            fillOpacity = 0.3,
+            popup = ~paste("Area:", Area_Name),
+            highlight = highlightOptions(
+              weight = 2,
+              color = "blue",
+              fillOpacity = 0.6,
+              bringToFront = TRUE
+            )
+          )
+      } else {
+        # Show selected WEA with highlighted styling
+        map <- map %>%
+          addPolygons(
+            data = wea_data,
+            fillColor = "blue",
+            weight = 2,
+            color = "darkblue",
+            fillOpacity = 0.6,
+            popup = ~paste("Selected Area:", Area_Name)
+          )
+      }
+      
+      return(map)
       
     }, error = function(e) {
       return(leaflet() %>% 
@@ -457,6 +484,9 @@ function(input, output, session) {
       # Get filtered timestamp information for the selected layers
       timestamp_info <- get_filtered_timestamp_data(valid_configs, "habitat")
       
+      # Get filtered WEA data for the report
+      wea_data <- filtered_wea_data()
+      
       # Make sure each valid_config has valid spatial data
       for(i in seq_along(valid_configs)) {
         # Ensure data is transformed to WGS84 for leaflet
@@ -495,7 +525,8 @@ function(input, output, session) {
           tab_name = "Natural Resources",
           combined_map_title = "Combined Habitat Maps",
           data_timestamps = timestamp_info, 
-          component_name = "Habitat"
+          component_name = "Habitat",
+          wea_data = wea_data
         ),
         envir = new.env(parent = globalenv())
       )
@@ -604,6 +635,9 @@ function(input, output, session) {
       # Get filtered timestamp information for the selected layers
       timestamp_info <- get_filtered_timestamp_data(valid_configs, "species")
       
+      # Get filtered WEA data for the report
+      wea_data <- filtered_wea_data()
+      
       # Make sure each valid_config has valid spatial data
       for(i in seq_along(valid_configs)) {
         # Ensure data is transformed to WGS84 for leaflet
@@ -642,7 +676,8 @@ function(input, output, session) {
           tab_name = "Natural Resources",
           combined_map_title = "Combined Species Maps",
           data_timestamps = timestamp_info, 
-          component_name = "Species"
+          component_name = "Species",
+          wea_data = wea_data
         ),
         envir = new.env(parent = globalenv())
       )
@@ -750,6 +785,9 @@ function(input, output, session) {
       # Get filtered timestamp information for the selected layers
       timestamp_info <- get_filtered_timestamp_data(valid_configs, "surveys")
       
+      # Get filtered WEA data for the report
+      wea_data <- filtered_wea_data()
+      
       # Make sure each valid_config has valid spatial data
       for(i in seq_along(valid_configs)) {
         # Ensure data is transformed to WGS84 for leaflet
@@ -788,7 +826,8 @@ function(input, output, session) {
           tab_name = "Industry and Operations",
           combined_map_title = "Combined Surveys Maps",
           data_timestamps = timestamp_info, 
-          component_name = "Surveys"
+          component_name = "Surveys",
+          wea_data = wea_data
         ),
         envir = new.env(parent = globalenv())
       )
@@ -897,6 +936,9 @@ function(input, output, session) {
       # Get filtered timestamp information for the selected layers
       timestamp_info <- get_filtered_timestamp_data(valid_configs, "cables")
       
+      # Get filtered WEA data for the report
+      wea_data <- filtered_wea_data()
+      
       # Make sure each valid_config has valid spatial data
       for(i in seq_along(valid_configs)) {
         # Ensure data is transformed to WGS84 for leaflet
@@ -935,7 +977,8 @@ function(input, output, session) {
           tab_name = "Industry and Operations",
           combined_map_title = "Combined Cables Maps",
           data_timestamps = timestamp_info, 
-          component_name = "Cables"
+          component_name = "Cables",
+          wea_data = wea_data
         ),
         envir = new.env(parent = globalenv())
       )
@@ -1308,22 +1351,25 @@ function(input, output, session) {
       }
       
       # Get filtered timestamp information for the combined submodel
-      all_configs <- c()
+      all_configs <- list()
       
       # Add habitat configs if included
       if(input$includeHabitat %||% FALSE) {
         habitat_configs <- get_valid_configs_for_tab(input, "habitat", habitat_layer, score_colors, filter_by_score)
-        all_configs <- c(all_configs, habitat_configs)
+        all_configs <- append(all_configs, habitat_configs)
       }
       
       # Add species configs if included  
       if(input$includeSpecies %||% FALSE) {
         species_configs <- get_valid_configs_for_tab(input, "species", species_layer, score_colors, filter_by_score)
-        all_configs <- c(all_configs, species_configs)
+        all_configs <- append(all_configs, species_configs)
       }
       
       # Get timestamp data for all included components
       timestamp_info <- get_filtered_timestamp_data(all_configs, "combined")
+      
+      # Get filtered WEA data for the report
+      wea_data <- filtered_wea_data()
       
       # Render the combined submodel report
       rmarkdown::render(
@@ -1336,7 +1382,8 @@ function(input, output, session) {
           combined_data = combined_maps_data$natural_resources_combined_submodel,
           combined_map_title = "Natural Resources Combined Submodel",
           data_timestamps = timestamp_info,
-          component_data_summary = component_data_summary
+          component_data_summary = component_data_summary,
+          wea_data = wea_data
         ),
         envir = new.env(parent = globalenv())
       )
@@ -1545,22 +1592,25 @@ function(input, output, session) {
       }
       
       # Get filtered timestamp information for the combined submodel
-      all_configs <- c()
+      all_configs <- list()
       
       # Add surveys configs if included
       if(input$includeSurveys %||% FALSE) {
         surveys_configs <- get_valid_configs_for_tab(input, "surveys", surveys_layer, score_colors, filter_by_score)
-        all_configs <- c(all_configs, surveys_configs)
+        all_configs <- append(all_configs, surveys_configs)
       }
       
       # Add cables configs if included  
       if(input$includeCables %||% FALSE) {
         cables_configs <- get_valid_configs_for_tab(input, "cables", submarine_cables_layer, score_colors, filter_by_score)
-        all_configs <- c(all_configs, cables_configs)
+        all_configs <- append(all_configs, cables_configs)
       }
       
       # Get timestamp data for all included components
       timestamp_info <- get_filtered_timestamp_data(all_configs, "combined")
+      
+      # Get filtered WEA data for the report
+      wea_data <- filtered_wea_data()
       
       # Render the combined submodel report
       rmarkdown::render(
@@ -1573,7 +1623,8 @@ function(input, output, session) {
           combined_data = combined_maps_data$industry_operations_combined_submodel,
           combined_map_title = "Industry & Operations Combined Submodel",
           data_timestamps = timestamp_info,
-          component_data_summary = component_data_summary
+          component_data_summary = component_data_summary,
+          wea_data = wea_data
         ),
         envir = new.env(parent = globalenv())
       )
