@@ -15,6 +15,7 @@ params:
   combined_map_title: "Combined Submodel Map"
   data_timestamps: NULL
   component_data_summary: NULL
+  wea_data: NULL
 ---
 
 ```{css, include = FALSE}
@@ -126,7 +127,7 @@ font-weight: bold;
 </style>
 ```
 
-```{r}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.width = 12, fig.height = 8)
 
 # Load required libraries
@@ -142,7 +143,7 @@ suppressPackageStartupMessages({
 `%||%` <- function(x, y) if(is.null(x)) y else x
 
 # Function to create combined submodel map
-create_combined_submodel_map <- function(combined_data, title) {
+create_combined_submodel_map <- function(combined_data, title, wea_data = NULL) {
   if (is.null(combined_data)) {
     return(leaflet() %>%
              addProviderTiles("Esri.OceanBasemap") %>%
@@ -185,7 +186,8 @@ create_combined_submodel_map <- function(combined_data, title) {
     '<strong>Cell ID:</strong> ', CellID_2km
   )
   
-  leaflet(combined_data) %>%
+  # Create the base map
+  map <- leaflet(combined_data) %>%
     addProviderTiles("Esri.OceanBasemap",
                      options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
     addProviderTiles("Esri.OceanBasemap",
@@ -196,7 +198,8 @@ create_combined_submodel_map <- function(combined_data, title) {
       opacity = 1,
       color = '#00000000',
       fillOpacity = 0.7,
-      popup = popup_text
+      popup = popup_text,
+      group = "Combined Data"
     ) %>%
     addLegend(
       pal = pal,
@@ -205,6 +208,32 @@ create_combined_submodel_map <- function(combined_data, title) {
       position = 'bottomright',
       opacity = 1
     )
+  
+  # Add WEA boundary if available
+  if (!is.null(wea_data) && nrow(wea_data) > 0) {
+    # Transform WEA data if needed
+    if (!st_is_longlat(wea_data)) {
+      wea_data <- st_transform(wea_data, 4326)
+    }
+    wea_data <- st_zm(wea_data)
+    
+    map <- map %>%
+      addPolygons(
+        data = wea_data,
+        fillColor = "transparent",
+        color = "red",
+        weight = 3,
+        fillOpacity = 0,
+        popup = ~paste("WEA Area:", Area_Name),
+        group = "WEA Boundary"
+      ) %>%
+      addLayersControl(
+        overlayGroups = c("Combined Data", "WEA Boundary"),
+        options = layersControlOptions(collapsed = FALSE)
+      )
+  }
+  
+  return(map)
 }
 ```
 
@@ -287,7 +316,7 @@ if (!is.null(params$data_timestamps)) {
   
   if (!is.null(display_table) && nrow(display_table) > 0) {
     kable(display_table, 
-          caption = "Data Layer Update Information",
+          caption = "Data Layer Update Information for All Selected Components",
           format = "html",
           table.attr = "class='table table-striped'")
   } else {
@@ -322,7 +351,8 @@ if (!is.null(params$combined_data)) {
 }
 
 if (!is.null(params$combined_data)) {
-  create_combined_submodel_map(params$combined_data, params$combined_map_title %||% "Combined Submodel")
+  create_combined_submodel_map(params$combined_data, params$combined_map_title %||% "Combined Submodel",
+                               wea_data = params$wea_data)
 } else {
   # Show placeholder message
   cat("*Combined submodel was not generated.*\n")
