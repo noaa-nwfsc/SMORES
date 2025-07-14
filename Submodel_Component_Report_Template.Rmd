@@ -14,8 +14,9 @@ params:
   selected_methods: NULL    
   tab_name: NULL
   combined_map_title: "Combined Map"
-  data_timestamps: NULL, 
+  data_timestamps: NULL
   component_name: NULL
+  wea_data: NULL
 ---
 
 ```{css, include = FALSE}
@@ -140,7 +141,7 @@ score_colors <- list(
 )
 
 # Function to create individual maps
-create_individual_map <- function(data, layer_name, score_value, map_title) {
+create_individual_map <- function(data, layer_name, score_value, map_title, wea_data = NULL) {
   # Ensure data is in the correct CRS for leaflet
   if (inherits(data, 'sf') && !identical(st_crs(data)$input, '+proj=longlat +datum=WGS84')) {
     data <- st_transform(data, '+proj=longlat +datum=WGS84')
@@ -149,8 +150,8 @@ create_individual_map <- function(data, layer_name, score_value, map_title) {
   # Get color for the score
   color <- score_colors[[as.character(score_value)]] %||% '#000000'
   
-  # Create the map
-  leaflet(data) %>%
+  # Create the base map
+  map <- leaflet(data) %>%
     addProviderTiles("Esri.OceanBasemap",
                      options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
     addProviderTiles("Esri.OceanBasemap",
@@ -165,7 +166,8 @@ create_individual_map <- function(data, layer_name, score_value, map_title) {
         '<strong>Layer:</strong> ', layer_name, '<br>',
         '<strong>Score:</strong> ', score_value, '<br>',
         '<strong>Cell ID:</strong> ', CellID_2km
-      )
+      ),
+      group = "Layer Data"
     ) %>%
     addLegend(
       position = 'bottomright',
@@ -174,10 +176,36 @@ create_individual_map <- function(data, layer_name, score_value, map_title) {
       title = layer_name,
       opacity = 0.7
     )
+  
+  # Add WEA boundary if available
+  if (!is.null(wea_data) && nrow(wea_data) > 0) {
+    # Transform WEA data if needed
+    if (!st_is_longlat(wea_data)) {
+      wea_data <- st_transform(wea_data, 4326)
+    }
+    wea_data <- st_zm(wea_data)
+    
+    map <- map %>%
+      addPolygons(
+        data = wea_data,
+        fillColor = "transparent",
+        color = "red",
+        weight = 3,
+        fillOpacity = 0,
+        popup = ~paste("WEA Area:", Area_Name),
+        group = "WEA Boundary"
+      ) %>%
+      addLayersControl(
+        overlayGroups = c("Layer Data", "WEA Boundary"),
+        options = layersControlOptions(collapsed = FALSE)
+      )
+  }
+  
+  return(map)
 }
 
 # Function to create combined map based on method
-create_combined_map <- function(combined_data, title, method = "geometric_mean") {
+create_combined_map <- function(combined_data, title, method = "geometric_mean", wea_data = NULL) {
   if (is.null(combined_data)) {
     return(leaflet() %>%
              addProviderTiles("Esri.OceanBasemap") %>%
@@ -212,12 +240,10 @@ create_combined_map <- function(combined_data, title, method = "geometric_mean")
              addControl("No valid data available for this method.", position = "topright"))
   }
   
-  # Create color palette
-  pal <- colorNumeric(
-    palette = "viridis",
-    domain = range(valid_values),
-    na.color = 'transparent'
-  )
+  # Get the range of score values for the specific calculation method
+  score_values <- combined_data[[value_column]][!is.na(combined_data[[value_column]])]
+  min_val <- min(score_values, na.rm = TRUE)
+  max_val <- max(score_values, na.rm = TRUE)
   
   # Create popup text based on method
   popup_text <- switch(method,
@@ -239,26 +265,87 @@ create_combined_map <- function(combined_data, title, method = "geometric_mean")
     )
   )
   
- leaflet(combined_data) %>%
-    addProviderTiles("Esri.OceanBasemap",
-                     options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
-    addProviderTiles("Esri.OceanBasemap",
-                     options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
-    addPolygons(
-      fillColor = ~pal(get(value_column)),
-      weight = 1,
-      opacity = 1,
-      color = '#00000000',
-      fillOpacity = 0.7,
-      popup = popup_text
-    ) %>%
-    addLegend(
-      pal = pal,
-      values = ~get(value_column),
-      title = title,
-      position = 'bottomright',
-      opacity = 1
-    )
+  # Check if all values are the same (constant values)
+  if(length(score_values) == 0 || min_val == max_val) {
+    # When all values are the same, create a single-color palette
+    single_color <- viridis::viridis(1, begin = 0.5, end = 0.5)
+    
+    # Create the map with constant color
+    map <- leaflet(combined_data) %>%
+      addProviderTiles("Esri.OceanBasemap",
+                       options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
+      addProviderTiles("Esri.OceanBasemap",
+                       options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
+      addPolygons(
+        fillColor = single_color,
+        weight = 1,
+        opacity = 1,
+        color = '#00000000',
+        fillOpacity = 0.7,
+        popup = popup_text,
+        group = "Combined Data"
+      ) %>%
+      addLegend(
+        position = 'bottomright',
+        colors = single_color,
+        labels = paste("Score:", round(min_val, 2)),
+        title = title,
+        opacity = 1
+      )
+  } else {
+    # Normal case with varying values - use continuous palette
+    pal <- colorNumeric("viridis", 
+                        domain = range(score_values, na.rm = TRUE), 
+                        na.color = "transparent")
+    
+    map <- leaflet(combined_data) %>%
+      addProviderTiles("Esri.OceanBasemap",
+                       options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
+      addProviderTiles("Esri.OceanBasemap",
+                       options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
+      addPolygons(
+        fillColor = ~pal(get(value_column)),
+        weight = 1,
+        opacity = 1,
+        color = '#00000000',
+        fillOpacity = 0.7,
+        popup = popup_text,
+        group = "Combined Data"
+      ) %>%
+      addLegend(
+        pal = pal,
+        values = ~get(value_column),
+        title = title,
+        position = 'bottomright',
+        opacity = 1
+      )
+  }
+  
+  # Add WEA boundary if available
+  if (!is.null(wea_data) && nrow(wea_data) > 0) {
+    # Transform WEA data if needed
+    if (!st_is_longlat(wea_data)) {
+      wea_data <- st_transform(wea_data, 4326)
+    }
+    wea_data <- st_zm(wea_data)
+    
+    map <- map %>%
+      addPolygons(
+        data = wea_data,
+        fillColor = "transparent",
+        color = "red",
+        weight = 3,
+        fillOpacity = 0,
+        popup = ~paste("WEA Area:", Area_Name),
+        group = "WEA Boundary"
+      ) %>%
+      addLayersControl(
+        overlayGroups = c("Combined Data", "WEA Boundary"),
+        options = layersControlOptions(collapsed = FALSE)
+      )
+  }
+  
+  return(map)
 }
 
 # Source the data timestamps function if not provided as parameter
@@ -315,7 +402,8 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 1) {
     data = config$data,
     layer_name = config$layer,
     score_value = config$score,
-    map_title = "Map 1"
+    map_title = "Map 1",
+     wea_data = params$wea_data
   )
 }
 ```
@@ -337,7 +425,8 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 2) {
     data = config$data,
     layer_name = config$layer,
     score_value = config$score,
-    map_title = "Map 2"
+    map_title = "Map 2",
+    wea_data = params$wea_data
   )
 }
 ```
@@ -359,7 +448,8 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 3) {
     data = config$data,
     layer_name = config$layer,
     score_value = config$score,
-    map_title = "Map 3"
+    map_title = "Map 3",
+    wea_data = params$wea_data
   )
 }
 ```
@@ -381,7 +471,8 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 4) {
     data = config$data,
     layer_name = config$layer,
     score_value = config$score,
-    map_title = "Map 4"
+    map_title = "Map 4",
+    wea_data = params$wea_data
   )
 }
 ```
@@ -403,7 +494,8 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 5) {
     data = config$data,
     layer_name = config$layer,
     score_value = config$score,
-    map_title = "Map 5"
+    map_title = "Map 5",
+    wea_data = params$wea_data
   )
 }
 ```
@@ -425,7 +517,8 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 6) {
     data = config$data,
     layer_name = config$layer,
     score_value = config$score,
-    map_title = "Map 6"
+    map_title = "Map 6",
+    wea_data = params$wea_data
   )
 }
 ```
@@ -447,7 +540,8 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 7) {
     data = config$data,
     layer_name = config$layer,
     score_value = config$score,
-    map_title = "Map 7"
+    map_title = "Map 7",
+    wea_data = params$wea_data
   )
 }
 ```
@@ -469,7 +563,8 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 8) {
     data = config$data,
     layer_name = config$layer,
     score_value = config$score,
-    map_title = "Map 8"
+    map_title = "Map 8",
+    wea_data = params$wea_data
   )
 }
 ```
@@ -482,7 +577,9 @@ if (!is.null(params$selected_methods) && "geometric_mean" %in% params$selected_m
     !is.null(params$combined_data_list) && "geometric_mean" %in% names(params$combined_data_list)) {
   combined_data <- params$combined_data_list[["geometric_mean"]]
   if(!is.null(combined_data)) {
-    cat("**Combined Data Points:** ", nrow(combined_data), "  \n")
+    # Count only cells with scores not equal to 0 or NA
+    valid_data_points <- nrow(combined_data[!is.na(combined_data$Geo_mean) & combined_data$Geo_mean != 0, ])
+    cat("**Combined Data Points:** ", valid_data_points, "  \n")
     cat("**Calculation Method:** Geometric Mean  \n\n")
   }
 } else {
@@ -493,7 +590,7 @@ if (!is.null(params$selected_methods) && "geometric_mean" %in% params$selected_m
     !is.null(params$combined_data_list) && "geometric_mean" %in% names(params$combined_data_list)) {
   combined_data <- params$combined_data_list[["geometric_mean"]]
   if(!is.null(combined_data)) {
-    create_combined_map(combined_data, paste(params$combined_map_title, "- Geometric Mean"), "geometric_mean")
+    create_combined_map(combined_data, paste(params$combined_map_title, "- Geometric Mean"), "geometric_mean", wea_data = params$wea_data)
   }
 }
 ```
@@ -505,7 +602,10 @@ if (!is.null(params$selected_methods) && "lowest" %in% params$selected_methods &
     !is.null(params$combined_data_list) && "lowest" %in% names(params$combined_data_list)) {
   combined_data <- params$combined_data_list[["lowest"]]
   if(!is.null(combined_data)) {
-    cat("**Combined Data Points:** ", nrow(combined_data), "  \n")
+    # Count only cells with scores not equal to 0 or NA
+    value_column <- if("Lowest" %in% names(combined_data)) "Lowest" else "Lowest_value"
+    valid_data_points <- nrow(combined_data[!is.na(combined_data[[value_column]]) & combined_data[[value_column]] != 0, ])
+    cat("**Combined Data Points:** ", valid_data_points, "  \n")
     cat("**Calculation Method:** Lowest Score  \n\n")
   }
 } else {
@@ -518,7 +618,7 @@ if (!is.null(params$selected_methods) && "lowest" %in% params$selected_methods &
     !is.null(params$combined_data_list) && "lowest" %in% names(params$combined_data_list)) {
   combined_data <- params$combined_data_list[["lowest"]]
   if(!is.null(combined_data)) {
-    create_combined_map(combined_data, paste(params$combined_map_title, "- Lowest Score"), "lowest")
+    create_combined_map(combined_data, paste(params$combined_map_title, "- Lowest Score"), "lowest", wea_data = params$wea_data)
   }
 }
 ```
@@ -530,7 +630,10 @@ if (!is.null(params$selected_methods) && "product" %in% params$selected_methods 
     !is.null(params$combined_data_list) && "product" %in% names(params$combined_data_list)) {
   combined_data <- params$combined_data_list[["product"]]
   if(!is.null(combined_data)) {
-    cat("**Combined Data Points:** ", nrow(combined_data), "  \n")
+    # Count only cells with scores not equal to 0 or NA
+    value_column <- if("Product" %in% names(combined_data)) "Product" else "Product_value"
+    valid_data_points <- nrow(combined_data[!is.na(combined_data[[value_column]]) & combined_data[[value_column]] != 0, ])
+    cat("**Combined Data Points:** ", valid_data_points, "  \n")
     cat("**Calculation Method:** Product  \n\n")
   }
 } else {
@@ -543,7 +646,7 @@ if (!is.null(params$selected_methods) && "product" %in% params$selected_methods 
     !is.null(params$combined_data_list) && "product" %in% names(params$combined_data_list)) {
   combined_data <- params$combined_data_list[["product"]]
   if(!is.null(combined_data)) {
-    create_combined_map(combined_data, paste(params$combined_map_title, "- Product"), "product")
+    create_combined_map(combined_data, paste(params$combined_map_title, "- Product"), "product", wea_data = params$wea_data)
   }
 }
 ```
