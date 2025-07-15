@@ -33,14 +33,24 @@ calculate_lowest_value <- function(combined_data) {
     # Convert to numeric and calculate row-wise minimum
     score_matrix <- as.matrix(combined_data[score_cols])
     score_matrix <- apply(score_matrix, 2, as.numeric)
+    
     combined_data$Lowest_value <- apply(score_matrix, 1, function(x) {
       if(all(is.na(x))) return(NA)
+      # Handle case where all values are the same
+      if(length(unique(x[!is.na(x)])) <= 1) {
+        return(x[!is.na(x)][1])  # Return the single unique value
+      }
+      
       min(x, na.rm = TRUE)
     })
+    
+    # Filter out rows where geometric mean is NA or 0
+    combined_data <- combined_data[!is.na(combined_data$Lowest_value) & combined_data$Lowest_value > 0, ]
   }
   
   return(combined_data)
 }
+  
 
 # Calculate product across all score columns
 calculate_product <- function(combined_data) {
@@ -53,8 +63,17 @@ calculate_product <- function(combined_data) {
     score_matrix <- apply(score_matrix, 2, as.numeric)
     combined_data$Product_value <- apply(score_matrix, 1, function(x) {
       if(all(is.na(x))) return(NA)
+      
+      # Handle case where all values are the same
+      if(length(unique(x[!is.na(x)])) <= 1) {
+        return(x[!is.na(x)][1])  # Return the single unique value
+      }
+      
       prod(x, na.rm = TRUE)
     })
+    
+    # Filter out rows where geometric mean is NA or 0
+    combined_data <- combined_data[!is.na(combined_data$Product_value) & combined_data$Product_value > 0, ]
   }
   
   return(combined_data)
@@ -302,23 +321,4 @@ generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, b
   }
   
   return(results)
-}
-
-# Keep the original function for backward compatibility
-generate_combined_map <- function(valid_configs, dataset_mapping, base_grid = grid_test, 
-                                  map_title = "Combined Map", 
-                                  calculation_method = "geometric_mean",
-                                  wea_data_reactive = NULL) {
-  
-  # Use the new function to generate a single method
-  results <- generate_combined_maps_all_methods(
-    valid_configs = valid_configs,
-    dataset_mapping = dataset_mapping,
-    base_grid = base_grid,
-    selected_methods = c(calculation_method),
-    wea_data_reactive = wea_data_reactive
-  )
-  
-  # Return the result for the requested method
-  return(results[[calculation_method]])
 }
