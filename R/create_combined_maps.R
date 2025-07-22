@@ -82,7 +82,7 @@ calculate_product <- function(combined_data) {
 generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, base_grid = grid_test, 
                                                selected_methods = c("geometric_mean"), 
                                                map_type = "Combined",
-                                               wea_data_reactive = NULL) {
+                                               aoi_data_reactive = NULL) {
   
   # Initialize result structure for all methods
   results <- list()
@@ -252,64 +252,64 @@ generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, b
     }
     
     # Add WEA data to the map if available
-    if(!is.null(wea_data_reactive)) {
+    if(!is.null(aoi_data_reactive)) {
       tryCatch({
-        wea_data <- wea_data_reactive()
-        if(!is.null(wea_data) && nrow(wea_data) > 0) {
+        aoi_data <- aoi_data_reactive()
+        if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
           # Transform WEA data if needed
-          if(!st_is_longlat(wea_data)) {
-            wea_data <- st_transform(wea_data, 4326)
+          if(!st_is_longlat(aoi_data)) {
+            aoi_data <- st_transform(aoi_data, 4326)
           }
-          wea_data <- st_zm(wea_data)
+          aoi_data <- st_zm(aoi_data)
           
           map <- map %>%
             addPolygons(
-              data = wea_data,
+              data = aoi_data,
               fillColor = "transparent",
               color = "red",
               weight = 3,
               fillOpacity = 0,
               popup = ~paste("Area:", Area_Name),
-              group = "WEA Area"
+              group = "AOI Area"
             ) %>%
             addLayersControl(
-              overlayGroups = c("Combined Data", "WEA Area"),
+              overlayGroups = c("Combined Data", "AOI Area"),
               options = layersControlOptions(collapsed = FALSE)
             )
         }
       }, error = function(e) {
         # If WEA data fails, continue without it
-        message("Could not add WEA data to combined map: ", e$message)
+        message("Could not add AOI data to combined map: ", e$message)
       })
-    } else if(exists("WEA")) {
-      # Fall back to global WEA data if no reactive provided
+    } else if(exists("AOI")) {
+      # Fall back to global AOI data if no reactive provided
       tryCatch({
-        wea_data <- WEA
-        if(!is.null(wea_data) && nrow(wea_data) > 0) {
+        aoi_data <- AOI
+        if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
           # Transform WEA data if needed
-          if(!st_is_longlat(wea_data)) {
-            wea_data <- st_transform(wea_data, 4326)
+          if(!st_is_longlat(aoi_data)) {
+            aoi_data <- st_transform(aoi_data, 4326)
           }
-          wea_data <- st_zm(wea_data)
+          aoi_data <- st_zm(aoi_data)
           
           map <- map %>%
             addPolygons(
-              data = wea_data,
+              data = aoi_data,
               fillColor = "transparent",
               color = "red",
               weight = 3,
               fillOpacity = 0,
               popup = ~paste("Area:", Area_Name),
-              group = "WEA Area"
+              group = "AOI Area"
             ) %>%
             addLayersControl(
-              overlayGroups = c("Combined Data", "WEA Area"),
+              overlayGroups = c("Combined Data", "AOI Area"),
               options = layersControlOptions(collapsed = FALSE)
             )
         }
       }, error = function(e) {
         # If global WEA data fails, continue without it
-        message("Could not add global WEA data to combined map: ", e$message)
+        message("Could not add global AOI data to combined map: ", e$message)
       })
     }
     

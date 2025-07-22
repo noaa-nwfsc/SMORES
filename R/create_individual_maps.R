@@ -14,7 +14,7 @@
 #' # Get valid configurations and create maps
 #' valid_configs <- get_valid_configs()
 #' create_individual_maps(valid_configs, output, "naturalresources")
-create_individual_maps <- function(configs, output, namespace = NULL, wea_data_reactive = NULL) {
+create_individual_maps <- function(configs, output, namespace = NULL, aoi_data_reactive = NULL) {
   # Early return if no configs
   if(length(configs) == 0) {
     return(invisible(NULL))
@@ -34,17 +34,17 @@ create_individual_maps <- function(configs, output, namespace = NULL, wea_data_r
       output[[map_id]] <- renderLeaflet({
         # Get WEA data - use the reactive if provided, otherwise use global WEA
         wea_data <- NULL
-        if(!is.null(wea_data_reactive)) {
+        if(!is.null(aoi_data_reactive)) {
           tryCatch({
-            wea_data <- wea_data_reactive()
+            aoi_data <- aoi_data_reactive()
           }, error = function(e) {
             # If reactive fails, try to get WEA directly
-            if(exists("WEA")) {
-              wea_data <- WEA
+            if(exists("AOI")) {
+              aoi_data <- AOI
             }
           })
-        } else if(exists("WEA")) {
-          wea_data <- WEA
+        } else if(exists("AOI")) {
+          aoi_data <- AOI
         }
         
         # Ensure we have data to display
@@ -57,16 +57,16 @@ create_individual_maps <- function(configs, output, namespace = NULL, wea_data_r
             addControl("No data matching selected score", position = "topright")
           
           # Add WEA polygon - always include it
-          if(!is.null(wea_data) && nrow(wea_data) > 0) {
+          if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
             # Transform WEA data if needed
-            if(!st_is_longlat(wea_data)) {
-              wea_data <- st_transform(wea_data, 4326)
+            if(!st_is_longlat(aoi_data)) {
+              aoi_data <- st_transform(aoi_data, 4326)
             }
-            wea_data <- st_zm(wea_data)
+            aoi_data <- st_zm(aoi_data)
             
             base_map <- base_map %>%
               addPolygons(
-                data = wea_data,
+                data = aoi_data,
                 fillColor = "transparent",
                 color = "red",
                 weight = 3,
@@ -104,25 +104,25 @@ create_individual_maps <- function(configs, output, namespace = NULL, wea_data_r
           )
         
         # Add WEA polygon - always include it
-        if(!is.null(wea_data) && nrow(wea_data) > 0) {
+        if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
           # Transform WEA data if needed
-          if(!st_is_longlat(wea_data)) {
-            wea_data <- st_transform(wea_data, 4326)
+          if(!st_is_longlat(aoi_data)) {
+            aoi_data <- st_transform(aoi_data, 4326)
           }
-          wea_data <- st_zm(wea_data)
+          aoi_data <- st_zm(aoi_data)
           
           map <- map %>%
             addPolygons(
-              data = wea_data,
+              data = aoi_data,
               fillColor = "transparent",
               color = "red",
               weight = 3,
               fillOpacity = 0,
               popup = ~paste("Area:", Area_Name),
-              group = "WEA Area"
+              group = "AOI Area"
             ) %>%
             addLayersControl(
-              overlayGroups = c("Data Layer", "WEA Area"),
+              overlayGroups = c("Data Layer", "AOI Area"),
               options = layersControlOptions(collapsed = FALSE)
             )
         }

@@ -42,7 +42,7 @@ most_recent_update <- timestamp_info$most_recent_update
 
 # Load datasets
 #WEA
-WEA <- readRDS("data/WEA.rds")
+AOI <- readRDS("data/WEA.rds")
 ## Natural Resources Layers
 ### Habitat Layers
 canyon <- readRDS("data/canyon_scored.rds")
@@ -102,9 +102,7 @@ surveys_layers <- list(
   "Periodic Surveys" = surveys_periodic
 )
 submarine_cables_layer <- list(
-  "Submarine Cables" = submarine_cable,
-  "Submarine Cables 0-500 m setback" = submarine_cable_500m, 
-  "Submarine Cables 501-1000 m setback" = submarine_cable_501_1000m
+  "Submarine Cables" = submarine_cable
 )
 
 # Weight values

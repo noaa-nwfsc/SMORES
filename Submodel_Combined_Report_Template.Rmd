@@ -14,7 +14,7 @@ params:
   combined_data: NULL
   combined_map_title: "Combined Submodel Map"
   data_timestamps: NULL
-  wea_data: NULL
+  aoi_data: NULL
   component_layer_details: NULL
   component_data_summary: NULL
 ---
@@ -311,7 +311,7 @@ if (!is.null(params$combined_data)) {
 
 if (!is.null(params$combined_data)) {
   create_combined_submodel_map(params$combined_data, params$combined_map_title %||% "Combined Submodel",
-                               wea_data = params$wea_data)
+                               aoi_data = params$aoi_data)
 } else {
   # Show placeholder message
   cat("*Combined submodel was not generated.*\n")

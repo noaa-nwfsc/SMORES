@@ -16,7 +16,7 @@ params:
   combined_map_title: "Combined Map"
   data_timestamps: NULL
   component_name: NULL
-  wea_data: NULL
+  aoi_data: NULL
 ---
 
 ```{css, include = FALSE}
@@ -322,25 +322,25 @@ create_combined_map <- function(combined_data, title, method = "geometric_mean",
   }
   
   # Add WEA boundary if available
-  if (!is.null(wea_data) && nrow(wea_data) > 0) {
-    # Transform WEA data if needed
-    if (!st_is_longlat(wea_data)) {
-      wea_data <- st_transform(wea_data, 4326)
+  if (!is.null(aoi_data) && nrow(aoi_data) > 0) {
+    # Transform AOI data if needed
+    if (!st_is_longlat(aoi_data)) {
+      aoi_data <- st_transform(aoi_data, 4326)
     }
-    wea_data <- st_zm(wea_data)
+    aoi_data <- st_zm(aoi_data)
     
     map <- map %>%
       addPolygons(
-        data = wea_data,
+        data = aoi_data,
         fillColor = "transparent",
         color = "red",
         weight = 3,
         fillOpacity = 0,
-        popup = ~paste("WEA Area:", Area_Name),
-        group = "WEA Boundary"
+        popup = ~paste("AOI Area:", Area_Name),
+        group = "AOI Boundary"
       ) %>%
       addLayersControl(
-        overlayGroups = c("Combined Data", "WEA Boundary"),
+        overlayGroups = c("Combined Data", "AOI Boundary"),
         options = layersControlOptions(collapsed = FALSE)
       )
   }
@@ -403,7 +403,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 1) {
     layer_name = config$layer,
     score_value = config$score,
     map_title = "Map 1",
-     wea_data = params$wea_data
+     aoi_data = params$aoi_data
   )
 }
 ```
@@ -426,7 +426,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 2) {
     layer_name = config$layer,
     score_value = config$score,
     map_title = "Map 2",
-    wea_data = params$wea_data
+    aoi_data = params$aoi_data
   )
 }
 ```
@@ -449,7 +449,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 3) {
     layer_name = config$layer,
     score_value = config$score,
     map_title = "Map 3",
-    wea_data = params$wea_data
+    aoi_data = params$aoi_data
   )
 }
 ```
@@ -472,7 +472,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 4) {
     layer_name = config$layer,
     score_value = config$score,
     map_title = "Map 4",
-    wea_data = params$wea_data
+    aoi_data = params$aoi_data
   )
 }
 ```
@@ -495,7 +495,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 5) {
     layer_name = config$layer,
     score_value = config$score,
     map_title = "Map 5",
-    wea_data = params$wea_data
+    aoi_data = params$aoi_data
   )
 }
 ```
@@ -518,7 +518,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 6) {
     layer_name = config$layer,
     score_value = config$score,
     map_title = "Map 6",
-    wea_data = params$wea_data
+    aoi_data = params$aoi_data
   )
 }
 ```
@@ -541,7 +541,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 7) {
     layer_name = config$layer,
     score_value = config$score,
     map_title = "Map 7",
-    wea_data = params$wea_data
+    aoi_data = params$aoi_data
   )
 }
 ```
@@ -564,7 +564,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 8) {
     layer_name = config$layer,
     score_value = config$score,
     map_title = "Map 8",
-    wea_data = params$wea_data
+    aoi_data = params$aoi_data
   )
 }
 ```
@@ -590,7 +590,7 @@ if (!is.null(params$selected_methods) && "geometric_mean" %in% params$selected_m
     !is.null(params$combined_data_list) && "geometric_mean" %in% names(params$combined_data_list)) {
   combined_data <- params$combined_data_list[["geometric_mean"]]
   if(!is.null(combined_data)) {
-    create_combined_map(combined_data, paste(params$combined_map_title, "- Geometric Mean"), "geometric_mean", wea_data = params$wea_data)
+    create_combined_map(combined_data, paste(params$combined_map_title, "- Geometric Mean"), "geometric_mean", aoi_data = params$aoi_data)
   }
 }
 ```
@@ -618,7 +618,7 @@ if (!is.null(params$selected_methods) && "lowest" %in% params$selected_methods &
     !is.null(params$combined_data_list) && "lowest" %in% names(params$combined_data_list)) {
   combined_data <- params$combined_data_list[["lowest"]]
   if(!is.null(combined_data)) {
-    create_combined_map(combined_data, paste(params$combined_map_title, "- Lowest Score"), "lowest", wea_data = params$wea_data)
+    create_combined_map(combined_data, paste(params$combined_map_title, "- Lowest Score"), "lowest", aoi_data = params$aoi_data)
   }
 }
 ```
@@ -646,7 +646,7 @@ if (!is.null(params$selected_methods) && "product" %in% params$selected_methods 
     !is.null(params$combined_data_list) && "product" %in% names(params$combined_data_list)) {
   combined_data <- params$combined_data_list[["product"]]
   if(!is.null(combined_data)) {
-    create_combined_map(combined_data, paste(params$combined_map_title, "- Product"), "product", wea_data = params$wea_data)
+    create_combined_map(combined_data, paste(params$combined_map_title, "- Product"), "product", aoi_data = params$aoi_data)
   }
 }
 ```

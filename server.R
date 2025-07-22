@@ -28,11 +28,11 @@ function(input, output, session) {
   
   #WEA area selector options
   observe({
-    if(!is.null(WEA) && "Area_Name" %in% names(WEA)){
-      area_names <- sort(unique(WEA$Area_Name))
+    if(!is.null(AOI) && "Area_Name" %in% names(AOI)){
+      area_names <- sort(unique(AOI$Area_Name))
       updateRadioButtons(
         session = session,
-        inputId = "weaAreaSelector",
+        inputId = "aoiAreaSelector",
         choices = c("All Areas" = "all", area_names),  # Add "All Areas" option
         selected = "all"  # Select "All Areas" by default
       )
@@ -40,51 +40,51 @@ function(input, output, session) {
   })
   
   # Reactive expression for filtered WEA data with debug
-  filtered_wea_data <- reactive({
+  filtered_aoi_data <- reactive({
     
     # If no area is selected or "All Areas" is selected, return all WEA data
-    if(is.null(input$weaAreaSelector) || input$weaAreaSelector == "" || 
-       input$weaAreaSelector == "loading" || input$weaAreaSelector == "all") {
-      return(WEA)  # Return all WEAs
+    if(is.null(input$aoiAreaSelector) || input$aoiAreaSelector == "" || 
+       input$aoiAreaSelector == "loading" || input$aoiAreaSelector == "all") {
+      return(AOI)  # Return all WEAs
     }
     
     # Filter the data when a specific area is selected
-    filtered_data <- WEA[WEA$Area_Name == input$weaAreaSelector, ]
+    filtered_data <- AOI[AOI$Area_Name == input$aoiAreaSelector, ]
     
     return(filtered_data)
   })
   
   # WEA Map Output - Modified to show all WEAs initially
-  output$weaMap <- renderLeaflet({
+  output$aoiMap <- renderLeaflet({
     
     tryCatch({
       # Call the reactive expression to get the actual data
-      wea_data <- filtered_wea_data()
+      aoi_data <- filtered_aoi_data()
       
-      if(is.null(wea_data) || nrow(wea_data) == 0) {
+      if(is.null(aoi_data) || nrow(aoi_data) == 0) {
         return(leaflet() %>% 
                  addProviderTiles("Esri.OceanBasemap") %>% 
-                 addControl("No WEA data available", position = "center"))
+                 addControl("No Area of Interest data available", position = "center"))
       }
       
       # Transform to WGS84 if needed
-      if(!st_is_longlat(wea_data)) {
-        wea_data <- st_transform(wea_data, 4326)
+      if(!st_is_longlat(aoi_data)) {
+        aoi_data <- st_transform(aoi_data, 4326)
       }
       
       # Remove Z & M dimensions for leaflet compatability
-      wea_data <- st_zm(wea_data)
+      aoi_data <- st_zm(aoi_data)
       
       # Create the map with different styling based on selection
       map <- leaflet() %>%
         addProviderTiles("Esri.OceanBasemap")
       
       # Check if showing all areas or just one
-      if(is.null(input$weaAreaSelector) || input$weaAreaSelector == "" || input$weaAreaSelector == "loading") {
+      if(is.null(input$aoiAreaSelector) || input$aoiAreaSelector == "" || input$aoiAreaSelector == "loading") {
         # Show all WEAs with lighter styling
         map <- map %>%
           addPolygons(
-            data = wea_data,
+            data = aoi_data,
             fillColor = "lightblue",
             weight = 1,
             color = "navy",
@@ -101,7 +101,7 @@ function(input, output, session) {
         # Show selected WEA with highlighted styling
         map <- map %>%
           addPolygons(
-            data = wea_data,
+            data = aoi_data,
             fillColor = "blue",
             weight = 2,
             color = "darkblue",
@@ -248,7 +248,7 @@ function(input, output, session) {
     valid_configs <- natural_resources_valid_configs()
     
     if(length(valid_configs) > 0) {
-      create_individual_maps(valid_configs, output, namespace = "naturalresources", wea_data_reactive = filtered_wea_data)
+      create_individual_maps(valid_configs, output, namespace = "naturalresources", aoi_data_reactive = filtered_aoi_data)
     }
   })
   
@@ -258,7 +258,7 @@ function(input, output, session) {
     valid_configs <- industry_operations_valid_configs()
     
     if(length(valid_configs) > 0) {
-      create_individual_maps(valid_configs, output, namespace = "industryoperations", wea_data_reactive = filtered_wea_data)
+      create_individual_maps(valid_configs, output, namespace = "industryoperations", aoi_data_reactive = filtered_aoi_data)
     }
   })
   
@@ -433,7 +433,7 @@ function(input, output, session) {
       dataset_mapping = habitat_dataset_mapping,
       selected_methods = selected_methods,
       map_type = "Habitat",
-      wea_data_reactive = filtered_wea_data
+      aoi_data_reactive = filtered_aoi_data
     )
     
     # Store results for all methods
@@ -484,8 +484,8 @@ function(input, output, session) {
       # Get filtered timestamp information for the selected layers
       timestamp_info <- get_filtered_timestamp_data(valid_configs, "habitat")
       
-      # Get filtered WEA data for the report
-      wea_data <- filtered_wea_data()
+      # Get filtered AOI data for the report
+      aoi_data <- filtered_aoi_data()
       
       # Make sure each valid_config has valid spatial data
       for(i in seq_along(valid_configs)) {
@@ -526,7 +526,7 @@ function(input, output, session) {
           combined_map_title = "Combined Habitat Maps",
           data_timestamps = timestamp_info, 
           component_name = "Habitat",
-          wea_data = wea_data
+          aoi_data = aoi_data
         ),
         envir = new.env(parent = globalenv())
       )
@@ -584,7 +584,7 @@ function(input, output, session) {
       dataset_mapping = species_dataset_mapping,
       selected_methods = selected_methods,
       map_type = "Species",
-      wea_data_reactive = filtered_wea_data
+      aoi_data_reactive = filtered_aoi_data
     )
     
     # Store results for all methods
@@ -635,8 +635,8 @@ function(input, output, session) {
       # Get filtered timestamp information for the selected layers
       timestamp_info <- get_filtered_timestamp_data(valid_configs, "species")
       
-      # Get filtered WEA data for the report
-      wea_data <- filtered_wea_data()
+      # Get filtered AOI data for the report
+      aoi_data <- filtered_aoi_data()
       
       # Make sure each valid_config has valid spatial data
       for(i in seq_along(valid_configs)) {
@@ -677,7 +677,7 @@ function(input, output, session) {
           combined_map_title = "Combined Species Maps",
           data_timestamps = timestamp_info, 
           component_name = "Species",
-          wea_data = wea_data
+          aoi_data = aoi_data
         ),
         envir = new.env(parent = globalenv())
       )
@@ -734,7 +734,7 @@ function(input, output, session) {
       dataset_mapping = surveys_dataset_mapping,
       selected_methods = selected_methods,
       map_type = "Surveys",
-      wea_data_reactive = filtered_wea_data
+      aoi_data_reactive = filtered_aoi_data
     )
       
       # Store results for all methods
@@ -785,8 +785,8 @@ function(input, output, session) {
       # Get filtered timestamp information for the selected layers
       timestamp_info <- get_filtered_timestamp_data(valid_configs, "surveys")
       
-      # Get filtered WEA data for the report
-      wea_data <- filtered_wea_data()
+      # Get filtered AOI data for the report
+      aoi_data <- filtered_aoi_data()
       
       # Make sure each valid_config has valid spatial data
       for(i in seq_along(valid_configs)) {
@@ -827,7 +827,7 @@ function(input, output, session) {
           combined_map_title = "Combined Surveys Maps",
           data_timestamps = timestamp_info, 
           component_name = "Surveys",
-          wea_data = wea_data
+          aoi_data = aoi_data
         ),
         envir = new.env(parent = globalenv())
       )
@@ -871,9 +871,7 @@ function(input, output, session) {
     
     # Define dataset mapping for species tab
     cables_dataset_mapping <- list(
-      "Submarine Cables" = list(data = submarine_cable, score_column = "Score.submarine_cable"),
-      "Submarine Cables 0-500 m setback" = list(data = submarine_cable_500m, score_column = "Score.submarine_cable_500m"),
-      "Submarine Cables 501-1000 m setback" = list(data = submarine_cable_501_1000m, score_column = "Score.submarine_cable_501_1000m")
+      "Submarine Cables" = list(data = submarine_cable, score_column = "Score.submarine_cable")
     )
     
     # Get valid configurations
@@ -885,7 +883,7 @@ function(input, output, session) {
       dataset_mapping = cables_dataset_mapping,
       selected_methods = selected_methods,
       map_type = "Cables",
-      wea_data_reactive = filtered_wea_data
+      aoi_data_reactive = filtered_aoi_data
     )
     
     # Store results for all methods
@@ -936,8 +934,8 @@ function(input, output, session) {
       # Get filtered timestamp information for the selected layers
       timestamp_info <- get_filtered_timestamp_data(valid_configs, "cables")
       
-      # Get filtered WEA data for the report
-      wea_data <- filtered_wea_data()
+      # Get filtered AOI data for the report
+      aoi_data <- filtered_aoi_data()
       
       # Make sure each valid_config has valid spatial data
       for(i in seq_along(valid_configs)) {
@@ -978,7 +976,7 @@ function(input, output, session) {
           combined_map_title = "Combined Cables Maps",
           data_timestamps = timestamp_info, 
           component_name = "Cables",
-          wea_data = wea_data
+          aoi_data = aoi_data
         ),
         envir = new.env(parent = globalenv())
       )
@@ -1231,7 +1229,9 @@ function(input, output, session) {
       # Generate the combined submodel using geometric mean
       if(length(component_data_list) > 0) {
         
-        combined_submodel_result <- create_combined_submodel(component_data_list)
+        combined_submodel_result <- create_combined_submodel(component_data_list,
+                                                             base_grid = grid_test,
+                                                             aoi_data_reactive = filtered_aoi_data)
         
         # Store the result
         combined_maps_data$natural_resources_combined_submodel <- combined_submodel_result$combined_data
@@ -1301,20 +1301,42 @@ function(input, output, session) {
       # Get component selections for the report
       selected_components <- c()
       component_methods <- c()
+      component_layer_details <- list()
       
       if(input$includeHabitat %||% FALSE) {
         selected_components <- c(selected_components, "Habitat")
         component_methods <- c(component_methods, input$habitatCalculationMethod %||% "geometric_mean")
-      }
-      if(input$includeSpecies %||% FALSE) {
-        selected_components <- c(selected_components, "Species")
-        component_methods <- c(component_methods, input$speciesCalculationMethod %||% "geometric_mean")
-      }
-      if(input$includeBirds %||% FALSE) {
-        selected_components <- c(selected_components, "Birds")
-        component_methods <- c(component_methods, input$birdsCalculationMethod %||% "geometric_mean")
-      }
-      
+        
+        # Get habitat layer details with scores
+        habitat_configs <- get_valid_configs_for_tab(input, "habitat", habitat_layer, score_colors, filter_by_score)
+        if(length(habitat_configs) > 0) {
+          component_layer_details[["Habitat"]] <- list(
+            method = input$habitatCalculationMethod %||% "geometric_mean",
+            layers = lapply(habitat_configs, function(config) {
+              list(
+                layer_name = config$layer %||% "Unknown",
+                score_used = config$score %||% "Unknown"
+              )
+            })
+          )
+        }}
+        if(input$includeSpecies %||% FALSE) {
+          selected_components <- c(selected_components, "Species")
+          component_methods <- c(component_methods, input$speciesCalculationMethod %||% "geometric_mean")
+          
+          # Get species layer details with scores
+          species_configs <- get_valid_configs_for_tab(input, "species", species_layer, score_colors, filter_by_score)
+          if(length(species_configs) > 0) {
+            component_layer_details[["Species"]] <- list(
+              method = input$speciesCalculationMethod %||% "geometric_mean",
+              layers = lapply(species_configs, function(config) {
+                list(
+                  layer_name = config$layer %||% "Unknown",
+                  score_used = config$score %||% "Unknown"
+                )
+              })
+            )
+          }}
       # Create component data summary for the report
       component_data_summary <- list()
       
@@ -1353,23 +1375,11 @@ function(input, output, session) {
       # Get filtered timestamp information for the combined submodel
       all_configs <- list()
       
-      # Add habitat configs if included
-      if(input$includeHabitat %||% FALSE) {
-        habitat_configs <- get_valid_configs_for_tab(input, "habitat", habitat_layer, score_colors, filter_by_score)
-        all_configs <- append(all_configs, habitat_configs)
-      }
-      
-      # Add species configs if included  
-      if(input$includeSpecies %||% FALSE) {
-        species_configs <- get_valid_configs_for_tab(input, "species", species_layer, score_colors, filter_by_score)
-        all_configs <- append(all_configs, species_configs)
-      }
-      
       # Get timestamp data for all included components
       timestamp_info <- get_filtered_timestamp_data(all_configs, "combined")
       
-      # Get filtered WEA data for the report
-      wea_data <- filtered_wea_data()
+      # Get filtered AOI data for the report
+      aoi_data <- filtered_aoi_data()
       
       # Render the combined submodel report
       rmarkdown::render(
@@ -1383,7 +1393,8 @@ function(input, output, session) {
           combined_map_title = "Natural Resources Combined Submodel",
           data_timestamps = timestamp_info,
           component_data_summary = component_data_summary,
-          wea_data = wea_data
+          aoi_data = aoi_data,
+          component_layer_details = component_layer_details #not working
         ),
         envir = new.env(parent = globalenv())
       )
@@ -1476,7 +1487,9 @@ function(input, output, session) {
       # Generate the combined submodel using geometric mean
       if(length(component_data_list) > 0) {
       
-        combined_submodel_result <- create_combined_submodel(component_data_list)
+        combined_submodel_result <- create_combined_submodel(component_data_list, 
+                                                             base_grid = grid_test, 
+                                                             aoi_data_reactive = filtered_aoi_data)
         
         # Store the result
         combined_maps_data$industry_operations_combined_submodel <- combined_submodel_result$combined_data
@@ -1609,8 +1622,8 @@ function(input, output, session) {
       # Get timestamp data for all included components
       timestamp_info <- get_filtered_timestamp_data(all_configs, "combined")
       
-      # Get filtered WEA data for the report
-      wea_data <- filtered_wea_data()
+      # Get filtered AOI data for the report
+      aoi_data <- filtered_aoi_data()
       
       # Render the combined submodel report
       rmarkdown::render(
@@ -1624,7 +1637,7 @@ function(input, output, session) {
           combined_map_title = "Industry & Operations Combined Submodel",
           data_timestamps = timestamp_info,
           component_data_summary = component_data_summary,
-          wea_data = wea_data
+          aoi_data = aoi_data
         ),
         envir = new.env(parent = globalenv())
       )

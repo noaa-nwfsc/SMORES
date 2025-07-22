@@ -24,16 +24,16 @@ generate_area_of_interest_sidebar <- function() {
           div(
             style = "text-align: center;",
             radioButtons(
-              "weaAreaSelector",
-              "Select Energy Area:",
+              "aoiAreaSelector",
+              "Select Area of Interest:",
               choices = c("Loading..." = "loading"),
               selected = "loading",
               inline = TRUE
             ),
-            p("Select one Wind Energy Area to filter the dataset. The map will update to show only the selected area.")
+            p("Select one Area of Interest to filter the dataset. The map will update to highlight the selected area.")
           ),
           
-          leafletOutput("weaMap", height = "250px")
+          leafletOutput("aoiMap", height = "250px")
         )
       )
     )
