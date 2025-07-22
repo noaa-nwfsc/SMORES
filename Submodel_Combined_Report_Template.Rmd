@@ -14,8 +14,9 @@ params:
   combined_data: NULL
   combined_map_title: "Combined Submodel Map"
   data_timestamps: NULL
-  component_data_summary: NULL
   wea_data: NULL
+  component_layer_details: NULL
+  component_data_summary: NULL
 ---
 
 ```{css, include = FALSE}
@@ -238,92 +239,50 @@ create_combined_submodel_map <- function(combined_data, title, wea_data = NULL) 
 ```
 
 ```{r}
-if (!is.null(params$selected_components) && !is.null(params$component_methods)) {
-  # Create a summary table of components and their methods
-  component_summary <- data.frame(
-    Component = params$selected_components,
-    Calculation_Method = params$component_methods,
-    stringsAsFactors = FALSE
-  )
+# Add detailed component layer information
+if (!is.null(params$component_layer_details) && length(params$component_layer_details) > 0) {
+  cat("## Individual Layers Used in Combined Submodel\n\n")
   
-  kable(component_summary, 
-        col.names = c("Component", "Calculation Method"),
-        caption = "Components and Calculation Methods Used in Combined Submodel",
-        format = "html",
-        table.attr = "class='table table-striped config-table'")
-} else {
-  "No component information available."
-}
-```
-
-```{r}
-if (!is.null(params$selected_components) && length(params$selected_components) > 0) {
-  for (i in seq_along(params$selected_components)) {
-    component_name <- params$selected_components[i]
-    method_name <- if (!is.null(params$component_methods) && i <= length(params$component_methods)) {
-      params$component_methods[i]
-    } else {
-      "Method not specified"
-    }
+  # Create a comprehensive table showing all layers used in each component
+  layer_details_list <- list()
+  
+  for (component in names(params$component_layer_details)) {
+    component_data <- params$component_layer_details[[component]]
+    component_method <- component_data$method %||% "Unknown"
+    component_layers <- component_data$layers %||% list()
     
-    cat('<div class="component-summary">\n')
-    cat('<div class="component-header">', component_name, ' Component</div>\n')
-    cat('<p><strong>Calculation Method:</strong> ', method_name, '</p>\n')
     
-    # Add component-specific information if available
-    if (!is.null(params$component_data_summary) && component_name %in% names(params$component_data_summary)) {
-      summary_data <- params$component_data_summary[[component_name]]
-      if (!is.null(summary_data$data_points)) {
-        cat('<p><strong>Data Points:</strong> ', summary_data$data_points, '</p>\n')
-      }
-      if (!is.null(summary_data$description)) {
-        cat('<p><strong>Description:</strong> ', summary_data$description, '</p>\n')
+    if (length(component_layers) > 0) {
+      for (i in seq_along(component_layers)) {
+        # Safely extract values with fallbacks
+        layer_name <- component_layers[[i]]$layer_name %||% "Unknown"
+        score_used <- component_layers[[i]]$score_used %||% "Unknown"
+        
+        layer_details_list[[length(layer_details_list) + 1]] <- data.frame(
+          Component = component,
+          Method = component_method,
+          Layer_Name = layer_name,
+          Score_Used = score_used,
+          stringsAsFactors = FALSE
+        )
       }
     }
-    
-    cat('</div>\n\n')
-  }
-} else {
-  cat("No component details available.\n")
-}
-```
-
-```{r}
-if (!is.null(params$data_timestamps)) {
-  if (is.list(params$data_timestamps) && "data_timestamps" %in% names(params$data_timestamps)) {
-    # Handle nested structure
-    display_table <- params$data_timestamps$data_timestamps %>%
-      filter(!is.na(formatted_date)) %>%
-      select(dataset_name, description, formatted_date) %>%
-      rename(
-        "Dataset" = dataset_name,
-        "Description" = description,
-        "Last Updated" = formatted_date
-      )
-  } else if (is.data.frame(params$data_timestamps)) {
-    # Handle direct data frame
-    display_table <- params$data_timestamps %>%
-      filter(!is.na(formatted_date)) %>%
-      select(dataset_name, description, formatted_date) %>%
-      rename(
-        "Dataset" = dataset_name,
-        "Description" = description,
-        "Last Updated" = formatted_date
-      )
-  } else {
-    display_table <- NULL
   }
   
-  if (!is.null(display_table) && nrow(display_table) > 0) {
-    kable(display_table, 
-          caption = "Data Layer Update Information for All Selected Components",
+  if (length(layer_details_list) > 0) {
+    # Combine all layer details into one data frame
+    all_layer_details <- do.call(rbind, layer_details_list)
+    
+    kable(all_layer_details, 
+          col.names = c("Component", " Component Calculation Method", "Layer Name", "Score Used"),
+          caption = "Individual Layers and Scores Used in Each Component",
           format = "html",
-          table.attr = "class='table table-striped'")
+          table.attr = "class='table table-striped config-table'")
   } else {
-    "No timestamp information available for the selected data layers."
+    cat("No individual layer details available.\n")
   }
 } else {
-  "Timestamp information not available."
+  cat("Individual layer information not available.\n")
 }
 ```
 
