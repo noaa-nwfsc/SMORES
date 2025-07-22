@@ -30,22 +30,18 @@ calculate_submodel_geometric_mean <- function(combined_data) {
   return(combined_data)
 }
 
-create_combined_submodel <- function(component_data_list, base_grid = grid_test) {
+create_combined_submodel <- function(component_data_list, base_grid = grid_test, wea_data_reactive = NULL) {
   tryCatch({
-    cat("DEBUG: create_combined_submodel called with", length(component_data_list), "components\n")
     
     # Start with base grid
     combined_data <- base_grid
-    cat("DEBUG: Base grid has", nrow(combined_data), "rows\n")
     
     # Extract the calculated values from each component
     for(component_name in names(component_data_list)) {
-      cat("DEBUG: Processing component:", component_name, "\n")
-      
+    
       component_data <- component_data_list[[component_name]]
       
       if(is.null(component_data)) {
-        cat("WARNING: Component data is null for:", component_name, "\n")
         next
       }
       
@@ -93,8 +89,6 @@ create_combined_submodel <- function(component_data_list, base_grid = grid_test)
     min_val <- min(score_values, na.rm = TRUE)
     max_val <- max(score_values, na.rm = TRUE)
     
-    cat("DEBUG: Score range:", min_val, "to", max_val, "\n")
-    
     # Create popup text
     map_data$popup_display <- paste("Combined Natural Resources Score:", 
                                     format(map_data$Geo_mean, digits = 3))
@@ -106,7 +100,6 @@ create_combined_submodel <- function(component_data_list, base_grid = grid_test)
     
     # Handle color palette - check if we have variation in values
     if(abs(min_val - max_val) < 1e-10) {
-      cat("DEBUG: All values identical, using single color\n")
       # All values are the same - use single color
       map <- map %>%
         addPolygons(
@@ -127,7 +120,6 @@ create_combined_submodel <- function(component_data_list, base_grid = grid_test)
           position = "bottomright"
         )
     } else {
-      cat("DEBUG: Creating color palette with variation\n")
       # We have variation - create proper color palette
       
       # Expand the range slightly to ensure all values are included
@@ -143,7 +135,7 @@ create_combined_submodel <- function(component_data_list, base_grid = grid_test)
       
       # Test the palette with actual values
       test_colors <- pal(c(min_val, max_val))
-      cat("DEBUG: Color palette test - min color:", test_colors[1], "max color:", test_colors[2], "\n")
+ 
       
       # Add polygons with color mapping
       map <- map %>%
@@ -169,7 +161,67 @@ create_combined_submodel <- function(component_data_list, base_grid = grid_test)
         )
     }
     
-    cat("DEBUG: Map created successfully\n")
+    # Add WEA data to the map if available
+    if(!is.null(wea_data_reactive)) {
+      tryCatch({
+        wea_data <- wea_data_reactive()
+        if(!is.null(wea_data) && nrow(wea_data) > 0) {
+          # Transform WEA data if needed
+          if(!st_is_longlat(wea_data)) {
+            wea_data <- st_transform(wea_data, 4326)
+          }
+          wea_data <- st_zm(wea_data)
+          
+          map <- map %>%
+            addPolygons(
+              data = wea_data,
+              fillColor = "transparent",
+              color = "red",
+              weight = 3,
+              fillOpacity = 0,
+              popup = ~paste("Area:", Area_Name),
+              group = "WEA Area"
+            ) %>%
+            addLayersControl(
+              overlayGroups = c("Combined Data", "WEA Area"),
+              options = layersControlOptions(collapsed = FALSE)
+            )
+        }
+      }, error = function(e) {
+        # If WEA data fails, continue without it
+        message("Could not add WEA data to combined map: ", e$message)
+      })
+    } else if(exists("WEA")) {
+      # Fall back to global WEA data if no reactive provided
+      tryCatch({
+        wea_data <- WEA
+        if(!is.null(wea_data) && nrow(wea_data) > 0) {
+          # Transform WEA data if needed
+          if(!st_is_longlat(wea_data)) {
+            wea_data <- st_transform(wea_data, 4326)
+          }
+          wea_data <- st_zm(wea_data)
+          
+          map <- map %>%
+            addPolygons(
+              data = wea_data,
+              fillColor = "transparent",
+              color = "red",
+              weight = 3,
+              fillOpacity = 0,
+              popup = ~paste("Area:", Area_Name),
+              group = "WEA Area"
+            ) %>%
+            addLayersControl(
+              overlayGroups = c("Combined Data", "WEA Area"),
+              options = layersControlOptions(collapsed = FALSE)
+            )
+        }
+      }, error = function(e) {
+        # If global WEA data fails, continue without it
+        message("Could not add global WEA data to combined map: ", e$message)
+      })
+    }
     
     return(list(
       combined_data = combined_data,
