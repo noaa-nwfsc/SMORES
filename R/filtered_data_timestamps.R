@@ -38,7 +38,8 @@ get_filtered_timestamp_data <- function(valid_configs, layer_type = "habitat") {
     layer_to_dataset_mapping <- list(
       "Southern Resident Killer Whales" = "ESA Critical Habitat for Southern Resident Killer Whales",
       "Leatherback Sea Turtles" = "ESA Critical Habitat for Leatherback Sea Turtles",
-      "Humpback Whale - Mexico and Central DPS" =  "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS"
+      "Humpback Whale - Mexico and Central DPS" =  "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS",
+      "Biologically Important Area - Blue Whale" = "Biologically Important Area - Blue Whale"
     )
   } else if (layer_type == "industry") {
     layer_to_dataset_mapping <- list(
