@@ -13,6 +13,9 @@ function(input, output, session) {
     birds = NULL,
     natural_resources_combined_submodel = NULL,
     natural_resources_combined_submodel_generated = FALSE,
+    natural_resources_combined_map = NULL,
+    natural_resources_combined_map_cropped = NULL,
+    natural_resources_combined_map_cropped_normalized = NULL,
     industry = NULL, 
     surveys_geo = NULL,
     surveys_lowest = NULL, 
@@ -23,10 +26,13 @@ function(input, output, session) {
     cables_product = NULL, 
     cables_combined_map_generated = FALSE,
     industry_operations_combined_submodel = NULL,
-    industry_operations_combined_submodel_generated = FALSE
+    industry_operations_combined_submodel_generated = FALSE, 
+    industry_operations_combined_map = NULL,
+    industry_operations_combined_map_cropped = NULL, 
+    industry_operations_combined_map_cropped_normalized = NULL
   )
   
-  #WEA area selector options
+  #AOI selector options
   observe({
     if(!is.null(AOI) && "Area_Name" %in% names(AOI)){
       area_names <- sort(unique(AOI$Area_Name))
@@ -572,7 +578,8 @@ function(input, output, session) {
     species_dataset_mapping <- list(
       "ESA Critical Habitat for Southern Resident Killer Whales" = list(data = killer_whale, score_column = "Score.killer_whale"),
       "ESA Critical Habitat for Leatherback Sea Turtles"  = list(data = leatherback_turtle, score_column = "Score.leatherback_turtle"),
-      "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS" = list(data = humpback_whale, score_column = "Score.humpback_whale")
+      "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS" = list(data = humpback_whale, score_column = "Score.humpback_whale"),
+      "Biologically Important Area - Blue Whale" = list(data = blue_whale, score_column = "Score.blue_whale")
     )
     
     # Get valid configurations
@@ -1240,6 +1247,27 @@ function(input, output, session) {
         # Store the map object for rendering
         combined_maps_data$natural_resources_combined_map <- combined_submodel_result$map
         
+        # Generate and store the cropped map
+        if(!is.null(combined_submodel_result$combined_data)) {
+          cropped_map <- create_aoi_cropped_map(
+            combined_data = combined_submodel_result$combined_data,
+            aoi_data_reactive = filtered_aoi_data,
+            map_title = "Natural Resources AOI-Cropped",
+            full_data_range = combined_submodel_result$full_data_range
+          )
+          combined_maps_data$natural_resources_combined_map_cropped <- cropped_map
+        
+        
+        # Generate and store the normalized cropped map
+        normalized_cropped_map <- create_aoi_cropped_normalized_map(
+          combined_data = combined_submodel_result$combined_data,
+          aoi_data_reactive = filtered_aoi_data,
+          map_title = "Natural Resources AOI-Cropped Normalized",
+          full_data_range = combined_submodel_result$full_data_range
+        )
+        combined_maps_data$natural_resources_combined_map_cropped_normalized <- normalized_cropped_map
+      }
+        
         showNotification("Combined Natural Resources Submodel generated successfully!", type = "message")
       } else {
         showNotification("No valid component data available for selected components.", type = "error")
@@ -1271,18 +1299,62 @@ function(input, output, session) {
     }
   })
   
+  # Natural Resources cropped map output
+  output$naturalResourcesCombinedMapCropped <- renderLeaflet({
+    if(!is.null(combined_maps_data$natural_resources_combined_map_cropped)) {
+      combined_maps_data$natural_resources_combined_map_cropped
+    } else {
+      leaflet() %>%
+        addProviderTiles("Esri.OceanBasemap") %>%
+        addControl("Generate combined submodel and select a AOI to see cropped map", position = "center")
+    }
+  })
+  
+  # Natural Resources normalized cropped map output
+  output$naturalResourcesCombinedMapCroppedNormalized <- renderLeaflet({
+    if(!is.null(combined_maps_data$natural_resources_combined_map_cropped_normalized)) {
+      combined_maps_data$natural_resources_combined_map_cropped_normalized
+    } else {
+      leaflet() %>%
+        addProviderTiles("Esri.OceanBasemap") %>%
+        addControl("Generate combined submodel and select a AOI to see normalized cropped map", position = "center")
+    }
+  })
+  
   # Render the map container content
   output$naturalResourcesCombinedMapContainer <- renderUI({
- 
+    
     if(combined_maps_data$natural_resources_combined_submodel_generated) {
       tagList(
-        p("This map shows the combined Natural Resources submodel calculated using the geometric mean of selected components."),
-        leafletOutput("naturalResourcesCombinedMap")
+        # Main combined map section
+        div(
+          h4("Combined Natural Resources Submodel Map"),
+          p("This map shows the combined Natural Resources submodel calculated using the geometric mean of selected components."),
+          leafletOutput("naturalResourcesCombinedMap", height = "500px")
+        ),
+        
+        br(),
+        
+        # Cropped map section
+        div(
+          h4("AOI-Cropped Natural Resources Submodel Map"),
+          p("This map shows the same combined submodel data cropped to the selected Area of Interest (AOI)."),
+          leafletOutput("naturalResourcesCombinedMapCropped", height = "500px")
+        ),
+        
+        br(),
+        
+        # Normalized cropped map section
+        div(
+          h4("AOI-Cropped Normalized Natural Resources Submodel Map"),
+          p("This map shows the AOI-cropped data normalized to a 0-1 scale for easier comparison across different areas."),
+          leafletOutput("naturalResourcesCombinedMapCroppedNormalized", height = "500px")
+        )
       )
     } else {
       div(
         style = "text-align: center; padding: 40px; color: #666;",
-        p("Combined submodel map will appear here after generation."),
+        p("Combined submodel maps will appear here after generation."),
         p("Use the sidebar to configure and generate the combined submodel.")
       )
     }
@@ -1394,7 +1466,7 @@ function(input, output, session) {
           data_timestamps = timestamp_info,
           component_data_summary = component_data_summary,
           aoi_data = aoi_data,
-          component_layer_details = component_layer_details #not working
+          component_layer_details = component_layer_details
         ),
         envir = new.env(parent = globalenv())
       )
@@ -1498,6 +1570,26 @@ function(input, output, session) {
         # Store the map object for rendering
         combined_maps_data$industry_operations_combined_map <- combined_submodel_result$map
         
+        # Generate and store the cropped map
+        if(!is.null(combined_submodel_result$combined_data)) {
+          cropped_map <- create_aoi_cropped_map(
+            combined_data = combined_submodel_result$combined_data,
+            aoi_data_reactive = filtered_aoi_data,
+            map_title = "Industry Operations AOI-Cropped",
+            full_data_range = combined_submodel_result$full_data_range
+          )
+          combined_maps_data$industry_operations_combined_map_cropped <- cropped_map
+          
+          # Generate and store the normalized cropped map
+          normalized_cropped_map <- create_aoi_cropped_normalized_map(
+            combined_data = combined_submodel_result$combined_data,
+            aoi_data_reactive = filtered_aoi_data,
+            map_title = "Industry Operations AOI-Cropped Normalized",
+            full_data_range = combined_submodel_result$full_data_range
+          )
+          combined_maps_data$industry_operations_combined_map_cropped_normalized <- normalized_cropped_map
+        }
+        
         showNotification("Combined Industry & Operations Submodel generated successfully!", type = "message")
       } else {
         showNotification("No valid component data available for selected components.", type = "error")
@@ -1529,18 +1621,62 @@ function(input, output, session) {
     }
   })
   
+  # Industry Operations cropped map output
+  output$industryOperationsCombinedMapCropped <- renderLeaflet({
+    if(!is.null(combined_maps_data$industry_operations_combined_map_cropped)) {
+      combined_maps_data$industry_operations_combined_map_cropped
+    } else {
+      leaflet() %>%
+        addProviderTiles("Esri.OceanBasemap") %>%
+        addControl("Generate combined submodel and select a AOI to see cropped map", position = "center")
+    }
+  })
+  
+  # Industry Operations normalized cropped map output
+  output$industryOperationsCombinedMapCroppedNormalized <- renderLeaflet({
+    if(!is.null(combined_maps_data$industry_operations_combined_map_cropped_normalized)) {
+      combined_maps_data$industry_operations_combined_map_cropped_normalized
+    } else {
+      leaflet() %>%
+        addProviderTiles("Esri.OceanBasemap") %>%
+        addControl("Generate combined submodel and select a AOI to see normalized cropped map", position = "center")
+    }
+  })
+  
   # Render the map container content
   output$industryOperationsCombinedMapContainer <- renderUI({
     
     if(combined_maps_data$industry_operations_combined_submodel_generated) {
       tagList(
-        p("This map shows the combined Industry & Operations submodel calculated using the geometric mean of selected components."),
-        leafletOutput("industryOperationsCombinedMap")
+        # Main combined map section
+        div(
+          h4("Combined Industry & Operations Submodel Map"),
+          p("This map shows the combined Industry & Operations submodel calculated using the geometric mean of selected components."),
+          leafletOutput("industryOperationsCombinedMap", height = "500px")
+        ),
+        
+        br(),
+        
+        # Cropped map section
+        div(
+          h4("AOI-Cropped Industry & Operations Submodel Map"),
+          p("This map shows the same combined submodel data cropped to the selected Area of Interest (AOI)."),
+          leafletOutput("industryOperationsCombinedMapCropped", height = "500px")
+        ),
+        
+        br(),
+        
+        # Normalized cropped map section
+        div(
+          h4("AOI-Cropped Normalized Industry & Operations Submodel Map"),
+          p("This map shows the AOI-cropped data normalized to a 0-1 scale for easier comparison across different areas."),
+          leafletOutput("industryOperationsCombinedMapCroppedNormalized", height = "500px")
+        )
       )
     } else {
       div(
         style = "text-align: center; padding: 40px; color: #666;",
-        p("Combined submodel map will appear here after generation."),
+        p("Combined submodel maps will appear here after generation."),
         p("Use the sidebar to configure and generate the combined submodel.")
       )
     }
@@ -1559,16 +1695,42 @@ function(input, output, session) {
       # Get component selections for the report
       selected_components <- c()
       component_methods <- c()
+      component_layer_details <- list()
       
       if(input$includeSurveys %||% FALSE) {
         selected_components <- c(selected_components, "Scientific Surveys")
         component_methods <- c(component_methods, input$surveysCalculationMethod %||% "geometric_mean")
-      }
+        
+        # Get habitat layer details with scores
+        surveys_configs <- get_valid_configs_for_tab(input, "surveys", surveys_layer, score_colors, filter_by_score)
+        if(length(surveys_configs) > 0) {
+          component_layer_details[["Scientific Surveys"]] <- list(
+            method = input$surveysCalculationMethod %||% "geometric_mean",
+            layers = lapply(surveys_configs, function(config) {
+              list(
+                layer_name = config$layer %||% "Unknown",
+                score_used = config$score %||% "Unknown"
+              )
+            })
+          )
+        }}
       if(input$includeCables %||% FALSE) {
         selected_components <- c(selected_components, "Submarine Cables")
         component_methods <- c(component_methods, input$cablesCalculationMethod %||% "geometric_mean")
-      }
-      
+        
+        # Get habitat layer details with scores
+        cables_configs <- get_valid_configs_for_tab(input, "cables", cables_layer, score_colors, filter_by_score)
+        if(length(cables_configs) > 0) {
+          component_layer_details[["Submarine Cables"]] <- list(
+            method = input$cablesCalculationMethod %||% "geometric_mean",
+            layers = lapply(cables_configs, function(config) {
+              list(
+                layer_name = config$layer %||% "Unknown",
+                score_used = config$score %||% "Unknown"
+              )
+            })
+          )
+        }}
       # Create component data summary for the report
       component_data_summary <- list()
       
@@ -1587,7 +1749,6 @@ function(input, output, session) {
           )
         }
       }
-      
       if(input$includeCables %||% FALSE) {
         method <- input$cablesCalculationMethod %||% "geometric_mean"
         cables_data <- switch(method,
@@ -1606,18 +1767,6 @@ function(input, output, session) {
       
       # Get filtered timestamp information for the combined submodel
       all_configs <- list()
-      
-      # Add surveys configs if included
-      if(input$includeSurveys %||% FALSE) {
-        surveys_configs <- get_valid_configs_for_tab(input, "surveys", surveys_layer, score_colors, filter_by_score)
-        all_configs <- append(all_configs, surveys_configs)
-      }
-      
-      # Add cables configs if included  
-      if(input$includeCables %||% FALSE) {
-        cables_configs <- get_valid_configs_for_tab(input, "cables", submarine_cables_layer, score_colors, filter_by_score)
-        all_configs <- append(all_configs, cables_configs)
-      }
       
       # Get timestamp data for all included components
       timestamp_info <- get_filtered_timestamp_data(all_configs, "combined")
