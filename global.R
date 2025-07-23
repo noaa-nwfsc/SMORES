@@ -34,6 +34,7 @@ source("R/generate_overall_model_sidebar.R")
 source("R/generate_natural_resources_combined_sidebar.R")
 source("R/create_combined_submodel_map.R")
 source("R/generate_cables_sidebar.R")
+source("R/create_aoi_cropped_map.R")
 
 # Get data timestamps information
 timestamp_info <- get_data_timestamps()
@@ -59,6 +60,7 @@ HAPCreef <- readRDS("data/HAPCreef_scored.rds")
 killer_whale <- readRDS("data/killer_whale_scored.rds")
 leatherback_turtle <- readRDS("data/leatherback_turtle_scored.rds")
 humpback_whale <- readRDS("data/humpback_whale_scored.rds")
+blue_whale <- readRDS("data/blue_whale_scored.rds")
 ### Birds Layers
 ## Industry & Operations Layers
 ###Survey Layers
@@ -87,7 +89,8 @@ habitat_layer <- list(
 species_layer <- list(
   "ESA Critical Habitat for Southern Resident Killer Whales" = killer_whale,
   "ESA Critical Habitat for Leatherback Sea Turtles" = leatherback_turtle,
-  "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS" = humpback_whale
+  "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS" = humpback_whale,
+  "Biologically Important Area - Blue Whale" = blue_whale
 )
 
 bird_layer <- list (
