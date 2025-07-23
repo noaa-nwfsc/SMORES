@@ -362,6 +362,11 @@ saveRDS(HAPCreef_scored_long, "U:\\Github\\SMORES\\data\\HAPCreef_scored.rds")
 ## Species Layers
 ESA_Critical_Habitat <- sf::st_read(dsn = "Z:\\ArcGIS\\Projects\\OWEC\\p30\\protected_species_density_layers\\nmfs_combined\\Critical_Habitat_Areas_by_the_National_Marine_Fisheries_Service\\Critical_Habitat_Areas_by_the_National_Marine_Fisheries_Service.shp")  
 
+bia_bw_nms <- "https://services2.arcgis.com/C8EMgrsFcRFL6LrL/ArcGIS/rest/services/BIA_II_WebMerc/FeatureServer/1"
+# contains parent and core - parent = entire range, core = intensified use areas such as breeding ground or feeding site 
+bia_bw_nms_layer <- arc_read(bia_bw_nms, where = "Common_Name = 'Blue whale'") %>% 
+  st_transform(crsOut)
+
 #killer whale 
 killer_whale <- ESA_Critical_Habitat %>% 
   filter(commonName == "Whale, killer") %>% 
@@ -433,7 +438,6 @@ st_crs(DSC_RH_scored_long) == st_crs(leatherback_turtle_scored_long)
 saveRDS(leatherback_turtle_scored_long, "U:\\Github\\SMORES\\data\\leatherback_turtle_scored.rds")
 
 #humpback whale - mexico and central dps
-#killer whale 
 humpback_whale <- ESA_Critical_Habitat %>% 
   filter(commonName == "Whale, humpback") %>% 
   select(-c(statusType, scientific, listingSta, federalReg)) %>% 
@@ -497,6 +501,40 @@ humpback_whale_scored_long <- pivot_longer(humpback_whale_scored, cols = starts_
 st_crs(DSC_RH_scored_long) == st_crs(humpback_whale_scored_long)
 saveRDS(humpback_whale_scored_long, "U:\\Github\\SMORES\\data\\humpback_whale_scored.rds")
 
+#blue whale 
+blue_whale <- bia_bw_nms_layer %>% 
+  select(c(Common_Name, Stock, Area_Name, geometry)) %>% 
+  st_transform(crsOut) 
+blue_whale.grid <- sf::st_intersection(blue_whale, grd.norcal) %>%
+  mutate(Score.blue_whale = 1) %>% 
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid 
+  #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.blue_whale) #use for 2km grid
+blue_whale_score <- blue_whale.grid %>% #no duplicates
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+blue_whale_scored <- grd.norcal %>%
+  full_join(blue_whale_score, by = "CellID_2km") %>%
+  filter(Score.blue_whale == 1) %>%
+  rename("1" = Score.blue_whale) %>%
+  mutate("0.1" = 0.1,
+         "0.2" = 0.2,
+         "0.3" = 0.3,
+         "0.4" = 0.4,
+         "0.5" = 0.5,
+         "0.6" = 0.6,
+         "0.7" = 0.7,
+         "0.8" = 0.8,
+         "0.9" = 0.9) 
+blue_whale_scored_long <- pivot_longer(blue_whale_scored, cols = starts_with(c("0.", "1")), names_to = "blue_whale", values_to = "Score.blue_whale") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-blue_whale)
+st_crs(DSC_RH_scored_long) == st_crs(blue_whale_scored_long)
+saveRDS(blue_whale_scored_long, "U:\\Github\\SMORES\\data\\blue_whale_scored.rds")
+
 #submarine cables
 furl_nms <- "https://coast.noaa.gov/arcgis/rest/services/Hosted/SubmarineCables/FeatureServer/0"
 nms_layer <- arc_read(furl_nms, where = "status = 'In Service'
@@ -542,67 +580,67 @@ submarine_cable_scored_long <- pivot_longer(submarine_cable_scored, cols = start
 st_crs(DSC_RH_scored_long) == st_crs(submarine_cable_scored_long)
 saveRDS(submarine_cable_scored_long, "U:\\Github\\SMORES\\data\\submarine_cable_scored.rds")
 
-##submarine cables 500 m buffer
-submarine_cable_500m.grid <- sf::st_intersection(submarine_cable_buffer_500, grd.norcal) %>%
-  mutate(Score.submarine_cable_500m = 0) %>%
-  mutate(area.part = st_area(.)) %>%
-  group_by(CellID_2km) %>% #use for 2km grid 
-  #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
-  slice_max(area.part, n = 1) %>%
-  select(CellID_2km, Score.submarine_cable_500m, status) #use for 2km grid
-submarine_cable_500m_score <- submarine_cable_500m.grid %>%
-  st_drop_geometry() %>% 
-  group_by(CellID_2km) %>% 
-  distinct(CellID_2km, .keep_all = TRUE)
-submarine_cable_500m_scored <- grd.norcal %>%
-  full_join(submarine_cable_500m_score, by = "CellID_2km") %>%
-  filter(Score.submarine_cable_500m == 0) %>%
-  rename("1" = Score.submarine_cable_500m) %>%
-  mutate("0.1" = 0.1,
-         "0.2" = 0.2,
-         "0.3" = 0.3,
-         "0.4" = 0.4,
-         "0.5" = 0.5,
-         "0.6" = 0.6,
-         "0.7" = 0.7,
-         "0.8" = 0.8,
-         "0.9" = 0.9) 
-submarine_cable_500m_scored_long <- pivot_longer(submarine_cable_500m_scored, cols = starts_with(c("0.", "1")), names_to = "submarine_cable_500m", values_to = "Score.submarine_cable_500m") %>% 
-  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
-  select(-submarine_cable_500m)
-st_crs(DSC_RH_scored_long) == st_crs(submarine_cable_500m_scored_long)
-saveRDS(submarine_cable_500m_scored_long, "U:\\Github\\SMORES\\data\\submarine_cable_500m_scored.rds")
-
-##submarine cables 501-1000 m buffer
-submarine_cable_501_1000m.grid <- sf::st_intersection(submarine_cable_buffer_501_1000, grd.norcal) %>%
-  mutate(Score.submarine_cable_501_1000m = 0) %>%
-  mutate(area.part = st_area(.)) %>%
-  group_by(CellID_2km) %>% #use for 2km grid 
-  #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
-  slice_max(area.part, n = 1) %>%
-  select(CellID_2km, Score.submarine_cable_501_1000m, status) #use for 2km grid
-submarine_cable_501_1000m_score <- submarine_cable_501_1000m.grid %>%
-  st_drop_geometry() %>% 
-  group_by(CellID_2km) %>% 
-  distinct(CellID_2km, .keep_all = TRUE)
-submarine_cable_501_1000m_scored <- grd.norcal %>%
-  full_join(submarine_cable_501_1000m_score, by = "CellID_2km") %>%
-  filter(Score.submarine_cable_501_1000m == 0) %>%
-  rename("1" = Score.submarine_cable_501_1000m) %>%
-  mutate("0.1" = 0.1,
-         "0.2" = 0.2,
-         "0.3" = 0.3,
-         "0.4" = 0.4,
-         "0.5" = 0.5,
-         "0.6" = 0.6,
-         "0.7" = 0.7,
-         "0.8" = 0.8,
-         "0.9" = 0.9) 
-submarine_cable_501_1000m_scored_long <- pivot_longer(submarine_cable_501_1000m_scored, cols = starts_with(c("0.", "1")), names_to = "submarine_cable_501_1000m", values_to = "Score.submarine_cable_501_1000m") %>% 
-  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
-  select(-submarine_cable_501_1000m)
-st_crs(DSC_RH_scored_long) == st_crs(submarine_cable_501_1000m_scored_long)
-saveRDS(submarine_cable_501_1000m_scored_long, "U:\\Github\\SMORES\\data\\submarine_cable_501_1000m_scored.rds")
+# ##submarine cables 500 m buffer
+# submarine_cable_500m.grid <- sf::st_intersection(submarine_cable_buffer_500, grd.norcal) %>%
+#   mutate(Score.submarine_cable_500m = 0) %>%
+#   mutate(area.part = st_area(.)) %>%
+#   group_by(CellID_2km) %>% #use for 2km grid 
+#   #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
+#   slice_max(area.part, n = 1) %>%
+#   select(CellID_2km, Score.submarine_cable_500m, status) #use for 2km grid
+# submarine_cable_500m_score <- submarine_cable_500m.grid %>%
+#   st_drop_geometry() %>% 
+#   group_by(CellID_2km) %>% 
+#   distinct(CellID_2km, .keep_all = TRUE)
+# submarine_cable_500m_scored <- grd.norcal %>%
+#   full_join(submarine_cable_500m_score, by = "CellID_2km") %>%
+#   filter(Score.submarine_cable_500m == 0) %>%
+#   rename("1" = Score.submarine_cable_500m) %>%
+#   mutate("0.1" = 0.1,
+#          "0.2" = 0.2,
+#          "0.3" = 0.3,
+#          "0.4" = 0.4,
+#          "0.5" = 0.5,
+#          "0.6" = 0.6,
+#          "0.7" = 0.7,
+#          "0.8" = 0.8,
+#          "0.9" = 0.9) 
+# submarine_cable_500m_scored_long <- pivot_longer(submarine_cable_500m_scored, cols = starts_with(c("0.", "1")), names_to = "submarine_cable_500m", values_to = "Score.submarine_cable_500m") %>% 
+#   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+#   select(-submarine_cable_500m)
+# st_crs(DSC_RH_scored_long) == st_crs(submarine_cable_500m_scored_long)
+# saveRDS(submarine_cable_500m_scored_long, "U:\\Github\\SMORES\\data\\submarine_cable_500m_scored.rds")
+# 
+# ##submarine cables 501-1000 m buffer
+# submarine_cable_501_1000m.grid <- sf::st_intersection(submarine_cable_buffer_501_1000, grd.norcal) %>%
+#   mutate(Score.submarine_cable_501_1000m = 0) %>%
+#   mutate(area.part = st_area(.)) %>%
+#   group_by(CellID_2km) %>% #use for 2km grid 
+#   #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
+#   slice_max(area.part, n = 1) %>%
+#   select(CellID_2km, Score.submarine_cable_501_1000m, status) #use for 2km grid
+# submarine_cable_501_1000m_score <- submarine_cable_501_1000m.grid %>%
+#   st_drop_geometry() %>% 
+#   group_by(CellID_2km) %>% 
+#   distinct(CellID_2km, .keep_all = TRUE)
+# submarine_cable_501_1000m_scored <- grd.norcal %>%
+#   full_join(submarine_cable_501_1000m_score, by = "CellID_2km") %>%
+#   filter(Score.submarine_cable_501_1000m == 0) %>%
+#   rename("1" = Score.submarine_cable_501_1000m) %>%
+#   mutate("0.1" = 0.1,
+#          "0.2" = 0.2,
+#          "0.3" = 0.3,
+#          "0.4" = 0.4,
+#          "0.5" = 0.5,
+#          "0.6" = 0.6,
+#          "0.7" = 0.7,
+#          "0.8" = 0.8,
+#          "0.9" = 0.9) 
+# submarine_cable_501_1000m_scored_long <- pivot_longer(submarine_cable_501_1000m_scored, cols = starts_with(c("0.", "1")), names_to = "submarine_cable_501_1000m", values_to = "Score.submarine_cable_501_1000m") %>% 
+#   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+#   select(-submarine_cable_501_1000m)
+# st_crs(DSC_RH_scored_long) == st_crs(submarine_cable_501_1000m_scored_long)
+# saveRDS(submarine_cable_501_1000m_scored_long, "U:\\Github\\SMORES\\data\\submarine_cable_501_1000m_scored.rds")
 
 #WEA's
 BOEM.gdb <- "Z:\\ArcGIS\\Projects\\OWEC\\p30\\boem_offshorewindenergy.gdb"
@@ -610,3 +648,4 @@ WEA <- sf::st_read(dsn = BOEM.gdb, layer = "BOEM_CA_OR_WEAs_merge_new") %>%
   filter(AreaType == "WEA") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84')
 saveRDS(WEA, "U:\\Github\\SMORES\\data\\WEA.rds")
+
