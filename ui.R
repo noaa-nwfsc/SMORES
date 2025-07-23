@@ -197,9 +197,9 @@ tagList(
             
             # Info about map settings
             card(
-              card_header("Map Configuration"),
+              card_header("Scoring Information"),
               card_body(
-                includeMarkdown("markdown/species_map_settings.md")
+                includeMarkdown("markdown/species.md")
               )
             ),
             
