@@ -89,6 +89,9 @@ create_combined_submodel <- function(component_data_list, base_grid = grid_test,
     min_val <- min(score_values, na.rm = TRUE)
     max_val <- max(score_values, na.rm = TRUE)
     
+    # Store the full data range for consistent coloring
+    full_data_range <- list(min = min_val, max = max_val)
+    
     # Create popup text
     map_data$popup_display <- paste("Combined Natural Resources Score:", 
                                     format(map_data$Geo_mean, digits = 3))
@@ -225,7 +228,8 @@ create_combined_submodel <- function(component_data_list, base_grid = grid_test,
     
     return(list(
       combined_data = combined_data,
-      map = map
+      map = map,
+      full_data_range = full_data_range
     ))
     
   }, error = function(e) {
