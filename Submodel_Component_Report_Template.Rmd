@@ -141,7 +141,7 @@ score_colors <- list(
 )
 
 # Function to create individual maps
-create_individual_map <- function(data, layer_name, score_value, map_title, wea_data = NULL) {
+create_individual_map <- function(data, layer_name, score_value, map_title, aoi_data = NULL) {
   # Ensure data is in the correct CRS for leaflet
   if (inherits(data, 'sf') && !identical(st_crs(data)$input, '+proj=longlat +datum=WGS84')) {
     data <- st_transform(data, '+proj=longlat +datum=WGS84')
@@ -177,26 +177,26 @@ create_individual_map <- function(data, layer_name, score_value, map_title, wea_
       opacity = 0.7
     )
   
-  # Add WEA boundary if available
-  if (!is.null(wea_data) && nrow(wea_data) > 0) {
-    # Transform WEA data if needed
-    if (!st_is_longlat(wea_data)) {
-      wea_data <- st_transform(wea_data, 4326)
+  # Add AOI boundary if available
+  if (!is.null(aoi_data) && nrow(aoi_data) > 0) {
+    # Transform AOI data if needed
+    if (!st_is_longlat(aoi_data)) {
+      aoi_data <- st_transform(aoi_data, 4326)
     }
-    wea_data <- st_zm(wea_data)
+    aoi_data <- st_zm(aoi_data)
     
     map <- map %>%
       addPolygons(
-        data = wea_data,
+        data = aoi_data,
         fillColor = "transparent",
         color = "red",
         weight = 3,
         fillOpacity = 0,
-        popup = ~paste("WEA Area:", Area_Name),
+        popup = ~paste("AOI:", Area_Name),
         group = "WEA Boundary"
       ) %>%
       addLayersControl(
-        overlayGroups = c("Layer Data", "WEA Boundary"),
+        overlayGroups = c("Layer Data", "AOI Boundary"),
         options = layersControlOptions(collapsed = FALSE)
       )
   }
@@ -205,7 +205,7 @@ create_individual_map <- function(data, layer_name, score_value, map_title, wea_
 }
 
 # Function to create combined map based on method
-create_combined_map <- function(combined_data, title, method = "geometric_mean", wea_data = NULL) {
+create_combined_map <- function(combined_data, title, method = "geometric_mean", aoi_data = NULL) {
   if (is.null(combined_data)) {
     return(leaflet() %>%
              addProviderTiles("Esri.OceanBasemap") %>%
@@ -336,7 +336,7 @@ create_combined_map <- function(combined_data, title, method = "geometric_mean",
         color = "red",
         weight = 3,
         fillOpacity = 0,
-        popup = ~paste("AOI Area:", Area_Name),
+        popup = ~paste("AOI:", Area_Name),
         group = "AOI Boundary"
       ) %>%
       addLayersControl(
