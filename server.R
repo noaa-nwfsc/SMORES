@@ -1429,6 +1429,11 @@ function(input, output, session) {
       # Get filtered AOI data for the report
       aoi_data <- filtered_aoi_data()
       
+      # Get cropped map and cropped normalized map
+      aoi_cropped_map <- combined_maps_data$natural_resources_combined_map_cropped  
+      aoi_cropped_normalized_map <- combined_maps_data$natural_resources_combined_map_cropped_normalized
+      
+      
       # Render the combined submodel report
       rmarkdown::render(
         input = "Submodel_Combined_Report_Template.Rmd", 
@@ -1442,7 +1447,9 @@ function(input, output, session) {
           data_timestamps = timestamp_info,
           component_data_summary = component_data_summary,
           aoi_data = aoi_data,
-          component_layer_details = component_layer_details
+          component_layer_details = component_layer_details,
+          aoi_cropped_map = aoi_cropped_map,
+          aoi_cropped_normalized_map = aoi_cropped_normalized_map
         ),
         envir = new.env(parent = globalenv())
       )
@@ -1749,6 +1756,10 @@ function(input, output, session) {
       # Get filtered AOI data for the report
       aoi_data <- filtered_aoi_data()
       
+      aoi_cropped_map <- combined_maps_data$industry_operations_combined_map_cropped
+      aoi_cropped_normalized_map <- combined_maps_data$industry_operations_combined_map_cropped_normalized
+      
+      
       # Render the combined submodel report
       rmarkdown::render(
         input = "Submodel_Combined_Report_Template.Rmd", 
@@ -1761,7 +1772,9 @@ function(input, output, session) {
           combined_map_title = "Industry & Operations Combined Submodel",
           data_timestamps = timestamp_info,
           component_data_summary = component_data_summary,
-          aoi_data = aoi_data
+          aoi_data = aoi_data, 
+          aoi_cropped_map = aoi_cropped_map,
+          aoi_cropped_normalized_map = aoi_cropped_normalized_map
         ),
         envir = new.env(parent = globalenv())
       )

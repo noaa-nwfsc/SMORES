@@ -19,6 +19,8 @@ params:
   aoi_data: NULL
   component_layer_details: NULL
   component_data_summary: NULL
+  aoi_cropped_map: NULL,
+  aoi_cropped_normalized_map: NULL
 ---
 
 ```{css, include = FALSE}
@@ -317,5 +319,25 @@ if (!is.null(params$combined_data)) {
 } else {
   # Show placeholder message
   cat("*Combined submodel was not generated.*\n")
+}
+```
+
+The AOI-cropped map shows the same combined submodel data filtered to the selected Area of Interest (AOI), maintaining the original color scale for consistency with the full dataset.
+
+```{r}
+if (!is.null(params$aoi_cropped_map)) {
+  params$aoi_cropped_map
+} else {
+  cat("*AOI-cropped map not available. Please select a specific AOI area.*\n")
+}
+```
+
+The normalized AOI-cropped map shows the AOI-filtered data rescaled to a 0-1 range using a min max normalization for only the values within the selected area, making it easier to compare relative differences within the AOI.
+
+```{r}
+if (!is.null(params$aoi_cropped_normalized_map)) {
+  params$aoi_cropped_normalized_map
+} else {
+  cat("*AOI-cropped normalized map not available. Please select a specific AOI area.*\n")
 }
 ```
