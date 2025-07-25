@@ -1,5 +1,5 @@
 # Function to create normalized (0-1 scale) cropped map with its own color scheme
-create_aoi_cropped_normalized_map <- function(combined_data, aoi_data_reactive = NULL, map_title = "AOI-Cropped Normalized Map", full_data_range = NULL) {
+create_aoi_cropped_normalized_map <- function(combined_data, aoi_data_reactive = NULL, map_title = "AOI-Cropped Normalized Map") {
   tryCatch({
     
     # Get AOI data
@@ -57,31 +57,18 @@ create_aoi_cropped_normalized_map <- function(combined_data, aoi_data_reactive =
                addControl("No valid data in selected AOI", position = "center"))
     }
     
-    # Get the full data range for normalization (use full combined data, not just cropped)
-    if(!is.null(full_data_range)) {
-      full_min_val <- full_data_range$min
-      full_max_val <- full_data_range$max
-    } else {
-      # Fall back to calculating from the full combined_data if full_data_range not provided
-      full_score_values <- combined_data$Geo_mean[!is.na(combined_data$Geo_mean)]
-      if(length(full_score_values) > 0) {
-        full_min_val <- min(full_score_values, na.rm = TRUE)
-        full_max_val <- max(full_score_values, na.rm = TRUE)
-      } else {
-        # Last resort: use cropped data range
-        score_values <- map_data$Geo_mean
-        full_min_val <- min(score_values, na.rm = TRUE)
-        full_max_val <- max(score_values, na.rm = TRUE)
-      }
-    }
+    # Get the min and max values from the CROPPED data only for normalization
+    score_values <- map_data$Geo_mean
+    cropped_min_val <- min(score_values, na.rm = TRUE)
+    cropped_max_val <- max(score_values, na.rm = TRUE)
     
-    # Normalize the cropped data to 0-1 scale using the full data range
-    if(abs(full_max_val - full_min_val) < 1e-10) {
-      # If all values in the full dataset are the same, set normalized values to 0.5
+    # Normalize the cropped data to 0-1 scale using only the cropped data range
+    if(abs(cropped_max_val - cropped_min_val) < 1e-10) {
+      # If all values in the cropped dataset are the same, set normalized values to 0.5
       map_data$Normalized_Score <- 0.5
     } else {
-      # Normalize using: (value - min) / (max - min)
-      map_data$Normalized_Score <- (map_data$Geo_mean - full_min_val) / (full_max_val - full_min_val)
+      # Normalize using cropped data range: (value - cropped_min) / (cropped_max - cropped_min)
+      map_data$Normalized_Score <- (map_data$Geo_mean - cropped_min_val) / (cropped_max_val - cropped_min_val)
     }
     
     # Create popup text with both original and normalized values
