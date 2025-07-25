@@ -3,7 +3,9 @@ title: " `r paste(params$component_name)` Component of the `r paste(params$tab_n
 date: "`r format(Sys.time(), '%B %d, %Y at %H:%M:%S')`"
 output: 
   html_document:
-    theme: cosmo
+    theme:
+      version: 5
+      brand: _brand.yml
     toc: true
     toc_float: true
     self_contained: true
