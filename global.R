@@ -35,6 +35,9 @@ source("R/generate_natural_resources_combined_sidebar.R")
 source("R/create_combined_submodel_map.R")
 source("R/generate_cables_sidebar.R")
 source("R/create_aoi_cropped_map.R")
+source("R/create_overall_combined_model.R")
+source("R/submodel_status_display.R")
+source("R/map_generation_status.R")
 
 # Get data timestamps information
 timestamp_info <- get_data_timestamps()

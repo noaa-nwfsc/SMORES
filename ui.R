@@ -346,21 +346,10 @@ tagList(
         card(
           card_header("Overall Combined Model"),
           card_body(
-            # Display individual submodel maps when available
-            conditionalPanel(
-              condition = "output.overallModelSubmodelStatus",
-              h5("Available Submodel Maps"),
-              htmlOutput("availableSubmodelMaps")
-            ),
+            includeMarkdown("markdown/overall_model.md"),
             
-            hr(),
-            
-            # Overall combined map result
-            conditionalPanel(
-              condition = "output.overallCombinedMap",
-              h5("Overall Combined Model Result"),
-              leafletOutput("overallCombinedMap", height = "600px")
-            )
+            # Add the single line here:
+            htmlOutput("overallCombinedMapContainer")
           )
         )
       )

@@ -29,7 +29,12 @@ function(input, output, session) {
     industry_operations_combined_submodel_generated = FALSE, 
     industry_operations_combined_map = NULL,
     industry_operations_combined_map_cropped = NULL, 
-    industry_operations_combined_map_cropped_normalized = NULL
+    industry_operations_combined_map_cropped_normalized = NULL,
+    overall_combined_model = NULL,
+    overall_combined_model_generated = FALSE,
+    overall_combined_map = NULL,
+    overall_combined_map_cropped = NULL, 
+    overall_combined_map_cropped_normalized = NULL
   )
   
   #AOI selector options
@@ -1045,24 +1050,29 @@ function(input, output, session) {
     }
   })
   
-  # Check if submodels have generated combined maps
+  # Enhanced submodel status using the new function
   submodel_status <- reactive({
     list(
       natural_resources = list(
         available = combined_maps_data$habitat_combined_map_generated || 
           combined_maps_data$species_combined_map_generated,
-        habitat_ready = combined_maps_data$habitat_combined_map_generated,
-        species_ready = combined_maps_data$species_combined_map_generated,
-        birds_ready = FALSE  # Add this when birds is implemented
+        components = list(
+          habitat = combined_maps_data$habitat_combined_map_generated,
+          species = combined_maps_data$species_combined_map_generated,
+          birds = FALSE  # Add this when birds is a go
+        )
       ),
       fisheries = list(
-        available = FALSE,  # Update this when fisheries is implemented
-        ready_components = c()
+        available = FALSE,  # Update this when fisheries is a go
+        components = list()
       ),
       industry_operations = list(
-        available = combined_maps_data$surveys_combined_map_generated,
-        surveys_ready = combined_maps_data$surveys_combined_map_generated,
-        cables_ready = combined_maps_data$cables_combined_map_generated
+        available = combined_maps_data$surveys_combined_map_generated || 
+          combined_maps_data$cables_combined_map_generated,
+        components = list(
+          surveys = combined_maps_data$surveys_combined_map_generated,
+          cables = combined_maps_data$cables_combined_map_generated
+        )
       )
     )
   })
@@ -1091,50 +1101,17 @@ function(input, output, session) {
     }
   })
   
-  # Display detailed status for each submodel
+  # status for each submodel
   output$overallModelSubmodelStatus <- renderUI({
     status <- submodel_status()
     
     tagList(
-      # Natural Resources Status
-      div(class = if(status$natural_resources$available) "alert alert-success" else "alert alert-warning",
-          h6("Natural Resources Submodel"),
-          if(status$natural_resources$available) {
-            tagList(
-              "✓ Available",
-              if(status$natural_resources$habitat_ready) div("• Habitat combined map ready"),
-              if(status$natural_resources$species_ready) div("• Species combined map ready")
-            )
-          } else {
-            "⚠ Not ready - Generate combined maps in Natural Resources tabs first"
-          }
-      ),
-      
-      # Fisheries Status  
-      div(class = if(status$fisheries$available) "alert alert-success" else "alert alert-warning",
-          h6("Fisheries Submodel"),
-          if(status$fisheries$available) {
-            "✓ Available"
-          } else {
-            "⚠ Not implemented yet"
-          }
-      ),
-      
-      # Industry & Operations Status
-      div(class = if(status$industry_operations$available) "alert alert-success" else "alert alert-warning",
-          h6("Industry & Operations Submodel"),
-          if(status$industry_operations$available) {
-            tagList(
-              "✓ Available",
-              if(status$industry_operations$surveys_ready) div("• Scientific Surveys combined map ready"),
-              if(status$industry_operations$cables_ready) div("• Submarine Cables combined map ready")
-            )
-          } else {
-            "⚠ Not ready - Generate combined maps in Industry & Operations tabs first"
-          }
-      )
+      submodel_status_display("Natural Resources", status$natural_resources),
+      submodel_status_display("Fisheries", status$fisheries),
+      submodel_status_display("Industry & Operations", status$industry_operations)
     )
   })
+  
   # Data tab timestamp table
   output$data_timestamps_table <- renderTable({
     data_timestamps %>%
@@ -1262,8 +1239,7 @@ function(input, output, session) {
         normalized_cropped_map <- create_aoi_cropped_normalized_map(
           combined_data = combined_submodel_result$combined_data,
           aoi_data_reactive = filtered_aoi_data,
-          map_title = "Natural Resources AOI-Cropped Normalized",
-          full_data_range = combined_submodel_result$full_data_range
+          map_title = "Natural Resources AOI-Cropped Normalized"
         )
         combined_maps_data$natural_resources_combined_map_cropped_normalized <- normalized_cropped_map
       }
@@ -1584,8 +1560,7 @@ function(input, output, session) {
           normalized_cropped_map <- create_aoi_cropped_normalized_map(
             combined_data = combined_submodel_result$combined_data,
             aoi_data_reactive = filtered_aoi_data,
-            map_title = "Industry Operations AOI-Cropped Normalized",
-            full_data_range = combined_submodel_result$full_data_range
+            map_title = "Industry Operations AOI-Cropped Normalized"
           )
           combined_maps_data$industry_operations_combined_map_cropped_normalized <- normalized_cropped_map
         }
@@ -1795,4 +1770,206 @@ function(input, output, session) {
       removeModal()
     }
   )
+  
+  # Generate Overall Model Button Logic
+  observeEvent(input$generateOverallModel, {
+    tryCatch({
+      # Get weight values
+      natural_resources_weight <- input$weightNaturalResources %||% 0
+      fisheries_weight <- input$weightFisheries %||% 0
+      industry_weight <- input$weightIndustryOperations %||% 0
+      
+      # Get which submodels are enabled
+      nr_enabled <- input$enableNaturalResources %||% FALSE
+      fisheries_enabled <- input$enableFisheries %||% FALSE
+      industry_enabled <- input$enableIndustryOperations %||% FALSE
+      
+      # Validate that at least one submodel is enabled with weight > 0
+      enabled_submodels <- c()
+      enabled_weights <- c()
+      
+      if(nr_enabled && natural_resources_weight > 0 && 
+         !is.null(combined_maps_data$natural_resources_combined_submodel)) {
+        enabled_submodels <- c(enabled_submodels, "natural_resources")
+        enabled_weights <- c(enabled_weights, natural_resources_weight)
+      }
+      
+      if(fisheries_enabled && fisheries_weight > 0) {
+        # Add fisheries here
+        # enabled_submodels <- c(enabled_submodels, "fisheries")
+        # enabled_weights <- c(enabled_weights, fisheries_weight)
+      }
+      
+      if(industry_enabled && industry_weight > 0 && 
+         !is.null(combined_maps_data$industry_operations_combined_submodel)) {
+        enabled_submodels <- c(enabled_submodels, "industry_operations")
+        enabled_weights <- c(enabled_weights, industry_weight)
+      }
+      
+      # Check if we have any valid submodels
+      if(length(enabled_submodels) == 0) {
+        showNotification(
+          "No valid submodels selected. Please enable submodels with weights > 0 and ensure they have been generated.", 
+          type = "warning"
+        )
+        return()
+      }
+      
+      # Show spinner modal
+      show_spinner_modal("Generating Overall Combined Model", 
+                         paste("Please wait while the overall model is being calculated using", 
+                               length(enabled_submodels), "submodel(s)..."))
+      
+      # Collect submodel data and weights
+      submodels <- list()
+      weights <- list()
+      
+      for(i in seq_along(enabled_submodels)) {
+        submodel_name <- enabled_submodels[i]
+        
+        if(submodel_name == "natural_resources") {
+          submodels[["natural_resources"]] <- combined_maps_data$natural_resources_combined_submodel
+          weights[["natural_resources"]] <- enabled_weights[i]
+        } else if(submodel_name == "industry_operations") {
+          submodels[["industry_operations"]] <- combined_maps_data$industry_operations_combined_submodel
+          weights[["industry_operations"]] <- enabled_weights[i]
+        }
+        # Add fisheries here
+      }
+      
+      # Generate the overall combined model
+      overall_result <- create_overall_combined_model(
+        submodels = submodels,
+        weights = weights,
+        base_grid = grid_test
+      )
+      
+      # Store the results
+      combined_maps_data$overall_combined_model <- overall_result$combined_data
+      combined_maps_data$overall_combined_model_generated <- TRUE
+      combined_maps_data$overall_combined_map <- overall_result$map
+      
+      # Generate cropped maps if we have valid data
+      if(!is.null(overall_result$combined_data) && 
+         "Overall_Geo_mean" %in% names(overall_result$combined_data)) {
+        
+        # Create a modified version of the data with Geo_mean column for compatibility
+        cropped_data <- overall_result$combined_data %>%
+          mutate(Geo_mean = Overall_Geo_mean)
+        
+        # Get the data range for consistent coloring
+        overall_values <- cropped_data$Geo_mean[!is.na(cropped_data$Geo_mean)]
+        full_data_range <- list(
+          min = min(overall_values, na.rm = TRUE),
+          max = max(overall_values, na.rm = TRUE)
+        )
+        
+        # Generate AOI-cropped map
+        cropped_map <- create_aoi_cropped_map(
+          combined_data = cropped_data,
+          aoi_data_reactive = filtered_aoi_data,
+          map_title = "Overall Model AOI-Cropped",
+          full_data_range = full_data_range
+        )
+        combined_maps_data$overall_combined_map_cropped <- cropped_map
+        
+        # Generate normalized cropped map
+        normalized_cropped_map <- create_aoi_cropped_normalized_map(
+          combined_data = cropped_data,
+          aoi_data_reactive = filtered_aoi_data,
+          map_title = "Overall Model AOI-Cropped Normalized"
+        )
+        combined_maps_data$overall_combined_map_cropped_normalized <- normalized_cropped_map
+      }
+      
+      # Show success notification
+      showNotification(
+        paste("Overall Combined Model generated successfully using", 
+              length(enabled_submodels), "submodel(s)!"), 
+        type = "message"
+      )
+      
+      # Remove spinner modal
+      removeModal()
+      
+    }, error = function(e) {
+      # Remove modal on error
+      removeModal()
+      
+      # Show error notification
+      showNotification(
+        paste("Error generating overall combined model:", e$message), 
+        type = "error", 
+        duration = 10
+      )
+    })
+  })
+  
+  output$overallCombinedMapContainer <- renderUI({
+    if(combined_maps_data$overall_combined_model_generated) {
+      tagList(
+        # Main combined map section
+        div(
+          h4("Overall Combined Model Map"),
+          p("This map shows the overall combined model calculated using the weighted geometric mean of selected submodels."),
+          leafletOutput("overallCombinedMap", height = "500px")
+        ),
+        
+        br(),
+        
+        # Cropped map section
+        div(
+          h4("AOI-Cropped Overall Model Map"),
+          p("This map shows the same overall model data cropped to the selected Area of Interest (AOI)."),
+          leafletOutput("overallCombinedMapCropped", height = "500px")
+        ),
+        
+        br(),
+        
+        # Normalized cropped map section
+        div(
+          h4("AOI-Cropped Normalized Overall Model Map"),
+          p("This map shows the AOI-cropped data normalized to a 0-1 scale for easier comparison across different areas."),
+          leafletOutput("overallCombinedMapCroppedNormalized", height = "500px")
+        )
+      )
+    } else {
+      div(
+        style = "text-align: center; padding: 40px; color: #666;",
+        p("Overall model maps will appear here after generation."),
+        p("Use the sidebar to configure and generate the overall model.")
+      )
+    }
+  })
+  
+  # Overall Combined Model map outputs
+  output$overallCombinedMap <- renderLeaflet({
+    if(!is.null(combined_maps_data$overall_combined_map)) {
+      combined_maps_data$overall_combined_map
+    } else {
+      leaflet() %>%
+        addProviderTiles("Esri.OceanBasemap") %>%
+        addControl("Generate overall model to see map", position = "center")
+    }
+  })
+  
+  output$overallCombinedMapCropped <- renderLeaflet({
+    if(!is.null(combined_maps_data$overall_combined_map_cropped)) {
+      combined_maps_data$overall_combined_map_cropped
+    } else {
+      leaflet() %>%
+        addProviderTiles("Esri.OceanBasemap") %>%
+        addControl("Generate overall model and select an AOI to see cropped map", position = "center")
+    }
+  })
+  
+  output$overallCombinedMapCroppedNormalized <- renderLeaflet({
+    if(!is.null(combined_maps_data$overall_combined_map_cropped_normalized)) {
+      combined_maps_data$overall_combined_map_cropped_normalized
+    } else {
+      leaflet() %>%
+        addProviderTiles("Esri.OceanBasemap") %>%
+        addControl("Generate overall model and select an AOI to see normalized cropped map", position = "center")
+    }
+  })
 }
