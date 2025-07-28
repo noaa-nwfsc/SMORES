@@ -1854,7 +1854,8 @@ function(input, output, session) {
       overall_result <- create_overall_combined_model(
         submodels = submodels,
         weights = weights,
-        base_grid = grid_test
+        base_grid = grid_test,
+        aoi_data_reactive = filtered_aoi_data
       )
       
       # Store the results
