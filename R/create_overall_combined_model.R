@@ -8,170 +8,255 @@
 #' @param base_grid The base spatial grid to use for combining data
 #' @return A list containing the combined data and the leaflet map
 #'
-create_overall_combined_model <- function(submodels, weights, base_grid = grid_test) {
-  
-  # Initialize result structure
-  result <- list(
-    combined_data = NULL,
-    map = NULL
-  )
-  
-  if(length(submodels) == 0) {
-    # No submodels - return empty map with message
-    result$map <- leaflet() %>%
-      addProviderTiles("Esri.OceanBasemap") %>%
-      addControl("No submodels available for overall model generation.", position = "topright")
+create_overall_combined_model <- function(submodels, weights, base_grid = grid_test, aoi_data_reactive = NULL) {
+  tryCatch({
     
-    return(result)
-  }
-  
-  # Normalize weights to sum to 1
-  total_weight <- sum(unlist(weights))
-  if(total_weight > 0) {
-    normalized_weights <- lapply(weights, function(w) w / total_weight)
-  } else {
-    # If all weights are 0, assign equal weights
-    normalized_weights <- lapply(weights, function(w) 1 / length(weights))
-  }
-  
-  # Start with base grid
-  combined_data <- base_grid
-  
-  # Apply weights and combine submodels
-  weighted_columns <- c()
-  
-  for(i in seq_along(submodels)) {
-    submodel_name <- names(submodels)[i]
-    submodel_data <- submodels[[i]]
-    weight <- normalized_weights[[i]]
+    # Initialize result structure
+    result <- list(
+      combined_data = NULL,
+      map = NULL
+    )
     
-    # Check if submodel has Geo_mean column
-    if(!"Geo_mean" %in% names(submodel_data)) {
-      warning(paste("Submodel", submodel_name, "does not have Geo_mean column. Skipping."))
-      next
+    if(length(submodels) == 0) {
+      # No submodels - return empty map with message
+      result$map <- leaflet() %>%
+        addProviderTiles("Esri.OceanBasemap") %>%
+        addControl("No submodels available for overall model generation.", position = "topright")
+      
+      return(result)
     }
     
-    # Create weighted column name
-    weighted_col_name <- paste0("Weighted_", submodel_name)
-    
-    # Extract geometric mean and apply weight
-    temp_data <- submodel_data %>%
-      st_drop_geometry() %>%
-      select(CellID_2km, Geo_mean) %>%
-      mutate(!!weighted_col_name := Geo_mean^weight) %>%
-      select(CellID_2km, !!weighted_col_name)
-    
-    # Join with combined data
-    combined_data <- left_join(combined_data, temp_data, by = "CellID_2km")
-    
-    # Track weighted columns for final calculation
-    weighted_columns <- c(weighted_columns, weighted_col_name)
-  }
-  
-  # Calculate overall geometric mean from weighted components
-  if(length(weighted_columns) > 0) {
-    combined_data <- combined_data %>%
-      rowwise() %>%
-      mutate(
-        Overall_Geo_mean = if(all(is.na(c_across(all_of(weighted_columns))))) {
-          NA_real_
-        } else {
-          # Calculate geometric mean of weighted values
-          non_na_values <- c_across(all_of(weighted_columns))[!is.na(c_across(all_of(weighted_columns)))]
-          if(length(non_na_values) > 0) {
-            exp(mean(log(non_na_values[non_na_values > 0]), na.rm = TRUE))
-          } else {
-            NA_real_
-          }
-        }
-      ) %>%
-      ungroup()
-  }
-  
-  # Create the map
-  if("Overall_Geo_mean" %in% names(combined_data) && 
-     any(!is.na(combined_data$Overall_Geo_mean))) {
-    
-    # Transform for leaflet
-    combined_data <- st_transform(combined_data, '+proj=longlat +datum=WGS84')
-    
-    # Get bounding box
-    bbox <- st_bbox(combined_data)
-    min_lng <- as.numeric(bbox["xmin"])
-    min_lat <- as.numeric(bbox["ymin"])  
-    max_lng <- as.numeric(bbox["xmax"])
-    max_lat <- as.numeric(bbox["ymax"])
-    
-    # Get range of values
-    overall_values <- combined_data$Overall_Geo_mean[!is.na(combined_data$Overall_Geo_mean)]
-    min_val <- min(overall_values, na.rm = TRUE)
-    max_val <- max(overall_values, na.rm = TRUE)
-    
-    # Create map with color palette
-    if(min_val == max_val) {
-      # Single color for constant values
-      single_color <- viridis::viridis(1, begin = 0.5, end = 0.5)
-      
-      result$map <- leaflet() %>%
-        addProviderTiles("Esri.OceanBasemap",
-                         options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
-        addProviderTiles("Esri.OceanBasemap",
-                         options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
-        addPolygons(
-          data = combined_data, 
-          color = "#33333300",
-          weight = 1, 
-          fillColor = single_color, 
-          fillOpacity = 1,
-          popup = ~paste("Overall Model Score:", round(Overall_Geo_mean, 2))
-        ) %>%
-        addLegend(
-          position = "bottomright",
-          colors = single_color,
-          labels = paste("Score:", round(min_val, 2)),
-          title = "Overall Model Score",
-          opacity = 1
-        ) %>%
-        fitBounds(lng1 = min_lng, lat1 = min_lat, 
-                  lng2 = max_lng, lat2 = max_lat)
+    # Normalize weights to sum to 1
+    total_weight <- sum(unlist(weights))
+    if(total_weight > 0) {
+      normalized_weights <- lapply(names(weights), function(name) {
+        weights[[name]] / total_weight
+      })
+      names(normalized_weights) <- names(weights)
     } else {
-      # Color palette for varying values
-      pal <- colorNumeric("viridis", 
-                          domain = c(min_val, max_val), 
-                          na.color = "transparent")
-      
-      result$map <- leaflet() %>%
-        addProviderTiles("Esri.OceanBasemap",
-                         options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
-        addProviderTiles("Esri.OceanBasemap",
-                         options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
-        addPolygons(
-          data = combined_data, 
-          color = "#33333300",
-          weight = 1, 
-          fillColor = ~pal(Overall_Geo_mean), 
-          fillOpacity = 1,
-          popup = ~paste("Overall Model Score:", round(Overall_Geo_mean, 2))
-        ) %>%
-        addLegend(
-          position = "bottomright",
-          pal = pal,
-          values = combined_data$Overall_Geo_mean,
-          title = "Overall Model Score",
-          opacity = 1
-        ) %>%
-        fitBounds(lng1 = min_lng, lat1 = min_lat, 
-                  lng2 = max_lng, lat2 = max_lat)
+      # If all weights are 0, assign equal weights
+      equal_weight <- 1 / length(weights)
+      normalized_weights <- lapply(names(weights), function(name) equal_weight)
+      names(normalized_weights) <- names(weights)
     }
-  } else {
-    # No valid data
-    result$map <- leaflet() %>%
+    
+    # Start with base grid
+    combined_data <- base_grid
+    
+    # Apply weights and combine submodels
+    weighted_columns <- c()
+    
+    for(i in seq_along(submodels)) {
+      submodel_name <- names(submodels)[i]
+      submodel_data <- submodels[[i]]
+      weight <- normalized_weights[[i]]
+      
+      # Check if submodel has Geo_mean column
+      if(!"Geo_mean" %in% names(submodel_data)) {
+        warning(paste("Submodel", submodel_name, "does not have Geo_mean column. Skipping."))
+        next
+      }
+      
+      # Create weighted column name
+      weighted_col_name <- paste0("Weighted_", submodel_name)
+      
+      # Extract geometric mean and apply weight
+      temp_data <- submodel_data %>%
+        st_drop_geometry() %>%
+        select(CellID_2km, Geo_mean) %>%
+        mutate(!!weighted_col_name := Geo_mean^weight) %>%
+        select(CellID_2km, !!weighted_col_name)
+      
+      # Join with combined data
+      combined_data <- left_join(combined_data, temp_data, by = "CellID_2km")
+      
+      # Track weighted columns for final calculation
+      weighted_columns <- c(weighted_columns, weighted_col_name)
+    }
+    
+    # Calculate overall geometric mean from weighted components
+    if(length(weighted_columns) > 0) {
+      combined_data <- combined_data %>%
+        rowwise() %>%
+        mutate(
+          Overall_Geo_mean = if(all(is.na(c_across(all_of(weighted_columns))))) {
+            NA_real_
+          } else {
+            # Calculate geometric mean of weighted values
+            non_na_values <- c_across(all_of(weighted_columns))[!is.na(c_across(all_of(weighted_columns)))]
+            if(length(non_na_values) > 0) {
+              exp(mean(log(non_na_values[non_na_values > 0]), na.rm = TRUE))
+            } else {
+              NA_real_
+            }
+          }
+        ) %>%
+        ungroup()
+    }
+    
+    aoi_data <- NULL
+    if(!is.null(aoi_data_reactive)) {
+      tryCatch({
+        aoi_data <- aoi_data_reactive()
+      }, error = function(e) {
+        # If reactive fails, try to get AOI directly
+        if(exists("AOI")) {
+          aoi_data <- AOI
+        }
+      })
+    } else if(exists("AOI")) {
+      aoi_data <- AOI
+    }
+    
+    # Transform AOI data to WGS84 if available and needed
+    if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
+      if(!st_is_longlat(aoi_data)) {
+        aoi_data <- st_transform(aoi_data, 4326)
+      }
+      aoi_data <- st_zm(aoi_data)
+    }
+    
+    # Create the map
+    if("Overall_Geo_mean" %in% names(combined_data) && 
+       any(!is.na(combined_data$Overall_Geo_mean))) {
+      
+      # Transform for leaflet
+      combined_data <- st_transform(combined_data, '+proj=longlat +datum=WGS84')
+      
+      # Calculate map bounds - prioritize AOI bounds if available
+      map_bounds <- NULL
+      if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
+        # Use AOI bounds for centering the map
+        bbox <- st_bbox(aoi_data)
+        map_bounds <- list(
+          lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
+          lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
+        )
+      } else if(nrow(combined_data) > 0) {
+        # Fallback to data bounds if no AOI
+        bbox <- st_bbox(combined_data)
+        map_bounds <- list(
+          lng1 = as.numeric(bbox["xmin"]), lat1 = as.numeric(bbox["ymin"]),
+          lng2 = as.numeric(bbox["xmax"]), lat2 = as.numeric(bbox["ymax"])
+        )
+      }
+      
+      # Get range of values
+      overall_values <- combined_data$Overall_Geo_mean[!is.na(combined_data$Overall_Geo_mean)]
+      min_val <- min(overall_values, na.rm = TRUE)
+      max_val <- max(overall_values, na.rm = TRUE)
+      
+      # Create map with color palette
+      if(min_val == max_val) {
+        # Single color for constant values
+        single_color <- viridis::viridis(1, begin = 0.5, end = 0.5)
+        
+        result$map <- leaflet() %>%
+          addProviderTiles("Esri.OceanBasemap",
+                           options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
+          addProviderTiles("Esri.OceanBasemap",
+                           options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
+          addPolygons(
+            data = combined_data, 
+            color = "#33333300",
+            weight = 1, 
+            fillColor = single_color, 
+            fillOpacity = 1,
+            popup = ~paste("Overall Model Score:", round(Overall_Geo_mean, 2)),
+            group = "Overall Model Data"
+          ) %>%
+          addLegend(
+            position = "bottomright",
+            colors = single_color,
+            labels = paste("Score:", round(min_val, 2)),
+            title = "Overall Model Score",
+            opacity = 1
+          )
+      } else {
+        # Color palette for varying values
+        pal <- colorNumeric("viridis", 
+                            domain = c(min_val, max_val), 
+                            na.color = "transparent")
+        
+        result$map <- leaflet() %>%
+          addProviderTiles("Esri.OceanBasemap",
+                           options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
+          addProviderTiles("Esri.OceanBasemap",
+                           options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
+          addPolygons(
+            data = combined_data, 
+            color = "#33333300",
+            weight = 1, 
+            fillColor = ~pal(Overall_Geo_mean), 
+            fillOpacity = 1,
+            popup = ~paste("Overall Model Score:", round(Overall_Geo_mean, 2)),
+            group = "Overall Model Data"
+          ) %>%
+          addLegend(
+            position = "bottomright",
+            pal = pal,
+            values = combined_data$Overall_Geo_mean,
+            title = "Overall Model Score",
+            opacity = 1
+          )
+      }
+      
+      # Set map view based on bounds
+      if(!is.null(map_bounds)) {
+        result$map <- result$map %>%
+          fitBounds(
+            lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
+            lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
+            options = list(padding = c(20, 20))  # Add some padding around the bounds
+          )
+      }
+      
+      # Add AOI polygon if available - always include it
+      if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
+        result$map <- result$map %>%
+          addPolygons(
+            data = aoi_data,
+            fillColor = "transparent",
+            color = "red",
+            weight = 3,
+            fillOpacity = 0,
+            popup = ~paste("Area:", Area_Name),
+            group = "AOI Boundaries"
+          ) %>%
+          addLayersControl(
+            overlayGroups = c("Overall Model Data", "AOI Boundaries"),
+            options = layersControlOptions(collapsed = FALSE)
+          )
+      }
+      
+    } else {
+      # No valid data
+      result$map <- leaflet() %>%
+        addProviderTiles("Esri.OceanBasemap") %>%
+        addControl("No valid score data available for overall model.", position = "topright")
+    }
+    
+    # Store combined data
+    result$combined_data <- combined_data
+    
+    return(list(
+      combined_data = combined_data,
+      map = result$map,
+      full_data_range = list(min = min_val, max = max_val)
+    ))
+  }, error = function(e) {
+    cat("ERROR in create_overall_combined_model:", e$message, "\n")
+    
+    # Return error map
+    error_map <- leaflet() %>%
       addProviderTiles("Esri.OceanBasemap") %>%
-      addControl("No valid score data available for overall model.", position = "topright")
-  }
-  
-  # Store combined data
-  result$combined_data <- combined_data
-  
-  return(result)
+      setView(lng = -124, lat = 38, zoom = 7) %>%
+      addControl(paste("Error generating overall model:", e$message), position = "topright")
+    
+    return(list(
+      combined_data = NULL,
+      map = error_map,
+      full_data_range = NULL
+    ))
+  })
 }
