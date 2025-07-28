@@ -23,8 +23,8 @@ calculate_submodel_geometric_mean <- function(combined_data) {
     # Filter out rows where geometric mean is NA or 0
     combined_data <- combined_data[!is.na(combined_data$Geo_mean) & combined_data$Geo_mean > 0, ]
   } else {
-    cat("WARNING: No score columns found. Looking for columns with pattern '^Score[._]'\\n")
-    cat("Available columns:", paste(names(combined_data), collapse = ", "), "\\n")
+    cat("WARNING: No score columns found. Looking for columns with pattern '^Score[._]'\n")
+    cat("Available columns:", paste(names(combined_data), collapse = ", "), "\n")
   }
   
   return(combined_data)
@@ -38,7 +38,7 @@ create_combined_submodel <- function(component_data_list, base_grid = grid_test,
     
     # Extract the calculated values from each component
     for(component_name in names(component_data_list)) {
-    
+      
       component_data <- component_data_list[[component_name]]
       
       if(is.null(component_data)) {
@@ -96,10 +96,69 @@ create_combined_submodel <- function(component_data_list, base_grid = grid_test,
     map_data$popup_display <- paste("Combined Natural Resources Score:", 
                                     format(map_data$Geo_mean, digits = 3))
     
+    # Calculate map bounds - prioritize AOI bounds if available
+    map_bounds <- NULL
+    if(!is.null(aoi_data_reactive)) {
+      tryCatch({
+        aoi_data_temp <- aoi_data_reactive()
+        if(!is.null(aoi_data_temp) && nrow(aoi_data_temp) > 0) {
+          # Transform to WGS84 if needed
+          if(!st_is_longlat(aoi_data_temp)) {
+            aoi_data_temp <- st_transform(aoi_data_temp, 4326)
+          }
+          aoi_data_temp <- st_zm(aoi_data_temp)
+          
+          # Use AOI bounds for centering the map
+          bbox <- st_bbox(aoi_data_temp)
+          map_bounds <- list(
+            lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
+            lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
+          )
+        }
+      }, error = function(e) {
+        # If AOI data fails, continue without bounds
+        message("Could not get AOI bounds: ", e$message)
+      })
+    } else if(exists("AOI")) {
+      # Fall back to global AOI data if no reactive provided
+      tryCatch({
+        aoi_data_temp <- AOI
+        if(!is.null(aoi_data_temp) && nrow(aoi_data_temp) > 0) {
+          # Transform to WGS84 if needed
+          if(!st_is_longlat(aoi_data_temp)) {
+            aoi_data_temp <- st_transform(aoi_data_temp, 4326)
+          }
+          aoi_data_temp <- st_zm(aoi_data_temp)
+          
+          # Use AOI bounds for centering the map
+          bbox <- st_bbox(aoi_data_temp)
+          map_bounds <- list(
+            lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
+            lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
+          )
+        }
+      }, error = function(e) {
+        # If global AOI data fails, continue without bounds
+        message("Could not get global AOI bounds: ", e$message)
+      })
+    }
+    
     # Initialize the map
     map <- leaflet(map_data) %>%
-      addProviderTiles("Esri.OceanBasemap") %>%
-      setView(lng = -124, lat = 38, zoom = 7)
+      addProviderTiles("Esri.OceanBasemap")
+    
+    # Set map view based on bounds or default
+    if(!is.null(map_bounds)) {
+      map <- map %>%
+        fitBounds(
+          lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
+          lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
+          options = list(padding = c(20, 20))  # Add some padding around the bounds
+        )
+    } else {
+      map <- map %>%
+        setView(lng = -124, lat = 38, zoom = 7)  # Default view
+    }
     
     # Handle color palette - check if we have variation in values
     if(abs(min_val - max_val) < 1e-10) {
@@ -138,7 +197,7 @@ create_combined_submodel <- function(component_data_list, base_grid = grid_test,
       
       # Test the palette with actual values
       test_colors <- pal(c(min_val, max_val))
- 
+      
       
       # Add polygons with color mapping
       map <- map %>%
@@ -221,8 +280,8 @@ create_combined_submodel <- function(component_data_list, base_grid = grid_test,
             )
         }
       }, error = function(e) {
-        # If global AOI data fails, continue without it
-        message("Could not add global AOI data to combined map: ", e$message)
+        # If global WEA data fails, continue without it
+        message("Could not add global WEA data to combined map: ", e$message)
       })
     }
     
@@ -235,14 +294,14 @@ create_combined_submodel <- function(component_data_list, base_grid = grid_test,
   }, error = function(e) {
     cat("ERROR in create_combined_submodel:", e$message, "\n")
     
-    # Return a basic error map
+    # Return error map
     error_map <- leaflet() %>%
       addProviderTiles("Esri.OceanBasemap") %>%
       setView(lng = -124, lat = 38, zoom = 7) %>%
-      addControl(paste("Error:", e$message), position = "topright")
+      addControl(paste("Error generating combined submodel:", e$message), position = "topright")
     
     return(list(
-      combined_data = NULL,
+      combined_data = combined_data,
       map = error_map
     ))
   })
