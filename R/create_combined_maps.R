@@ -1,4 +1,4 @@
-# Calculate geometric mean across all score columns  
+# Calculate geometric mean across all score columns
 calculate_geometric_mean <- function(combined_data) {
   # Find all score columns
   score_cols <- names(combined_data)[grep("^Score\\.", names(combined_data))]
@@ -50,7 +50,7 @@ calculate_lowest_value <- function(combined_data) {
   
   return(combined_data)
 }
-  
+
 
 # Calculate product across all score columns
 calculate_product <- function(combined_data) {
@@ -79,8 +79,8 @@ calculate_product <- function(combined_data) {
   return(combined_data)
 }
 
-generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, base_grid = grid_test, 
-                                               selected_methods = c("geometric_mean"), 
+generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, base_grid = grid_test,
+                                               selected_methods = c("geometric_mean"),
                                                map_type = "Combined",
                                                aoi_data_reactive = NULL) {
   
@@ -160,18 +160,58 @@ generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, b
     }
     
     # Check if we have valid score data
-    if(!is.null(score_column) && score_column %in% names(combined_data) && 
+    if(!is.null(score_column) && score_column %in% names(combined_data) &&
        any(!is.na(combined_data[[score_column]]))) {
       
       # Make sure geometry is set properly for leaflet
       combined_data <- st_transform(combined_data, '+proj=longlat +datum=WGS84')
       
-      # Get the bounding box of the data to set initial view
-      bbox <- st_bbox(combined_data)
-      min_lng <- as.numeric(bbox["xmin"])
-      min_lat <- as.numeric(bbox["ymin"])  
-      max_lng <- as.numeric(bbox["xmax"])
-      max_lat <- as.numeric(bbox["ymax"])
+      # Calculate map bounds - prioritize AOI bounds if available
+      map_bounds <- NULL
+      if(!is.null(aoi_data_reactive)) {
+        tryCatch({
+          aoi_data_temp <- aoi_data_reactive()
+          if(!is.null(aoi_data_temp) && nrow(aoi_data_temp) > 0) {
+            # Transform to WGS84 if needed
+            if(!st_is_longlat(aoi_data_temp)) {
+              aoi_data_temp <- st_transform(aoi_data_temp, 4326)
+            }
+            aoi_data_temp <- st_zm(aoi_data_temp)
+            
+            # Use AOI bounds for centering the map
+            bbox <- st_bbox(aoi_data_temp)
+            map_bounds <- list(
+              lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
+              lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
+            )
+          }
+        }, error = function(e) {
+          # If AOI data fails, continue without bounds
+          message("Could not get AOI bounds: ", e$message)
+        })
+      } else if(exists("AOI")) {
+        # Fall back to global AOI data if no reactive provided
+        tryCatch({
+          aoi_data_temp <- AOI
+          if(!is.null(aoi_data_temp) && nrow(aoi_data_temp) > 0) {
+            # Transform to WGS84 if needed
+            if(!st_is_longlat(aoi_data_temp)) {
+              aoi_data_temp <- st_transform(aoi_data_temp, 4326)
+            }
+            aoi_data_temp <- st_zm(aoi_data_temp)
+            
+            # Use AOI bounds for centering the map
+            bbox <- st_bbox(aoi_data_temp)
+            map_bounds <- list(
+              lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
+              lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
+            )
+          }
+        }, error = function(e) {
+          # If global AOI data fails, continue without bounds
+          message("Could not get global AOI bounds: ", e$message)
+        })
+      }
       
       # Get the range of score values for the specific calculation method
       score_values <- combined_data[[score_column]][!is.na(combined_data[[score_column]])]
@@ -193,10 +233,10 @@ generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, b
           addProviderTiles("Esri.OceanBasemap",
                            options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
           addPolygons(
-            data = combined_data, 
+            data = combined_data,
             color = "#33333300",
-            weight = 1, 
-            fillColor = single_color, 
+            weight = 1,
+            fillColor = single_color,
             fillOpacity = 1,
             popup = ~popup_display,
             group = "Combined Data"
@@ -207,13 +247,27 @@ generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, b
             labels = paste("Score:", round(min_val, 2)),
             title = map_title,  # Use the method-specific title
             opacity = 1
-          ) %>%
-          fitBounds(lng1 = min_lng, lat1 = min_lat, 
-                    lng2 = max_lng, lat2 = max_lat)
+          )
+        
+        # set map view based on bounds or default
+        if(!is.null(map_bounds)) {
+          map <- map %>%
+            fitBounds(
+              lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
+              lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
+              options = list(padding = c(20, 20))
+            )
+        } else {
+          # Use data bounds as fallback
+          bbox <- st_bbox(combined_data)
+          map <- map %>%
+            fitBounds(lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
+                      lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]])
+        }
       } else {
         # Normal case with varying values - use continuous palette
-        pal <- colorNumeric("viridis", 
-                            domain = range(score_values, na.rm = TRUE), 
+        pal <- colorNumeric("viridis",
+                            domain = range(score_values, na.rm = TRUE),
                             na.color = "transparent")
         
         # Add a fillColor column directly to the data to avoid leaflet formula issues
@@ -226,10 +280,10 @@ generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, b
           addProviderTiles("Esri.OceanBasemap",
                            options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
           addPolygons(
-            data = combined_data, 
+            data = combined_data,
             color = "#33333300",
-            weight = 1, 
-            fillColor = ~fill_color, 
+            weight = 1,
+            fillColor = ~fill_color,
             fillOpacity = 1,
             popup = ~popup_display,
             group = "Combined Data"
@@ -238,87 +292,107 @@ generate_combined_maps_all_methods <- function(valid_configs, dataset_mapping, b
             position = "bottomright",
             pal = pal,
             values = combined_data[[score_column]],
-            title = map_title,  # Use the method-specific title
+            title = map_title,
             opacity = 1
-          ) %>%
-          fitBounds(lng1 = min_lng, lat1 = min_lat, 
-                    lng2 = max_lng, lat2 = max_lat)
+          )
+        
+        # Set map view based on bounds or default
+        if(!is.null(map_bounds)) {
+          map <- map %>%
+            fitBounds(
+              lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
+              lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
+              options = list(padding = c(20, 20))
+            )
+        } else {
+          # Use data bounds as fallback
+          bbox <- st_bbox(combined_data)
+          map <- map %>%
+            fitBounds(lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
+                      lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]])
+        }
       }
+      
+      # Add WEA data to the map if available
+      if(!is.null(aoi_data_reactive)) {
+        tryCatch({
+          aoi_data <- aoi_data_reactive()
+          if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
+            # Transform WEA data if needed
+            if(!st_is_longlat(aoi_data)) {
+              aoi_data <- st_transform(aoi_data, 4326)
+            }
+            aoi_data <- st_zm(aoi_data)
+            
+            map <- map %>%
+              addPolygons(
+                data = aoi_data,
+                fillColor = "transparent",
+                color = "red",
+                weight = 3,
+                fillOpacity = 0,
+                popup = ~paste("Area:", Area_Name),
+                group = "AOI Area"
+              ) %>%
+              addLayersControl(
+                overlayGroups = c("Combined Data", "AOI Area"),
+                options = layersControlOptions(collapsed = FALSE)
+              )
+          }
+        }, error = function(e) {
+          # If WEA data fails, continue without it
+          message("Could not add AOI data to combined map: ", e$message)
+        })
+      } else if(exists("AOI")) {
+        # Fall back to global AOI data if no reactive provided
+        tryCatch({
+          aoi_data <- AOI
+          if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
+            # Transform WEA data if needed
+            if(!st_is_longlat(aoi_data)) {
+              aoi_data <- st_transform(aoi_data, 4326)
+            }
+            aoi_data <- st_zm(aoi_data)
+            
+            map <- map %>%
+              addPolygons(
+                data = aoi_data,
+                fillColor = "transparent",
+                color = "red",
+                weight = 3,
+                fillOpacity = 0,
+                popup = ~paste("Area:", Area_Name),
+                group = "AOI Area"
+              ) %>%
+              addLayersControl(
+                overlayGroups = c("Combined Data", "AOI Area"),
+                options = layersControlOptions(collapsed = FALSE)
+              )
+          }
+        }, error = function(e) {
+          # If global WEA data fails, continue without it
+          message("Could not add global AOI data to combined map: ", e$message)
+        })
+      }
+      
+      # Store the result for this method
+      results[[method]] <- list(
+        combined_data = combined_data,
+        map = map
+      )
     } else {
       # No score data available
       map <- leaflet() %>%
         addProviderTiles("Esri.OceanBasemap") %>%
         addControl("No score data available for the selected layers.", position = "topright")
+      
+      # Store the empty map for this method
+      results[[method]] <- list(
+        combined_data = NULL,
+        map = map
+      )
     }
-    
-    # Add WEA data to the map if available
-    if(!is.null(aoi_data_reactive)) {
-      tryCatch({
-        aoi_data <- aoi_data_reactive()
-        if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-          # Transform WEA data if needed
-          if(!st_is_longlat(aoi_data)) {
-            aoi_data <- st_transform(aoi_data, 4326)
-          }
-          aoi_data <- st_zm(aoi_data)
-          
-          map <- map %>%
-            addPolygons(
-              data = aoi_data,
-              fillColor = "transparent",
-              color = "red",
-              weight = 3,
-              fillOpacity = 0,
-              popup = ~paste("Area:", Area_Name),
-              group = "AOI Area"
-            ) %>%
-            addLayersControl(
-              overlayGroups = c("Combined Data", "AOI Area"),
-              options = layersControlOptions(collapsed = FALSE)
-            )
-        }
-      }, error = function(e) {
-        # If WEA data fails, continue without it
-        message("Could not add AOI data to combined map: ", e$message)
-      })
-    } else if(exists("AOI")) {
-      # Fall back to global AOI data if no reactive provided
-      tryCatch({
-        aoi_data <- AOI
-        if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-          # Transform WEA data if needed
-          if(!st_is_longlat(aoi_data)) {
-            aoi_data <- st_transform(aoi_data, 4326)
-          }
-          aoi_data <- st_zm(aoi_data)
-          
-          map <- map %>%
-            addPolygons(
-              data = aoi_data,
-              fillColor = "transparent",
-              color = "red",
-              weight = 3,
-              fillOpacity = 0,
-              popup = ~paste("Area:", Area_Name),
-              group = "AOI Area"
-            ) %>%
-            addLayersControl(
-              overlayGroups = c("Combined Data", "AOI Area"),
-              options = layersControlOptions(collapsed = FALSE)
-            )
-        }
-      }, error = function(e) {
-        # If global WEA data fails, continue without it
-        message("Could not add global AOI data to combined map: ", e$message)
-      })
-    }
-    
-    # Store the result for this method
-    results[[method]] <- list(
-      combined_data = combined_data,
-      map = map
-    )
-  }
+  } 
   
-  return(results)
+  return(results) 
 }
