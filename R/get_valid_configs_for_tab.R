@@ -21,24 +21,38 @@ get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colo
         score_value <- input[[score_input_id]]
         
         if(!is.null(score_value) && score_value != "None") {
-          # Get score color
-          score_color <- score_colors[[score_value]]
           
-          # Filter data by score
-          if(layer_name %in% names(layer_data)) {
+          # Special handling for DSC layer with Z Membership
+          if(layer_name == "Deep Sea Coral Robust High Suitability") {
+            if(score_value == "Z Membership") {
+              # Use the Z membership dataset and create continuous color palette
+              filtered_data <- filter_by_score(DSC_RH_z_membership, score_value)
+              score_color <- "continuous"  # Flag for continuous coloring
+              color_palette <- create_z_membership_palette(filtered_data)
+            } else {
+              # Use the regular scored dataset
+              filtered_data <- filter_by_score(layer_data[[layer_name]], score_value)
+              score_color <- score_colors[[score_value]]
+              color_palette <- NULL
+            }
+          } else {
+            # For all other layers, use regular processing
             filtered_data <- filter_by_score(layer_data[[layer_name]], score_value)
-            
-            # Add to valid configs
-            valid_configs[[length(valid_configs) + 1]] <- list(
-              index = index,
-              layer = layer_name,
-              score = score_value,
-              color = score_color,
-              data = filtered_data
-            )
-            
-            index <- index + 1
+            score_color <- score_colors[[score_value]]
+            color_palette <- NULL
           }
+          
+          # Add to valid configs
+          valid_configs[[length(valid_configs) + 1]] <- list(
+            index = index,
+            layer = layer_name,
+            score = score_value,
+            color = score_color,
+            color_palette = color_palette,  # Add this for continuous coloring
+            data = filtered_data
+          )
+          
+          index <- index + 1
         }
       }
     }
