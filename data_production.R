@@ -92,21 +92,22 @@ saveRDS(canyons_scored_long, "U:\\Github\\SMORES\\data\\canyon_scored.rds")
 canyon_score_full_df <- canyons_scored_long %>% 
   st_drop_geometry()
 
-#Deep sea coral robust high
+#Deep sea coral robust high - user selected score data set
 DSC.RobustHigh.grid <- sf::st_intersection(DSC.RobustHigh, grd.norcal) %>%
   mutate(Score.DSC.RH = DSC.RH.Score) %>%
   mutate(area.part = st_area(.)) %>%
   group_by(CellID_2km) %>% #use for 2km grid
   #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
   slice_max(area.part, n = 1) %>%
-  select(CellID_2km, Score.DSC.RH) #use for 2km grid
+  select(CellID_2km, Score.DSC.RH)
 DSC_RH <- DSC.RobustHigh.grid %>%
   st_drop_geometry()
 DSC_RH_scored <- grd.norcal %>%
   full_join(DSC_RH, by = "CellID_2km") %>%
   filter(Score.DSC.RH == 0.1) %>%
   rename("0.1" = Score.DSC.RH) %>%
-  mutate("0.2" = 0.2,
+  mutate("0.01" = 0.01,
+          "0.2" = 0.2,
          "0.3" = 0.3,
          "0.4" = 0.4,
          "0.5" = 0.5,
@@ -120,8 +121,54 @@ DSC_RH_scored_long <- pivot_longer(DSC_RH_scored, cols = starts_with(c("0.", "1"
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-DSC_RH)
 saveRDS(DSC_RH_scored_long, "U:\\Github\\SMORES\\data\\DSC_RH_scored.rds")
-DSC_RH_score_full_df <- DSC_RH_scored_long %>% 
+
+# Deep sea coral robust high - user selected z membership scoring option
+DSC.RobustHigh.grid_z_membership <- sf::st_intersection(DSC.RobustHigh, grd.norcal) %>%
+  mutate(Score.DSC.RH = DSC.RH.Score) %>%
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid
+  #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, gridcode) #grid code is rasters original assigned score that will be used for z-membership
+DSC_RH_z_membership <- DSC.RobustHigh.grid_z_membership %>%
   st_drop_geometry()
+#function to create z-membership scores for each column in df
+#df is dataframe to pull column from, col_name is the column you would like to apply score to, and b_variance is the value added depending on indicator
+z_membership <- function(df, col_name, b_variance){
+  
+  #assign col_names so they can be used to index
+  col_name <- enquo(col_name)
+  
+  zmf.sum <- c()
+  obs.sum <- df %>% pull((!!col_name))
+  a = min(obs.sum, na.rm = TRUE)
+  b = max(obs.sum, na.rm = TRUE) + b_variance #most likely 0.001, but could be 0.000001 for indicators with very small values
+  for (i in 1:length(obs.sum)) {
+    if(is.na(obs.sum[i])){
+      zmf.sum[i] = 1
+    } else if(obs.sum[i] <= a){
+      zmf.sum[i] = 1
+    } else if(obs.sum[i] <= (a + b)/2){
+      zmf.sum[i] = 1 - 2*((obs.sum[i] - a)/(b - a))^2
+    } else if(obs.sum[i] <= b ){
+      zmf.sum[i] = 2*((obs.sum[i] - b)/(b - a))^2
+    } else if(obs.sum[i] >= b){
+      zmf.sum[i] = 0
+    }
+  }
+  
+  return(zmf.sum)
+} 
+
+# Normalizing Deep Sea Coral Habitat Suitability
+DSC_RH_z_membership$Score.Z_Membership <- z_membership(DSC_RH_z_membership, 'gridcode', 0.001) 
+
+DSC_RH_z_membership_score <- grd.norcal %>%
+  full_join(DSC_RH_z_membership, by = "CellID_2km") %>%
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  filter(!is.na(gridcode))
+
+saveRDS(DSC_RH_z_membership_score, "U:\\Github\\SMORES\\data\\DSC_RH_z_membership_scored.rds")
 
 #Surveys fixed
 Surveys.fixed.grid <- sf::st_intersection(Surveys.fixed, grd.norcal) %>%
