@@ -51,6 +51,7 @@ AOI <- readRDS("data/WEA.rds")
 ### Habitat Layers
 canyon <- readRDS("data/canyon_scored.rds")
 DSC_RH <- readRDS("data/DSC_RH_scored.rds")
+DSC_RH_z_membership <- readRDS("data/DSC_RH_z_membership_scored.rds")
 surveys_fixed <- readRDS("data/Surveys_fixed_scored.rds")
 surveys_periodic <- readRDS("data/Surveys_periodic_scored.rds")
 seeps <- readRDS("data/Seeps_scored.rds")
@@ -112,7 +113,10 @@ submarine_cables_layer <- list(
 )
 
 # Weight values
-score_values <- c("0.1", "0.2", "0.3", "0.4", "0.5" ,"0.6", "0.7", "0.8", "0.9", "1")
+score_values <- c("0.01", "0.1", "0.2", "0.3", "0.4", "0.5" ,"0.6", "0.7", "0.8", "0.9", "1")
+
+# Weight values with z-membership involved
+score_values_z_membership <- c("Z Membership" ,"0.01", "0.1", "0.2", "0.3", "0.4", "0.5" ,"0.6", "0.7", "0.8", "0.9", "1")
 
 # Add a null coalescing operator helper since R doesn't have one built-in
 `%||%` <- function(x, y) if(is.null(x)) y else x
@@ -130,3 +134,17 @@ score_colors <- list(
   "0.9" = "#999999",  # grey
   "1" = "#000000"     # black
 )
+
+# Function to create continuous color palette for Z Membership
+create_z_membership_palette <- function(data) {
+  if(is.null(data) || !"Score.Z_Membership" %in% names(data)) {
+    return(colorNumeric("viridis", domain = c(0, 1)))
+  }
+  
+  z_values <- data$Score.Z_Membership[!is.na(data$Score.Z_Membership)]
+  if(length(z_values) == 0) {
+    return(colorNumeric("viridis", domain = c(0, 1)))
+  }
+  
+  return(colorNumeric("viridis", domain = range(z_values, na.rm = TRUE)))
+}
