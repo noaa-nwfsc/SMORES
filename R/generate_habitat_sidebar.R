@@ -5,12 +5,16 @@ generate_habitat_sidebar <- function(habitat_layers, score_values, current_tab =
     return(generate_combined_model_sidebar(submodel_config))
   }
   
-  # Individual species tab logic
-  # Create inputs for each species layer
+  # Individual habitat tab logic
+  # Create inputs for each habitat layer
   layer_inputs <- lapply(habitat_layers, function(layer_name) {
     # Create consistent IDs
     layer_id <- gsub(" ", "_", layer_name)
     layer_id <- gsub("[^A-Za-z0-9_]", "", layer_id)
+    
+    # Check if this is the DSC layer that needs Z Membership option
+    is_dsc_layer <- layer_name == "Deep Sea Coral Robust High Suitability"
+    score_choices <- if(is_dsc_layer) score_values_z_membership else score_values
     
     tagList(
       hr(),
@@ -23,7 +27,7 @@ generate_habitat_sidebar <- function(habitat_layers, score_values, current_tab =
         pickerInput(
           paste0("HabitatScorePicker_", layer_id),
           paste("Select score for", layer_name),
-          choices = c("None", score_values),
+          choices = c("None", score_choices),
           selected = "None"
         )
       )
