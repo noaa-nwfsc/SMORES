@@ -136,6 +136,13 @@ function(input, output, session) {
       return(df)
     }
     
+    # Special handling for Z Membership selection
+    if(selected_score == "Z Membership") {
+      # For Z Membership, return all data since it's already the correct dataset
+      # and we want to show the continuous Z membership values
+      return(df)
+    }
+    
     # Find the score column for each selected layer
     score_cols <- names(df)[grep("^Score\\.", names(df))]
     
@@ -148,7 +155,8 @@ function(input, output, session) {
     rows_to_keep <- rep(FALSE, nrow(df))
     
     for(col in score_cols) {
-      rows_to_keep <- rows_to_keep | (df[[col]] == selected_score)
+      # Convert both to character for comparison to handle numeric vs character issues
+      rows_to_keep <- rows_to_keep | (as.character(df[[col]]) == as.character(selected_score))
     }
     
     # Return the filtered dataframe
@@ -426,7 +434,22 @@ function(input, output, session) {
     # Define dataset mapping for habitat tab
     habitat_dataset_mapping <- list(
       "Canyon" = list(data = canyon, score_column = "Score.Canyon"),
-      "Deep Sea Coral Robust High Suitability" = list(data = DSC_RH, score_column = "Score.DSC_RH"),
+      "Deep Sea Coral Robust High Suitability" = list(
+        data = function(score) {
+          if(score == "Z Membership") {
+            return(DSC_RH_z_membership)
+          } else {
+            return(DSC_RH)
+          }
+        }, 
+        score_column = function(score) {
+          if(score == "Z Membership") {
+            return("Score.Z_Membership")
+          } else {
+            return("Score.DSC_RH")
+          }
+        }
+      ),
       "Seeps" = list(data = seeps, score_column = "Score.Seeps"),
       "Shelf Break" = list(data = shlfbrk, score_column = "Score.ShlfBrk"),
       "EFHCA" = list(data = efhca, score_column = "Score.EFHCA"), 
