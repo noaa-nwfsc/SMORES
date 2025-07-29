@@ -105,7 +105,6 @@ create_individual_maps <- function(configs, output, namespace = NULL, aoi_data_r
                 color = "red",
                 weight = 3,
                 fillOpacity = 0,
-                popup = ~paste("Area:", Area_Name),
                 group = "AOI Area"
               )
           }
@@ -118,24 +117,51 @@ create_individual_maps <- function(configs, output, namespace = NULL, aoi_data_r
           addProviderTiles("Esri.OceanBasemap",
                            options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
           addProviderTiles("Esri.OceanBasemap",
-                           options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
-          addPolygons(
-            data = local_config$data, 
-            color = "#33333300",  # transparent border
-            weight = 1,            
-            fillColor = local_config$color,
-            fillOpacity = 0.7,
-            popup = ~paste("Score:", local_config$score),
-            group = "Data Layer"
-          ) %>%
-          # Add a legend
-          addLegend(
-            position = "bottomright",
-            colors = local_config$color,
-            labels = paste("Score:", local_config$score),
-            opacity = 0.7,
-            title = local_config$layer
-          )
+                           options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) 
+          
+          # Handle different coloring types
+          if(!is.null(local_config$score) && local_config$score == "Z Membership" && 
+             !is.null(local_config$color_palette)) {
+            # Handle continuous Z Membership coloring
+            map <- map %>%
+              addPolygons(
+                data = local_config$data, 
+                color = "#33333300",  # transparent border
+                weight = 1,            
+                fillColor = ~local_config$color_palette(Score.Z_Membership),
+                fillOpacity = 0.7,
+                popup = ~paste("Z Membership:", round(Score.Z_Membership, 3)),
+                group = "Data Layer"
+              ) %>%
+              # Add continuous legend for Z Membership
+              addLegend(
+                position = "bottomright",
+                pal = local_config$color_palette,
+                values = local_config$data$Score.Z_Membership,
+                opacity = 0.7,
+                title = paste(local_config$layer, "<br>Z Membership")
+              )
+          } else {
+            # Handle discrete score coloring
+            map <- map %>%
+              addPolygons(
+                data = local_config$data, 
+                color = "#33333300",  # transparent border
+                weight = 1,            
+                fillColor = local_config$color,
+                fillOpacity = 0.7,
+                popup = ~paste("Score:", local_config$score),
+                group = "Data Layer"
+              ) %>%
+              # Add discrete legend
+              addLegend(
+                position = "bottomright",
+                colors = local_config$color,
+                labels = paste("Score:", local_config$score),
+                opacity = 0.7,
+                title = local_config$layer
+              )
+          }
         
         # Set map view based on bounds (prioritize AOI bounds)
         if(!is.null(map_bounds)) {
@@ -156,7 +182,6 @@ create_individual_maps <- function(configs, output, namespace = NULL, aoi_data_r
               color = "red",
               weight = 3,
               fillOpacity = 0,
-              popup = ~paste("Area:", Area_Name),
               group = "AOI Area"
             ) %>%
             addLayersControl(
