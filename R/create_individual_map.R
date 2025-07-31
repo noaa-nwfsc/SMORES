@@ -63,6 +63,7 @@ create_individual_map <- function(config, aoi_data = NULL) {
           color = "red",
           weight = 3,
           fillOpacity = 0,
+          popup = ~paste("AOI Area:", if("Area_Name" %in% names(aoi_data)) Area_Name else "Selected Area"),
           group = "AOI Area"
         )
     }
@@ -77,7 +78,7 @@ create_individual_map <- function(config, aoi_data = NULL) {
     addProviderTiles("Esri.OceanBasemap",
                      options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) 
   
-  # Handle different coloring types
+  # Add data layer FIRST
   if(!is.null(config$score) && config$score == "Z Membership" && 
      !is.null(config$color_palette)) {
     # Handle continuous Z Membership coloring
@@ -88,7 +89,7 @@ create_individual_map <- function(config, aoi_data = NULL) {
         weight = 1,            
         fillColor = ~config$color_palette(Score.Z_Membership),
         fillOpacity = 0.7,
-        popup = ~paste("Z Membership:", round(Score.Z_Membership, 3)),
+        popup = ~paste("Cell Score: Z Membership:", round(Score.Z_Membership, 3)),
         group = "Data Layer"
       ) %>%
       # Add continuous legend for Z Membership
@@ -108,7 +109,7 @@ create_individual_map <- function(config, aoi_data = NULL) {
         weight = 1,            
         fillColor = config$color,
         fillOpacity = 0.7,
-        popup = ~paste("Score:", config$score),
+        popup = ~paste("Cell Score:", config$score),
         group = "Data Layer"
       ) %>%
       # Add discrete legend
@@ -118,6 +119,23 @@ create_individual_map <- function(config, aoi_data = NULL) {
         labels = paste("Score:", config$score),
         opacity = 0.7,
         title = config$layer
+      )
+  }
+  
+  # Add AOI polygon AFTER data layer with smart interactivity
+  if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
+    map <- map %>%
+      addPolygons(
+        data = aoi_data,
+        fillColor = "transparent",
+        color = "red",
+        weight = 3,
+        fillOpacity = 0,  # Completely transparent fill
+        popup = ~paste("AOI Area:", if("Area_Name" %in% names(aoi_data)) Area_Name else "Selected Area"),
+        group = "AOI Area",
+        options = pathOptions(
+          interactive = FALSE
+        )
       )
   }
   
@@ -131,17 +149,9 @@ create_individual_map <- function(config, aoi_data = NULL) {
       )
   }
   
-  # Add AOI polygon - always include it
+  # Add layers control
   if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
     map <- map %>%
-      addPolygons(
-        data = aoi_data,
-        fillColor = "transparent",
-        color = "red",
-        weight = 3,
-        fillOpacity = 0,
-        group = "AOI Area"
-      ) %>%
       addLayersControl(
         overlayGroups = c("Data Layer", "AOI Area"),
         options = layersControlOptions(collapsed = FALSE)
