@@ -479,14 +479,18 @@ function(input, output, session) {
     # Get valid configurations
     valid_configs <- natural_resources_valid_configs()
     
-    # Generate all maps at once
-    all_results <- generate_combined_maps_all_methods(
-      valid_configs = valid_configs,
-      dataset_mapping = habitat_dataset_mapping,
-      selected_methods = selected_methods,
-      map_type = "Habitat",
-      aoi_data_reactive = filtered_aoi_data
-    )
+    # Generate maps using the restructured approach
+    all_results <- list()
+    for(method in selected_methods) {
+      all_results[[method]] <- generate_combined_map_for_method(
+        valid_configs = valid_configs,
+        dataset_mapping = habitat_dataset_mapping,
+        method = method,
+        map_type = "Habitat", 
+        aoi_data = filtered_aoi_data(),
+        base_grid = grid_test
+      )
+    }
     
     # Store results for all methods
     if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
@@ -631,14 +635,18 @@ function(input, output, session) {
     # Get valid configurations
     valid_configs <- natural_resources_valid_configs()
     
-    # Generate all maps at once
-    all_results <- generate_combined_maps_all_methods(
-      valid_configs = valid_configs,
-      dataset_mapping = species_dataset_mapping,
-      selected_methods = selected_methods,
-      map_type = "Species",
-      aoi_data_reactive = filtered_aoi_data
-    )
+    # Generate maps using the restructured approach
+    all_results <- list()
+    for(method in selected_methods) {
+      all_results[[method]] <- generate_combined_map_for_method(
+        valid_configs = valid_configs,
+        dataset_mapping = species_dataset_mapping,
+        method = method,
+        map_type = "Species", 
+        aoi_data = filtered_aoi_data(),
+        base_grid = grid_test
+      )
+    }
     
     # Store results for all methods
     if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
@@ -781,14 +789,18 @@ function(input, output, session) {
     # Get valid configurations
     valid_configs <- industry_operations_valid_configs()
     
-    # Generate all maps at once
-    all_results <- generate_combined_maps_all_methods(
-      valid_configs = valid_configs,
-      dataset_mapping = surveys_dataset_mapping,
-      selected_methods = selected_methods,
-      map_type = "Surveys",
-      aoi_data_reactive = filtered_aoi_data
-    )
+    # Generate maps using the restructured approach
+    all_results <- list()
+    for(method in selected_methods) {
+      all_results[[method]] <- generate_combined_map_for_method(
+        valid_configs = valid_configs,
+        dataset_mapping = surveys_dataset_mapping,
+        method = method,
+        map_type = "Surveys",
+        aoi_data = filtered_aoi_data(),
+        base_grid = grid_test
+      )
+    }
       
       # Store results for all methods
       if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
@@ -930,14 +942,18 @@ function(input, output, session) {
     # Get valid configurations
     valid_configs <- industry_operations_valid_configs()
     
-    # Generate all maps at once
-    all_results <- generate_combined_maps_all_methods(
-      valid_configs = valid_configs,
-      dataset_mapping = cables_dataset_mapping,
-      selected_methods = selected_methods,
-      map_type = "Cables",
-      aoi_data_reactive = filtered_aoi_data
-    )
+    # Generate maps using the restructured approach
+    all_results <- list()
+    for(method in selected_methods) {
+      all_results[[method]] <- generate_combined_map_for_method(
+        valid_configs = valid_configs,
+        dataset_mapping = cables_dataset_mapping,
+        method = method,
+        map_type = "Cables",
+        aoi_data = filtered_aoi_data(),
+        base_grid = grid_test
+      )
+    }
     
     # Store results for all methods
     if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
