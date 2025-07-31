@@ -13,13 +13,14 @@ library(yaml)
 library(markdown)
 library(rmarkdown)
 library(viridis)
+library(knitr)
 
 theme <- bslib::bs_theme()
 
 #load custom functions 
 source("R/modal.R")
 source("R/get_valid_configs_for_tab.R")
-source("R/create_individual_maps.R")
+source("R/create_individual_map.R")
 source("R/create_combined_maps.R")
 source("R/data_timestamps.R")
 source("R/generate_habitat_sidebar.R")
