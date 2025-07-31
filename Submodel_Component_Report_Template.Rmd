@@ -268,84 +268,84 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 8) {
 }
 ```
 
-<!-- ## Combined Maps -->
+## Combined Maps
 
-<!-- ### Combined Map - Geometric Mean -->
-<!-- ```{r} -->
-<!-- if (!is.null(params$selected_methods) && "geometric_mean" %in% params$selected_methods &&  -->
-<!--     !is.null(params$combined_data_list) && "geometric_mean" %in% names(params$combined_data_list)) { -->
-<!--   combined_data <- params$combined_data_list[["geometric_mean"]] -->
-<!--   if(!is.null(combined_data)) { -->
-<!--     # Count only cells with scores not equal to 0 or NA -->
-<!--     valid_data_points <- nrow(combined_data[!is.na(combined_data$Geo_mean) & combined_data$Geo_mean != 0, ]) -->
-<!--     cat("**Combined Data Points:** ", valid_data_points, "  \n") -->
-<!--     cat("**Calculation Method:** Geometric Mean  \n\n") -->
-<!--   } -->
-<!-- } else { -->
-<!--   cat("*Geometric mean calculation method was not selected or data is not available.*\n\n") -->
-<!-- } -->
+### Combined Map - Geometric Mean
+```{r}
+if (!is.null(params$selected_methods) && "geometric_mean" %in% params$selected_methods &&
+    !is.null(params$combined_data_list) && "geometric_mean" %in% names(params$combined_data_list)) {
+  combined_data <- params$combined_data_list[["geometric_mean"]]
+  if(!is.null(combined_data)) {
+    # Count only cells with scores not equal to 0 or NA
+    valid_data_points <- nrow(combined_data[!is.na(combined_data$Geo_mean) & combined_data$Geo_mean != 0, ])
+    cat("**Combined Data Points:** ", valid_data_points, "  \n")
+    cat("**Calculation Method:** Geometric Mean  \n\n")
+  }
+} else {
+  cat("*Geometric mean calculation method was not selected or data is not available.*\n\n")
+}
 
-<!-- if (!is.null(params$selected_methods) && "geometric_mean" %in% params$selected_methods &&  -->
-<!--     !is.null(params$combined_data_list) && "geometric_mean" %in% names(params$combined_data_list)) { -->
-<!--   combined_data <- params$combined_data_list[["geometric_mean"]] -->
-<!--   if(!is.null(combined_data)) { -->
-<!--     create_combined_map(combined_data, paste(params$combined_map_title, "- Geometric Mean"), "geometric_mean", aoi_data = params$aoi_data) -->
-<!--   } -->
-<!-- } -->
-<!-- ``` -->
+if (!is.null(params$selected_methods) && "geometric_mean" %in% params$selected_methods &&
+    !is.null(params$combined_data_list) && "geometric_mean" %in% names(params$combined_data_list)) {
+  combined_data <- params$combined_data_list[["geometric_mean"]]
+  if(!is.null(combined_data)) {
+    create_combined_map(combined_data, paste(params$combined_map_title, "- Geometric Mean"), "geometric_mean", aoi_data = params$aoi_data)
+  }
+}
+```
 
-<!-- ### Combined Map - Lowest Score -->
+### Combined Map - Lowest Score
 
-<!-- ```{r} -->
-<!-- if (!is.null(params$selected_methods) && "lowest" %in% params$selected_methods &&  -->
-<!--     !is.null(params$combined_data_list) && "lowest" %in% names(params$combined_data_list)) { -->
-<!--   combined_data <- params$combined_data_list[["lowest"]] -->
-<!--   if(!is.null(combined_data)) { -->
-<!--     # Count only cells with scores not equal to 0 or NA -->
-<!--     value_column <- if("Lowest" %in% names(combined_data)) "Lowest" else "Lowest_value" -->
-<!--     valid_data_points <- nrow(combined_data[!is.na(combined_data[[value_column]]) & combined_data[[value_column]] != 0, ]) -->
-<!--     cat("**Combined Data Points:** ", valid_data_points, "  \n") -->
-<!--     cat("**Calculation Method:** Lowest Score  \n\n") -->
-<!--   } -->
-<!-- } else { -->
-<!--   cat("*Lowest score calculation method was not selected or data is not available.*\n\n") -->
-<!-- } -->
-<!-- ``` -->
+```{r}
+if (!is.null(params$selected_methods) && "lowest" %in% params$selected_methods &&
+    !is.null(params$combined_data_list) && "lowest" %in% names(params$combined_data_list)) {
+  combined_data <- params$combined_data_list[["lowest"]]
+  if(!is.null(combined_data)) {
+    # Count only cells with scores not equal to 0 or NA
+    value_column <- if("Lowest" %in% names(combined_data)) "Lowest" else "Lowest_value"
+    valid_data_points <- nrow(combined_data[!is.na(combined_data[[value_column]]) & combined_data[[value_column]] != 0, ])
+    cat("**Combined Data Points:** ", valid_data_points, "  \n")
+    cat("**Calculation Method:** Lowest Score  \n\n")
+  }
+} else {
+  cat("*Lowest score calculation method was not selected or data is not available.*\n\n")
+}
+```
 
-<!-- ```{r} -->
-<!-- if (!is.null(params$selected_methods) && "lowest" %in% params$selected_methods &&  -->
-<!--     !is.null(params$combined_data_list) && "lowest" %in% names(params$combined_data_list)) { -->
-<!--   combined_data <- params$combined_data_list[["lowest"]] -->
-<!--   if(!is.null(combined_data)) { -->
-<!--     create_combined_map(combined_data, paste(params$combined_map_title, "- Lowest Score"), "lowest", aoi_data = params$aoi_data) -->
-<!--   } -->
-<!-- } -->
-<!-- ``` -->
+```{r}
+if (!is.null(params$selected_methods) && "lowest" %in% params$selected_methods &&
+    !is.null(params$combined_data_list) && "lowest" %in% names(params$combined_data_list)) {
+  combined_data <- params$combined_data_list[["lowest"]]
+  if(!is.null(combined_data)) {
+    create_combined_map(combined_data, paste(params$combined_map_title, "- Lowest Score"), "lowest", aoi_data = params$aoi_data)
+  }
+}
+```
 
-<!-- ### Combined Map - Product -->
+### Combined Map - Product
 
-<!-- ```{r} -->
-<!-- if (!is.null(params$selected_methods) && "product" %in% params$selected_methods &&  -->
-<!--     !is.null(params$combined_data_list) && "product" %in% names(params$combined_data_list)) { -->
-<!--   combined_data <- params$combined_data_list[["product"]] -->
-<!--   if(!is.null(combined_data)) { -->
-<!--     # Count only cells with scores not equal to 0 or NA -->
-<!--     value_column <- if("Product" %in% names(combined_data)) "Product" else "Product_value" -->
-<!--     valid_data_points <- nrow(combined_data[!is.na(combined_data[[value_column]]) & combined_data[[value_column]] != 0, ]) -->
-<!--     cat("**Combined Data Points:** ", valid_data_points, "  \n") -->
-<!--     cat("**Calculation Method:** Product  \n\n") -->
-<!--   } -->
-<!-- } else { -->
-<!--   cat("*Product calculation method was not selected or data is not available.*\n\n") -->
-<!-- } -->
-<!-- ``` -->
+```{r}
+if (!is.null(params$selected_methods) && "product" %in% params$selected_methods &&
+    !is.null(params$combined_data_list) && "product" %in% names(params$combined_data_list)) {
+  combined_data <- params$combined_data_list[["product"]]
+  if(!is.null(combined_data)) {
+    # Count only cells with scores not equal to 0 or NA
+    value_column <- if("Product" %in% names(combined_data)) "Product" else "Product_value"
+    valid_data_points <- nrow(combined_data[!is.na(combined_data[[value_column]]) & combined_data[[value_column]] != 0, ])
+    cat("**Combined Data Points:** ", valid_data_points, "  \n")
+    cat("**Calculation Method:** Product  \n\n")
+  }
+} else {
+  cat("*Product calculation method was not selected or data is not available.*\n\n")
+}
+```
 
-<!-- ```{r} -->
-<!-- if (!is.null(params$selected_methods) && "product" %in% params$selected_methods &&  -->
-<!--     !is.null(params$combined_data_list) && "product" %in% names(params$combined_data_list)) { -->
-<!--   combined_data <- params$combined_data_list[["product"]] -->
-<!--   if(!is.null(combined_data)) { -->
-<!--     create_combined_map(combined_data, paste(params$combined_map_title, "- Product"), "product", aoi_data = params$aoi_data) -->
-<!--   } -->
-<!-- } -->
-<!-- ``` -->
+```{r}
+if (!is.null(params$selected_methods) && "product" %in% params$selected_methods &&
+    !is.null(params$combined_data_list) && "product" %in% names(params$combined_data_list)) {
+  combined_data <- params$combined_data_list[["product"]]
+  if(!is.null(combined_data)) {
+    create_combined_map(combined_data, paste(params$combined_map_title, "- Product"), "product", aoi_data = params$aoi_data)
+  }
+}
+```
