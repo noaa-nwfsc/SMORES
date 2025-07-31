@@ -1,6 +1,6 @@
 function(input, output, session) {
   
-  # Create a reactive values object to store combined maps data
+  # Create a reactive values object to store data so it can be used throughout the app
   combined_maps_data <- reactiveValues(
     habitat_geo = NULL,
     habitat_lowest = NULL,
@@ -263,21 +263,39 @@ function(input, output, session) {
   
   # Natural Resources maps
   observe({
-    # Remove the req() condition and let the reactive handle the logic
     valid_configs <- natural_resources_valid_configs()
+    aoi_data <- filtered_aoi_data()
     
-    if(length(valid_configs) > 0) {
-      create_individual_maps(valid_configs, output, namespace = "naturalresources", aoi_data_reactive = filtered_aoi_data)
+    # Generate each map directly using the pure function
+    for(config in valid_configs) {
+      local({
+        local_config <- config
+        map_id <- paste0("naturalresources_map_", local_config$index)
+        
+        # Generate map using pure function and assign to output
+        output[[map_id]] <- renderLeaflet({
+          create_individual_map(local_config, aoi_data)
+        })
+      })
     }
   })
   
-  # Industry maps
+  # Industry & Operations maps
   observe({
-    # Get valid configs without navbar condition check
     valid_configs <- industry_operations_valid_configs()
+    aoi_data <- filtered_aoi_data()
     
-    if(length(valid_configs) > 0) {
-      create_individual_maps(valid_configs, output, namespace = "industryoperations", aoi_data_reactive = filtered_aoi_data)
+    # Generate each map directly using the pure function
+    for(config in valid_configs) {
+      local({
+        local_config <- config
+        map_id <- paste0("industryoperations_map_", local_config$index)
+        
+        # Generate map using pure function and assign to output
+        output[[map_id]] <- renderLeaflet({
+          create_individual_map(local_config, aoi_data)
+        })
+      })
     }
   })
   
