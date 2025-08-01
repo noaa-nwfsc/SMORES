@@ -65,7 +65,10 @@ create_combined_map <- function(combined_data, map_title, method, aoi_data = NUL
           color = "red",
           weight = 3,
           fillOpacity = 0,
-          group = "AOI Area"
+          group = "AOI Area",
+          options = pathOptions(
+            interactive = FALSE
+          )
         )
     }
     
@@ -108,20 +111,6 @@ create_combined_map <- function(combined_data, map_title, method, aoi_data = NUL
                      options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
     addProviderTiles("Esri.OceanBasemap",
                      options = providerTileOptions(variant = "Ocean/World_Ocean_Reference"))
-  
-  # Add AOI overlay if available
-  if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-    map <- map %>%
-      addPolygons(
-        data = aoi_data,
-        fillColor = "transparent",
-        color = "red",
-        weight = 3,
-        fillOpacity = 0,
-        popup = ~paste("Area:", Area_Name),
-        group = "AOI Area"
-      ) 
-  }
   
   # Handle coloring based on whether values are constant or varying
   if(min_val == max_val) {
@@ -170,6 +159,22 @@ create_combined_map <- function(combined_data, map_title, method, aoi_data = NUL
         title = map_title,
         opacity = 1
       )
+  }
+  
+  # Add AOI polygon  second so the combined data is on top
+  if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
+    map <- map %>%
+      addPolygons(
+        data = aoi_data,
+        fillColor = "transparent",
+        color = "red",
+        weight = 3,
+        fillOpacity = 0,
+        group = "AOI Area",
+        options = pathOptions(
+          interactive = FALSE  # Disable popup for AOI polygon
+        )
+      ) 
   }
   
   # Set map view based on bounds
