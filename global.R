@@ -45,6 +45,7 @@ source("R/generate_combined_map_for_method.R")
 source("R/calculate_geometric_mean_combined.R")
 source("R/calculate_lowest_combined.R")
 source("R/calculate_product_combined.R")
+source("R/generate_submodel_component_report.R")
 
 # Get data timestamps information
 timestamp_info <- get_data_timestamps()

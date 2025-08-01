@@ -527,68 +527,19 @@ function(input, output, session) {
   # Habitat/Natural Resources tab export
   output$habitatExportRmd <- downloadHandler(
     filename = function() {
-      paste("Habitat_Component_Natural_Resources_Submodel_Report_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+      paste("Habitat_Component_Natural_Resources_Submodel_Report_", 
+            format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
     },
     content = function(file) {
-      # Show modal with spinner
-      show_spinner_modal("Generating Report", 
-                         "Please wait while the Habitat Component of the Natural Resources report is being generated...")
-      
-      # Get valid configurations
-      valid_configs <- natural_resources_valid_configs()
-      
-      # Get filtered timestamp information for the selected layers
-      timestamp_info <- get_filtered_timestamp_data(valid_configs, "habitat")
-      
-      # Get filtered AOI data for the report
-      aoi_data <- filtered_aoi_data()
-      
-      # Make sure each valid_config has valid spatial data
-      for(i in seq_along(valid_configs)) {
-        # Ensure data is transformed to WGS84 for leaflet
-        if(!is.null(valid_configs[[i]]$data) && inherits(valid_configs[[i]]$data, "sf")) {
-          valid_configs[[i]]$data <- st_transform(valid_configs[[i]]$data, '+proj=longlat +datum=WGS84')
-        }
-      }
-      
-      # Get selected calculation methods from habitat tab
-      selected_methods <- input$habitatCalculationMethods %||% character(0)
-      
-      # Get combined data for each selected method if available
-      combined_data_list <- list()
-      if(combined_maps_data$habitat_combined_map_generated && length(selected_methods) > 0) {
-        if("geometric_mean" %in% selected_methods && !is.null(combined_maps_data$habitat_geo)) {
-          combined_data_list[["geometric_mean"]] <- combined_maps_data$habitat_geo
-        }
-        
-        if("lowest" %in% selected_methods && !is.null(combined_maps_data$habitat_lowest)) {
-          combined_data_list[["lowest"]] <- combined_maps_data$habitat_lowest
-        }
-        
-        if("product" %in% selected_methods && !is.null(combined_maps_data$habitat_product)) {
-          combined_data_list[["product"]] <- combined_maps_data$habitat_product
-        }
-      }
-      
-      # Render the RMarkdown report with updated parameters
-      rmarkdown::render(
-        input = "Submodel_Component_Report_Template.Rmd", 
-        output_file = file,
-        params = list(
-          map_configs = valid_configs,
-          combined_data_list = combined_data_list,  
-          selected_methods = selected_methods,     
-          tab_name = "Natural Resources",
-          combined_map_title = "Combined Habitat Maps",
-          data_timestamps = timestamp_info, 
-          component_name = "Habitat",
-          aoi_data = aoi_data
-        ),
-        envir = new.env(parent = globalenv())
+      generate_submodel_component_report(
+        component_type = "habitat",
+        submodel_type = "natural_resources", 
+        valid_configs = natural_resources_valid_configs(),
+        combined_maps_data = combined_maps_data,
+        input = input,
+        filtered_aoi_data = filtered_aoi_data,
+        file = file
       )
-      
-      # Remove the modal when done
-      removeModal()
     }
   )
   
@@ -680,71 +631,22 @@ function(input, output, session) {
     removeModal()
   })
   
-  # Species/Natural Resources tab export
+  # Species/Natural Resources tab export  
   output$speciesExportRmd <- downloadHandler(
     filename = function() {
-      paste("Species_Component_Natural_Resources_Submodel_Report_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+      paste("Species_Component_Natural_Resources_Submodel_Report_", 
+            format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
     },
     content = function(file) {
-      # Show modal with spinner
-      show_spinner_modal("Generating Report", 
-                         "Please wait while the Species Component of the Natural Resources report is being generated...")
-      
-      # Get valid configurations
-      valid_configs <- natural_resources_valid_configs()
-      
-      # Get filtered timestamp information for the selected layers
-      timestamp_info <- get_filtered_timestamp_data(valid_configs, "species")
-      
-      # Get filtered AOI data for the report
-      aoi_data <- filtered_aoi_data()
-      
-      # Make sure each valid_config has valid spatial data
-      for(i in seq_along(valid_configs)) {
-        # Ensure data is transformed to WGS84 for leaflet
-        if(!is.null(valid_configs[[i]]$data) && inherits(valid_configs[[i]]$data, "sf")) {
-          valid_configs[[i]]$data <- st_transform(valid_configs[[i]]$data, '+proj=longlat +datum=WGS84')
-        }
-      }
-      
-      # Get selected calculation methods from habitat tab
-      selected_methods <- input$speciesCalculationMethods %||% character(0)
-      
-      # Get combined data for each selected method if available
-      combined_data_list <- list()
-      if(combined_maps_data$species_combined_map_generated && length(selected_methods) > 0) {
-        if("geometric_mean" %in% selected_methods && !is.null(combined_maps_data$species_geo)) {
-          combined_data_list[["geometric_mean"]] <- combined_maps_data$species_geo
-        }
-        
-        if("lowest" %in% selected_methods && !is.null(combined_maps_data$species_lowest)) {
-          combined_data_list[["lowest"]] <- combined_maps_data$species_lowest
-        }
-        
-        if("product" %in% selected_methods && !is.null(combined_maps_data$species_product)) {
-          combined_data_list[["product"]] <- combined_maps_data$species_product
-        }
-      }
-      
-      # Render the RMarkdown report with updated parameters
-      rmarkdown::render(
-        input = "Submodel_Component_Report_Template.Rmd", 
-        output_file = file,
-        params = list(
-          map_configs = valid_configs,
-          combined_data_list = combined_data_list,  
-          selected_methods = selected_methods,     
-          tab_name = "Natural Resources",
-          combined_map_title = "Combined Species Maps",
-          data_timestamps = timestamp_info, 
-          component_name = "Species",
-          aoi_data = aoi_data
-        ),
-        envir = new.env(parent = globalenv())
+      generate_submodel_component_report(
+        component_type = "species",
+        submodel_type = "natural_resources",
+        valid_configs = natural_resources_valid_configs(), 
+        combined_maps_data = combined_maps_data,
+        input = input,
+        filtered_aoi_data = filtered_aoi_data,
+        file = file
       )
-      
-      # Remove the modal when done
-      removeModal()
     }
   )
   
@@ -834,71 +736,23 @@ function(input, output, session) {
       removeModal()
     })
   
+  
   # Surveys/Industry and Operations tab export
   output$surveysExportRmd <- downloadHandler(
     filename = function() {
-      paste("Surveys_Component_Industry_Operations_Submodel_Report_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+      paste("Surveys_Component_Industry_Operations_Submodel_Report_", 
+            format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
     },
     content = function(file) {
-      # Show modal with spinner
-      show_spinner_modal("Generating Report", 
-                         "Please wait while the Surveys Component of the Industry and Operations report is being generated...")
-      
-      # Get valid configurations
-      valid_configs <- industry_operations_valid_configs()
-      
-      # Get filtered timestamp information for the selected layers
-      timestamp_info <- get_filtered_timestamp_data(valid_configs, "surveys")
-      
-      # Get filtered AOI data for the report
-      aoi_data <- filtered_aoi_data()
-      
-      # Make sure each valid_config has valid spatial data
-      for(i in seq_along(valid_configs)) {
-        # Ensure data is transformed to WGS84 for leaflet
-        if(!is.null(valid_configs[[i]]$data) && inherits(valid_configs[[i]]$data, "sf")) {
-          valid_configs[[i]]$data <- st_transform(valid_configs[[i]]$data, '+proj=longlat +datum=WGS84')
-        }
-      }
-      
-      # Get selected calculation methods from surveys tab
-      selected_methods <- input$surveysCalculationMethods %||% character(0)
-      
-      # Get combined data for each selected method if available
-      combined_data_list <- list()
-      if(combined_maps_data$surveys_combined_map_generated && length(selected_methods) > 0) {
-        if("geometric_mean" %in% selected_methods && !is.null(combined_maps_data$surveys_geo)) {
-          combined_data_list[["geometric_mean"]] <- combined_maps_data$surveys_geo
-        }
-        
-        if("lowest" %in% selected_methods && !is.null(combined_maps_data$surveys_lowest)) {
-          combined_data_list[["lowest"]] <- combined_maps_data$surveys_lowest
-        }
-        
-        if("product" %in% selected_methods && !is.null(combined_maps_data$surveys_product)) {
-          combined_data_list[["product"]] <- combined_maps_data$surveys_product
-        }
-      }
-      
-      # Render the RMarkdown report with updated parameters
-      rmarkdown::render(
-        input = "Submodel_Component_Report_Template.Rmd", 
-        output_file = file,
-        params = list(
-          map_configs = valid_configs,
-          combined_data_list = combined_data_list,  
-          selected_methods = selected_methods,     
-          tab_name = "Industry and Operations",
-          combined_map_title = "Combined Surveys Maps",
-          data_timestamps = timestamp_info, 
-          component_name = "Surveys",
-          aoi_data = aoi_data
-        ),
-        envir = new.env(parent = globalenv())
+      generate_submodel_component_report(
+        component_type = "surveys",
+        submodel_type = "industry_operations",
+        valid_configs = industry_operations_valid_configs(),
+        combined_maps_data = combined_maps_data, 
+        input = input,
+        filtered_aoi_data = filtered_aoi_data,
+        file = file
       )
-      
-      # Remove the modal when done
-      removeModal()
     }
   )
   
@@ -987,71 +841,22 @@ function(input, output, session) {
     removeModal()
   })
   
-  # Submarine Cables/Industry and Operations tab export
+  # Cables/Industry and Operations tab export
   output$cablesExportRmd <- downloadHandler(
     filename = function() {
-      paste("Submarine_Cables_Component_Industry_Operations_Submodel_Report_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+      paste("Submarine_Cables_Component_Industry_Operations_Submodel_Report_", 
+            format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
     },
     content = function(file) {
-      # Show modal with spinner
-      show_spinner_modal("Generating Report", 
-                         "Please wait while the Submarine Cables Component of the Industry and Operations report is being generated...")
-      
-      # Get valid configurations
-      valid_configs <- industry_operations_valid_configs()
-      
-      # Get filtered timestamp information for the selected layers
-      timestamp_info <- get_filtered_timestamp_data(valid_configs, "cables")
-      
-      # Get filtered AOI data for the report
-      aoi_data <- filtered_aoi_data()
-      
-      # Make sure each valid_config has valid spatial data
-      for(i in seq_along(valid_configs)) {
-        # Ensure data is transformed to WGS84 for leaflet
-        if(!is.null(valid_configs[[i]]$data) && inherits(valid_configs[[i]]$data, "sf")) {
-          valid_configs[[i]]$data <- st_transform(valid_configs[[i]]$data, '+proj=longlat +datum=WGS84')
-        }
-      }
-      
-      # Get selected calculation methods from surveys tab
-      selected_methods <- input$cablesCalculationMethods %||% character(0)
-      
-      # Get combined data for each selected method if available
-      combined_data_list <- list()
-      if(combined_maps_data$cables_combined_map_generated && length(selected_methods) > 0) {
-        if("geometric_mean" %in% selected_methods && !is.null(combined_maps_data$cables_geo)) {
-          combined_data_list[["geometric_mean"]] <- combined_maps_data$cables_geo
-        }
-        
-        if("lowest" %in% selected_methods && !is.null(combined_maps_data$cables_lowest)) {
-          combined_data_list[["lowest"]] <- combined_maps_data$cables_lowest
-        }
-        
-        if("product" %in% selected_methods && !is.null(combined_maps_data$cables_product)) {
-          combined_data_list[["product"]] <- combined_maps_data$cables_product
-        }
-      }
-      
-      # Render the RMarkdown report with updated parameters
-      rmarkdown::render(
-        input = "Submodel_Component_Report_Template.Rmd", 
-        output_file = file,
-        params = list(
-          map_configs = valid_configs,
-          combined_data_list = combined_data_list,  
-          selected_methods = selected_methods,     
-          tab_name = "Industry and Operations",
-          combined_map_title = "Combined Cables Maps",
-          data_timestamps = timestamp_info, 
-          component_name = "Cables",
-          aoi_data = aoi_data
-        ),
-        envir = new.env(parent = globalenv())
+      generate_submodel_component_report(
+        component_type = "cables", 
+        submodel_type = "industry_operations",
+        valid_configs = industry_operations_valid_configs(),
+        combined_maps_data = combined_maps_data,
+        input = input,
+        filtered_aoi_data = filtered_aoi_data,
+        file = file
       )
-      
-      # Remove the modal when done
-      removeModal()
     }
   )
   
