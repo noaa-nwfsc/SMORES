@@ -5,7 +5,7 @@ NMFS provided 2 scoring scenarios for BOEM's consideration for inclusion in the 
 \*Note: more layers are available to model than the initial Oregon Siting exercise
 
 | Data Layer | Score |
-|----|----|
+|------------------------------------|------------------------------------|
 | Essential Fish Habitat Conservation Areas | 0.01 |
 | Rocky Reef Groundfish Habitat Areas of Particular Concern - Mapped | 0.01 |
 | Rocky Reef Groundfish Habitat Areas of Particular Concern - Probable | 0.2 |
