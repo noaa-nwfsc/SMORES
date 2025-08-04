@@ -50,13 +50,13 @@ function(input, output, session) {
     }
   })
   
-  # Reactive expression for filtered WEA data with debug
+  # Reactive expression for filtered AOI data with debug
   filtered_aoi_data <- reactive({
     
-    # If no area is selected or "All Areas" is selected, return all WEA data
+    # If no area is selected or "All Areas" is selected, return all AOI data
     if(is.null(input$aoiAreaSelector) || input$aoiAreaSelector == "" || 
        input$aoiAreaSelector == "loading" || input$aoiAreaSelector == "all") {
-      return(AOI)  # Return all WEAs
+      return(AOI)  # Return all AOIs
     }
     
     # Filter the data when a specific area is selected
@@ -65,7 +65,7 @@ function(input, output, session) {
     return(filtered_data)
   })
   
-  # WEA Map Output - Modified to show all WEAs initially
+  # AOI Map Output - Modified to show all AOIs initially
   output$aoiMap <- renderLeaflet({
     
     tryCatch({
@@ -92,7 +92,7 @@ function(input, output, session) {
       
       # Check if showing all areas or just one
       if(is.null(input$aoiAreaSelector) || input$aoiAreaSelector == "" || input$aoiAreaSelector == "loading") {
-        # Show all WEAs with lighter styling
+        # Show all AOIs with lighter styling
         map <- map %>%
           addPolygons(
             data = aoi_data,
@@ -109,7 +109,7 @@ function(input, output, session) {
             )
           )
       } else {
-        # Show selected WEA with highlighted styling
+        # Show selected AOI with highlighted styling
         map <- map %>%
           addPolygons(
             data = aoi_data,
@@ -126,7 +126,7 @@ function(input, output, session) {
     }, error = function(e) {
       return(leaflet() %>% 
                addProviderTiles("Esri.OceanBasemap") %>% 
-               addControl("Error loading WEA data", position = "topright"))
+               addControl("Error loading AOI data", position = "topright"))
     })
   })
   

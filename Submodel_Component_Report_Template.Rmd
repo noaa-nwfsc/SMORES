@@ -128,7 +128,7 @@ render_individual_map_from_config <- function(config) {
 }
 ```
 
-## Data Layers Information
+## Selected Layers Data Information
 
 This report includes data from the following selected layers, with their last update timestamps:
 
@@ -153,7 +153,6 @@ if (!is.null(data_timestamps_table)) {
   
   if (nrow(display_table) > 0) {
     kable(display_table, 
-          caption = "Selected Data Layer Update Information",
           format = "html",
           table.attr = "class='table table-striped'")
   } else {
@@ -164,13 +163,17 @@ if (!is.null(data_timestamps_table)) {
 }
 ```
 
+## Mapped Individual Layers 
+
+The following maps are individual data layers that have been visualized for the study area. The maps are zoomed to the area of interest that was previously selected, and shown in a red outline. To view the wider study area select the zoom out button on the map. To more closely analyze a cell click on the cell of interest and a pop-up will generate with the assigned score. Above each of the maps is a block containing relevant information: layer name, score assigned, and the number of cells that are represented by this data layer.
+
 ```{r}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 1) {
   config <- params$map_configs[[1]]
-  cat("### Map 1:", config$layer, "(Score:", config$score, ")\n\n")
-  cat("**Layer:** ", config$layer, "  \n")
-  cat("**Score:** ", config$score, "  \n") 
-  cat("**Data Points:** ", nrow(config$data), "  \n\n")
+  cat("Map 1:", config$layer, "(Score:", config$score, ")\n\n")
+  cat("Layer: ", config$layer, "  \n")
+  cat("Score: ", config$score, "  \n") 
+  cat("Data Points: ", nrow(config$data), "  \n\n")
 
   # Generate the map
   render_individual_map_from_config(config)
@@ -180,10 +183,10 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 1) {
 ```{r}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 2) {
   config <- params$map_configs[[2]]
-  cat("### Map 2:", config$layer, "(Score:", config$score, ")\n\n")
-  cat("**Layer:** ", config$layer, "  \n")
-  cat("**Score:** ", config$score, "  \n") 
-  cat("**Data Points:** ", nrow(config$data), "  \n\n")
+  cat("Map 2:", config$layer, "(Score:", config$score, ")\n\n")
+  cat("Layer: ", config$layer, "  \n")
+  cat("Score: ", config$score, "  \n") 
+  cat("Data Points: ", nrow(config$data), "  \n\n")
   
   # Generate the map
   render_individual_map_from_config(config)
@@ -193,10 +196,10 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 2) {
 ```{r}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 3) {
   config <- params$map_configs[[3]]
-  cat("### Map 3:", config$layer, "(Score:", config$score, ")\n\n")
-  cat("**Layer:** ", config$layer, "  \n")
-  cat("**Score:** ", config$score, "  \n") 
-  cat("**Data Points:** ", nrow(config$data), "  \n\n")
+  cat("Map 3:", config$layer, "(Score:", config$score, ")\n\n")
+  cat("Layer: ", config$layer, "  \n")
+  cat("Score: ", config$score, "  \n") 
+  cat("Data Points: ", nrow(config$data), "  \n\n")
 
   # Generate the map
   render_individual_map_from_config(config)
@@ -206,10 +209,10 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 3) {
 ```{r}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 4) {
   config <- params$map_configs[[4]]
-  cat("### Map 4:", config$layer, "(Score:", config$score, ")\n\n")
-  cat("**Layer:** ", config$layer, "  \n")
-  cat("**Score:** ", config$score, "  \n") 
-  cat("**Data Points:** ", nrow(config$data), "  \n\n")
+  cat("Map 4:", config$layer, "(Score:", config$score, ")\n\n")
+  cat("Layer: ", config$layer, "  \n")
+  cat("Score: ", config$score, "  \n") 
+  cat("Data Points: ", nrow(config$data), "  \n\n")
  
   # Generate the map
   render_individual_map_from_config(config)
@@ -219,10 +222,10 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 4) {
 ```{r}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 5) {
   config <- params$map_configs[[5]]
-  cat("### Map 5:", config$layer, "(Score:", config$score, ")\n\n")
-  cat("**Layer:** ", config$layer, "  \n")
-  cat("**Score:** ", config$score, "  \n") 
-  cat("**Data Points:** ", nrow(config$data), "  \n\n")
+  cat("Map 5:", config$layer, "(Score:", config$score, ")\n\n")
+  cat("Layer: ", config$layer, "  \n")
+  cat("Score: ", config$score, "  \n") 
+  cat("Data Points: ", nrow(config$data), "  \n\n")
 
   # Generate the map
   render_individual_map_from_config(config)
@@ -232,10 +235,10 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 5) {
 ```{r}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 6) {
   config <- params$map_configs[[6]]
-  cat("### Map 6:", config$layer, "(Score:", config$score, ")\n\n")
-  cat("**Layer:** ", config$layer, "  \n")
-  cat("**Score:** ", config$score, "  \n") 
-  cat("**Data Points:** ", nrow(config$data), "  \n\n")
+  cat("Map 6:", config$layer, "(Score:", config$score, ")\n\n")
+  cat("Layer: ", config$layer, "  \n")
+  cat("Score: ", config$score, "  \n") 
+  cat("Data Points: ", nrow(config$data), "  \n\n")
 
   # Generate the map
   render_individual_map_from_config(config)
@@ -245,10 +248,10 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 6) {
 ```{r}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 7) {
   config <- params$map_configs[[7]]
-  cat("### Map 7:", config$layer, "(Score:", config$score, ")\n\n")
-  cat("**Layer:** ", config$layer, "  \n")
-  cat("**Score:** ", config$score, "  \n") 
-  cat("**Data Points:** ", nrow(config$data), "  \n\n")
+  cat("Map 7:", config$layer, "(Score:", config$score, ")\n\n")
+  cat("Layer: ", config$layer, "  \n")
+  cat("Score: ", config$score, "  \n") 
+  cat("Data Points: ", nrow(config$data), "  \n\n")
 
   # Generate the map
   render_individual_map_from_config(config)
@@ -258,10 +261,10 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 7) {
 ```{r}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 8) {
   config <- params$map_configs[[8]]
-  cat("### Map 8:", config$layer, "(Score:", config$score, ")\n\n")
-  cat("**Layer:** ", config$layer, "  \n")
-  cat("**Score:** ", config$score, "  \n") 
-  cat("**Data Points:** ", nrow(config$data), "  \n\n")
+  cat("Map 8:", config$layer, "(Score:", config$score, ")\n\n")
+  cat("Layer: ", config$layer, "  \n")
+  cat("Score: ", config$score, "  \n") 
+  cat("Data Points: ", nrow(config$data), "  \n\n")
 
   # Generate the map
   render_individual_map_from_config(config)
@@ -270,7 +273,8 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 8) {
 
 ## Combined Maps
 
-### Combined Map - Geometric Mean
+The following maps are combined data layers that have been calculated and visualized for the study area. The maps are zoomed to the area of interest that was previously selected, and shown in a red outline. To view the wider study area select the zoom out button on the map. To more closely analyze a cell click on the cell of interest and a pop-up will generate with the assigned score. Above each of the maps is a block containing relevant information: the number of cells that are represented by this data layer, and the calculation method used (geometric mean, lowest value, or product method).
+
 ```{r}
 if (!is.null(params$selected_methods) && "geometric_mean" %in% params$selected_methods &&
     !is.null(params$combined_data_list) && "geometric_mean" %in% names(params$combined_data_list)) {
@@ -293,8 +297,6 @@ if (!is.null(params$selected_methods) && "geometric_mean" %in% params$selected_m
   }
 }
 ```
-
-### Combined Map - Lowest Score
 
 ```{r}
 if (!is.null(params$selected_methods) && "lowest" %in% params$selected_methods &&
@@ -321,8 +323,6 @@ if (!is.null(params$selected_methods) && "lowest" %in% params$selected_methods &
   }
 }
 ```
-
-### Combined Map - Product
 
 ```{r}
 if (!is.null(params$selected_methods) && "product" %in% params$selected_methods &&
