@@ -1,4 +1,10 @@
 tagList(
+  
+    # Custom CSS
+    tags$head(
+      tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
+    ),
+    
   # Custom header with logo
   div(
     class = "container-fluid",
@@ -16,127 +22,7 @@ tagList(
   
   # Navbar
   page_navbar(
-    theme = theme %>% 
-      bs_add_rules(
-        # Custom CSS to style the navbar
-        "/* Style for all navbar links first (base styling) */
-  .navbar-nav .nav-link {
-    color: white !important;
-    background-color: #003087 !important;
-    border-radius: 4px 4px 0 0;
-    margin-right: 2px;
-  }
-
-  /* Active state for all navbar links */
-  .navbar-nav .nav-link.active {
-    color: #003087 !important;
-    background-color: white !important;
-    border-radius: 4px 4px 0 0;
-  }
-
-  /* Hover effect for all navbar links */
-  .navbar-nav .nav-link:hover {
-    background-color: #0052A3 !important;
-  }
-
-  /* Override for model tabs - use medium blue */
-  .navbar-nav .nav-link[data-value='Natural Resources Submodel'],
-  .navbar-nav .nav-link[data-value='Fisheries Submodel'],
-  .navbar-nav .nav-link[data-value='Industry & Operations Submodel'],
-  .navbar-nav .nav-link[data-value='Full Model'] {
-    background-color: #0085CA !important;
-  }
-
-  /* Active state for model tabs */
-  .navbar-nav .nav-link.active[data-value='Natural Resources Submodel'],
-  .navbar-nav .nav-link.active[data-value='Fisheries Submodel'],
-  .navbar-nav .nav-link.active[data-value='Industry & Operations Submodel'],
-  .navbar-nav .nav-link.active[data-value='Full Model'] {
-    background-color: white !important;
-    color: #0085CA !important;
-  }
-
-  /* Hover for model tabs */
-  .navbar-nav .nav-link:hover[data-value='Natural Resources Submodel'],
-  .navbar-nav .nav-link:hover[data-value='Fisheries Submodel'],
-  .navbar-nav .nav-link:hover[data-value='Industry & Operations Submodel'],
-  .navbar-nav .nav-link:hover[data-value='Full Model'] {
-    background-color: #0066B3 !important;
-  }
-       
-  /* Background for the nav-tabs container but NOT for the main navbar - light gray*/
-       .navset-tab > .nav-tabs,
-       #dataTabs > .nav-tabs,
-       .card .nav-tabs,
-       div:not(.navbar) .nav-tabs {
-         display: flex;
-         justify-content: center;
-         background-color: #F1F2F3 !important;
-         padding-top: 4px !important;
-         border-bottom: none !important;
-       }
-       
-       /* Non-active inset tab links but NOT navbar links -  */
-       .navset-tab > .nav-tabs .nav-link:not(.active),
-       #dataTabs > .nav-tabs .nav-link:not(.active),
-       .card .nav-tabs .nav-link:not(.active),
-       div:not(.navbar) .nav-tabs .nav-link:not(.active) {
-         background-color: #F1F2F3 !important;
-         color: #323C46 !important;
-         border: none !important;
-         margin-right: 2px !important;
-         border-radius: 4px 4px 0 0 !important;
-       }
-       
-       /* Active inset tab links but NOT navbar links */
-       .navset-tab > .nav-tabs .nav-link.active,
-       #dataTabs > .nav-tabs .nav-link.active,
-       .card .nav-tabs .nav-link.active,
-       div:not(.navbar) .nav-tabs .nav-link.active {
-         background-color: white !important;
-         color: black !important;
-         border: none !important;
-         border-top: 3px solid #0085CA !important;
-         margin-right: 2px !important;
-         border-radius: 4px 4px 0 0 !important;
-       }
-       
-       /* Fix tab content area background */
-       .navset-tab > .tab-content,
-       #dataTabs > .tab-content,
-       .card .tab-content,
-       div:not(.navbar) .tab-content {
-         background-color: white !important;
-         padding: 15px !important;
-         border-radius: 0 0 4px 4px !important;
-       }
-       
-       /* Hover effect for inset tabs */
-       .navset-tab > .nav-tabs .nav-link:hover:not(.active),
-       #dataTabs > .nav-tabs .nav-link:hover:not(.active),
-       .card .nav-tabs .nav-link:hover:not(.active),
-       div:not(.navbar) .nav-tabs .nav-link:hover:not(.active) {
-         background-color: #E0E0E0 !important;
-       }
-       
-       /* Direct targeting for dynamically created tabs in the UI */
-       #dataTabs .nav-tabs {
-         background-color: #F1F2F3 !important;
-       }
-       
-       #dataTabs .nav-tabs .nav-item .nav-link:not(.active) - gray background with black text {
-         background-color: #F1F2F3 !important;
-         color: #323C46 !important;
-         border: #E0E0E0 !important;
-       }
-       
-       #dataTabs .nav-tabs .nav-item .nav-link.active - white background with black text and blue border {
-         background-color: white !important;
-         color: black !important;
-         border: none !important;
-         border-top: 3px solid #0085CA !important;
-       }"
-      ),
+    theme = theme,
     title = "Suitability Modeling", # title text
     
     # Tab 1: Overview
@@ -180,7 +66,7 @@ tagList(
             card(
               card_header("Map Configuration"),
               card_body(
-                includeMarkdown("markdown/habitat_map_settings.md")
+                includeMarkdown("markdown/habitat.md")
               )
             ),
             
