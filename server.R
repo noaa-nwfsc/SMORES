@@ -1198,129 +1198,22 @@ function(input, output, session) {
     }
   })
   
-  # downloadHandler for the natural resources combined submodel export
+  # Natural Resources combined export
   output$naturalResourcesCombinedExport <- downloadHandler(
     filename = function() {
       paste("Natural_Resources_Combined_Submodel_Report_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
     },
     content = function(file) {
-      # Show spinner modal
-      show_spinner_modal("Generating Combined Submodel Report", 
-                         "Please wait while the Natural Resources Combined Submodel report is being generated...")
-      
-      # Get component selections for the report
-      selected_components <- c()
-      component_methods <- c()
-      component_layer_details <- list()
-      
-      if(input$includeHabitat %||% FALSE) {
-        selected_components <- c(selected_components, "Habitat")
-        component_methods <- c(component_methods, input$habitatCalculationMethod %||% "geometric_mean")
-        
-        # Get habitat layer details with scores
-        habitat_configs <- get_valid_configs_for_tab(input, "habitat", habitat_layer, score_colors, filter_by_score)
-        if(length(habitat_configs) > 0) {
-          component_layer_details[["Habitat"]] <- list(
-            method = input$habitatCalculationMethod %||% "geometric_mean",
-            layers = lapply(habitat_configs, function(config) {
-              list(
-                layer_name = config$layer %||% "Unknown",
-                score_used = config$score %||% "Unknown"
-              )
-            })
-          )
-        }}
-        if(input$includeSpecies %||% FALSE) {
-          selected_components <- c(selected_components, "Species")
-          component_methods <- c(component_methods, input$speciesCalculationMethod %||% "geometric_mean")
-          
-          # Get species layer details with scores
-          species_configs <- get_valid_configs_for_tab(input, "species", species_layer, score_colors, filter_by_score)
-          if(length(species_configs) > 0) {
-            component_layer_details[["Species"]] <- list(
-              method = input$speciesCalculationMethod %||% "geometric_mean",
-              layers = lapply(species_configs, function(config) {
-                list(
-                  layer_name = config$layer %||% "Unknown",
-                  score_used = config$score %||% "Unknown"
-                )
-              })
-            )
-          }}
-      # Create component data summary for the report
-      component_data_summary <- list()
-      
-      if(input$includeHabitat %||% FALSE) {
-        method <- input$habitatCalculationMethod %||% "geometric_mean"
-        habitat_data <- switch(method,
-                               "geometric_mean" = combined_maps_data$habitat_geo,
-                               "lowest" = combined_maps_data$habitat_lowest,
-                               "product" = combined_maps_data$habitat_product,
-                               combined_maps_data$habitat_geo)
-        
-        if(!is.null(habitat_data)) {
-          component_data_summary[["Habitat"]] <- list(
-            data_points = nrow(habitat_data),
-            description = "Habitat suitability analysis for marine ecosystems"
-          )
-        }
-      }
-      
-      if(input$includeSpecies %||% FALSE) {
-        method <- input$speciesCalculationMethod %||% "geometric_mean"
-        species_data <- switch(method,
-                               "geometric_mean" = combined_maps_data$species_geo,
-                               "lowest" = combined_maps_data$species_lowest,
-                               "product" = combined_maps_data$species_product,
-                               combined_maps_data$species_geo)
-        
-        if(!is.null(species_data)) {
-          component_data_summary[["Species"]] <- list(
-            data_points = nrow(species_data),
-            description = "Critical habitat analysis for protected species"
-          )
-        }
-      }
-      
-      # Get filtered timestamp information for the combined submodel
-      all_configs <- list()
-      
-      # Get timestamp data for all included components
-      timestamp_info <- get_filtered_timestamp_data(all_configs, "combined")
-      
-      # Get filtered AOI data for the report
-      aoi_data <- filtered_aoi_data()
-      
-      # Get cropped map and cropped normalized map
-      aoi_cropped_map <- combined_maps_data$natural_resources_combined_map_cropped  
-      aoi_cropped_normalized_map <- combined_maps_data$natural_resources_combined_map_cropped_normalized
-      
-      
-      # Render the combined submodel report
-      rmarkdown::render(
-        input = "Submodel_Combined_Report_Template.Rmd", 
-        output_file = file,
-        params = list(
-          submodel_name = "Natural Resources",
-          selected_components = selected_components,
-          component_methods = component_methods,
-          combined_data = combined_maps_data$natural_resources_combined_submodel,
-          combined_map_title = "Natural Resources Combined Submodel",
-          data_timestamps = timestamp_info,
-          component_data_summary = component_data_summary,
-          aoi_data = aoi_data,
-          component_layer_details = component_layer_details,
-          aoi_cropped_map = aoi_cropped_map,
-          aoi_cropped_normalized_map = aoi_cropped_normalized_map
-        ),
-        envir = new.env(parent = globalenv())
+      generate_combined_submodel_report(
+        submodel_type = "natural_resources",
+        input = input,
+        combined_maps_data = combined_maps_data,
+        filtered_aoi_data = filtered_aoi_data,
+        file = file
       )
-      
-      # Remove modal
-      removeModal()
     }
   )
-  
+
   # Add this output to handle validation messages
   output$industryOperationsCombinedValidation <- renderUI({
     # Get component selections
@@ -1526,123 +1419,19 @@ function(input, output, session) {
     }
   })
   
-  # downloadHandler for the industry and operations combined submodel export
+  # Industry & Operations combined export
   output$industryOperationsCombinedExport <- downloadHandler(
     filename = function() {
       paste("Industry_Operations_Combined_Submodel_Report_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
     },
     content = function(file) {
-      # Show spinner modal
-      show_spinner_modal("Generating Combined Submodel Report", 
-                         "Please wait while the Industry & Operations Combined Submodel report is being generated...")
-      
-      # Get component selections for the report
-      selected_components <- c()
-      component_methods <- c()
-      component_layer_details <- list()
-      
-      if(input$includeSurveys %||% FALSE) {
-        selected_components <- c(selected_components, "Scientific Surveys")
-        component_methods <- c(component_methods, input$surveysCalculationMethod %||% "geometric_mean")
-        
-        # Get habitat layer details with scores
-        surveys_configs <- get_valid_configs_for_tab(input, "surveys", surveys_layer, score_colors, filter_by_score)
-        if(length(surveys_configs) > 0) {
-          component_layer_details[["Scientific Surveys"]] <- list(
-            method = input$surveysCalculationMethod %||% "geometric_mean",
-            layers = lapply(surveys_configs, function(config) {
-              list(
-                layer_name = config$layer %||% "Unknown",
-                score_used = config$score %||% "Unknown"
-              )
-            })
-          )
-        }}
-      if(input$includeCables %||% FALSE) {
-        selected_components <- c(selected_components, "Submarine Cables")
-        component_methods <- c(component_methods, input$cablesCalculationMethod %||% "geometric_mean")
-        
-        # Get habitat layer details with scores
-        cables_configs <- get_valid_configs_for_tab(input, "cables", cables_layer, score_colors, filter_by_score)
-        if(length(cables_configs) > 0) {
-          component_layer_details[["Submarine Cables"]] <- list(
-            method = input$cablesCalculationMethod %||% "geometric_mean",
-            layers = lapply(cables_configs, function(config) {
-              list(
-                layer_name = config$layer %||% "Unknown",
-                score_used = config$score %||% "Unknown"
-              )
-            })
-          )
-        }}
-      # Create component data summary for the report
-      component_data_summary <- list()
-      
-      if(input$includeSurveys %||% FALSE) {
-        method <- input$surveysCalculationMethod %||% "geometric_mean"
-        surveys_data <- switch(method,
-                               "geometric_mean" = combined_maps_data$surveys_geo,
-                               "lowest" = combined_maps_data$surveys_lowest,
-                               "product" = combined_maps_data$surveys_product,
-                               combined_maps_data$surveys_geo)
-        
-        if(!is.null(surveys_data)) {
-          component_data_summary[["Scientific Surveys"]] <- list(
-            data_points = nrow(surveys_data),
-            description = "Scientific survey activities and their spatial impact assessment"
-          )
-        }
-      }
-      if(input$includeCables %||% FALSE) {
-        method <- input$cablesCalculationMethod %||% "geometric_mean"
-        cables_data <- switch(method,
-                              "geometric_mean" = combined_maps_data$cables_geo,
-                              "lowest" = combined_maps_data$cables_lowest,
-                              "product" = combined_maps_data$cables_product,
-                              combined_maps_data$cables_geo)
-        
-        if(!is.null(cables_data)) {
-          component_data_summary[["Submarine Cables"]] <- list(
-            data_points = nrow(cables_data),
-            description = "Submarine cable infrastructure and associated buffer zones"
-          )
-        }
-      }
-      
-      # Get filtered timestamp information for the combined submodel
-      all_configs <- list()
-      
-      # Get timestamp data for all included components
-      timestamp_info <- get_filtered_timestamp_data(all_configs, "combined")
-      
-      # Get filtered AOI data for the report
-      aoi_data <- filtered_aoi_data()
-      
-      aoi_cropped_map <- combined_maps_data$industry_operations_combined_map_cropped
-      aoi_cropped_normalized_map <- combined_maps_data$industry_operations_combined_map_cropped_normalized
-      
-      
-      # Render the combined submodel report
-      rmarkdown::render(
-        input = "Submodel_Combined_Report_Template.Rmd", 
-        output_file = file,
-        params = list(
-          submodel_name = "Industry & Operations",
-          selected_components = selected_components,
-          component_methods = component_methods,
-          combined_data = combined_maps_data$industry_operations_combined_submodel,
-          combined_map_title = "Industry & Operations Combined Submodel",
-          data_timestamps = timestamp_info,
-          component_data_summary = component_data_summary,
-          aoi_data = aoi_data, 
-          aoi_cropped_map = aoi_cropped_map,
-          aoi_cropped_normalized_map = aoi_cropped_normalized_map
-        ),
-        envir = new.env(parent = globalenv())
+      generate_combined_submodel_report(
+        submodel_type = "industry_operations",
+        input = input,
+        combined_maps_data = combined_maps_data,
+        filtered_aoi_data = filtered_aoi_data,
+        file = file
       )
-      
-      # Remove modal
-      removeModal()
     }
   )
   
