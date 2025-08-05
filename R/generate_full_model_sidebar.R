@@ -1,6 +1,9 @@
 # Generate sidebar for overall model tab
 generate_overall_model_sidebar <- function() {
   tagList(
+    h5("Submodel Availability"),
+    htmlOutput("overallModelSubmodelStatus"),
+    hr(),
     h4("Overall Model Settings"),
     hr(),
     
@@ -66,9 +69,6 @@ generate_overall_model_sidebar <- function() {
     h5("Weight Summary"),
     htmlOutput("overallWeightValidation"),
     hr(),
-    h5("Submodel Availability"),
-    htmlOutput("overallModelSubmodelStatus"),
-    hr(),
     
     # Generate final model button
     actionButton(
@@ -83,8 +83,8 @@ generate_overall_model_sidebar <- function() {
     # Export section
     h4("Export"),
     downloadButton(
-      "overallModelExportRmd", 
-      "Export Overall Model Report",
+      "fullModelExportRmd", 
+      "Export Full Model Report",
       icon = icon("file-export"),
       class = "btn-info btn-block"
     )
