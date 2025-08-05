@@ -1425,7 +1425,7 @@ function(input, output, session) {
       paste("Industry_Operations_Combined_Submodel_Report_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
     },
     content = function(file) {
-      generate_combined_submodel_report(
+      generate_submodel_combined_report(
         submodel_type = "industry_operations",
         input = input,
         combined_maps_data = combined_maps_data,
@@ -1502,7 +1502,7 @@ function(input, output, session) {
       }
       
       # Generate the overall combined model
-      overall_result <- create_overall_combined_model(
+      overall_result <- create_full_model_map(
         submodels = submodels,
         weights = weights,
         base_grid = grid_test,
@@ -1637,4 +1637,19 @@ function(input, output, session) {
         addControl("Generate overall model and select an AOI to see normalized cropped map", position = "center")
     }
   })
+  
+  # Full Model Report Export Handler
+  output$fullModelExportRmd <- downloadHandler(
+    filename = function() {
+      paste0("Full_Model_Report_", Sys.Date(), ".html")
+    },
+    content = function(file) {
+      generate_full_model_report(
+        input = input,
+        combined_maps_data = combined_maps_data,
+        filtered_aoi_data = filtered_aoi_data,
+        file = file
+      )
+    }
+  )
 }
