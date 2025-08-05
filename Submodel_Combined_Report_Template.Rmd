@@ -19,6 +19,7 @@ params:
   aoi_data: NULL
   component_layer_details: NULL
   component_data_summary: NULL
+  combined_map: NULL,
   aoi_cropped_map: NULL,
   aoi_cropped_normalized_map: NULL
 ---
@@ -216,12 +217,10 @@ if (!is.null(params$combined_data)) {
   cat("*Combined submodel data not available.*\n\n")
 }
 
-if (!is.null(params$combined_data)) {
-  create_combined_submodel_map(params$combined_data, params$combined_map_title %||% "Combined Submodel",
-                               aoi_data = params$aoi_data)
+if (!is.null(params$combined_map)) {
+  params$combined_map
 } else {
-  # Show placeholder message
-  cat("*Combined submodel was not generated.*\n")
+  cat("*Combined submodel map not available.*\n")
 }
 ```
 
