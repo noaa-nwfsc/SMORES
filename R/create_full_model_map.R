@@ -8,7 +8,7 @@
 #' @param base_grid The base spatial grid to use for combining data
 #' @return A list containing the combined data and the leaflet map
 #'
-create_overall_combined_model <- function(submodels, weights, base_grid = grid_test, aoi_data_reactive = NULL) {
+create_full_model_map <- function(submodels, weights, base_grid = grid_test, aoi_data_reactive = NULL) {
   tryCatch({
     
     # Initialize result structure
@@ -220,8 +220,10 @@ create_overall_combined_model <- function(submodels, weights, base_grid = grid_t
             color = "red",
             weight = 3,
             fillOpacity = 0,
-            popup = ~paste("Area:", Area_Name),
-            group = "AOI Boundaries"
+            group = "AOI Boundaries", 
+            path = pathOptions(
+              interactive = FALSE
+            )
           ) %>%
           addLayersControl(
             overlayGroups = c("Overall Model Data", "AOI Boundaries"),

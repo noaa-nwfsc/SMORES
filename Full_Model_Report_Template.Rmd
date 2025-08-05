@@ -1,0 +1,364 @@
+---
+title: "Full Model Report"
+date: "`r format(Sys.time(), '%B %d, %Y at %H:%M:%S')`"
+output: 
+  html_document:
+    theme:
+      version: 5
+      brand: _brand.yml
+    toc: true
+    toc_float: true
+    self_contained: true
+params:
+  submodels_used: NULL
+  submodel_weights: NULL
+  natural_resources_components: NULL
+  industry_operations_components: NULL
+  fisheries_components: NULL
+  component_layer_details: NULL
+  overall_combined_data: NULL
+  overall_combined_map: NULL
+  overall_aoi_cropped_map: NULL
+  overall_aoi_cropped_normalized_map: NULL
+  data_timestamps: NULL
+  aoi_data: NULL
+---
+
+```{css, include = FALSE}
+<style>
+body {
+max-width: 1200px;
+margin: 0 auto;
+padding: 20px;
+font-family: 'Arial', sans-serif;
+}
+
+.main-container {
+max-width: 1200px;
+margin: 0 auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+text-align: center;
+margin: 20px 0;
+}
+
+.leaflet-container {
+margin: 20px auto;
+display: block;
+}
+
+table {
+margin: 20px auto;
+max-width: 800px;
+}
+
+.table {
+margin: 20px auto;
+}
+
+p {
+text-align: justify;
+margin: 15px 0;
+}
+
+.tocify-wrapper {
+position: fixed;
+top: 0;
+left: 0;
+width: 260px;
+height: 100%;
+overflow: auto;
+z-index: 1000;
+}
+
+.col-md-9 {
+margin-left: 280px;
+max-width: calc(100% - 300px);
+}
+
+/* Center specific elements */
+.centered-content {
+text-align: center;
+margin: 20px auto;
+}
+
+/* Map container centering */
+.map-container {
+display: flex;
+justify-content: center;
+margin: 20px 0;
+}
+
+/* Ensure leaflet maps are responsive and centered */
+.leaflet {
+max-width: 100%;
+height: 400px;
+margin: 0 auto;
+}
+
+/* Style for configuration table */
+.config-table {
+margin: 20px auto;
+max-width: 800px;
+}
+
+/* Center all chunk outputs */
+.chunk-output {
+text-align: center;
+}
+
+/* Center kable tables */
+.kable-table {
+margin-left: auto;
+margin-right: auto;
+}
+
+/* Submodel summary styling */
+.submodel-summary {
+background-color: #f8f9fa;
+border: 1px solid #dee2e6;
+border-radius: 8px;
+padding: 15px;
+margin: 15px 0;
+}
+
+.submodel-header {
+background-color: #e9ecef;
+border-radius: 5px;
+padding: 10px;
+margin-bottom: 10px;
+font-weight: bold;
+}
+
+/* Component summary styling */
+.component-summary {
+background-color: #f1f8ff;
+border: 1px solid #c6e2ff;
+border-radius: 5px;
+padding: 10px;
+margin: 10px 0;
+}
+</style>
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.width = 12, fig.height = 8)
+
+source("global.R")
+
+# Null coalescing operator
+`%||%` <- function(x, y) if(is.null(x)) y else x
+```
+
+## Individual Data Layers
+
+```{r}
+if (!is.null(params$component_layer_details) && length(params$component_layer_details) > 0) {
+  cat("Complete List of Individual Data Layers Used in Full Model\n\n")
+  
+  # Create a comprehensive table showing all layers used across all submodels
+  layer_details_list <- list()
+  
+  for (submodel in names(params$component_layer_details)) {
+    submodel_data <- params$component_layer_details[[submodel]]
+    
+    if (!is.null(submodel_data) && length(submodel_data) > 0) {
+      for (component in names(submodel_data)) {
+        component_data <- submodel_data[[component]]
+        component_method <- component_data$method %||% "Unknown"
+        component_layers <- component_data$layers %||% list()
+        
+        if (length(component_layers) > 0) {
+          for (i in seq_along(component_layers)) {
+            layer_name <- component_layers[[i]]$layer_name %||% "Unknown"
+            score_used <- component_layers[[i]]$score_used %||% "Unknown"
+            
+            layer_details_list[[length(layer_details_list) + 1]] <- data.frame(
+              Submodel = case_when(
+                submodel == "natural_resources" ~ "Natural Resources",
+                submodel == "industry_operations" ~ "Industry & Operations",
+                submodel == "fisheries" ~ "Fisheries",
+                TRUE ~ submodel
+              ),
+              Component = component,
+              Component_Method = component_method,
+              Layer_Name = layer_name,
+              Score_Used = score_used,
+              stringsAsFactors = FALSE
+            )
+          }
+        }
+      }
+    }
+  }
+  
+  if (length(layer_details_list) > 0) {
+    # Combine all layer details into one data frame
+    all_layer_details <- do.call(rbind, layer_details_list)
+    
+    kable(all_layer_details,
+          col.names = c("Submodel", "Component", "Component Method", "Layer Name", "Score Used"),
+          format = "html",
+          table.attr = "class='table table-striped config-table'")
+  } else {
+    cat("No individual layer details available.\n")
+  }
+} else {
+  cat("Individual layer information not available.\n")
+}
+```
+
+## Model Configuration
+
+```{r}
+if (!is.null(params$submodels_used) && !is.null(params$submodel_weights)) {
+  # Create submodel configuration table
+  submodel_config <- data.frame(
+    Submodel = names(params$submodels_used),
+    Status = "Included",
+    Weight = sapply(names(params$submodels_used), function(x) {
+      weight <- params$submodel_weights[[x]] %||% 0
+      paste0(round(weight * 100, 1), "%")
+    }),
+    stringsAsFactors = FALSE
+  )
+  
+  # Add display names
+  submodel_config$Submodel <- case_when(
+    submodel_config$Submodel == "natural_resources" ~ "Natural Resources",
+    submodel_config$Submodel == "industry_operations" ~ "Industry & Operations", 
+    submodel_config$Submodel == "fisheries" ~ "Fisheries",
+    TRUE ~ submodel_config$Submodel
+  )
+  
+  kable(submodel_config,
+        col.names = c("Submodel", "Status", "Weight"),
+        caption = "Submodels Used in Full Model Calculation",
+        format = "html",
+        table.attr = "class='table table-striped config-table'")
+  
+  cat("\n**Final Combination Method:** Weighted Geometric Mean of Submodel Scores\n\n")
+} else {
+  cat("Submodel configuration information not available.\n\n")
+}
+```
+
+```{r}
+if (!is.null(params$natural_resources_components) && length(params$natural_resources_components) > 0) {
+  cat("The Natural Resources submodel includes the following components:\n\n")
+  
+  nr_components <- data.frame(
+    Component = names(params$natural_resources_components),
+    Status = "Included",
+    Method = sapply(params$natural_resources_components, function(x) x$method %||% "Unknown"),
+    stringsAsFactors = FALSE
+  )
+  
+  kable(nr_components,
+        col.names = c("Component", "Status", "Calculation Method"),
+        format = "html", 
+        table.attr = "class='table table-striped config-table'")
+} else {
+  cat("Natural Resources submodel not included in this model.\n\n")
+}
+
+if (!is.null(params$fisheries_components) && length(params$fisheries_components) > 0) {
+  cat("The Fisheries submodel includes the following components:\n\n")
+  
+  fish_components <- data.frame(
+    Component = names(params$fisheries_components),
+    Status = "Included",
+    Method = sapply(params$fisheries_components, function(x) x$method %||% "Unknown"),
+    stringsAsFactors = FALSE
+  )
+  
+  kable(fish_components,
+        col.names = c("Component", "Status", "Calculation Method"),
+        format = "html",
+        table.attr = "class='table table-striped config-table'")
+} else {
+  cat("Fisheries submodel not included in this model.\n\n")
+}
+
+if (!is.null(params$industry_operations_components) && length(params$industry_operations_components) > 0) {
+  cat("The Industry & Operations submodel includes the following components:\n\n")
+  
+  io_components <- data.frame(
+    Component = names(params$industry_operations_components),
+    Status = "Included", 
+    Method = sapply(params$industry_operations_components, function(x) x$method %||% "Unknown"),
+    stringsAsFactors = FALSE
+  )
+  
+  kable(io_components,
+        col.names = c("Component", "Status", "Calculation Method"),
+        format = "html",
+        table.attr = "class='table table-striped config-table'")
+} else {
+  cat("Industry & Operations submodel not included in this model.\n\n")
+}
+```
+
+## Full Combined Model Map
+
+The full combined model represents the integration of all selected submodels using their specified weights. The final combination is calculated using the weighted geometric mean of the submodel scores to produce a unified assessment across all selected domains.
+
+```{r}
+if (!is.null(params$overall_combined_data)) {
+  # Check if combined_data has the geometry and expected columns
+  if (inherits(params$overall_combined_data, 'sf')) {
+    cat("**Full Model Data Points:** ", nrow(params$overall_combined_data), "  \n")
+    cat("**Final Combination Method:** Weighted Geometric Mean of Submodel Scores  \n")
+    
+    # Show value column information
+    value_column <- if("Overall_Geo_mean" %in% names(params$overall_combined_data)) {
+      "Overall_Geo_mean"
+    } else if("Geo_mean" %in% names(params$overall_combined_data)) {
+      "Geo_mean"
+    } else {
+      "Combined_Score"
+    }
+    
+    if (value_column %in% names(params$overall_combined_data)) {
+      valid_values <- params$overall_combined_data[[value_column]][!is.na(params$overall_combined_data[[value_column]])]
+      if(length(valid_values) > 0) {
+        cat("**Value Range:** ", round(min(valid_values), 3), " to ", round(max(valid_values), 3), "  \n")
+      }
+    }
+    cat("\n")
+  }
+} else {
+  cat("*Full model data not available.*\n\n")
+}
+
+if (!is.null(params$overall_combined_map)) {
+  params$overall_combined_map
+} else {
+  cat("*Full combined model map not available.*\n")
+}
+```
+
+## Full Combined Model - Cropped to Area of Interest (AOI)
+
+The AOI-cropped map shows the same full combined model data filtered to the selected aoi, maintaing the original full model color scale for consistency with the complete dataset 
+
+```{r}
+if (!is.null(params$overall_aoi_cropped_map)) {
+  params$overall_aoi_cropped_map
+} else {
+  cat("*AOI-cropped map not available. Please select a specific AOI area.*\n")
+}
+```
+
+## Full Combined Model - Cropped to Area of Interest and Normalized 
+
+The normalized AOI-cropped map shows the AOI-filtered data rescaled to a 0-1 range using min-max normalization for only the values within the selected area, making it easier to compare relative differences within the AOI. 
+
+```{r}
+if (!is.null(params$overall_aoi_cropped_normalized_map)) {
+  params$overall_aoi_cropped_normalized_map
+} else {
+  cat("*AOI-cropped normalized map not available. Please select a specific AOI area.*\n")
+}
+```
