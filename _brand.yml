@@ -249,8 +249,8 @@ typography:
 defaults:
   bootstrap:
     defaults: 
-      navbar-bg: "#003087" #background color of the navbar; working
-      navbar-fg: white #color of foreground elements; working
+      navbar-bg: "#003087" #background color of the navbar
+      navbar-fg: white #color of foreground elemennts
 
       
       #card controls
