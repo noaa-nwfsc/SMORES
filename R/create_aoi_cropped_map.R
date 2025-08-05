@@ -76,10 +76,7 @@ create_aoi_cropped_map <- function(combined_data, aoi_data_reactive = NULL, map_
     }
     
     # Create popup text
-    map_data$popup_display <- paste0(
-      "Combined Score: ", format(map_data$Geo_mean, digits = 3), "<br>",
-      "AOI: ", map_data$Area_Name
-    )
+    map_data$popup_display <- paste("Combined Score:", round(map_data$Geo_mean, 2))
     
     # Get bounds for the cropped area to set appropriate view
     bbox <- st_bbox(map_data)
@@ -155,8 +152,10 @@ create_aoi_cropped_map <- function(combined_data, aoi_data_reactive = NULL, map_
         color = "red",
         weight = 3,
         fillOpacity = 0,
-        popup = ~paste("AOI:", Area_Name),
-        group = "AOI Boundary"
+        group= "AOI Boundary",
+        options = pathOptions(
+          interactive = FALSE
+        )
       ) %>%
       addLayersControl(
         overlayGroups = c("Combined Data", "AOI Boundary"),

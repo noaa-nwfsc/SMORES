@@ -30,7 +30,7 @@ calculate_submodel_geometric_mean <- function(combined_data) {
   return(combined_data)
 }
 
-create_combined_submodel <- function(component_data_list, base_grid = grid_test, aoi_data_reactive = NULL) {
+create_combined_submodel_map <- function(component_data_list, base_grid = grid_test, aoi_data_reactive = NULL) {
   tryCatch({
     
     # Start with base grid
@@ -94,52 +94,33 @@ create_combined_submodel <- function(component_data_list, base_grid = grid_test,
     
     # Create popup text
     map_data$popup_display <- paste("Combined Natural Resources Score:", 
-                                    format(map_data$Geo_mean, digits = 3))
+                                    round(map_data$Geo_mean, 2))
     
     # Calculate map bounds - prioritize AOI bounds if available
     map_bounds <- NULL
+    # Initialize aoi_data to NULL
+    aoi_data <- NULL
     if(!is.null(aoi_data_reactive)) {
+      aoi_data <- aoi_data_reactive()
+    }
+    
+    # Set map bounds if we have AOI data
+    if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
       tryCatch({
-        aoi_data_temp <- aoi_data_reactive()
-        if(!is.null(aoi_data_temp) && nrow(aoi_data_temp) > 0) {
-          # Transform to WGS84 if needed
-          if(!st_is_longlat(aoi_data_temp)) {
-            aoi_data_temp <- st_transform(aoi_data_temp, 4326)
-          }
-          aoi_data_temp <- st_zm(aoi_data_temp)
-          
-          # Use AOI bounds for centering the map
-          bbox <- st_bbox(aoi_data_temp)
-          map_bounds <- list(
-            lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
-            lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
-          )
+        # Transform to WGS84 if needed
+        if(!st_is_longlat(aoi_data)) {
+          aoi_data <- st_transform(aoi_data, 4326)
         }
+        aoi_data <- st_zm(aoi_data)
+        
+        # Use AOI bounds for centering the map
+        bbox <- st_bbox(aoi_data)
+        map_bounds <- list(
+          lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
+          lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
+        )
       }, error = function(e) {
-        # If AOI data fails, continue without bounds
         message("Could not get AOI bounds: ", e$message)
-      })
-    } else if(exists("AOI")) {
-      # Fall back to global AOI data if no reactive provided
-      tryCatch({
-        aoi_data_temp <- AOI
-        if(!is.null(aoi_data_temp) && nrow(aoi_data_temp) > 0) {
-          # Transform to WGS84 if needed
-          if(!st_is_longlat(aoi_data_temp)) {
-            aoi_data_temp <- st_transform(aoi_data_temp, 4326)
-          }
-          aoi_data_temp <- st_zm(aoi_data_temp)
-          
-          # Use AOI bounds for centering the map
-          bbox <- st_bbox(aoi_data_temp)
-          map_bounds <- list(
-            lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
-            lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
-          )
-        }
-      }, error = function(e) {
-        # If global AOI data fails, continue without bounds
-        message("Could not get global AOI bounds: ", e$message)
       })
     }
     
@@ -224,65 +205,28 @@ create_combined_submodel <- function(component_data_list, base_grid = grid_test,
     }
     
     # Add AOI data to the map if available
-    if(!is.null(aoi_data_reactive)) {
-      tryCatch({
-        aoi_data <- aoi_data_reactive()
-        if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-          # Transform WEA data if needed
-          if(!st_is_longlat(aoi_data)) {
-            aoi_data <- st_transform(aoi_data, 4326)
-          }
-          aoi_data <- st_zm(aoi_data)
-          
-          map <- map %>%
-            addPolygons(
-              data = aoi_data,
-              fillColor = "transparent",
-              color = "red",
-              weight = 3,
-              fillOpacity = 0,
-              popup = ~paste("Area:", Area_Name),
-              group = "WEA Area"
-            ) %>%
-            addLayersControl(
-              overlayGroups = c("Combined Data", "AOI"),
-              options = layersControlOptions(collapsed = FALSE)
-            )
-        }
-      }, error = function(e) {
-        # If AOI data fails, continue without it
-        message("Could not add AOI data to combined map: ", e$message)
-      })
-    } else if(exists("AOI")) {
-      # Fall back to global WEA data if no reactive provided
-      tryCatch({
-        aoi_data <- AOI
-        if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-          # Transform WEA data if needed
-          if(!st_is_longlat(aoi_data)) {
-            aoi_data <- st_transform(aoi_data, 4326)
-          }
-          aoi_data <- st_zm(aoi_data)
-          
-          map <- map %>%
-            addPolygons(
-              data = aoi_data,
-              fillColor = "transparent",
-              color = "red",
-              weight = 3,
-              fillOpacity = 0,
-              popup = ~paste("Area:", Area_Name),
-              group = "WEA Area"
-            ) %>%
-            addLayersControl(
-              overlayGroups = c("Combined Data", "WEA Area"),
-              options = layersControlOptions(collapsed = FALSE)
-            )
-        }
-      }, error = function(e) {
-        # If global WEA data fails, continue without it
-        message("Could not add global WEA data to combined map: ", e$message)
-      })
+    if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
+      map <- map %>%
+        addPolygons(
+          data = aoi_data,
+          fillColor = "transparent",
+          color = "red",
+          weight = 3,
+          fillOpacity = 0,
+          group = "AOI Boundaries",
+          options = pathOptions(
+            interactive = FALSE  # Disable popup for AOI polygon
+          ) 
+        )
+    }
+    
+    # Add layers control
+    if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
+      map <- map %>%
+        addLayersControl(
+          overlayGroups = c("Combined Data", "AOI Area"),
+          options = layersControlOptions(collapsed = FALSE)
+        )
     }
     
     return(list(

@@ -73,9 +73,7 @@ create_aoi_cropped_normalized_map <- function(combined_data, aoi_data_reactive =
     
     # Create popup text with both original and normalized values
     map_data$popup_display <- paste0(
-      "Original Score: ", format(map_data$Geo_mean, digits = 3), "<br>",
-      "Normalized Score (0-1): ", format(map_data$Normalized_Score, digits = 3), "<br>",
-      "AOI: ", map_data$Area_Name
+      "Combined Normalized Score (0-1): ", round(map_data$Normalized_Score, 2)
     )
     
     # Get bounds for the cropped area to set appropriate view
@@ -155,8 +153,10 @@ create_aoi_cropped_normalized_map <- function(combined_data, aoi_data_reactive =
         color = "red",
         weight = 3,
         fillOpacity = 0,
-        popup = ~paste("AOI:", Area_Name),
-        group = "AOI Boundary"
+        group = "AOI Boundary",
+        options = pathOptions(
+          interactive = FALSE
+        )
       ) %>%
       addLayersControl(
         overlayGroups = c("Normalized Data", "AOI Boundary"),
