@@ -147,7 +147,7 @@ source("global.R")
 ```{r}
 # Add detailed component layer information
 if (!is.null(params$component_layer_details) && length(params$component_layer_details) > 0) {
-  cat("## Individual Layers Used in Combined Submodel\n\n")
+  cat("Individual Layers Used in Combined Submodel\n\n")
   
   # Create a comprehensive table showing all layers used in each component
   layer_details_list <- list()
@@ -180,8 +180,7 @@ if (!is.null(params$component_layer_details) && length(params$component_layer_de
     all_layer_details <- do.call(rbind, layer_details_list)
     
     kable(all_layer_details, 
-          col.names = c("Component", " Component Calculation Method", "Layer Name", "Score Used"),
-          caption = "Individual Layers and Scores Used in Each Component",
+          col.names = c("Component", " Component Calculation Method", "Layer Name", "Selected Score"),
           format = "html",
           table.attr = "class='table table-striped config-table'")
   } else {

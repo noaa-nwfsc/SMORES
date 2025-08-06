@@ -47,6 +47,7 @@ source("R/calculate_product_combined.R")
 source("R/generate_submodel_component_report.R")
 source("R/generate_submodel_combined_report.R")
 source("R/generate_full_model_report.R")
+source("R/filter_by_score.R")
 
 # Get data timestamps information
 timestamp_info <- get_data_timestamps()
