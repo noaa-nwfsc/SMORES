@@ -1040,7 +1040,7 @@ function(input, output, session) {
       # Generate the combined submodel using geometric mean
       if(length(component_data_list) > 0) {
         
-        combined_submodel_result <- create_combined_submodel(component_data_list,
+        combined_submodel_result <- create_combined_submodel_map(component_data_list,
                                                              base_grid = grid_test,
                                                              aoi_data_reactive = filtered_aoi_data)
         
@@ -1262,7 +1262,7 @@ function(input, output, session) {
       # Generate the combined submodel using geometric mean
       if(length(component_data_list) > 0) {
       
-        combined_submodel_result <- create_combined_submodel(component_data_list, 
+        combined_submodel_result <- create_combined_submodel_map(component_data_list, 
                                                              base_grid = grid_test, 
                                                              aoi_data_reactive = filtered_aoi_data)
         
