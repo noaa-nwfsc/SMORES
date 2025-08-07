@@ -1,4 +1,3 @@
-# Function to create a combined map from processed data
 create_combined_map <- function(combined_data, map_title, method, aoi_data = NULL) {
   
   # Get AOI data - handle both direct data and global AOI fallback
@@ -40,128 +39,96 @@ create_combined_map <- function(combined_data, map_title, method, aoi_data = NUL
     popup_prefix <- "Geometric Mean Score:"
   }
   
-  # Check if we have valid data and score column
-  if(is.null(combined_data) || nrow(combined_data) == 0 || 
-     !score_column %in% names(combined_data)) {
-    base_map <- leaflet() %>%
-      addProviderTiles("Esri.OceanBasemap") %>%
-      addControl("No data available for combined map", position = "topright")
-    
-    # Set map view and add AOI if available
-    if(!is.null(map_bounds)) {
-      base_map <- base_map %>%
-        fitBounds(
-          lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
-          lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
-          options = list(padding = c(20, 20))
-        )
-    }
-    
-    if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-      base_map <- base_map %>%
-        addPolygons(
-          data = aoi_data,
-          fillColor = "transparent",
-          color = "red",
-          weight = 3,
-          fillOpacity = 0,
-          group = "AOI Area",
-          options = pathOptions(
-            interactive = FALSE
-          )
-        )
-    }
-    
-    return(base_map)
-  }
-  
-  # Make sure geometry is set properly for leaflet
-  combined_data <- st_transform(combined_data, '+proj=longlat +datum=WGS84')
-  
-  # Get the range of score values
-  score_values <- combined_data[[score_column]][!is.na(combined_data[[score_column]])]
-  
-  if(length(score_values) == 0) {
-    # No valid score data
-    base_map <- leaflet() %>%
-      addProviderTiles("Esri.OceanBasemap") %>%
-      addControl("No valid score data available", position = "topright")
-    
-    if(!is.null(map_bounds)) {
-      base_map <- base_map %>%
-        fitBounds(
-          lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
-          lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
-          options = list(padding = c(20, 20))
-        )
-    }
-    
-    return(base_map)
-  }
-  
-  min_val <- min(score_values, na.rm = TRUE)
-  max_val <- max(score_values, na.rm = TRUE)
-  
-  # Create popup text
-  combined_data$popup_display <- paste(popup_prefix, round(combined_data[[score_column]], 2))
-  
-  # Create the map
+  # Initialize base map
   map <- leaflet() %>%
-    addProviderTiles("Esri.OceanBasemap",
-                     options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
+    addProviderTiles("Esri.OceanBasemap") %>%
     addProviderTiles("Esri.OceanBasemap",
                      options = providerTileOptions(variant = "Ocean/World_Ocean_Reference"))
   
-  # Handle coloring based on whether values are constant or varying
-  if(min_val == max_val) {
-    # Constant values - single color
-    single_color <- viridis::viridis(1, begin = 0.5, end = 0.5)
-    
+  # Check if we have valid data and score column
+  if(is.null(combined_data) || nrow(combined_data) == 0 || 
+     !score_column %in% names(combined_data)) {
     map <- map %>%
-      addPolygons(
-        data = combined_data,
-        color = "#33333300",
-        weight = 1,
-        fillColor = single_color,
-        fillOpacity = 1,
-        popup = ~popup_display,
-        group = "Combined Data"
-      ) %>%
-      addLegend(
-        position = "bottomright",
-        colors = single_color,
-        labels = paste("Score:", round(min_val, 2)),
-        title = map_title,
-        opacity = 1
-      )
+      addControl("No data available for combined map", position = "topright")
   } else {
-    # Varying values - continuous palette
-    pal <- colorNumeric("viridis",
-                        domain = range(score_values, na.rm = TRUE),
-                        na.color = "transparent")
+    # Make sure geometry is set properly for leaflet
+    combined_data <- st_transform(combined_data, '+proj=longlat +datum=WGS84')
     
-    combined_data$fill_color <- pal(combined_data[[score_column]])
+    # Get the range of score values
+    score_values <- combined_data[[score_column]][!is.na(combined_data[[score_column]])]
     
-    map <- map %>%
-      addPolygons(
-        data = combined_data,
-        color = "#33333300",
-        weight = 1,
-        fillColor = ~fill_color,
-        fillOpacity = 1,
-        popup = ~popup_display,
-        group = "Combined Data"
-      ) %>%
-      addLegend(
-        position = "bottomright",
-        pal = pal,
-        values = combined_data[[score_column]],
-        title = map_title,
-        opacity = 1
-      )
+    if(length(score_values) == 0) {
+      # No valid score data
+      map <- map %>%
+        addControl("No valid score data available", position = "topright")
+    } else {
+      min_val <- min(score_values, na.rm = TRUE)
+      max_val <- max(score_values, na.rm = TRUE)
+      
+      # Create popup text
+      combined_data$popup_display <- paste(popup_prefix, round(combined_data[[score_column]], 2))
+      
+      # Handle coloring based on whether values are constant or varying
+      if(min_val == max_val) {
+        # Constant values - single color
+        single_color <- viridis::viridis(1, begin = 0.5, end = 0.5)
+        
+        map <- map %>%
+          addPolygons(
+            data = combined_data,
+            color = "#33333300",
+            weight = 1,
+            fillColor = single_color,
+            fillOpacity = 1,
+            popup = ~popup_display,
+            group = "Combined Data"
+          ) %>%
+          addLegend(
+            position = "bottomright",
+            colors = single_color,
+            labels = paste("Score:", round(min_val, 2)),
+            title = map_title,
+            opacity = 1
+          )
+      } else {
+        # Varying values - continuous palette
+        pal <- colorNumeric("viridis",
+                            domain = range(score_values, na.rm = TRUE),
+                            na.color = "transparent")
+        
+        combined_data$fill_color <- pal(combined_data[[score_column]])
+        
+        map <- map %>%
+          addPolygons(
+            data = combined_data,
+            color = "#33333300",
+            weight = 1,
+            fillColor = ~fill_color,
+            fillOpacity = 1,
+            popup = ~popup_display,
+            group = "Combined Data"
+          ) %>%
+          addLegend(
+            position = "bottomright",
+            pal = pal,
+            values = combined_data[[score_column]],
+            title = map_title,
+            opacity = 1
+          )
+      }
+      
+      # If no AOI bounds available, calculate from data
+      if(is.null(map_bounds)) {
+        bbox <- st_bbox(combined_data)
+        map_bounds <- list(
+          lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
+          lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
+        )
+      }
+    }
   }
   
-  # Add AOI polygon  second so the combined data is on top
+  # Add AOI polygon after combined data so it appears on top
   if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
     map <- map %>%
       addPolygons(
@@ -172,33 +139,22 @@ create_combined_map <- function(combined_data, map_title, method, aoi_data = NUL
         fillOpacity = 0,
         group = "AOI Area",
         options = pathOptions(
-          interactive = FALSE  # Disable popup for AOI polygon
+          interactive = FALSE
         )
-      ) 
+      ) %>%
+      addLayersControl(
+        overlayGroups = c("Combined Data", "AOI Area"),
+        options = layersControlOptions(collapsed = FALSE)
+      )
   }
   
-  # Set map view based on bounds
+  # Set map view bounds
   if(!is.null(map_bounds)) {
     map <- map %>%
       fitBounds(
         lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
         lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
         options = list(padding = c(20, 20))
-      )
-  } else {
-    # Use data bounds as fallback
-    bbox <- st_bbox(combined_data)
-    map <- map %>%
-      fitBounds(lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
-                lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]])
-  }
-  
-  # Add layers control
-  if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-    map <- map %>%
-      addLayersControl(
-        overlayGroups = c("Combined Data", "AOI Area"),
-        options = layersControlOptions(collapsed = FALSE)
       )
   }
   

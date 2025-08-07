@@ -1,37 +1,35 @@
-calculate_submodel_geometric_mean <- function(combined_data) {
-  # Find all score columns - updated pattern to match both dots and underscores
-  score_cols <- names(combined_data)[grep("^Score[._]", names(combined_data))]
-  
-  if(length(score_cols) > 0) {
-    # Convert to numeric and calculate row-wise geometric mean
-    score_matrix <- as.matrix(combined_data[score_cols])
-    score_matrix <- apply(score_matrix, 2, as.numeric)
-    
-    combined_data$Geo_mean <- apply(score_matrix, 1, function(x) {
-      if(all(is.na(x))) return(NA)
-      # Filter out zero values for geometric mean calculation
-      valid_values <- x[!is.na(x) & x > 0]
-      if(length(valid_values) == 0) return(NA)
-      
-      # Handle case where all values are the same
-      if(length(unique(valid_values)) <= 1) {
-        return(valid_values[1])  # Return the single unique value
-      }
-      exp(mean(log(valid_values), na.rm = TRUE))
-    })
-    
-    # Filter out rows where geometric mean is NA or 0
-    combined_data <- combined_data[!is.na(combined_data$Geo_mean) & combined_data$Geo_mean > 0, ]
-  } else {
-    cat("WARNING: No score columns found. Looking for columns with pattern '^Score[._]'\n")
-    cat("Available columns:", paste(names(combined_data), collapse = ", "), "\n")
-  }
-  
-  return(combined_data)
-}
-
 create_combined_submodel_map <- function(component_data_list, base_grid = grid_test, aoi_data_reactive = NULL) {
   tryCatch({
+    
+    # Get AOI data - handle both reactive and direct data
+    aoi_data <- NULL
+    if(!is.null(aoi_data_reactive)) {
+      if(is.function(aoi_data_reactive)) {
+        aoi_data <- aoi_data_reactive()
+      } else {
+        aoi_data <- aoi_data_reactive
+      }
+    } else if(exists("AOI")) {
+      aoi_data <- AOI
+    }
+    
+    # Transform AOI data to WGS84 if available and needed
+    if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
+      if(!st_is_longlat(aoi_data)) {
+        aoi_data <- st_transform(aoi_data, 4326)
+      }
+      aoi_data <- st_zm(aoi_data)
+    }
+    
+    # Calculate map bounds based on AOI if available
+    map_bounds <- NULL
+    if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
+      bbox <- st_bbox(aoi_data)
+      map_bounds <- list(
+        lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
+        lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
+      )
+    }
     
     # Start with base grid
     combined_data <- base_grid
@@ -71,140 +69,102 @@ create_combined_submodel_map <- function(component_data_list, base_grid = grid_t
     # Filter valid data
     map_data <- combined_data[!is.na(combined_data$Geo_mean), ]
     
+    # Initialize base map
+    map <- leaflet() %>%
+      addProviderTiles("Esri.OceanBasemap")
+    
     if(nrow(map_data) == 0) {
       # No valid data
-      map <- leaflet() %>%
-        addProviderTiles("Esri.OceanBasemap") %>%
-        setView(lng = -124, lat = 38, zoom = 7) %>%
+      map <- map %>%
         addControl("No valid data for combined submodel", position = "topright")
+    } else {
+      # Get score values for color palette
+      score_values <- map_data$Geo_mean
+      min_val <- min(score_values, na.rm = TRUE)
+      max_val <- max(score_values, na.rm = TRUE)
       
-      return(list(
-        combined_data = combined_data,
-        map = map
-      ))
-    }
-    
-    # Get score values for color palette
-    score_values <- map_data$Geo_mean
-    min_val <- min(score_values, na.rm = TRUE)
-    max_val <- max(score_values, na.rm = TRUE)
-    
-    # Store the full data range for consistent coloring
-    full_data_range <- list(min = min_val, max = max_val)
-    
-    # Create popup text
-    map_data$popup_display <- paste("Combined Natural Resources Score:", 
-                                    round(map_data$Geo_mean, 2))
-    
-    # Calculate map bounds - prioritize AOI bounds if available
-    map_bounds <- NULL
-    # Initialize aoi_data to NULL
-    aoi_data <- NULL
-    if(!is.null(aoi_data_reactive)) {
-      aoi_data <- aoi_data_reactive()
-    }
-    
-    # Set map bounds if we have AOI data
-    if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-      tryCatch({
-        # Transform to WGS84 if needed
-        if(!st_is_longlat(aoi_data)) {
-          aoi_data <- st_transform(aoi_data, 4326)
-        }
-        aoi_data <- st_zm(aoi_data)
+      # Store the full data range for consistent coloring
+      full_data_range <- list(min = min_val, max = max_val)
+      
+      # Create popup text
+      map_data$popup_display <- paste0(
+        "Combined Submodel Score:", round(map_data$Geo_mean, 2)
+      )
+      
+      # Handle color palette - check if we have variation in values
+      if(abs(min_val - max_val) < 1e-10) {
+        # All values are the same - use single color
+        map <- map %>%
+          addPolygons(
+            data = map_data,
+            weight = 1,
+            color = "#333333",
+            fillColor = "#440154",  # Dark purple
+            fillOpacity = 0.7,
+            popup = ~popup_display,
+            group = "Combined Submodel",
+            highlightOptions = highlightOptions(
+              weight = 2,
+              color = "#666",
+              fillOpacity = 0.9,
+              bringToFront = TRUE
+            )
+          ) %>%
+          addControl(
+            paste("All areas have the same score:", format(min_val, digits = 3)),
+            position = "bottomright"
+          )
+      } else {
+        # We have variation - create proper color palette
         
-        # Use AOI bounds for centering the map
-        bbox <- st_bbox(aoi_data)
+        # Expand the range slightly to ensure all values are included
+        range_buffer <- (max_val - min_val) * 0.01
+        pal_domain <- c(min_val - range_buffer, max_val + range_buffer)
+        
+        # Create color palette
+        pal <- colorNumeric(
+          palette = "viridis",
+          domain = pal_domain,
+          na.color = "transparent"
+        )
+        
+        # Add polygons with color mapping
+        map <- map %>%
+          addPolygons(
+            data = map_data,
+            weight = 1,
+            color = "#333333",
+            fillColor = ~pal(Geo_mean),
+            fillOpacity = 0.7,
+            popup = ~popup_display,
+            group = "Combined Submodel",
+            highlightOptions = highlightOptions(
+              weight = 2,
+              color = "#666",
+              fillOpacity = 0.9,
+              bringToFront = TRUE
+            )
+          ) %>%
+          addLegend(
+            position = "bottomright",
+            pal = pal,
+            values = map_data$Geo_mean,
+            title = "Combined Submodel Score",
+            opacity = 1
+          )
+      }
+      
+      # If no AOI bounds available, calculate from data
+      if(is.null(map_bounds)) {
+        bbox <- st_bbox(map_data)
         map_bounds <- list(
           lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
           lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
         )
-      }, error = function(e) {
-        message("Could not get AOI bounds: ", e$message)
-      })
+      }
     }
     
-    # Initialize the map
-    map <- leaflet(map_data) %>%
-      addProviderTiles("Esri.OceanBasemap")
-    
-    # Set map view based on bounds or default
-    if(!is.null(map_bounds)) {
-      map <- map %>%
-        fitBounds(
-          lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
-          lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
-          options = list(padding = c(20, 20))  # Add some padding around the bounds
-        )
-    } else {
-      map <- map %>%
-        setView(lng = -124, lat = 38, zoom = 7)  # Default view
-    }
-    
-    # Handle color palette - check if we have variation in values
-    if(abs(min_val - max_val) < 1e-10) {
-      # All values are the same - use single color
-      map <- map %>%
-        addPolygons(
-          weight = 1,
-          color = "#333333",
-          fillColor = "#440154",  # Dark purple
-          fillOpacity = 0.7,
-          popup = ~popup_display,
-          highlightOptions = highlightOptions(
-            weight = 2,
-            color = "#666",
-            fillOpacity = 0.9,
-            bringToFront = TRUE
-          )
-        ) %>%
-        addControl(
-          paste("All areas have the same score:", format(min_val, digits = 3)),
-          position = "bottomright"
-        )
-    } else {
-      # We have variation - create proper color palette
-      
-      # Expand the range slightly to ensure all values are included
-      range_buffer <- (max_val - min_val) * 0.01
-      pal_domain <- c(min_val - range_buffer, max_val + range_buffer)
-      
-      # Create color palette
-      pal <- colorNumeric(
-        palette = "viridis",
-        domain = pal_domain,
-        na.color = "transparent"
-      )
-      
-      # Test the palette with actual values
-      test_colors <- pal(c(min_val, max_val))
-      
-      
-      # Add polygons with color mapping
-      map <- map %>%
-        addPolygons(
-          weight = 1,
-          color = "#333333",
-          fillColor = ~pal(Geo_mean),
-          fillOpacity = 0.7,
-          popup = ~popup_display,
-          highlightOptions = highlightOptions(
-            weight = 2,
-            color = "#666",
-            fillOpacity = 0.9,
-            bringToFront = TRUE
-          )
-        ) %>%
-        addLegend(
-          position = "bottomright",
-          pal = pal,
-          values = ~Geo_mean,
-          title = "Combined Natural Resources Score",
-          opacity = 1
-        )
-    }
-    
-    # Add AOI data to the map if available
+    # Add AOI boundary outline after main data so it appears on top
     if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
       map <- map %>%
         addPolygons(
@@ -213,26 +173,31 @@ create_combined_submodel_map <- function(component_data_list, base_grid = grid_t
           color = "red",
           weight = 3,
           fillOpacity = 0,
-          group = "AOI Boundaries",
+          group = "AOI Boundary",
           options = pathOptions(
-            interactive = FALSE  # Disable popup for AOI polygon
-          ) 
+            interactive = FALSE
+          )
+        ) %>%
+        addLayersControl(
+          overlayGroups = c("Combined Submodel", "AOI Boundary"),
+          options = layersControlOptions(collapsed = FALSE)
         )
     }
     
-    # Add layers control
-    if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
+    # Set map view bounds once at the end
+    if(!is.null(map_bounds)) {
       map <- map %>%
-        addLayersControl(
-          overlayGroups = c("Combined Data", "AOI Area"),
-          options = layersControlOptions(collapsed = FALSE)
+        fitBounds(
+          lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
+          lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
+          options = list(padding = c(20, 20))
         )
     }
     
     return(list(
       combined_data = combined_data,
       map = map,
-      full_data_range = full_data_range
+      full_data_range = if(exists("full_data_range")) full_data_range else NULL
     ))
     
   }, error = function(e) {
@@ -241,11 +206,10 @@ create_combined_submodel_map <- function(component_data_list, base_grid = grid_t
     # Return error map
     error_map <- leaflet() %>%
       addProviderTiles("Esri.OceanBasemap") %>%
-      setView(lng = -124, lat = 38, zoom = 7) %>%
       addControl(paste("Error generating combined submodel:", e$message), position = "topright")
     
     return(list(
-      combined_data = combined_data,
+      combined_data = if(exists("combined_data")) combined_data else NULL,
       map = error_map
     ))
   })
