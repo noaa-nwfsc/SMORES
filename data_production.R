@@ -75,7 +75,10 @@ canyon_scored <- grd.norcal %>%
   full_join(canyon, by = "CellID_2km") %>%
   filter(Score.Canyons == 0.1) %>%
   rename("0.1" = Score.Canyons) %>%
-  mutate("0.2" = 0.2,
+  mutate("0" = 0,
+         "0.01" = 0.01,
+         "0.001" = 0.001,
+         "0.2" = 0.2,
          "0.3" = 0.3,
          "0.4" = 0.4,
          "0.5" = 0.5,
@@ -85,12 +88,10 @@ canyon_scored <- grd.norcal %>%
          "0.9" = 0.9,
          "1" = 1) 
 #this approach would let us know which score is associated with which layer 
-canyons_scored_long <- pivot_longer(canyon_scored, cols = starts_with(c("0.", "1")), names_to = "Canyon", values_to = "Score.Canyon") %>% 
+canyons_scored_long <- pivot_longer(canyon_scored, cols = starts_with(c("0", "1")), names_to = "Canyon", values_to = "Score.Canyon") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-Canyon)
 saveRDS(canyons_scored_long, "U:\\Github\\SMORES\\data\\canyon_scored.rds")
-canyon_score_full_df <- canyons_scored_long %>% 
-  st_drop_geometry()
 
 #Deep sea coral robust high - user selected score data set
 DSC.RobustHigh.grid <- sf::st_intersection(DSC.RobustHigh, grd.norcal) %>%
@@ -106,8 +107,10 @@ DSC_RH_scored <- grd.norcal %>%
   full_join(DSC_RH, by = "CellID_2km") %>%
   filter(Score.DSC.RH == 0.1) %>%
   rename("0.1" = Score.DSC.RH) %>%
-  mutate("0.01" = 0.01,
-          "0.2" = 0.2,
+  mutate("0" = 0,
+         "0.01" = 0.01,
+         "0.001" = 0.001,
+         "0.2" = 0.2,
          "0.3" = 0.3,
          "0.4" = 0.4,
          "0.5" = 0.5,
@@ -117,7 +120,7 @@ DSC_RH_scored <- grd.norcal %>%
          "0.9" = 0.9,
          "1" = 1) 
 #this approach would let us know which score is associated with which layer 
-DSC_RH_scored_long <- pivot_longer(DSC_RH_scored, cols = starts_with(c("0.", "1")), names_to = "DSC_RH", values_to = "Score.DSC_RH") %>% 
+DSC_RH_scored_long <- pivot_longer(DSC_RH_scored, cols = starts_with(c("0", "1")), names_to = "DSC_RH", values_to = "Score.DSC_RH") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-DSC_RH)
 saveRDS(DSC_RH_scored_long, "U:\\Github\\SMORES\\data\\DSC_RH_scored.rds")
@@ -186,7 +189,10 @@ Surveys_fixed_scored <- grd.norcal %>%
   full_join(Surveys_fixed, by = "CellID_2km") %>%
   filter(Score.Surveys.Fixed == 1) %>%
   rename("1" = Score.Surveys.Fixed) %>%
-  mutate("0.1" = 0.1,
+  mutate("0" = 0,
+         "0.01" = 0.01,
+         "0.001" = 0.001,
+         "0.1" = 0.1,
          "0.2" = 0.2,
          "0.3" = 0.3,
          "0.4" = 0.4,
@@ -195,7 +201,7 @@ Surveys_fixed_scored <- grd.norcal %>%
          "0.7" = 0.7,
          "0.8" = 0.8,
          "0.9" = 0.9) 
-Surveys_fixed_scored_long <- pivot_longer(Surveys_fixed_scored, cols = starts_with(c("0.", "1")), names_to = "Surveys_fixed", values_to = "Score.Surveys_fixed") %>% 
+Surveys_fixed_scored_long <- pivot_longer(Surveys_fixed_scored, cols = starts_with(c("0", "1")), names_to = "Surveys_fixed", values_to = "Score.Surveys_fixed") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-Surveys_fixed)
 st_crs(DSC_RH_scored_long) == st_crs(Surveys_fixed_scored_long)
@@ -217,7 +223,10 @@ Surveys_periodic_scored <- grd.norcal %>%
   full_join(Surveys_periodic, by = "CellID_2km") %>%
   filter(Score.Surveys.Per == 1) %>%
   rename("1" = Score.Surveys.Per) %>%
-  mutate("0.1" = 0.1,
+  mutate("0" = 0,
+         "0.01" = 0.01,
+         "0.001" = 0.001,
+         "0.1" = 0.1,
          "0.2" = 0.2,
          "0.3" = 0.3,
          "0.4" = 0.4,
@@ -226,7 +235,7 @@ Surveys_periodic_scored <- grd.norcal %>%
          "0.7" = 0.7,
          "0.8" = 0.8,
          "0.9" = 0.9) 
-Surveys_periodic_scored_long <- pivot_longer(Surveys_periodic_scored, cols = starts_with(c("0.", "1")), names_to = "Surveys_periodic", values_to = "Score.Surveys_periodic") %>% 
+Surveys_periodic_scored_long <- pivot_longer(Surveys_periodic_scored, cols = starts_with(c("0", "1")), names_to = "Surveys_periodic", values_to = "Score.Surveys_periodic") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-Surveys_periodic)
 st_crs(DSC_RH_scored_long) == st_crs(Surveys_periodic_scored_long)
@@ -248,7 +257,10 @@ Seeps_scored <- grd.norcal %>%
   full_join(Seeps_score, by = "CellID_2km") %>%
   filter(Score.Seeps == 1) %>%
   rename("1" = Score.Seeps) %>%
-  mutate("0.1" = 0.1,
+  mutate("0" = 0,
+         "0.01" = 0.01,
+         "0.001" = 0.001,
+         "0.1" = 0.1,
          "0.2" = 0.2,
          "0.3" = 0.3,
          "0.4" = 0.4,
@@ -257,7 +269,7 @@ Seeps_scored <- grd.norcal %>%
          "0.7" = 0.7,
          "0.8" = 0.8,
          "0.9" = 0.9) 
-Seeps_scored_long <- pivot_longer(Seeps_scored, cols = starts_with(c("0.", "1")), names_to = "Seeps", values_to = "Score.Seeps") %>% 
+Seeps_scored_long <- pivot_longer(Seeps_scored, cols = starts_with(c("0", "1")), names_to = "Seeps", values_to = "Score.Seeps") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-Seeps)
 st_crs(DSC_RH_scored_long) == st_crs(Seeps_scored_long)
@@ -279,7 +291,10 @@ ShlfBrk_scored <- grd.norcal %>%
   full_join(ShlfBrk_score, by = "CellID_2km") %>%
   filter(Score.ShlfBrk == 1) %>%
   rename("1" = Score.ShlfBrk) %>%
-  mutate("0.1" = 0.1,
+  mutate("0" = 0,
+         "0.01" = 0.01,
+         "0.001" = 0.001,
+         "0.1" = 0.1,
          "0.2" = 0.2,
          "0.3" = 0.3,
          "0.4" = 0.4,
@@ -288,7 +303,7 @@ ShlfBrk_scored <- grd.norcal %>%
          "0.7" = 0.7,
          "0.8" = 0.8,
          "0.9" = 0.9) 
-ShlfBrk_scored_long <- pivot_longer(ShlfBrk_scored, cols = starts_with(c("0.", "1")), names_to = "ShlfBrk", values_to = "Score.ShlfBrk") %>% 
+ShlfBrk_scored_long <- pivot_longer(ShlfBrk_scored, cols = starts_with(c("0", "1")), names_to = "ShlfBrk", values_to = "Score.ShlfBrk") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-ShlfBrk)
 st_crs(DSC_RH_scored_long) == st_crs(ShlfBrk_scored_long)
@@ -305,7 +320,9 @@ EFHCA_scored <- grd.norcal %>%
   full_join(EFHCA_score, by = "CellID_2km") %>%
   filter(Score.EFHCA == 0.01) %>%
   rename("0.01" = Score.EFHCA) %>%
-  mutate("0.1" = 0.1,
+  mutate("0" = 0,
+         "0.001" = 0.001,
+         "0.1" = 0.1,
          "0.2" = 0.2,
          "0.3" = 0.3,
          "0.4" = 0.4,
@@ -314,9 +331,8 @@ EFHCA_scored <- grd.norcal %>%
          "0.7" = 0.7,
          "0.8" = 0.8,
          "0.9" = 0.9,
-         "1" = 1) %>% 
-  select(-"0.01")
-EFHCA_scored_long <- pivot_longer(EFHCA_scored, cols = starts_with(c("0.", "1")), names_to = "EFHCA", values_to = "Score.EFHCA") %>% 
+         "1" = 1)
+EFHCA_scored_long <- pivot_longer(EFHCA_scored, cols = starts_with(c("0", "1")), names_to = "EFHCA", values_to = "Score.EFHCA") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-EFHCA)
 st_crs(DSC_RH_scored_long) == st_crs(EFHCA_scored_long)
@@ -333,7 +349,9 @@ EFHCA_700_scored <- grd.norcal %>%
   full_join(EFHCA_700_score, by = "CellID_2km") %>%
   filter(Score.EFHCA.700 == 0.01) %>%
   rename("0.01" = Score.EFHCA.700) %>%
-  mutate("0.1" = 0.1,
+  mutate("0" = 0,
+         "0.001" = 0.001,
+         "0.1" = 0.1,
          "0.2" = 0.2,
          "0.3" = 0.3,
          "0.4" = 0.4,
@@ -342,9 +360,8 @@ EFHCA_700_scored <- grd.norcal %>%
          "0.7" = 0.7,
          "0.8" = 0.8,
          "0.9" = 0.9,
-         "1" = 1) %>% 
-  select(-"0.01")
-EFHCA_700_scored_long <- pivot_longer(EFHCA_700_scored, cols = starts_with(c("0.", "1")), names_to = "EFHCA_700", values_to = "Score.EFHCA.700") %>% 
+         "1" = 1) 
+EFHCA_700_scored_long <- pivot_longer(EFHCA_700_scored, cols = starts_with(c("0", "1")), names_to = "EFHCA_700", values_to = "Score.EFHCA.700") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-EFHCA_700)
 st_crs(DSC_RH_scored_long) == st_crs(EFHCA_700_scored_long)
@@ -361,7 +378,9 @@ HAPCaoi_scored <- grd.norcal %>%
   full_join(HAPCaoi_score, by = "CellID_2km") %>%
   filter(Score.HAPC.AOI == 0.01) %>%
   rename("0.01" = Score.HAPC.AOI) %>%
-  mutate("0.1" = 0.1,
+  mutate("0" = 0,
+         "0.001" = 0.001,
+         "0.1" = 0.1,
          "0.2" = 0.2,
          "0.3" = 0.3,
          "0.4" = 0.4,
@@ -370,9 +389,8 @@ HAPCaoi_scored <- grd.norcal %>%
          "0.7" = 0.7,
          "0.8" = 0.8,
          "0.9" = 0.9,
-         "1" = 1) %>% 
-  select(-"0.01")
-HAPCaoi_scored_long <- pivot_longer(HAPCaoi_scored, cols = starts_with(c("0.", "1")), names_to = "HAPCaoi", values_to = "Score.HAPC.AOI") %>% 
+         "1" = 1)
+HAPCaoi_scored_long <- pivot_longer(HAPCaoi_scored, cols = starts_with(c("0", "1")), names_to = "HAPCaoi", values_to = "Score.HAPC.AOI") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-HAPCaoi)
 st_crs(DSC_RH_scored_long) == st_crs(HAPCaoi_scored_long)
@@ -389,7 +407,9 @@ HAPCreef_scored <- grd.norcal %>%
   full_join(HAPCreef_score, by = "CellID_2km") %>%
   filter(Score.HAPC.Reef == 0.001) %>%
   rename("0.001" = Score.HAPC.Reef) %>%
-  mutate("0.1" = 0.1,
+  mutate("0" = 0,
+         "0.01" = 0.01,
+         "0.1" = 0.1,
          "0.2" = 0.2,
          "0.3" = 0.3,
          "0.4" = 0.4,
@@ -398,9 +418,8 @@ HAPCreef_scored <- grd.norcal %>%
          "0.7" = 0.7,
          "0.8" = 0.8,
          "0.9" = 0.9,
-         "1" = 1) %>% 
-  select(-"0.001")
-HAPCreef_scored_long <- pivot_longer(HAPCreef_scored, cols = starts_with(c("0.", "1")), names_to = "HAPCreef", values_to = "Score.HAPC.Reef") %>% 
+         "1" = 1) 
+HAPCreef_scored_long <- pivot_longer(HAPCreef_scored, cols = starts_with(c("0", "1")), names_to = "HAPCreef", values_to = "Score.HAPC.Reef") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-HAPCreef)
 st_crs(DSC_RH_scored_long) == st_crs(HAPCreef_scored_long)
@@ -434,7 +453,10 @@ killer_whale_scored <- grd.norcal %>%
   full_join(killer_whale_score, by = "CellID_2km") %>%
   filter(Score.killer_whale == 1) %>%
   rename("1" = Score.killer_whale) %>%
-  mutate("0.1" = 0.1,
+  mutate("0" = 0,
+         "0.01" = 0.01,
+         "0.001" = 0.001,
+         "0.1" = 0.1,
          "0.2" = 0.2,
          "0.3" = 0.3,
          "0.4" = 0.4,
@@ -443,7 +465,7 @@ killer_whale_scored <- grd.norcal %>%
          "0.7" = 0.7,
          "0.8" = 0.8,
          "0.9" = 0.9) 
-killer_whale_scored_long <- pivot_longer(killer_whale_scored, cols = starts_with(c("0.", "1")), names_to = "killer_whale", values_to = "Score.killer_whale") %>% 
+killer_whale_scored_long <- pivot_longer(killer_whale_scored, cols = starts_with(c("0", "1")), names_to = "killer_whale", values_to = "Score.killer_whale") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-killer_whale)
 st_crs(DSC_RH_scored_long) == st_crs(killer_whale_scored_long)
@@ -469,7 +491,10 @@ leatherback_turtle_scored <- grd.norcal %>%
   full_join(leatherback_turtle_score, by = "CellID_2km") %>%
   filter(Score.leatherback_turtle == 1) %>%
   rename("1" = Score.leatherback_turtle) %>%
-  mutate("0.1" = 0.1,
+  mutate("0" = 0,
+         "0.01" = 0.01,
+         "0.001" = 0.001,
+         "0.1" = 0.1,
          "0.2" = 0.2,
          "0.3" = 0.3,
          "0.4" = 0.4,
@@ -478,7 +503,7 @@ leatherback_turtle_scored <- grd.norcal %>%
          "0.7" = 0.7,
          "0.8" = 0.8,
          "0.9" = 0.9) 
-leatherback_turtle_scored_long <- pivot_longer(leatherback_turtle_scored, cols = starts_with(c("0.", "1")), names_to = "leatherback_turtle", values_to = "Score.leatherback_turtle") %>% 
+leatherback_turtle_scored_long <- pivot_longer(leatherback_turtle_scored, cols = starts_with(c("0", "1")), names_to = "leatherback_turtle", values_to = "Score.leatherback_turtle") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-leatherback_turtle)
 st_crs(DSC_RH_scored_long) == st_crs(leatherback_turtle_scored_long)
@@ -533,7 +558,10 @@ humpback_whale_scored <- grd.norcal %>%
   full_join(humpback_whale_score, by = "CellID_2km") %>%
   filter(Score.humpback_whale == 1) %>%
   rename("1" = Score.humpback_whale) %>%
-  mutate("0.1" = 0.1,
+  mutate("0" = 0,
+         "0.01" = 0.01,
+         "0.001" = 0.001,
+         "0.1" = 0.1,
          "0.2" = 0.2,
          "0.3" = 0.3,
          "0.4" = 0.4,
@@ -542,7 +570,7 @@ humpback_whale_scored <- grd.norcal %>%
          "0.7" = 0.7,
          "0.8" = 0.8,
          "0.9" = 0.9) 
-humpback_whale_scored_long <- pivot_longer(humpback_whale_scored, cols = starts_with(c("0.", "1")), names_to = "humpback_whale", values_to = "Score.humpback_whale") %>% 
+humpback_whale_scored_long <- pivot_longer(humpback_whale_scored, cols = starts_with(c("0", "1")), names_to = "humpback_whale", values_to = "Score.humpback_whale") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-humpback_whale)
 st_crs(DSC_RH_scored_long) == st_crs(humpback_whale_scored_long)
@@ -567,7 +595,10 @@ blue_whale_scored <- grd.norcal %>%
   full_join(blue_whale_score, by = "CellID_2km") %>%
   filter(Score.blue_whale == 1) %>%
   rename("1" = Score.blue_whale) %>%
-  mutate("0.1" = 0.1,
+  mutate("0" = 0,
+         "0.01" = 0.01,
+         "0.001" = 0.001,
+         "0.1" = 0.1,
          "0.2" = 0.2,
          "0.3" = 0.3,
          "0.4" = 0.4,
@@ -576,7 +607,7 @@ blue_whale_scored <- grd.norcal %>%
          "0.7" = 0.7,
          "0.8" = 0.8,
          "0.9" = 0.9) 
-blue_whale_scored_long <- pivot_longer(blue_whale_scored, cols = starts_with(c("0.", "1")), names_to = "blue_whale", values_to = "Score.blue_whale") %>% 
+blue_whale_scored_long <- pivot_longer(blue_whale_scored, cols = starts_with(c("0", "1")), names_to = "blue_whale", values_to = "Score.blue_whale") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-blue_whale)
 st_crs(DSC_RH_scored_long) == st_crs(blue_whale_scored_long)
@@ -612,7 +643,10 @@ submarine_cable_scored <- grd.norcal %>%
   full_join(submarine_cable_score, by = "CellID_2km") %>%
   filter(Score.submarine_cable == 0) %>%
   rename("1" = Score.submarine_cable) %>%
-  mutate("0.1" = 0.1,
+  mutate("0" = 0,
+         "0.01" = 0.01,
+         "0.001" = 0.001,
+         "0.1" = 0.1,
          "0.2" = 0.2,
          "0.3" = 0.3,
          "0.4" = 0.4,
