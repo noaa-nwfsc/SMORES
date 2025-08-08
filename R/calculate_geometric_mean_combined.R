@@ -18,7 +18,7 @@ calculate_geometric_mean <- function(combined_data) {
     })
     
     # Filter out rows where geometric mean is NA or 0
-    combined_data <- combined_data[!is.na(combined_data$Geo_mean) & combined_data$Geo_mean > 0, ]
+    combined_data <- combined_data[!is.na(combined_data$Geo_mean), ]
   }
   
   return(combined_data)

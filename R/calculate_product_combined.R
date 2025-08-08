@@ -19,7 +19,7 @@ calculate_product <- function(combined_data) {
     })
     
     # Filter out rows where geometric mean is NA or 0
-    combined_data <- combined_data[!is.na(combined_data$Product_value) & combined_data$Product_value > 0, ]
+    combined_data <- combined_data[!is.na(combined_data$Product_value), ]
   }
   
   return(combined_data)

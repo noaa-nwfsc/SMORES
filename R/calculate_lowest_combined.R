@@ -19,7 +19,7 @@ calculate_lowest_value <- function(combined_data) {
     })
     
     # Filter out rows where lowest value is NA or 0
-    combined_data <- combined_data[!is.na(combined_data$Lowest_value) & combined_data$Lowest_value > 0, ]
+    combined_data <- combined_data[!is.na(combined_data$Lowest_value), ]
   }
   
   return(combined_data)
