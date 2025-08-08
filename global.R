@@ -49,6 +49,7 @@ source("R/generate_submodel_combined_report.R")
 source("R/generate_full_model_report.R")
 source("R/filter_by_score.R")
 source("R/calculate_submodel_geometric_mean.R")
+source("R/create_z_membership_palette.R")
 
 # Get data timestamps information
 timestamp_info <- get_data_timestamps()
@@ -148,17 +149,3 @@ score_colors <- list(
   "0.9" = "#791E94",  # bright purple 
   "1" = "#BE3E82" # berry
 )
-
-# Function to create continuous color palette for Z Membership
-create_z_membership_palette <- function(data) {
-  if(is.null(data) || !"Score.Z_Membership" %in% names(data)) {
-    return(colorNumeric("viridis", domain = c(0, 1)))
-  }
-  
-  z_values <- data$Score.Z_Membership[!is.na(data$Score.Z_Membership)]
-  if(length(z_values) == 0) {
-    return(colorNumeric("viridis", domain = c(0, 1)))
-  }
-  
-  return(colorNumeric("viridis", domain = range(z_values, na.rm = TRUE)))
-}
