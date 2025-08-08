@@ -1,7 +1,7 @@
-Use this page to develop a combined data layer providing the overall scores for selected protected species. You can assign scores that range from 0.1 (most vulnerable) to 0.9 (least vulnerable). The scoring approach used in the Oregon Siting Model is developed from Farmer et al. (2022) using factors that are more or less likely to affect the population's ability to withstand mortality, serious injury, or other impacts that could affect the species' ability to survive and recover.The table below outlines the scoring system from Farmer et al. (2022) that was used for NMFS protected species.
+Use this page to develop a combined data layer providing the overall scores for selected protected species. You can assign scores that range from 0 (a constraint)/0.001 (most vulnerable) to 0.9 (least vulnerable). The scoring approach used in the Oregon Siting Model is developed from Farmer et al. (2022) using factors that are more or less likely to affect the population's ability to withstand mortality, serious injury, or other impacts that could affect the species' ability to survive and recover.The table below outlines the scoring system from Farmer et al. (2022) that was used for NMFS protected species.
 
 | Status | Trend | Score (0-1) |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | Endangered | Declining, small population or both | 0.1 |
 | Endangered | Stable or unknown | 0.2 |
 | Endangered | Increasing | 0.3 |
@@ -17,7 +17,7 @@ Use this page to develop a combined data layer providing the overall scores for 
 NMFS provided three scoring scenarios for BOEM's consideration for inclusion in the suitability model. Scenario 3 was chosen for use in the model as it did not contain any constraints (scores of 0). Below is a table to reference the score, status and trend, for the species included in this application that were chosen in scenario 3.
 
 | Species Common Name | Status and Trend | Score (0-1) |
-|----|----|----|
+|------------------------|------------------------|------------------------|
 | Leatherback Sea Turtle | Endangered; Declining, small population | 0.1 |
 | Southern Resident Killer Whale | Endangered; Declining, small population | 0.1 |
 | Humpback whale - Central America DPS | Endangered; Increasing | 0.3 |

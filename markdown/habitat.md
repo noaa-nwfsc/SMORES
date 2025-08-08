@@ -1,4 +1,4 @@
-Use this page to develop a combined data layer providing the overall scores for selected protected habitats. You can assign scores that range from 0.1 (most vulnerable) to 0.9 (least vulnerable).
+Use this page to develop a combined data layer providing the overall scores for selected protected habitats. You can assign scores that range from 0 (a constraint)/0.001 (most vulnerable) to 0.9 (least vulnerable).
 
 NMFS provided 2 scoring scenarios for BOEM's consideration for inclusion in the suitability model. Scenario 2 was chosen for use in the model as it did not contain any constraints (scores of 0). Below is a table to reference the layer and score, for the habitat layers that were outlined in scenario 2.
 

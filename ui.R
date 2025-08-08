@@ -1,10 +1,10 @@
 tagList(
   
-    # Custom CSS
-    tags$head(
-      tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
-    ),
-    
+  # Custom CSS
+  tags$head(
+    tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
+  ),
+  
   # Custom header with logo
   div(
     class = "container-fluid",
@@ -168,7 +168,7 @@ tagList(
             card(
               card_header("Map Configuration"),
               card_body(
-                includeMarkdown("markdown/surveys_map_settings.md")
+                includeMarkdown("markdown/surveys.md")
               )
             ),
             
@@ -187,7 +187,7 @@ tagList(
             card(
               card_header("Map Configuration"),
               card_body(
-                includeMarkdown("markdown/misc_map_settings.md")
+                includeMarkdown("markdown/cables.md")
               )
             ),
             
