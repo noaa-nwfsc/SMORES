@@ -10,31 +10,35 @@ library(shinyWidgets)
 library(mapview)
 library(sf)
 library(yaml)
-library(markdown)
 library(rmarkdown)
 library(viridis)
 library(knitr)
+library(fontawesome)
 
 theme <- bslib::bs_theme()
 
-#load custom functions 
+# Load custom functions 
+## Sidebar functions
+source("R/generate_habitat_sidebar.R")
+source("R/generate_species_sidebar.R")
+source("R/generate_surveys_sidebar.R")
+source("R/generate_cables_sidebar.R")
+source("R/generate_full_model_sidebar.R")
+source("R/generate_natural_resources_combined_sidebar.R")
+source("R/sidebar_helpers.R")
+
+## Mapping and Aesthetics Functions
 source("R/modal.R")
 source("R/get_valid_configs_for_tab.R")
 source("R/create_individual_map.R")
 source("R/create_combined_map.R")
-source("R/data_timestamps.R")
-source("R/generate_habitat_sidebar.R")
-source("R/generate_species_sidebar.R")
-source("R/generate_surveys_sidebar.R")
+source("R/filter_by_score.R")
+source("R/calculate_submodel_geometric_mean.R")
+source("R/create_z_membership_palette.R")
 source("R/create_maps_container.R")
-source("R/filtered_data_timestamps.R")
 source("R/check_submodel_status.R")
-source("R/sidebar_helpers.R")
 source("R/submodel_configurations.R")
-source("R/generate_full_model_sidebar.R")
-source("R/generate_natural_resources_combined_sidebar.R")
 source("R/create_combined_submodel_map.R")
-source("R/generate_cables_sidebar.R")
 source("R/create_aoi_cropped_map.R")
 source("R/create_full_model_map.R")
 source("R/submodel_status_display.R")
@@ -44,12 +48,16 @@ source("R/generate_combined_map_for_method.R")
 source("R/calculate_geometric_mean_combined.R")
 source("R/calculate_lowest_combined.R")
 source("R/calculate_product_combined.R")
+
+## Reporting Functions
 source("R/generate_submodel_component_report.R")
 source("R/generate_submodel_combined_report.R")
 source("R/generate_full_model_report.R")
-source("R/filter_by_score.R")
-source("R/calculate_submodel_geometric_mean.R")
-source("R/create_z_membership_palette.R")
+
+## Data Functions
+source("R/data_timestamps.R")
+source("R/filtered_data_timestamps.R")
+
 
 # Get data timestamps information
 timestamp_info <- get_data_timestamps()
@@ -59,7 +67,9 @@ most_recent_update <- timestamp_info$most_recent_update
 # Load datasets
 #WEA
 AOI <- readRDS("data/WEA.rds")
+
 ## Natural Resources Layers
+
 ### Habitat Layers
 canyon <- readRDS("data/canyon_scored.rds")
 DSC_RH <- readRDS("data/DSC_RH_scored.rds")
@@ -72,17 +82,22 @@ efhca <- readRDS("data/efhca_scored.rds")
 efhca_700 <- readRDS("data/efhca_700_scored.rds")
 HAPCaoi <- readRDS("data/HAPCaoi_scored.rds")
 HAPCreef <- readRDS("data/HAPCreef_scored.rds")
+
 ### Species Layers
 killer_whale <- readRDS("data/killer_whale_scored.rds")
 leatherback_turtle <- readRDS("data/leatherback_turtle_scored.rds")
 humpback_whale <- readRDS("data/humpback_whale_scored.rds")
 blue_whale <- readRDS("data/blue_whale_scored.rds")
+
 ### Birds Layers
+
 ## Industry & Operations Layers
-###Survey Layers
+
+### Survey Layers
 surveys_fixed <- readRDS("data/Surveys_fixed_scored.rds")
 surveys_periodic <- readRDS("data/Surveys_periodic_scored.rds")
-###
+
+### Submarine Cable Layers 
 submarine_cable <- readRDS("data/submarine_cable_scored.rds")
 submarine_cable_500m <- readRDS("data/submarine_cable_500m_scored.rds")
 submarine_cable_501_1000m <- readRDS("data/submarine_cable_501_1000m_scored.rds")
