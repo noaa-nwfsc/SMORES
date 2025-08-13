@@ -89,8 +89,6 @@ leatherback_turtle <- readRDS("data/leatherback_turtle_scored.rds")
 humpback_whale <- readRDS("data/humpback_whale_scored.rds")
 blue_whale <- readRDS("data/blue_whale_scored.rds")
 
-### Birds Layers
-
 ## Industry & Operations Layers
 
 ### Survey Layers
@@ -122,10 +120,6 @@ species_layer <- list(
   "ESA Critical Habitat for Leatherback Sea Turtles" = leatherback_turtle,
   "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS" = humpback_whale,
   "Biologically Important Area - Blue Whale" = blue_whale
-)
-
-bird_layer <- list (
-  "bird1", "bird2"
 )
 
 ##Fisheries Submodel

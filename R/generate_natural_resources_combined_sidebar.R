@@ -3,10 +3,9 @@ generate_natural_resources_combined_sidebar <- function(submodel_config, combine
   # Check status of each component
   habitat_ready <- combined_maps_data$habitat_combined_map_generated %||% FALSE
   species_ready <- combined_maps_data$species_combined_map_generated %||% FALSE
-  birds_ready <- FALSE  # Update when birds is implemented
   
   # At least one component must be ready to enable the submodel
-  any_ready <- habitat_ready || species_ready || birds_ready
+  any_ready <- habitat_ready || species_ready 
   
   # Function to get available methods based on generated data
   get_available_methods <- function(component_type, combined_maps_data) {
@@ -108,34 +107,6 @@ generate_natural_resources_combined_sidebar <- function(submodel_config, combine
     ),
     
     br(),
-    
-    # Birds Component Selection (disabled until implemented)
-    div(
-      checkboxInput("includeBirds",
-                    label = div(
-                      "Include Birds Component",
-                      span(class = "text-muted", " (Not yet implemented)")
-                    ),
-                    value = FALSE),
-      
-      # Birds calculation method dropdown (disabled)
-      conditionalPanel(
-        condition = "input.includeBirds == true",
-        selectInput("birdsCalculationMethod",
-                    "Birds Calculation Method:",
-                    choices = list(
-                      "Geometric Mean" = "geometric_mean",
-                      "Lowest Value" = "lowest",
-                      "Product" = "product"
-                    ),
-                    selected = "geometric_mean"),
-        style = "margin-left: 20px; margin-top: 10px;"
-      ),
-      class = "text-muted"
-    ),
-    
-    hr(),
-    
     # Validation Message
     div(id = "naturalResourcesCombinedValidation",
         uiOutput("naturalResourcesCombinedValidation")),

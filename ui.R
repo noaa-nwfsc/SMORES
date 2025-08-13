@@ -26,6 +26,7 @@ tagList(
   page_navbar(
     theme = theme,
     title = "Suitability Modeling", # title text
+    fillable = TRUE,
     
     # Tab 1: Overview
     nav_panel(
@@ -35,7 +36,7 @@ tagList(
         card(
           card_header("Overview"),
           card_body(
-            HTML(markdown::markdownToHTML("markdown/overview.md"))
+           includeMarkdown("markdown/overview.md")
           )
         )
       )
@@ -96,20 +97,6 @@ tagList(
             
           ),
           # Inset Tab 3
-          nav_panel(
-            title = "Birds",
-            icon = icon("crow"),
-            value = "birds",
-            layout_columns(
-              card(
-                card_header("Birds Submodel"),
-                card_body(
-                  includeMarkdown("markdown/birds.md")
-                )
-              )
-            )
-          ),
-          # Inset Tab 4
           nav_panel(
             title = "Combined Submodel",
             icon = icon("object-group"),

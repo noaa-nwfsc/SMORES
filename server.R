@@ -10,7 +10,6 @@ function(input, output, session) {
     species_lowest = NULL,
     species_product = NULL,
     species_combined_map_generated = FALSE,
-    birds = NULL,
     natural_resources_combined_submodel = NULL,
     natural_resources_combined_submodel_generated = FALSE,
     natural_resources_combined_map = NULL,
@@ -139,7 +138,6 @@ function(input, output, session) {
     prefix <- switch(current_tab,
                      "habitat" = "Habitat",
                      "species" = "Species",
-                     "birds" = "Bird",
                      "surveys" = "Scientific Surveys",
                      "cables" = "Submarine Cables",
                      "")
@@ -155,7 +153,6 @@ function(input, output, session) {
     layer_data <- switch(current_tab,
                          "habitat" = habitat_layer,
                          "species" = species_layer,
-                         "birds" = bird_layer,
                          "surveys" = surveys_layer,
                          "cables" = submarine_cables_layers,
                          NULL)
@@ -175,7 +172,7 @@ function(input, output, session) {
     # For Natural Resources, we check if we have dataTabs (which means we're on the Natural Resources section)
     # OR if navbar is explicitly set to Natural Resources
     is_natural_resources <- (!is.null(input$dataTabs_natural_resources) && 
-                               input$dataTabs_natural_resources %in% c("habitat", "species", "birds", "combined_model_natural_resources")) ||
+                               input$dataTabs_natural_resources %in% c("habitat", "species", "combined_model_natural_resources")) ||
       (!is.null(input$navbar) && input$navbar == "Natural Resources Submodel")
     
     if(!is_natural_resources) {
@@ -189,7 +186,6 @@ function(input, output, session) {
     layer_data <- switch(current_tab_natural_resources,
                          "habitat" = habitat_layer,
                          "species" = species_layer,
-                         "birds" = bird_layer,
                          NULL)
     
     # Use your existing function to get valid configurations
@@ -293,49 +289,6 @@ function(input, output, session) {
         current_tab = current_tab_natural_resources,
         submodel_config = natural_resources_config
       )
-      
-      # Bird tab sidebar content
-    } else if (current_tab_natural_resources == "birds") {
-      map_inputs <- lapply(1:6, function(i) {
-        tagList(
-          hr(),
-          h5(paste("Map", i, "Configuration")),
-          checkboxInput(paste0("EnableBirdMap", i), paste("Enable Map", i), value = FALSE),
-          conditionalPanel(
-            condition = paste0("input.EnableBirdMap", i, " == true"),
-            pickerInput(
-              paste0("BirdLayerPicker", i),
-              paste("Select Layer for Map", i),
-              choices = c("None", names(bird_layer)),
-              selected = "None"
-            ),
-            pickerInput(
-              paste0("BirdScorePicker", i),
-              paste("Select score for Map", i),
-              choices = c("None", score_values),
-              selected = "None"
-            )
-          )
-        )
-      })
-      
-      # generate combined map
-      tagList(
-        h4("Bird Map Settings"),
-        map_inputs,
-        hr(),
-        h4("Combined Bird Map Settings"),
-        # helpText("The combined map will calculate the geometric mean"),
-        actionButton("GenerateCombinedBirdMap", "Generate Combined Bird Map", 
-                     class = "btn-primary btn-block"),
-        # Export button
-        hr(),
-        h4("Export"),
-        downloadButton("birdsExportRmd", "Export to R Markdown",
-                       icon = icon("file-export"),
-                       class = "btn-info btn-block")
-      )
-      
       # Combined Model Tab
     } else if(current_tab_natural_resources == "combined_model_natural_resources") {
       natural_resources_config <- get_natural_resources_config()
@@ -885,8 +838,7 @@ function(input, output, session) {
           combined_maps_data$species_combined_map_generated,
         components = list(
           habitat = combined_maps_data$habitat_combined_map_generated,
-          species = combined_maps_data$species_combined_map_generated,
-          birds = FALSE  # Add this when birds is a go
+          species = combined_maps_data$species_combined_map_generated
         )
       ),
       fisheries = list(
@@ -955,10 +907,9 @@ function(input, output, session) {
     # Get component selections
     include_habitat <- input$includeHabitat %||% FALSE
     include_species <- input$includeSpecies %||% FALSE
-    include_birds <- input$includeBirds %||% FALSE
     
     # Check if any components are selected
-    any_selected <- include_habitat || include_species || include_birds
+    any_selected <- include_habitat || include_species
     
     if(!any_selected) {
       div(class = "alert alert-warning", 
@@ -971,9 +922,6 @@ function(input, output, session) {
       }
       if(include_species && combined_maps_data$species_combined_map_generated) {
         selected_components <- c(selected_components, "Species")
-      }
-      if(include_birds && FALSE) {  # Update when birds is implemented
-        selected_components <- c(selected_components, "Birds")
       }
       
       if(length(selected_components) == 0) {
@@ -992,11 +940,10 @@ function(input, output, session) {
     tryCatch({
       # Get component selections
       include_habitat <- isTRUE(input$includeHabitat)
-      include_species <- isTRUE(input$includeSpecies) 
-      include_birds <- isTRUE(input$includeBirds)
+      include_species <- isTRUE(input$includeSpecies)
       
       # Validate selections
-      if(!include_habitat && !include_species && !include_birds) {
+      if(!include_habitat && !include_species) {
         showNotification("Please select at least one component.", type = "warning")
         return()
       }
