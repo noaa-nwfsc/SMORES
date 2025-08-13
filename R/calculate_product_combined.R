@@ -9,12 +9,7 @@ calculate_product <- function(combined_data) {
     score_matrix <- apply(score_matrix, 2, as.numeric)
     combined_data$Product_value <- apply(score_matrix, 1, function(x) {
       if(all(is.na(x))) return(NA)
-      
-      # Handle case where all values are the same
-      if(length(unique(x[!is.na(x)])) <= 1) {
-        return(x[!is.na(x)][1])  # Return the single unique value
-      }
-      
+  
       prod(x, na.rm = TRUE)
     })
     
