@@ -71,7 +71,7 @@ generate_natural_resources_combined_sidebar <- function(submodel_config, combine
                       choices = habitat_methods,
                       selected = if("geometric_mean" %in% habitat_methods) "geometric_mean" else habitat_methods[[1]])
         } else {
-          div(class = "text-warning", "No calculation methods available. Generate habitat combined maps first.")
+          div(class = "text-danger", "No calculation methods available. Generate habitat combined maps first.")
         },
         style = "margin-left: 20px; margin-top: 10px;"
       )
@@ -101,7 +101,7 @@ generate_natural_resources_combined_sidebar <- function(submodel_config, combine
                       choices = species_methods,
                       selected = if("geometric_mean" %in% species_methods) "geometric_mean" else species_methods[[1]])
         } else {
-          div(class = "text-warning", "No calculation methods available. Generate species combined maps first.")
+          div(class = "text-danger", "No calculation methods available. Generate species combined maps first.")
         },
         style = "margin-left: 20px; margin-top: 10px;"
       )

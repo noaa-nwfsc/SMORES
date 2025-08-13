@@ -50,7 +50,7 @@ function(input, output, session) {
     }
   })
   
-  # Reactive expression for filtered AOI data with debug
+  # Reactive expression for filtered AOI data
   filtered_aoi_data <- reactive({
     
     # If no area is selected or "All Areas" is selected, return all AOI data

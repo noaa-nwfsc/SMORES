@@ -152,3 +152,8 @@ table th {
   background-color: #f8f9fa !important;
   font-weight: bold !important;
 }
+
+/* Reset scroll position for sidebars */
+.bslib-sidebar {
+  scroll-behavior: smooth;
+}
