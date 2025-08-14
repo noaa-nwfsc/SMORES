@@ -36,12 +36,12 @@ get_data_timestamps <- function(data_dir = "data") {
   
   # Add human-readable names
   data_timestamps$dataset_name <- c(
-    "Canyon Data", 
-    "DSC_RH Data", 
+    "Canyon", 
+    "Deep Sea Coral Robust High Suitability", 
     "Fixed Surveys", 
     "Periodic Surveys", 
-    "Seeps Data", 
-    "Shelf Break Data", 
+    "Seeps", 
+    "Shelf Break", 
     "EFHCA",
     "EFHCA 700 fathoms",
     "HAPC AOI",

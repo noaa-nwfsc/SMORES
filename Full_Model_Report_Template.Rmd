@@ -22,6 +22,9 @@ params:
   overall_aoi_cropped_normalized_map: NULL
   data_timestamps: NULL
   aoi_data: NULL
+  weight_natural_resources: NULL
+  weight_fisheries: NULL
+  weight_industry_operations: NULL
 ---
 
 ```{css, include = FALSE}
@@ -151,64 +154,6 @@ source("global.R")
 `%||%` <- function(x, y) if(is.null(x)) y else x
 ```
 
-## Individual Data Layers
-
-```{r}
-if (!is.null(params$component_layer_details) && length(params$component_layer_details) > 0) {
-  cat("Complete List of Individual Data Layers Used in Full Model\n\n")
-  
-  # Create a comprehensive table showing all layers used across all submodels
-  layer_details_list <- list()
-  
-  for (submodel in names(params$component_layer_details)) {
-    submodel_data <- params$component_layer_details[[submodel]]
-    
-    if (!is.null(submodel_data) && length(submodel_data) > 0) {
-      for (component in names(submodel_data)) {
-        component_data <- submodel_data[[component]]
-        component_method <- component_data$method %||% "Unknown"
-        component_layers <- component_data$layers %||% list()
-        
-        if (length(component_layers) > 0) {
-          for (i in seq_along(component_layers)) {
-            layer_name <- component_layers[[i]]$layer_name %||% "Unknown"
-            score_used <- component_layers[[i]]$score_used %||% "Unknown"
-            
-            layer_details_list[[length(layer_details_list) + 1]] <- data.frame(
-              Submodel = case_when(
-                submodel == "natural_resources" ~ "Natural Resources",
-                submodel == "industry_operations" ~ "Industry & Operations",
-                submodel == "fisheries" ~ "Fisheries",
-                TRUE ~ submodel
-              ),
-              Component = component,
-              Component_Method = component_method,
-              Layer_Name = layer_name,
-              Score_Used = score_used,
-              stringsAsFactors = FALSE
-            )
-          }
-        }
-      }
-    }
-  }
-  
-  if (length(layer_details_list) > 0) {
-    # Combine all layer details into one data frame
-    all_layer_details <- do.call(rbind, layer_details_list)
-    
-    kable(all_layer_details,
-          col.names = c("Submodel", "Component", "Component Method", "Layer Name", "Score Used"),
-          format = "html",
-          table.attr = "class='table table-striped config-table'")
-  } else {
-    cat("No individual layer details available.\n")
-  }
-} else {
-  cat("Individual layer information not available.\n")
-}
-```
-
 ## Model Configuration
 
 ```{r}
@@ -244,9 +189,9 @@ if (!is.null(params$submodels_used) && !is.null(params$submodel_weights)) {
 }
 ```
 
+The Natural Resources submodel includes the following components:
 ```{r}
 if (!is.null(params$natural_resources_components) && length(params$natural_resources_components) > 0) {
-  cat("The Natural Resources submodel includes the following components:\n\n")
   
   nr_components <- data.frame(
     Component = names(params$natural_resources_components),
@@ -259,12 +204,21 @@ if (!is.null(params$natural_resources_components) && length(params$natural_resou
         col.names = c("Component", "Status", "Calculation Method"),
         format = "html", 
         table.attr = "class='table table-striped config-table'")
+  
+  # Add weight information
+  if (!is.null(params$weight_natural_resources)) {
+    normalized_weight_pct <- round((params$submodel_weights$natural_resources %||% 0) * 100, 1)
+    cat("**Natural Resources Weight:** ", params$weight_natural_resources, 
+        " (", params$weight_natural_resources * 100, "%), normalized weight ", normalized_weight_pct, "%\n\n")
+  }
 } else {
   cat("Natural Resources submodel not included in this model.\n\n")
 }
+```
 
+The fisheries submodel includes the following components: 
+```{r}
 if (!is.null(params$fisheries_components) && length(params$fisheries_components) > 0) {
-  cat("The Fisheries submodel includes the following components:\n\n")
   
   fish_components <- data.frame(
     Component = names(params$fisheries_components),
@@ -277,12 +231,21 @@ if (!is.null(params$fisheries_components) && length(params$fisheries_components)
         col.names = c("Component", "Status", "Calculation Method"),
         format = "html",
         table.attr = "class='table table-striped config-table'")
+  
+  # Add weight information
+  if (!is.null(params$weight_fisheries)) {
+    normalized_weight_pct <- round((params$submodel_weights$fisheries %||% 0) * 100, 1)
+    cat("**Fisheries Weight:** ", params$weight_fisheries, 
+        " (", params$weight_fisheries * 100, "%), normalized weight ", normalized_weight_pct, "%\n\n")
+  }
 } else {
   cat("Fisheries submodel not included in this model.\n\n")
 }
+```
 
+The Industry & Operations submodel includes the following components:
+```{r}
 if (!is.null(params$industry_operations_components) && length(params$industry_operations_components) > 0) {
-  cat("The Industry & Operations submodel includes the following components:\n\n")
   
   io_components <- data.frame(
     Component = names(params$industry_operations_components),
@@ -295,8 +258,96 @@ if (!is.null(params$industry_operations_components) && length(params$industry_op
         col.names = c("Component", "Status", "Calculation Method"),
         format = "html",
         table.attr = "class='table table-striped config-table'")
+  
+  # Add weight information
+  if (!is.null(params$weight_industry_operations)) {
+    normalized_weight_pct <- round((params$submodel_weights$industry_operations %||% 0) * 100, 1)
+    cat("**Industry & Operations Weight:** ", params$weight_industry_operations, 
+        " (", params$weight_industry_operations * 100, "%), normalized weight ", normalized_weight_pct, "%\n\n")
+  }
 } else {
   cat("Industry & Operations submodel not included in this model.\n\n")
+}
+```
+
+## Selected Layers Data Information
+
+The model configuration selected has the following data layers included: 
+
+```{r}
+if (!is.null(params$component_layer_details) && length(params$component_layer_details) > 0) {
+  
+  # Get data timestamps for joining
+  data_timestamps_df <- NULL
+  if (!is.null(params$data_timestamps)) {
+    data_timestamps_df <- params$data_timestamps %>%
+      select(dataset_name, formatted_date) %>%
+      rename(Layer_Name = dataset_name, Last_Updated = formatted_date)
+  }
+  
+  # Create a comprehensive table showing all layers used across all submodels
+  layer_details_list <- list()
+  
+  for (submodel in names(params$component_layer_details)) {
+    submodel_data <- params$component_layer_details[[submodel]]
+    
+    if (!is.null(submodel_data) && length(submodel_data) > 0) {
+      for (component in names(submodel_data)) {
+        component_data <- submodel_data[[component]]
+        component_method <- component_data$method %||% "Unknown"
+        component_layers <- component_data$layers %||% list()
+        
+        if (length(component_layers) > 0) {
+          for (i in seq_along(component_layers)) {
+            layer_name <- component_layers[[i]]$layer_name %||% "Unknown"
+            score_used <- component_layers[[i]]$score_used %||% "Unknown"
+            
+            layer_details_list[[length(layer_details_list) + 1]] <- data.frame(
+              Layer_Name = layer_name,
+              Score_Used = score_used,
+              Component = component,
+              Method = component_method,
+              Submodel = case_when(
+                submodel == "natural_resources" ~ "Natural Resources",
+                submodel == "industry_operations" ~ "Industry & Operations",
+                submodel == "fisheries" ~ "Fisheries",
+                TRUE ~ submodel
+              ),
+              stringsAsFactors = FALSE
+            )
+          }
+        }
+      }
+    }
+  }
+  
+  if (length(layer_details_list) > 0) {
+    # Combine all layer details into one data frame
+    all_layer_details <- do.call(rbind, layer_details_list)
+    
+     # Join with timestamps if available
+    if (!is.null(data_timestamps_df)) {
+      all_layer_details <- all_layer_details %>%
+        left_join(data_timestamps_df, by = "Layer_Name") %>%
+        
+        mutate(Last_Updated = ifelse(is.na(Last_Updated), "Unknown", Last_Updated))
+      # display table with timestamps
+      kable(all_layer_details,
+            col.names = c("Layer Name", "Selected Score", "Component", "Component Calculation Method", "Submodel", "Last Updated"),
+            format = "html",
+            table.attr = "class='table table-striped config-table'")
+    } else {
+      # Display table without timestamps
+      kable(all_layer_details, 
+            col.names = c("Layer Name", "Selected Score", "Component", "Component Calculation Method", "Submodel"),
+            format = "html",
+            table.attr = "class='table table-striped config-table'")
+    }
+  } else {
+    cat("No individual layer details available.\n")
+  }
+} else {
+  cat("Individual layer information not available.\n")
 }
 ```
 
@@ -353,7 +404,7 @@ if (!is.null(params$overall_aoi_cropped_map)) {
 
 ## Full Combined Model - Cropped to Area of Interest and Normalized 
 
-The normalized AOI-cropped map shows the AOI-filtered data rescaled to a 0-1 range using min-max normalization for only the values within the selected area, making it easier to compare relative differences within the AOI. 
+The normalized AOI-cropped map shows the AOI-filtered data rescaled to a 0-1 range using min-max normalization for only the values within the selected area, making it easier to compare relative differences within the AOI.
 
 ```{r}
 if (!is.null(params$overall_aoi_cropped_normalized_map)) {

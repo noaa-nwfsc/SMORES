@@ -25,10 +25,10 @@ get_filtered_timestamp_data <- function(valid_configs, layer_type = "habitat") {
   # Create mapping between layer names and dataset names
   if (layer_type == "habitat") {
     layer_to_dataset_mapping <- list(
-      "Canyon" = "Canyon Data",
-      "Deep Sea Coral Robust High Suitability" = "DSC_RH Data",
-      "Seeps" = "Seeps Data",
-      "Shelf Break" = "Shelf Break Data",
+      "Canyon" = "Canyon",
+      "Deep Sea Coral Robust High Suitability" = "Deep Sea Coral Robust High Suitability",
+      "Seeps" = "Seeps",
+      "Shelf Break" = "Shelf Break",
       "EFHCA" = "EFHCA",
       "EFHCA 700 fathom" = "EFHCA 700 fathoms",
       "HAPC AOI" = "HAPC AOI",

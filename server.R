@@ -1121,6 +1121,7 @@ function(input, output, session) {
         input = input,
         combined_maps_data = combined_maps_data,
         filtered_aoi_data = filtered_aoi_data,
+        data_timestamps = data_timestamps,
         file = file
       )
     }
@@ -1342,6 +1343,7 @@ function(input, output, session) {
         input = input,
         combined_maps_data = combined_maps_data,
         filtered_aoi_data = filtered_aoi_data,
+        data_timestamps = data_timestamps,
         file = file
       )
     }
@@ -1560,6 +1562,7 @@ function(input, output, session) {
         input = input,
         combined_maps_data = combined_maps_data,
         filtered_aoi_data = filtered_aoi_data,
+        data_timestamps = data_timestamps,
         file = file
       )
     }

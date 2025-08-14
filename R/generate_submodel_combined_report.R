@@ -3,6 +3,7 @@ generate_submodel_combined_report <- function(
     input,
     combined_maps_data,
     filtered_aoi_data,
+    data_timestamps,
     file
 ) {
   
@@ -204,6 +205,7 @@ generate_submodel_combined_report <- function(
       combined_map_title = paste(submodel_display_name, "Combined Submodel"),
       data_timestamps = timestamp_info,
       component_data_summary = component_data_summary,
+      data_timestamps = data_timestamps, 
       aoi_data = aoi_data,
       component_layer_details = component_layer_details,
       combined_map = combined_map,

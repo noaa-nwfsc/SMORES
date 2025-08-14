@@ -2,6 +2,7 @@ generate_full_model_report <- function(
     input,
     combined_maps_data,
     filtered_aoi_data,
+    data_timestamps,
     file
 ) {
   
@@ -217,6 +218,9 @@ generate_full_model_report <- function(
     params = list(
       submodels_used = submodels_used,
       submodel_weights = submodel_weights,
+      weight_natural_resources = input$weightNaturalResources %||% 0,
+      weight_fisheries = input$weightFisheries %||% 0,
+      weight_industry_operations = input$weightIndustryOperations %||% 0,
       natural_resources_components = natural_resources_components,
       industry_operations_components = industry_operations_components,
       fisheries_components = fisheries_components,
@@ -225,7 +229,7 @@ generate_full_model_report <- function(
       overall_combined_map = overall_combined_map,
       overall_aoi_cropped_map = overall_aoi_cropped_map,
       overall_aoi_cropped_normalized_map = overall_aoi_cropped_normalized_map,
-      data_timestamps = timestamp_info,
+      data_timestamps = data_timestamps,
       aoi_data = aoi_data
     ),
     envir = new.env(parent = globalenv())
