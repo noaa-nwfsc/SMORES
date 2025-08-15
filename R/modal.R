@@ -49,7 +49,7 @@ show_spinner_modal <- function(title,
     ),
     footer = NULL,
     size = "l",
-    easyClose = FALSE,
+    easyClose = TRUE,
     fade = TRUE
   ))
   
