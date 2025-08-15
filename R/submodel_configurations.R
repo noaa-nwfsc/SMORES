@@ -18,17 +18,31 @@ get_natural_resources_config <- function() {
         weight_label = "Species Weight",
         default_weight = 0.33,
         data_key = "species"
-      ),
-      list(
-        name = "Birds",
-        weight_id = "BirdsWeight",
-        weight_label = "Birds Weight", 
-        default_weight = 0.34,
-        data_key = "birds"
       )
     ),
     export_config = list(
       button_id = "combinedModelExportRmd",
+      button_label = "Export to R Markdown"
+    )
+  )
+}
+
+get_fisheries_config <- function() {
+  list(
+    name = "Fisheries",
+    status_output_id = "combinedModelStatus_fisheries", 
+    generate_button_id = "generateCombinedModelFisheries",
+    components = list(
+      list(
+        name = "Fisheries",
+        weight_id = "FisheriesWeight",
+        weight_label = "Fisheries Weight",
+        default_weight = 1,
+        data_key = "fisheries"
+      )
+    ),
+    export_config = list(
+      button_id = "fisheriesModelExportRmd",
       button_label = "Export to R Markdown"
     )
   )
@@ -48,11 +62,11 @@ get_industry_operations_config <- function() {
         data_key = "surveys"
       ),
       list(
-        name = "Miscellaneous",
-        weight_id = "MiscWeight",
-        weight_label = "Miscellaneous Weight", 
+        name = "Cables",
+        weight_id = "cablesWeight",
+        weight_label = "Cables Weight", 
         default_weight = 0.5,
-        data_key = "misc"
+        data_key = "cables"
       )
     ),
     export_config = list(
