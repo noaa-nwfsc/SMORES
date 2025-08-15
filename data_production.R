@@ -33,7 +33,8 @@ Seeps <- sf::st_read(dsn = melissa_file_path, layer = "CascadiaSeeps_wBuffer") %
 ShlfBrk <- sf::st_read(dsn = melissa_file_path, layer = "ContinentalShelfBreak_wBuffer") %>%
   st_transform(crsOut)
 
-
+Fisheries <- sf::st_read("G:\\My Drive\\SMORES\\NCCOSfisherieslayers20250815081621\\Non-Confidential_NMFS_fisheries_submodel_data_2km_grid.shp") %>% 
+  st_transform(crsOut)
 
 #area of Interest for analysis - this is the area that data will be cropped and summarized across
 #for Northern CA analysis:
@@ -661,67 +662,278 @@ submarine_cable_scored_long <- pivot_longer(submarine_cable_scored, cols = start
 st_crs(DSC_RH_scored_long) == st_crs(submarine_cable_scored_long)
 saveRDS(submarine_cable_scored_long, "U:\\Github\\SMORES\\data\\submarine_cable_scored.rds")
 
-# ##submarine cables 500 m buffer
-# submarine_cable_500m.grid <- sf::st_intersection(submarine_cable_buffer_500, grd.norcal) %>%
-#   mutate(Score.submarine_cable_500m = 0) %>%
-#   mutate(area.part = st_area(.)) %>%
-#   group_by(CellID_2km) %>% #use for 2km grid 
-#   #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
-#   slice_max(area.part, n = 1) %>%
-#   select(CellID_2km, Score.submarine_cable_500m, status) #use for 2km grid
-# submarine_cable_500m_score <- submarine_cable_500m.grid %>%
-#   st_drop_geometry() %>% 
-#   group_by(CellID_2km) %>% 
-#   distinct(CellID_2km, .keep_all = TRUE)
-# submarine_cable_500m_scored <- grd.norcal %>%
-#   full_join(submarine_cable_500m_score, by = "CellID_2km") %>%
-#   filter(Score.submarine_cable_500m == 0) %>%
-#   rename("1" = Score.submarine_cable_500m) %>%
-#   mutate("0.1" = 0.1,
-#          "0.2" = 0.2,
-#          "0.3" = 0.3,
-#          "0.4" = 0.4,
-#          "0.5" = 0.5,
-#          "0.6" = 0.6,
-#          "0.7" = 0.7,
-#          "0.8" = 0.8,
-#          "0.9" = 0.9) 
-# submarine_cable_500m_scored_long <- pivot_longer(submarine_cable_500m_scored, cols = starts_with(c("0.", "1")), names_to = "submarine_cable_500m", values_to = "Score.submarine_cable_500m") %>% 
-#   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
-#   select(-submarine_cable_500m)
-# st_crs(DSC_RH_scored_long) == st_crs(submarine_cable_500m_scored_long)
-# saveRDS(submarine_cable_500m_scored_long, "U:\\Github\\SMORES\\data\\submarine_cable_500m_scored.rds")
-# 
-# ##submarine cables 501-1000 m buffer
-# submarine_cable_501_1000m.grid <- sf::st_intersection(submarine_cable_buffer_501_1000, grd.norcal) %>%
-#   mutate(Score.submarine_cable_501_1000m = 0) %>%
-#   mutate(area.part = st_area(.)) %>%
-#   group_by(CellID_2km) %>% #use for 2km grid 
-#   #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
-#   slice_max(area.part, n = 1) %>%
-#   select(CellID_2km, Score.submarine_cable_501_1000m, status) #use for 2km grid
-# submarine_cable_501_1000m_score <- submarine_cable_501_1000m.grid %>%
-#   st_drop_geometry() %>% 
-#   group_by(CellID_2km) %>% 
-#   distinct(CellID_2km, .keep_all = TRUE)
-# submarine_cable_501_1000m_scored <- grd.norcal %>%
-#   full_join(submarine_cable_501_1000m_score, by = "CellID_2km") %>%
-#   filter(Score.submarine_cable_501_1000m == 0) %>%
-#   rename("1" = Score.submarine_cable_501_1000m) %>%
-#   mutate("0.1" = 0.1,
-#          "0.2" = 0.2,
-#          "0.3" = 0.3,
-#          "0.4" = 0.4,
-#          "0.5" = 0.5,
-#          "0.6" = 0.6,
-#          "0.7" = 0.7,
-#          "0.8" = 0.8,
-#          "0.9" = 0.9) 
-# submarine_cable_501_1000m_scored_long <- pivot_longer(submarine_cable_501_1000m_scored, cols = starts_with(c("0.", "1")), names_to = "submarine_cable_501_1000m", values_to = "Score.submarine_cable_501_1000m") %>% 
-#   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
-#   select(-submarine_cable_501_1000m)
-# st_crs(DSC_RH_scored_long) == st_crs(submarine_cable_501_1000m_scored_long)
-# saveRDS(submarine_cable_501_1000m_scored_long, "U:\\Github\\SMORES\\data\\submarine_cable_501_1000m_scored.rds")
+#Fisheries data
+# appears to be for just Coos Bay + Brookings
+
+#At-Sea hake mid-water trawl = ASH_RI in fisheries dataset
+ASH <- Fisheries %>% 
+  select(ASH_RI)
+ASH.grid_RI <- sf::st_intersection(ASH, grd.norcal) %>%
+  mutate(Score.ASH = ASH_RI) %>% 
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid 
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.ASH) %>% #checked and no duplicates present
+  sf::st_transform('+proj=longlat +datum=WGS84')
+st_crs(DSC_RH_scored_long) == st_crs(ASH.grid_RI)
+saveRDS(ASH.grid_RI, "U:\\Github\\SMORES\\data\\ASH_Ranked_Importance_scored.rds")
+
+# to make the user selected score options 
+ASH.grid <- ASH.grid_RI %>%
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+ASH_scored <- grd.norcal %>%
+  full_join(ASH.grid, by = "CellID_2km") %>%
+  rename("0" = Score.ASH) %>%
+  mutate("0" = 0,
+    "0.01" = 0.01,
+         "0.001" = 0.001) %>% 
+  pivot_longer(cols = starts_with(c("0.", 0)), names_to = "ASH", values_to = "Score.ASH") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-ASH)
+st_crs(DSC_RH_scored_long) == st_crs(ASH_scored)
+saveRDS(ASH_scored, "U:\\Github\\SMORES\\data\\ASH_scored.rds")
+
+# Shoreside hake mid-water trawl = SSH_RI in fisheries dataset
+SSH <- Fisheries %>% 
+  select(SSH_RI)
+SSH.grid_RI <- sf::st_intersection(SSH, grd.norcal) %>%
+  mutate(Score.SSH = SSH_RI) %>% 
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid 
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.SSH) %>% #checked and no duplicates present
+  sf::st_transform('+proj=longlat +datum=WGS84')
+st_crs(DSC_RH_scored_long) == st_crs(SSH.grid_RI)
+saveRDS(SSH.grid_RI, "U:\\Github\\SMORES\\data\\SSH_Ranked_Importance_scored.rds")
+
+# to make the user selected score options 
+SSH.grid <- SSH.grid_RI %>%
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+SSH_scored <- grd.norcal %>%
+  full_join(SSH.grid, by = "CellID_2km") %>%
+  rename("0" = Score.SSH) %>%
+  mutate("0" = 0,
+         "0.01" = 0.01,
+         "0.001" = 0.001) %>% 
+  pivot_longer(cols = starts_with(c("0.", 0)), names_to = "SSH", values_to = "Score.SSH") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-SSH)
+st_crs(DSC_RH_scored_long) == st_crs(SSH_scored)
+saveRDS(SSH_scored, "U:\\Github\\SMORES\\data\\SSH_scored.rds")
+
+# Groundfish bottom trawl = GFBT_RI in fisheries dataset
+GFBT <- Fisheries %>% 
+  select(GFBT_RI)
+GFBT.grid_RI <- sf::st_intersection(GFBT, grd.norcal) %>%
+  mutate(Score.GFBT = GFBT_RI) %>% 
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid 
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.GFBT) %>% #checked and no duplicates present
+  sf::st_transform('+proj=longlat +datum=WGS84')
+st_crs(DSC_RH_scored_long) == st_crs(GFBT.grid_RI)
+saveRDS(GFBT.grid_RI, "U:\\Github\\SMORES\\data\\GFBT_Ranked_Importance_scored.rds")
+
+# to make the user selected score options 
+GFBT.grid <- GFBT.grid_RI %>%
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+GFBT_scored <- grd.norcal %>%
+  full_join(GFBT.grid, by = "CellID_2km") %>%
+  rename("0" = Score.GFBT) %>%
+  mutate("0" = 0,
+         "0.01" = 0.01,
+         "0.001" = 0.001) %>% 
+  pivot_longer(cols = starts_with(c("0.", 0)), names_to = "GFBT", values_to = "Score.GFBT") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-GFBT)
+st_crs(DSC_RH_scored_long) == st_crs(GFBT_scored)
+saveRDS(GFBT_scored, "U:\\Github\\SMORES\\data\\GFBT_scored.rds")
+
+# Groundfish pot gear = GFP_RI in fisheries dataset
+GFP <- Fisheries %>% 
+  select(GFP_RI)
+GFP.grid_RI <- sf::st_intersection(GFP, grd.norcal) %>%
+  mutate(Score.GFP = GFP_RI) %>% 
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid 
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.GFP) %>% #checked and no duplicates present
+  sf::st_transform('+proj=longlat +datum=WGS84')
+st_crs(DSC_RH_scored_long) == st_crs(GFP.grid_RI)
+saveRDS(GFP.grid_RI, "U:\\Github\\SMORES\\data\\GFP_Ranked_Importance_scored.rds")
+
+# to make the user selected score options 
+GFP.grid <- GFP.grid_RI %>%
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+GFP_scored <- grd.norcal %>%
+  full_join(GFP.grid, by = "CellID_2km") %>%
+  rename("0" = Score.GFP) %>%
+  mutate("0" = 0,
+         "0.01" = 0.01,
+         "0.001" = 0.001) %>% 
+  pivot_longer(cols = starts_with(c("0.", 0)), names_to = "GFP", values_to = "Score.GFP") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-GFP)
+st_crs(DSC_RH_scored_long) == st_crs(GFP_scored)
+saveRDS(GFP_scored, "U:\\Github\\SMORES\\data\\GFP_scored.rds")
+
+# Groundfish longline gear = GFLL_RI in fisheries dataset
+GFLL <- Fisheries %>% 
+  select(GFLL_RI)
+GFLL.grid_RI <- sf::st_intersection(GFLL, grd.norcal) %>%
+  mutate(Score.GFLL = GFLL_RI) %>% 
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid 
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.GFLL) %>% #checked and no duplicates present
+  sf::st_transform('+proj=longlat +datum=WGS84')
+st_crs(DSC_RH_scored_long) == st_crs(GFLL.grid_RI)
+saveRDS(GFLL.grid_RI, "U:\\Github\\SMORES\\data\\GFLL_Ranked_Importance_scored.rds")
+
+# to make the user selected score options 
+GFLL.grid <- GFLL.grid_RI %>%
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+GFLL_scored <- grd.norcal %>%
+  full_join(GFLL.grid, by = "CellID_2km") %>%
+  rename("0" = Score.GFLL) %>%
+  mutate("0" = 0,
+         "0.01" = 0.01,
+         "0.001" = 0.001) %>% 
+  pivot_longer(cols = starts_with(c("0.", 0)), names_to = "GFLL", values_to = "Score.GFLL") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-GFLL)
+st_crs(DSC_RH_scored_long) == st_crs(GFLL_scored)
+saveRDS(GFLL_scored, "U:\\Github\\SMORES\\data\\GFLL_scored.rds")
+
+# Pink shrimp trawl = PS_RI in fisheries dataset
+PS <- Fisheries %>% 
+  select(PS_RI)
+PS.grid_RI <- sf::st_intersection(PS, grd.norcal) %>%
+  mutate(Score.PS = PS_RI) %>% 
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid 
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.PS) %>% #checked and no duplicates present
+  sf::st_transform('+proj=longlat +datum=WGS84')
+st_crs(DSC_RH_scored_long) == st_crs(PS.grid_RI)
+saveRDS(PS.grid_RI, "U:\\Github\\SMORES\\data\\PS_Ranked_Importance_scored.rds")
+
+# to make the user selected score options 
+PS.grid <- PS.grid_RI %>%
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+PS_scored <- grd.norcal %>%
+  full_join(PS.grid, by = "CellID_2km") %>%
+  rename("0" = Score.PS) %>%
+  mutate("0" = 0,
+         "0.01" = 0.01,
+         "0.001" = 0.001) %>% 
+  pivot_longer(cols = starts_with(c("0.", 0)), names_to = "PS", values_to = "Score.PS") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-PS)
+st_crs(DSC_RH_scored_long) == st_crs(PS_scored)
+saveRDS(PS_scored, "U:\\Github\\SMORES\\data\\PS_scored.rds")
+
+# Dungeness Crab = CRAB_RI in fisheries dataset
+CRAB <- Fisheries %>% 
+  select(CRAB_RI)
+CRAB.grid_RI <- sf::st_intersection(CRAB, grd.norcal) %>%
+  mutate(Score.CRAB = CRAB_RI) %>% 
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid 
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.CRAB) %>% #checked and no duplicates present
+  sf::st_transform('+proj=longlat +datum=WGS84')
+st_crs(DSC_RH_scored_long) == st_crs(CRAB.grid_RI)
+saveRDS(CRAB.grid_RI, "U:\\Github\\SMORES\\data\\CRAB_Ranked_Importance_scored.rds")
+
+# to make the user selected score options 
+CRAB.grid <- CRAB.grid_RI %>%
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+CRAB_scored <- grd.norcal %>%
+  full_join(CRAB.grid, by = "CellID_2km") %>%
+  rename("0" = Score.CRAB) %>%
+  mutate("0" = 0,
+         "0.01" = 0.01,
+         "0.001" = 0.001) %>% 
+  pivot_longer(cols = starts_with(c("0.", 0)), names_to = "CRAB", values_to = "Score.CRAB") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-CRAB)
+st_crs(DSC_RH_scored_long) == st_crs(CRAB_scored)
+saveRDS(CRAB_scored, "U:\\Github\\SMORES\\data\\CRAB_scored.rds")
+
+# Commercial troll/hook and line albacore = ALCO_RI in fisheries dataset
+ALCO <- Fisheries %>% 
+  select(ALCO_RI)
+ALCO.grid_RI <- sf::st_intersection(ALCO, grd.norcal) %>%
+  mutate(Score.ALCO = ALCO_RI) %>% 
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid 
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.ALCO) %>% #checked and no duplicates present
+  sf::st_transform('+proj=longlat +datum=WGS84')
+st_crs(DSC_RH_scored_long) == st_crs(ALCO.grid_RI)
+saveRDS(ALCO.grid_RI, "U:\\Github\\SMORES\\data\\ALCO_Ranked_Importance_scored.rds")
+
+# to make the user selected score options 
+ALCO.grid <- ALCO.grid_RI %>%
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+ALCO_scored <- grd.norcal %>%
+  full_join(ALCO.grid, by = "CellID_2km") %>%
+  rename("0" = Score.ALCO) %>%
+  mutate("0" = 0,
+         "0.01" = 0.01,
+         "0.001" = 0.001) %>% 
+  pivot_longer(cols = starts_with(c("0.", 0)), names_to = "ALCO", values_to = "Score.ALCO") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-ALCO)
+st_crs(DSC_RH_scored_long) == st_crs(ALCO_scored)
+saveRDS(ALCO_scored, "U:\\Github\\SMORES\\data\\ALCO_scored.rds")
+
+# Charter vessel albacore troll/hook and line = ALCH_RI in fisheries dataset
+ALCH <- Fisheries %>% 
+  select(ALCH_RI)
+ALCH.grid_RI <- sf::st_intersection(ALCH, grd.norcal) %>%
+  mutate(Score.ALCH = ALCH_RI) %>% 
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid 
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.ALCH) %>% #checked and no duplicates present
+  sf::st_transform('+proj=longlat +datum=WGS84')
+st_crs(DSC_RH_scored_long) == st_crs(ALCH.grid_RI)
+saveRDS(ALCH.grid_RI, "U:\\Github\\SMORES\\data\\ALCH_Ranked_Importance_scored.rds")
+
+# to make the user selected score options 
+ALCH.grid <- ALCH.grid_RI %>%
+  st_drop_geometry() %>% 
+  group_by(CellID_2km) %>% 
+  distinct(CellID_2km, .keep_all = TRUE)
+ALCH_scored <- grd.norcal %>%
+  full_join(ALCH.grid, by = "CellID_2km") %>%
+  rename("0" = Score.ALCH) %>%
+  mutate("0" = 0,
+         "0.01" = 0.01,
+         "0.001" = 0.001) %>% 
+  pivot_longer(cols = starts_with(c("0.", 0)), names_to = "ALCH", values_to = "Score.ALCH") %>% 
+  sf::st_transform('+proj=longlat +datum=WGS84') %>% 
+  select(-ALCH)
+st_crs(DSC_RH_scored_long) == st_crs(ALCH_scored)
+saveRDS(ALCH_scored, "U:\\Github\\SMORES\\data\\ALCH_scored.rds")
 
 #WEA's
 BOEM.gdb <- "Z:\\ArcGIS\\Projects\\OWEC\\p30\\boem_offshorewindenergy.gdb"

@@ -41,11 +41,6 @@ get_filtered_timestamp_data <- function(valid_configs, layer_type = "habitat") {
       "Humpback Whale - Mexico and Central DPS" =  "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS",
       "Biologically Important Area - Blue Whale" = "Biologically Important Area - Blue Whale"
     )
-  } else if (layer_type == "industry") {
-    layer_to_dataset_mapping <- list(
-      "Fixed Surveys" = "Fixed Surveys",
-      "Periodic Surveys" = "Periodic Surveys"
-    )
   } else {
     # For other layer types, use layer name as dataset name
     layer_to_dataset_mapping <- setNames(selected_layers, selected_layers)

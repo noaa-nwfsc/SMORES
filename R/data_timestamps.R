@@ -15,6 +15,15 @@ get_data_timestamps <- function(data_dir = "data") {
     "leatherback_turtle_scored.rds",
     "humpback_whale_scored.rds", 
     "blue_whale_scored.rds",
+    "ASH_scored.rds",
+    "SSH_scored.rds",
+    "GFBT_scored.rds",
+    "GFP_scored.rds",
+    "GFLL_scored.rds",
+    "PS_scored.rds",
+    "CRAB_scored.rds",
+    "ALCO_scored.rds",
+    "ALCH_scored.rds",
     "submarine_cable_scored.rds"
   )
   
@@ -50,6 +59,15 @@ get_data_timestamps <- function(data_dir = "data") {
     "ESA Critical Habitat for Leatherback Sea Turtles",
     "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS", 
     "Biologically Important Area - Blue Whale",
+    "At-Sea Hake Mid-Water Trawl",
+    "Shoreside Hake Mid-Water Trawl",
+    "Groundfish Bottom Trawl",
+    "Groundfish Pot Gear",
+    "Groundfish Long Line Gear",
+    "Pink Shrimp Trawl",
+    "Dungeness Crab",
+    "Commercial Troll/Hook and Line Albacore",
+    "Charter Vessel Albacore Troll/Hook and Line",
     "Submarine Cables"
   )
   
@@ -69,7 +87,44 @@ get_data_timestamps <- function(data_dir = "data") {
     "Critical habitat for endangered Leatherback Sea Turtles",
     "Critical habitat for Humpback Whales (Mexico and Central Distinct Population Segments)",
     "Biologically Important Area (Parent and Core) for Blue Whales",
+    "At-Sea Hake Mid-Water Trawl",
+    "Shoreside Hake Mid-Water Trawl",
+    "Groundfish Bottom Trawl",
+    "Groundfish Pot Gear",
+    "Groundfish Long Line Gear",
+    "Pink Shrimp Trawl",
+    "Dungeness Crab",
+    "Commercial Troll/Hook and Line Albacore",
+    "Charter Vessel Albacore Troll/Hook and Line",
     "Submarine Cables"
+  )
+  
+  # Add data type (need to be in same order as earlier lists)
+  data_timestamps$data_type <- c(
+    "Discrete",         # Canyon
+    "Dicrete (*Continuous if z-membership is selected)",     # Deep Sea Coral Robust High Suitability
+    "Discrete",         # Fixed Surveys
+    "Discrete",         # Periodic Surveys
+    "Discrete",         # Seeps
+    "Discrete",         # Shelf Break
+    "Discrete",         # EFHCA
+    "Discrete",         # EFHCA 700 fathoms
+    "Discrete",         # HAPC AOI
+    "Discrete",         # HAPC Rocky Reef
+    "Discrete",         # Killer Whales
+    "Discrete",         # Leatherback Turtles
+    "Discrete",         # Humpback Whales
+    "Discrete",         # Blue Whale
+    "Continuous",       # ASH
+    "Continuous",       # SSH
+    "Continuous",       # GFBT
+    "Continuous",       # GFP
+    "Continuous",       # GFLL
+    "Continuous",       # PS
+    "Continuous",       # CRAB
+    "Continuous",       # ALCO
+    "Continuous",       # ALCH
+    "Discrete"          # Submarine Cables
   )
   
   # Format the timestamps for display
