@@ -10,6 +10,9 @@ generate_full_model_report <- function(
   show_spinner_modal("Generating Full Model Report", 
                      "Please wait while the Full Model report is being generated...")
   
+  # Initialize component_layer_details at the beginning
+  component_layer_details <- list()
+  
   # Define filter_by_score function locally since it's not available in global environment
   filter_by_score <- function(df, selected_score) {
     if(is.null(df) || is.null(selected_score) || selected_score == "None") {
@@ -91,17 +94,22 @@ generate_full_model_report <- function(
     # Check which NR components were used
     if(input$includeHabitat %||% FALSE) {
       habitat_method <- input$habitatCalculationMethod %||% "geometric_mean"
-      natural_resources_components[["Habitat"]] <- list(method = habitat_method)
+      natural_resources_components[["Habitat"]] <- "Included"
+      # Store method separately for layer details
+      if(is.null(component_layer_details[["natural_resources"]])) {
+        component_layer_details[["natural_resources"]] <- list()
+      }
+      component_layer_details[["natural_resources"]][["Habitat"]] <- list(method = habitat_method)
     }
     
     if(input$includeSpecies %||% FALSE) {
       species_method <- input$speciesCalculationMethod %||% "geometric_mean"
-      natural_resources_components[["Species"]] <- list(method = species_method)
-    }
-    
-    if(input$includeBirds %||% FALSE) {
-      # Add when birds is implemented
-      # natural_resources_components[["Birds"]] <- list(method = "geometric_mean")
+      natural_resources_components[["Species"]] <- "Included"
+      # Store method separately for layer details
+      if(is.null(component_layer_details[["natural_resources"]])) {
+        component_layer_details[["natural_resources"]] <- list()
+      }
+      component_layer_details[["natural_resources"]][["Species"]] <- list(method = species_method)
     }
   }
   
@@ -113,30 +121,40 @@ generate_full_model_report <- function(
     # Check which IO components were used
     if(input$includeSurveys %||% FALSE) {
       surveys_method <- input$surveysCalculationMethod %||% "geometric_mean"
-      industry_operations_components[["Scientific Surveys"]] <- list(method = surveys_method)
+      industry_operations_components[["Scientific Surveys"]] <- "Included"
+      # Store method separately for layer details
+      if(is.null(component_layer_details[["industry_operations"]])) {
+        component_layer_details[["industry_operations"]] <- list()
+      }
+      component_layer_details[["industry_operations"]][["Scientific Surveys"]] <- list(method = surveys_method)
     }
     
     if(input$includeCables %||% FALSE) {
       cables_method <- input$cablesCalculationMethod %||% "geometric_mean"
-      industry_operations_components[["Submarine Cables"]] <- list(method = cables_method)
+      industry_operations_components[["Submarine Cables"]] <- "Included"
+      # Store method separately for layer details
+      if(is.null(component_layer_details[["industry_operations"]])) {
+        component_layer_details[["industry_operations"]] <- list()
+      }
+      component_layer_details[["industry_operations"]][["Submarine Cables"]] <- list(method = cables_method)
     }
   }
   
   # Get Fisheries components if enabled (placeholder for future implementation)
   fisheries_components <- NULL
   
-  # Build comprehensive component layer details
-  component_layer_details <- list()
-  
+  # Build comprehensive component layer details with actual layer configurations
   # Natural Resources layer details
   if(!is.null(natural_resources_components)) {
-    component_layer_details[["natural_resources"]] <- list()
+    if(is.null(component_layer_details[["natural_resources"]])) {
+      component_layer_details[["natural_resources"]] <- list()
+    }
     
     if("Habitat" %in% names(natural_resources_components)) {
       habitat_configs <- get_valid_configs_for_tab(input, "habitat", habitat_layer, score_colors, filter_by_score)
       if(length(habitat_configs) > 0) {
         component_layer_details[["natural_resources"]][["Habitat"]] <- list(
-          method = natural_resources_components[["Habitat"]]$method,
+          method = input$habitatCalculationMethod %||% "geometric_mean",
           layers = lapply(habitat_configs, function(config) {
             list(
               layer_name = config$layer %||% "Unknown",
@@ -151,7 +169,7 @@ generate_full_model_report <- function(
       species_configs <- get_valid_configs_for_tab(input, "species", species_layer, score_colors, filter_by_score)
       if(length(species_configs) > 0) {
         component_layer_details[["natural_resources"]][["Species"]] <- list(
-          method = natural_resources_components[["Species"]]$method,
+          method = input$speciesCalculationMethod %||% "geometric_mean",
           layers = lapply(species_configs, function(config) {
             list(
               layer_name = config$layer %||% "Unknown",
@@ -165,13 +183,15 @@ generate_full_model_report <- function(
   
   # Industry & Operations layer details
   if(!is.null(industry_operations_components)) {
-    component_layer_details[["industry_operations"]] <- list()
+    if(is.null(component_layer_details[["industry_operations"]])) {
+      component_layer_details[["industry_operations"]] <- list()
+    }
     
     if("Scientific Surveys" %in% names(industry_operations_components)) {
       surveys_configs <- get_valid_configs_for_tab(input, "surveys", surveys_layer, score_colors, filter_by_score)
       if(length(surveys_configs) > 0) {
         component_layer_details[["industry_operations"]][["Scientific Surveys"]] <- list(
-          method = industry_operations_components[["Scientific Surveys"]]$method,
+          method = input$surveysCalculationMethod %||% "geometric_mean",
           layers = lapply(surveys_configs, function(config) {
             list(
               layer_name = config$layer %||% "Unknown",
@@ -186,7 +206,7 @@ generate_full_model_report <- function(
       cables_configs <- get_valid_configs_for_tab(input, "cables", submarine_cables_layer, score_colors, filter_by_score)
       if(length(cables_configs) > 0) {
         component_layer_details[["industry_operations"]][["Submarine Cables"]] <- list(
-          method = industry_operations_components[["Submarine Cables"]]$method,
+          method = input$cablesCalculationMethod %||% "geometric_mean",
           layers = lapply(cables_configs, function(config) {
             list(
               layer_name = config$layer %||% "Unknown",
