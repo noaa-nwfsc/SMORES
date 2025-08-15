@@ -15,6 +15,10 @@ function(input, output, session) {
     natural_resources_combined_map = NULL,
     natural_resources_combined_map_cropped = NULL,
     natural_resources_combined_map_cropped_normalized = NULL,
+    fisheries_geo = NULL,
+    fisheries_lowest = NULL,
+    fisheries_product = NULL,
+    fisheries_combined_map_generated = FALSE,
     industry = NULL, 
     surveys_geo = NULL,
     surveys_lowest = NULL, 
@@ -140,6 +144,7 @@ function(input, output, session) {
                      "species" = "Species",
                      "surveys" = "Scientific Surveys",
                      "cables" = "Submarine Cables",
+                     "fisheries" = "Fisheries",
                      "")
     
     if(prefix == "") return(FALSE) # Invalid tab
@@ -155,6 +160,7 @@ function(input, output, session) {
                          "species" = species_layer,
                          "surveys" = surveys_layer,
                          "cables" = submarine_cables_layers,
+                         "fisheries" = fisheries_layers,
                          NULL)
     
     if(is.null(layer_data)) return(FALSE) # Invalid layer data
@@ -190,6 +196,30 @@ function(input, output, session) {
     
     # Use your existing function to get valid configurations
     configs <- get_valid_configs_for_tab(input, current_tab_natural_resources, layer_data, score_colors, filter_by_score)
+    
+    return(configs)
+  })
+  
+  # Reactive expression for Fisheries tab valid configs
+  fisheries_valid_configs <- reactive({
+    
+    # For Fisheries, we check if navbar is explicitly set to Fisheries
+    is_fisheries <- (!is.null(input$navbar) && input$navbar == "Fisheries Submodel")
+    
+    if(!is_fisheries) {
+      return(list())
+    }
+    
+    # Default to habitat if dataTabs is not set
+    current_tab_fisheries <- input$dataTabs_fisheries %||% "fisheries"
+    
+    # Set the layer data based on the current data tab
+    layer_data <- switch(current_tab_fisheries,
+                         "fisheries" = fisheries_layers,
+                         NULL)
+    
+    # Use your existing function to get valid configurations
+    configs <- get_valid_configs_for_tab(input, current_tab_fisheries, layer_data, score_colors, filter_by_score)
     
     return(configs)
   })
@@ -232,6 +262,25 @@ function(input, output, session) {
       local({
         local_config <- config
         map_id <- paste0("naturalresources_map_", local_config$index)
+        
+        # Generate map using pure function and assign to output
+        output[[map_id]] <- renderLeaflet({
+          create_individual_map(local_config, aoi_data)
+        })
+      })
+    }
+  })
+  
+  # Fisheries maps
+  observe({
+    valid_configs <- fisheries_valid_configs()
+    aoi_data <- filtered_aoi_data()
+    
+    # Generate each map directly using the pure function
+    for(config in valid_configs) {
+      local({
+        local_config <- config
+        map_id <- paste0("fisheries_map_", local_config$index)
         
         # Generate map using pure function and assign to output
         output[[map_id]] <- renderLeaflet({
@@ -293,6 +342,24 @@ function(input, output, session) {
     } else if(current_tab_natural_resources == "combined_model_natural_resources") {
       natural_resources_config <- get_natural_resources_config()
       generate_natural_resources_combined_sidebar(natural_resources_config, combined_maps_data)
+    }
+  })
+  
+  # Dynamic sidebar content for fisheries
+  output$dynamicSidebar_fisheries <- renderUI({
+    current_tab_fisheries <- input$dataTabs_fisheries %||% "fisheries"
+    
+    if (current_tab_fisheries == "fisheries") {
+      fisheries_layers_names <- names(fisheries_layers)
+      fisheries_config <- get_fisheries_config()
+      
+      #use function to make fisheries sidebar
+      generate_fisheries_sidebar(
+        fisheries_layers_names,  
+        score_values_ranked_importance,
+        current_tab = current_tab_fisheries,
+        submodel_config = fisheries_config
+      )
     }
   })
   
@@ -894,10 +961,11 @@ function(input, output, session) {
   # Data tab timestamp table
   output$data_timestamps_table <- renderTable({
     data_timestamps %>%
-      select(dataset_name, description, formatted_date) %>%
+      select(dataset_name, description, data_type, formatted_date) %>%
       rename(
         "Dataset" = dataset_name,
         "Description" = description,
+        "Data Type" = data_type,
         "Last Updated" = formatted_date
       )
   })
@@ -1555,7 +1623,7 @@ function(input, output, session) {
   # Full Model Report Export Handler
   output$fullModelExportRmd <- downloadHandler(
     filename = function() {
-      paste0("Full_Model_Report_", Sys.Date(), ".html")
+      paste("Full_Model_Report_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
     },
     content = function(file) {
       generate_full_model_report(

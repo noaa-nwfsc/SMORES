@@ -21,6 +21,7 @@ theme <- bslib::bs_theme()
 ## Sidebar functions
 source("R/generate_habitat_sidebar.R")
 source("R/generate_species_sidebar.R")
+source("R/generate_fisheries_sidebar.R")
 source("R/generate_surveys_sidebar.R")
 source("R/generate_cables_sidebar.R")
 source("R/generate_full_model_sidebar.R")
@@ -34,7 +35,7 @@ source("R/create_individual_map.R")
 source("R/create_combined_map.R")
 source("R/filter_by_score.R")
 source("R/calculate_submodel_geometric_mean.R")
-source("R/create_z_membership_palette.R")
+source("R/create_continuous_palette.R")
 source("R/create_maps_container.R")
 source("R/check_submodel_status.R")
 source("R/submodel_configurations.R")
@@ -89,6 +90,17 @@ leatherback_turtle <- readRDS("data/leatherback_turtle_scored.rds")
 humpback_whale <- readRDS("data/humpback_whale_scored.rds")
 blue_whale <- readRDS("data/blue_whale_scored.rds")
 
+## Fisheries Layers 
+ASH <- readRDS("data/ASH_scored.rds")
+SSH <- readRDS("data/SSH_scored.rds")
+GFBT <- readRDS("data/GFBT_scored.rds")
+GFP <- readRDS("data/GFP_scored.rds")
+GFLL <- readRDS("data/GFLL_scored.rds")
+PS <- readRDS("data/PS_scored.rds")
+CRAB <- readRDS("data/CRAB_scored.rds")
+ALCO <- readRDS("data/ALCO_scored.rds")
+ALCH <- readRDS("data/ALCH_scored.rds")
+
 ## Industry & Operations Layers
 
 ### Survey Layers
@@ -123,6 +135,17 @@ species_layer <- list(
 )
 
 ##Fisheries Submodel
+fisheries_layers <- list(
+  "At-Sea Hake Mid-Water Trawl" = ASH,
+  "Shoreside Hake Mid-Water Trawl" = SSH,
+  "Groundfish Bottom Trawl" = GFBT,
+  "Groundfish Pot Gear" = GFP,
+  "Groundfish Long Line Gear" = GFLL,
+  "Pink Shrimp Trawl" = PS,
+  "Dungeness Crab" = CRAB,
+  "Commercial Troll/Hook and Line Albacore" = ALCO,
+  "Charter Vessel Albacore Troll/Hook and Line" = ALCH
+)
 
 ##Industry & Operations Submodel
 surveys_layers <- list(
@@ -134,10 +157,13 @@ submarine_cables_layer <- list(
 )
 
 # Weight values
-score_values <- c("0","0.01", "0.001", "0.1", "0.2", "0.3", "0.4", "0.5" ,"0.6", "0.7", "0.8", "0.9", "1")
+score_values <- c("0","0.001", "0.01", "0.1", "0.2", "0.3", "0.4", "0.5" ,"0.6", "0.7", "0.8", "0.9", "1")
 
 # Weight values with z-membership involved
-score_values_z_membership <- c("Z Membership" ,"0", "0.01","0.001", "0.1", "0.2", "0.3", "0.4", "0.5" ,"0.6", "0.7", "0.8", "0.9", "1")
+score_values_z_membership <- c("Z Membership", "0", "0.001", "0.01", "0.1", "0.2", "0.3", "0.4", "0.5" ,"0.6", "0.7", "0.8", "0.9", "1")
+
+# Weight values with fisheries 
+score_values_ranked_importance <- c("Ranked Importance", "0", "0.001", "0.01")
 
 # Add a null coalescing operator helper since R doesn't have one built-in
 `%||%` <- function(x, y) if(is.null(x)) y else x

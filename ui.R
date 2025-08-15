@@ -126,13 +126,29 @@ tagList(
     nav_panel(
       title = "Fisheries Submodel",
       icon = icon("fish-fins"),
-      card(
-        card_header("Fisheries Submodel"),
-        card_body(
-          includeMarkdown("markdown/fisheries.md")
+      
+      # Layout with sidebar for fisheries
+      layout_sidebar(
+        # Sidebar for picker inputs
+        sidebar = sidebar(
+          # Dynamic picker inputs
+          uiOutput("dynamicSidebar_fisheries")
+        ),
+        
+        # Main content area
+        tagList(
+          card(
+            card_header("Scoring Information"),
+            card_body(
+              includeMarkdown("markdown/fisheries.md")
+            )
+          ),
+          
+          # Container for multiple maps
+          uiOutput("multipleMapsContainer_fisheries")
         )
       )
-    ), 
+    ),
     # Tab 5: Industry & Operations Submodel
     nav_panel(
       title = "Industry & Operations Submodel",
