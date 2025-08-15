@@ -187,86 +187,61 @@ if (!is.null(params$submodels_used) && !is.null(params$submodel_weights)) {
 } else {
   cat("Submodel configuration information not available.\n\n")
 }
-```
 
-The Natural Resources submodel includes the following components:
-```{r}
-if (!is.null(params$natural_resources_components) && length(params$natural_resources_components) > 0) {
+# Add the submodel components summary table here
+if (!is.null(params$natural_resources_components) || 
+    !is.null(params$industry_operations_components) || 
+    !is.null(params$fisheries_components)) {
   
-  nr_components <- data.frame(
-    Component = names(params$natural_resources_components),
-    Status = "Included",
-    Method = sapply(params$natural_resources_components, function(x) x$method %||% "Unknown"),
-    stringsAsFactors = FALSE
-  )
+  cat("### Submodel Components Summary\n\n")
   
-  kable(nr_components,
-        col.names = c("Component", "Status", "Calculation Method"),
-        format = "html", 
-        table.attr = "class='table table-striped config-table'")
+  # Create a comprehensive components table
+  all_components <- list()
   
-  # Add weight information
-  if (!is.null(params$weight_natural_resources)) {
-    normalized_weight_pct <- round((params$submodel_weights$natural_resources %||% 0) * 100, 1)
-    cat("**Natural Resources Weight:** ", params$weight_natural_resources, 
-        " (", params$weight_natural_resources * 100, "%), normalized weight ", normalized_weight_pct, "%\n\n")
+  if (!is.null(params$natural_resources_components) && length(params$natural_resources_components) > 0) {
+    for(comp_name in names(params$natural_resources_components)) {
+      all_components[[length(all_components) + 1]] <- data.frame(
+        Submodel = "Natural Resources",
+        Component = comp_name,
+        Status = "Included",
+        stringsAsFactors = FALSE
+      )
+    }
   }
-} else {
-  cat("Natural Resources submodel not included in this model.\n\n")
-}
-```
-
-The fisheries submodel includes the following components: 
-```{r}
-if (!is.null(params$fisheries_components) && length(params$fisheries_components) > 0) {
   
-  fish_components <- data.frame(
-    Component = names(params$fisheries_components),
-    Status = "Included",
-    Method = sapply(params$fisheries_components, function(x) x$method %||% "Unknown"),
-    stringsAsFactors = FALSE
-  )
-  
-  kable(fish_components,
-        col.names = c("Component", "Status", "Calculation Method"),
-        format = "html",
-        table.attr = "class='table table-striped config-table'")
-  
-  # Add weight information
-  if (!is.null(params$weight_fisheries)) {
-    normalized_weight_pct <- round((params$submodel_weights$fisheries %||% 0) * 100, 1)
-    cat("**Fisheries Weight:** ", params$weight_fisheries, 
-        " (", params$weight_fisheries * 100, "%), normalized weight ", normalized_weight_pct, "%\n\n")
+  if (!is.null(params$fisheries_components) && length(params$fisheries_components) > 0) {
+    for(comp_name in names(params$fisheries_components)) {
+      all_components[[length(all_components) + 1]] <- data.frame(
+        Submodel = "Fisheries", 
+        Component = comp_name,
+        Status = "Included",
+        stringsAsFactors = FALSE
+      )
+    }
   }
-} else {
-  cat("Fisheries submodel not included in this model.\n\n")
-}
-```
-
-The Industry & Operations submodel includes the following components:
-```{r}
-if (!is.null(params$industry_operations_components) && length(params$industry_operations_components) > 0) {
   
-  io_components <- data.frame(
-    Component = names(params$industry_operations_components),
-    Status = "Included", 
-    Method = sapply(params$industry_operations_components, function(x) x$method %||% "Unknown"),
-    stringsAsFactors = FALSE
-  )
-  
-  kable(io_components,
-        col.names = c("Component", "Status", "Calculation Method"),
-        format = "html",
-        table.attr = "class='table table-striped config-table'")
-  
-  # Add weight information
-  if (!is.null(params$weight_industry_operations)) {
-    normalized_weight_pct <- round((params$submodel_weights$industry_operations %||% 0) * 100, 1)
-    cat("**Industry & Operations Weight:** ", params$weight_industry_operations, 
-        " (", params$weight_industry_operations * 100, "%), normalized weight ", normalized_weight_pct, "%\n\n")
+  if (!is.null(params$industry_operations_components) && length(params$industry_operations_components) > 0) {
+    for(comp_name in names(params$industry_operations_components)) {
+      all_components[[length(all_components) + 1]] <- data.frame(
+        Submodel = "Industry & Operations",
+        Component = comp_name, 
+        Status = "Included",
+        stringsAsFactors = FALSE
+      )
+    }
   }
-} else {
-  cat("Industry & Operations submodel not included in this model.\n\n")
+  
+  if(length(all_components) > 0) {
+    components_df <- do.call(rbind, all_components)
+    
+    kable(components_df,
+          col.names = c("Submodel", "Component", "Status"),
+          caption = "Components Included in Each Submodel", 
+          format = "html",
+          table.attr = "class='table table-striped config-table'")
+    
+    cat("\n")
+  }
 }
 ```
 
@@ -281,8 +256,8 @@ if (!is.null(params$component_layer_details) && length(params$component_layer_de
   data_timestamps_df <- NULL
   if (!is.null(params$data_timestamps)) {
     data_timestamps_df <- params$data_timestamps %>%
-      select(dataset_name, formatted_date) %>%
-      rename(Layer_Name = dataset_name, Last_Updated = formatted_date)
+     select(dataset_name, data_type, formatted_date) %>%
+     rename(Layer_Name = dataset_name, Data_Type = data_type, Last_Updated = formatted_date)
   }
   
   # Create a comprehensive table showing all layers used across all submodels
@@ -329,11 +304,13 @@ if (!is.null(params$component_layer_details) && length(params$component_layer_de
     if (!is.null(data_timestamps_df)) {
       all_layer_details <- all_layer_details %>%
         left_join(data_timestamps_df, by = "Layer_Name") %>%
-        
-        mutate(Last_Updated = ifelse(is.na(Last_Updated), "Unknown", Last_Updated))
+       mutate(
+          Data_Type = ifelse(is.na(Data_Type), "Unknown", Data_Type),
+          Last_Updated = ifelse(is.na(Last_Updated), "Unknown", Last_Updated))
+      
       # display table with timestamps
       kable(all_layer_details,
-            col.names = c("Layer Name", "Selected Score", "Component", "Component Calculation Method", "Submodel", "Last Updated"),
+            col.names = c("Layer Name", "Selected Score", "Component", "Component Calculation Method", "Submodel", "Data Type", "Last Updated"),
             format = "html",
             table.attr = "class='table table-striped config-table'")
     } else {

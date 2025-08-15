@@ -152,8 +152,8 @@ if (!is.null(params$component_layer_details) && length(params$component_layer_de
   data_timestamps_df <- NULL
   if (!is.null(params$data_timestamps)) {
     data_timestamps_df <- params$data_timestamps %>%
-      select(dataset_name, formatted_date) %>%
-      rename(Layer_Name = dataset_name, Last_Updated = formatted_date)
+      select(dataset_name, data_type, formatted_date) %>%
+      rename(Layer_Name = dataset_name, Data_Type = data_type, Last_Updated = formatted_date)
   }
   
   # Create a comprehensive table showing all layers used in each component
@@ -189,11 +189,13 @@ if (!is.null(params$component_layer_details) && length(params$component_layer_de
     if (!is.null(data_timestamps_df)) {
       all_layer_details <- all_layer_details %>%
         left_join(data_timestamps_df, by = "Layer_Name") %>%
-        mutate(Last_Updated = ifelse(is.na(Last_Updated), "Unknown", Last_Updated))
+        mutate(
+          Data_Type = ifelse(is.na(Data_Type), "Unknown", Data_Type),
+          Last_Updated = ifelse(is.na(Last_Updated), "Unknown", Last_Updated))
       
       # Display table with timestamps
       kable(all_layer_details, 
-            col.names = c("Layer Name", "Selected Score", "Component", "Component Calculation Method", "Last Updated"),
+            col.names = c("Layer Name", "Selected Score", "Component", "Component Calculation Method", "Data Type", "Last Updated"),
             format = "html",
             table.attr = "class='table table-striped config-table'")
     } else {
@@ -257,7 +259,7 @@ if (!is.null(params$aoi_cropped_map)) {
 
 ## Normalized Combined Submodel - Cropped to area of interest (AOI)
 
-he normalized AOI-cropped map shows the AOI-filtered data rescaled to a 0-1 range using a min max normalization for only the values within the selected area, making it easier to compare relative differences within the AOI.
+The normalized AOI-cropped map shows the AOI-filtered data rescaled to a 0-1 range using a min max normalization for only the values within the selected area, making it easier to compare relative differences within the AOI.
 
 ```{r}
 if (!is.null(params$aoi_cropped_normalized_map)) {

@@ -144,10 +144,11 @@ if (is.null(params$data_timestamps)) {
 if (!is.null(data_timestamps_table)) {
   display_table <- data_timestamps_table %>%
     filter(!is.na(formatted_date)) %>%
-    select(dataset_name, description, formatted_date) %>%
+    select(dataset_name, description, data_type, formatted_date) %>%
     rename(
       "Layer Name" = dataset_name,
       "Description" = description,
+      "Data Type" = data_type,
       "Last Updated" = formatted_date
     )
   
