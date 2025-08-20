@@ -19,7 +19,7 @@ make_combined_map_dataset <- function(valid_configs, dataset_mapping, base_grid 
       next  # Skip if layer name doesn't match any mapping
     }
     
-    # Handle dynamic dataset selection for DSC layer
+    # Handle dynamic dataset selection for layers with multiple score types
     if(is.function(dataset_info$data)) {
       dataset <- dataset_info$data(score_value)
       score_column <- dataset_info$score_column(score_value)
@@ -28,8 +28,14 @@ make_combined_map_dataset <- function(valid_configs, dataset_mapping, base_grid 
       score_column <- dataset_info$score_column
     }
     
-    # Special handling for Z Membership - don't filter, use all data
-    if(score_value == "Z Membership") {
+    # Handle different score types - no filtering needed for ranked importance
+    if(score_value == "Ranked Importance") {
+      # For ranked importance, use all data as-is (values are already 0-1)
+      temp_data <- dataset %>%
+        st_drop_geometry() %>%
+        select(CellID_2km, !!score_column)
+    } else if(score_value == "Z Membership") {
+      # Special handling for Z Membership - don't filter, use all data
       temp_data <- dataset %>%
         st_drop_geometry() %>%
         select(CellID_2km, !!score_column)
