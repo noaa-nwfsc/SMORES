@@ -11,7 +11,8 @@ output:
     self_contained: true
 params:
   submodels_used: NULL
-  submodel_weights: NULL
+  submodel_weights_original: NULL
+  submodel_weights_normalized: NULL
   natural_resources_components: NULL
   industry_operations_components: NULL
   fisheries_components: NULL
@@ -157,13 +158,16 @@ source("global.R")
 ## Model Configuration
 
 ```{r}
-if (!is.null(params$submodels_used) && !is.null(params$submodel_weights)) {
   # Create submodel configuration table
   submodel_config <- data.frame(
     Submodel = names(params$submodels_used),
     Status = "Included",
-    Weight = sapply(names(params$submodels_used), function(x) {
-      weight <- params$submodel_weights[[x]] %||% 0
+    Original_Weight = sapply(names(params$submodels_used), function(x) {
+      weight <- params$submodel_weights_original[[x]] %||% 0
+      paste0(round(weight * 100, 1), "%")
+    }),
+    Normalized_Weight = sapply(names(params$submodels_used), function(x) {
+      weight <- params$submodel_weights_normalized[[x]] %||% 0
       paste0(round(weight * 100, 1), "%")
     }),
     stringsAsFactors = FALSE
@@ -177,72 +181,11 @@ if (!is.null(params$submodels_used) && !is.null(params$submodel_weights)) {
     TRUE ~ submodel_config$Submodel
   )
   
+  # Display the table
   kable(submodel_config,
-        col.names = c("Submodel", "Status", "Weight"),
-        caption = "Submodels Used in Full Model Calculation",
+        col.names = c("Submodel", "Status", "Original Weight", "Normalized Weight"),
         format = "html",
         table.attr = "class='table table-striped config-table'")
-  
-  cat("\n**Final Combination Method:** Weighted Geometric Mean of Submodel Scores\n\n")
-} else {
-  cat("Submodel configuration information not available.\n\n")
-}
-
-# Add the submodel components summary table here
-if (!is.null(params$natural_resources_components) || 
-    !is.null(params$industry_operations_components) || 
-    !is.null(params$fisheries_components)) {
-  
-  cat("### Submodel Components Summary\n\n")
-  
-  # Create a comprehensive components table
-  all_components <- list()
-  
-  if (!is.null(params$natural_resources_components) && length(params$natural_resources_components) > 0) {
-    for(comp_name in names(params$natural_resources_components)) {
-      all_components[[length(all_components) + 1]] <- data.frame(
-        Submodel = "Natural Resources",
-        Component = comp_name,
-        Status = "Included",
-        stringsAsFactors = FALSE
-      )
-    }
-  }
-  
-  if (!is.null(params$fisheries_components) && length(params$fisheries_components) > 0) {
-    for(comp_name in names(params$fisheries_components)) {
-      all_components[[length(all_components) + 1]] <- data.frame(
-        Submodel = "Fisheries", 
-        Component = comp_name,
-        Status = "Included",
-        stringsAsFactors = FALSE
-      )
-    }
-  }
-  
-  if (!is.null(params$industry_operations_components) && length(params$industry_operations_components) > 0) {
-    for(comp_name in names(params$industry_operations_components)) {
-      all_components[[length(all_components) + 1]] <- data.frame(
-        Submodel = "Industry & Operations",
-        Component = comp_name, 
-        Status = "Included",
-        stringsAsFactors = FALSE
-      )
-    }
-  }
-  
-  if(length(all_components) > 0) {
-    components_df <- do.call(rbind, all_components)
-    
-    kable(components_df,
-          col.names = c("Submodel", "Component", "Status"),
-          caption = "Components Included in Each Submodel", 
-          format = "html",
-          table.attr = "class='table table-striped config-table'")
-    
-    cat("\n")
-  }
-}
 ```
 
 ## Selected Layers Data Information
