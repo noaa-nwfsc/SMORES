@@ -22,6 +22,7 @@ theme <- bslib::bs_theme()
 source("R/generate_habitat_sidebar.R")
 source("R/generate_species_sidebar.R")
 source("R/generate_fisheries_sidebar.R")
+source("R/generate_trawl_fisheries_sidebar.R")
 source("R/generate_surveys_sidebar.R")
 source("R/generate_cables_sidebar.R")
 source("R/generate_full_model_sidebar.R")
@@ -92,14 +93,26 @@ blue_whale <- readRDS("data/blue_whale_scored.rds")
 
 ## Fisheries Layers 
 ASH <- readRDS("data/ASH_scored.rds")
+ASH_ranked_importance <- readRDS("data/ASH_Ranked_Importance_scored.rds")
 SSH <- readRDS("data/SSH_scored.rds")
+SSH_ranked_importance <- readRDS("data/SSH_Ranked_Importance_scored.rds")
 GFBT <- readRDS("data/GFBT_scored.rds")
+GFBT_ranked_importance <- readRDS("data/GFBT_Ranked_Importance_scored.rds")
 GFP <- readRDS("data/GFP_scored.rds")
+GFP_ranked_importance <- readRDS("data/GFP_Ranked_Importance_scored.rds")
 GFLL <- readRDS("data/GFLL_scored.rds")
+GFLL_ranked_importance <- readRDS("data/GFLL_Ranked_Importance_scored.rds")
 PS <- readRDS("data/PS_scored.rds")
+PS_ranked_importance <- readRDS("data/PS_Ranked_Importance_scored.rds")
 CRAB <- readRDS("data/CRAB_scored.rds")
+CRAB_ranked_importance <- readRDS("data/CRAB_Ranked_Importance_scored.rds")
 ALCO <- readRDS("data/ALCO_scored.rds")
+ALCO_ranked_importance <- readRDS("data/ALCO_Ranked_Importance_scored.rds")
 ALCH <- readRDS("data/ALCH_scored.rds")
+ALCH_ranked_importance <- readRDS("data/ALCH_Ranked_Importance_scored.rds")
+
+## Trawl Fisheries
+trawl_fisheries <- readRDS("data/trawl_fisheries_scored.rds")
 
 ## Industry & Operations Layers
 
@@ -135,7 +148,7 @@ species_layer <- list(
 )
 
 ##Fisheries Submodel
-fisheries_layers <- list(
+fisheries_layer <- list(
   "At-Sea Hake Mid-Water Trawl" = ASH,
   "Shoreside Hake Mid-Water Trawl" = SSH,
   "Groundfish Bottom Trawl" = GFBT,
@@ -147,7 +160,11 @@ fisheries_layers <- list(
   "Charter Vessel Albacore Troll/Hook and Line" = ALCH
 )
 
-##Industry & Operations Submodel
+trawl_fisheries_layer <- list(
+  "Trawl Fisheries @ 75%" = trawl_fisheries
+)
+
+## Industry & Operations Submodel
 surveys_layers <- list(
   "Fixed Surveys" = surveys_fixed,
   "Periodic Surveys" = surveys_periodic
@@ -164,6 +181,9 @@ score_values_z_membership <- c("Z Membership", "0", "0.001", "0.01", "0.1", "0.2
 
 # Weight values with fisheries 
 score_values_ranked_importance <- c("Ranked Importance", "0", "0.001", "0.01")
+
+# Weight Values for trawl fisheries
+score_values_trawl_fisheries <- c("0.001")
 
 # Add a null coalescing operator helper since R doesn't have one built-in
 `%||%` <- function(x, y) if(is.null(x)) y else x
