@@ -89,7 +89,7 @@ create_individual_map <- function(config, aoi_data = NULL) {
         weight = 1,            
         fillColor = ~config$color_palette(Score.Z_Membership),
         fillOpacity = 0.7,
-        popup = ~paste("Cell Score: Z Membership:", round(Score.Z_Membership, 3)),
+        popup = ~paste("Cell Score:", round(Score.Z_Membership, 3)),
         group = "Data Layer"
       ) %>%
       # Add continuous legend for Z Membership
@@ -100,6 +100,47 @@ create_individual_map <- function(config, aoi_data = NULL) {
         opacity = 0.7,
         title = paste(config$layer, "<br>Z Membership")
       )
+  } else if(!is.null(config$score) && config$score == "Ranked Importance" && 
+            !is.null(config$color_palette)) {
+    # Handle continuous Ranked Importance coloring for fisheries
+    # Determine the score column name based on the layer
+    score_column <- switch(config$layer,
+                           "At-Sea Hake Mid-Water Trawl" = "Score.ASH_Ranked_Importance",
+                           "Shoreside Hake Mid-Water Trawl" = "Score.SSH_Ranked_Importance",
+                           "Groundfish Bottom Trawl" = "Score.GFBT_Ranked_Importance",
+                           "Groundfish Pot Gear" = "Score.GFP_Ranked_Importance",
+                           "Groundfish Long Line Gear" = "Score.GFLL_Ranked_Importance",
+                           "Pink Shrimp Trawl" = "Score.PS_Ranked_Importance",
+                           "Dungeness Crab" = "Score.CRAB_Ranked_Importance",
+                           "Commercial Troll/Hook and Line Albacore" = "Score.ALCO_Ranked_Importance",
+                           "Charter Vessel Albacore Troll/Hook and Line" = "Score.ALCH_Ranked_Importance",
+                           NULL  # fallback
+    )
+    
+    if(!is.null(score_column) && score_column %in% names(config$data)) {
+      # Create fillColor formula dynamically
+      fill_color_formula <- paste0("~config$color_palette(", score_column, ")")
+      popup_formula <- paste0("~paste('Cell Score: Ranked Importance:', round(", score_column, ", 3))")
+      
+      map <- map %>%
+        addPolygons(
+          data = config$data, 
+          color = "#33333300",  # transparent border
+          weight = 1,            
+          fillColor = config$color_palette(config$data[[score_column]]),
+          fillOpacity = 0.7,
+          popup = ~paste("Cell Score:", round(get(score_column), 3)),
+          group = "Data Layer"
+        ) %>%
+        # Add continuous legend for Ranked Importance
+        addLegend(
+          position = "bottomright",
+          pal = config$color_palette,
+          values = config$data[[score_column]],
+          opacity = 0.7,
+          title = paste(config$layer, "<br>Ranked Importance")
+        )
+    }
   } else {
     # Handle discrete score coloring
     map <- map %>%
