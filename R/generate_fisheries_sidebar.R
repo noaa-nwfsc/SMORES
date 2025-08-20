@@ -1,8 +1,8 @@
-generate_fisheries_sidebar <- function(fisheries_layers, score_values, current_tab = NULL, submodel_config = NULL) {
+generate_fisheries_sidebar <- function(fisheries_layer, score_values_ranked_importance, current_tab = NULL, submodel_config = NULL) {
   
   # Individual fisheries tab logic
   # Create inputs for each fisheries layer
-  layer_inputs <- lapply(fisheries_layers, function(layer_name) { 
+  layer_inputs <- lapply(fisheries_layer, function(layer_name) { 
     # Create consistent IDs
     layer_id <- gsub(" ", "_", layer_name)
     layer_id <- gsub("[^A-Za-z0-9_]", "", layer_id)
@@ -18,7 +18,7 @@ generate_fisheries_sidebar <- function(fisheries_layers, score_values, current_t
         pickerInput(
           paste0("FisheriesScorePicker_", layer_id),
           paste("Select score for", layer_name),
-          choices = c("None", score_values),
+          choices = c("None", score_values_ranked_importance),
           selected = "None"
         )
       )
@@ -47,7 +47,7 @@ generate_fisheries_sidebar <- function(fisheries_layers, score_values, current_t
     # Export button
     hr(),
     h4("Export"),
-    downloadButton("fisheriesExportRmd", "Export to R Markdown",
+    downloadButton("fisheriesExportRmd", "Export to HTML File",
                    icon = icon("file-export"),
                    class = "btn-info btn-block")
   )
