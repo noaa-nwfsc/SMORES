@@ -126,26 +126,72 @@ tagList(
     nav_panel(
       title = "Fisheries Submodel",
       icon = icon("fish-fins"),
-      
-      # Layout with sidebar for fisheries
+      # Layout with sidebar for tabs
       layout_sidebar(
-        # Sidebar for picker inputs
+        # Sidebar for picker inputs that change based on tab selection
         sidebar = sidebar(
           # Dynamic picker inputs
-          uiOutput("dynamicSidebar_fisheries")
+          uiOutput("dynamicSidebar_fisheries") # Settings for dynamic sidebar live in server.R
         ),
-        
-        # Main content area
-        tagList(
-          card(
-            card_header("Scoring Information"),
-            card_body(
-              includeMarkdown("markdown/fisheries.md")
-            )
+        # Main area with the tab navigation
+        navset_tab(
+          id = "dataTabs_fisheries",
+          # Inset Tab 1
+          nav_panel(
+            title = "Fisheries",
+            icon = icon("microscope"),
+            value = "fisheries",
+            
+            # Info about map settings
+            card(
+              card_header("Map Configuration"),
+              card_body(
+                includeMarkdown("markdown/fisheries.md")
+              )
+            ),
+            
+            # Container for multiple maps
+            uiOutput("multipleMapsContainer_fisheries")
+            
           ),
-          
-          # Container for multiple maps
-          uiOutput("multipleMapsContainer_fisheries")
+          # Inset Tab 2
+          nav_panel(
+            title = "Trawl Fisheries",
+            icon = icon("fish-fins"),
+            value = "trawl",
+            
+            # Info about map settings
+            card(
+              card_header("Map Configuration"),
+              card_body(
+                includeMarkdown("markdown/trawl_fisheries.md")
+              )
+            ),
+            
+            # Container for multiple maps
+            uiOutput("multipleMapsContainer_trawl")
+            
+          ),
+          # Inset Tab 3
+          nav_panel(
+            title = "Combined Submodel",
+            icon = icon("object-group"),
+            value = "combined_model_fisheries",
+            
+            # Info card
+            card(
+              card_header("Combined Fisheries Submodel"),
+              card_body(
+                includeMarkdown("markdown/combined_fisheries_submodel.md")
+              )
+            ),
+            card(
+              card_header("Combined Fisheries Submodel Result"),
+              card_body(
+                uiOutput("fisheriesCombinedMapContainer")
+              )
+            )
+          )
         )
       )
     ),

@@ -1,5 +1,5 @@
 function(input, output, session) {
-  
+ 
   # Create a reactive values object to store data so it can be used throughout the app
   combined_maps_data <- reactiveValues(
     habitat_geo = NULL,
@@ -19,6 +19,10 @@ function(input, output, session) {
     fisheries_lowest = NULL,
     fisheries_product = NULL,
     fisheries_combined_map_generated = FALSE,
+    trawl_geo = NULL,
+    trawl_lowest = NULL,
+    trawl_product = NULL,
+    trawl_combined_map_generated = FALSE,
     industry = NULL, 
     surveys_geo = NULL,
     surveys_lowest = NULL, 
@@ -145,25 +149,10 @@ function(input, output, session) {
                      "surveys" = "Scientific Surveys",
                      "cables" = "Submarine Cables",
                      "fisheries" = "Fisheries",
+                     "trawl" = "Trawl Fisheries",
                      "")
     
     if(prefix == "") return(FALSE) # Invalid tab
-    
-    # Get the input values with the appropriate prefix
-    enable_input <- input[[paste0("Enable", prefix, "Map", i)]]
-    layer_input <- input[[paste0(prefix, "LayerPicker", i)]]
-    score_input <- input[[paste0(prefix, "ScorePicker", i)]]
-    
-    # Get the appropriate layer data based on the tab
-    layer_data <- switch(current_tab,
-                         "habitat" = habitat_layer,
-                         "species" = species_layer,
-                         "surveys" = surveys_layer,
-                         "cables" = submarine_cables_layers,
-                         "fisheries" = fisheries_layers,
-                         NULL)
-    
-    if(is.null(layer_data)) return(FALSE) # Invalid layer data
     
     # Check if configuration is valid
     !is.null(enable_input) && enable_input &&
@@ -203,8 +192,9 @@ function(input, output, session) {
   # Reactive expression for Fisheries tab valid configs
   fisheries_valid_configs <- reactive({
     
-    # For Fisheries, we check if navbar is explicitly set to Fisheries
-    is_fisheries <- (!is.null(input$navbar) && input$navbar == "Fisheries Submodel")
+    is_fisheries <- (!is.null(input$dataTabs_fisheries) && 
+                               input$dataTabs_fisheries %in% c("fisheries", "trawl", "combined_model_fisheries")) ||
+      (!is.null(input$navbar) && input$navbar == "Fisheries Submodel")
     
     if(!is_fisheries) {
       return(list())
@@ -215,7 +205,8 @@ function(input, output, session) {
     
     # Set the layer data based on the current data tab
     layer_data <- switch(current_tab_fisheries,
-                         "fisheries" = fisheries_layers,
+                         "fisheries" = fisheries_layer,
+                         "trawl" = trawl_fisheries_layer,
                          NULL)
     
     # Use your existing function to get valid configurations
@@ -274,6 +265,7 @@ function(input, output, session) {
   # Fisheries maps
   observe({
     valid_configs <- fisheries_valid_configs()
+    
     aoi_data <- filtered_aoi_data()
     
     # Generate each map directly using the pure function
@@ -350,16 +342,34 @@ function(input, output, session) {
     current_tab_fisheries <- input$dataTabs_fisheries %||% "fisheries"
     
     if (current_tab_fisheries == "fisheries") {
-      fisheries_layers_names <- names(fisheries_layers)
+      fisheries_layer_names <- names(fisheries_layer)
       fisheries_config <- get_fisheries_config()
       
       #use function to make fisheries sidebar
       generate_fisheries_sidebar(
-        fisheries_layers_names,  
+        fisheries_layer_names,  
         score_values_ranked_importance,
         current_tab = current_tab_fisheries,
         submodel_config = fisheries_config
       )
+      
+    } else if (current_tab_fisheries == "trawl") {
+      # Get the layer names for species
+      trawl_fisheries_layers <- names(trawl_fisheries_layer)
+      fisheries_config <- get_fisheries_config()
+      
+      #use function to make trawl fisheries sidebar
+      generate_trawl_fisheries_sidebar(
+        trawl_fisheries_layers, 
+        score_values_trawl_fisheries, 
+        current_tab = current_tab_fisheries,
+        submodel_config = fisheries_config
+      )
+      
+      # Combined Model Tab
+    } else if(current_tab_fisheries == "combined_model_fisheries") {
+      fisheries_config <- get_fisheries_config()
+      generate_fisheries_combined_sidebar(fisheries_config, combined_maps_data)
     }
   })
   
@@ -627,6 +637,357 @@ function(input, output, session) {
         component_type = "species",
         submodel_type = "natural_resources",
         valid_configs = natural_resources_valid_configs(), 
+        combined_maps_data = combined_maps_data,
+        input = input,
+        filtered_aoi_data = filtered_aoi_data,
+        file = file
+      )
+    }
+  )
+  
+  # Multiple maps container for fisheries
+  output$multipleMapsContainer_fisheries <- renderUI({
+    valid_configs <- fisheries_valid_configs()
+    selected_methods <- input$fisheriesCalculationMethods %||% character(0)
+    
+    create_maps_container(
+      configs = valid_configs,
+      namespace = "fisheries",
+      combined_map_output_id = "combinedFisheriesMap",
+      combined_map_generated = combined_maps_data$fisheries_combined_map_generated,
+      combined_map_title = "Combined Map Result",
+      selected_methods = selected_methods
+    )
+  })
+  
+  # Combined map logic
+  observeEvent(input$generateCombinedFisheriesMap, {
+    # Get selected calculation methods
+    selected_methods <- input$fisheriesCalculationMethods
+    
+    if(is.null(selected_methods) || length(selected_methods) == 0) {
+      showNotification("Please select at least one calculation method.", type = "warning")
+      return()
+    }
+    
+    # Show modal with spinner
+    show_spinner_modal("Generating Combined Map(s)", 
+                       paste("Please wait while", length(selected_methods), "combined map(s) are being generated..."))
+    
+    # Add a small delay to ensure the modal is visible
+    Sys.sleep(0.5)
+    
+    # Define dataset mapping for fisheries tab
+    fisheries_dataset_mapping <- list(
+      "At-Sea Hake Mid-Water Trawl" = list(
+        data = function(score) {
+          if(score == "Ranked Importance") {
+            return(ASH_ranked_importance)
+          } else {
+            return(ASH)
+          }
+        }, 
+        score_column = function(score) {
+          if(score == "Ranked Importance") {
+            return("Score.ASH_Ranked_Importance")
+          } else {
+            return("Score.ASH")
+          }
+        }
+      ),
+      "Shoreside Hake Mid-Water Trawl" = list(
+        data = function(score) {
+          if(score == "Ranked Importance") {
+            return(SSH_ranked_importance)
+          } else {
+            return(SSH)
+          }
+        }, 
+        score_column = function(score) {
+          if(score == "Ranked Importance") {
+            return("Score.SSH_Ranked_Importance")
+          } else {
+            return("Score.SSH")
+          }
+        }
+      ),
+      "Groundfish Bottom Trawl" = list(
+        data = function(score) {
+          if(score == "Ranked Importance") {
+            return(GFBT_ranked_importance)
+          } else {
+            return(GFBT)
+          }
+        }, 
+        score_column = function(score) {
+          if(score == "Ranked Importance") {
+            return("Score.GFBT_Ranked_Importance")
+          } else {
+            return("Score.GFBT")
+          }
+        }
+      ),
+      "Groundfish Pot Gear" = list(
+        data = function(score) {
+          if(score == "Ranked Importance") {
+            return(GFP_ranked_importance)
+          } else {
+            return(GFP)
+          }
+        }, 
+        score_column = function(score) {
+          if(score == "Ranked Importance") {
+            return("Score.GFP_Ranked_Importance")
+          } else {
+            return("Score.GFP")
+          }
+        }
+      ),
+      "Groundfish Long Line Gear" = list(
+        data = function(score) {
+          if(score == "Ranked Importance") {
+            return(GFLL_ranked_importance)
+          } else {
+            return(GFLL)
+          }
+        }, 
+        score_column = function(score) {
+          if(score == "Ranked Importance") {
+            return("Score.GFLL_Ranked_Importance")
+          } else {
+            return("Score.GFLL")
+          }
+        }
+      ),
+      "Pink Shrimp Trawl" = list(
+        data = function(score) {
+          if(score == "Ranked Importance") {
+            return(PS_ranked_importance)
+          } else {
+            return(PS)
+          }
+        }, 
+        score_column = function(score) {
+          if(score == "Ranked Importance") {
+            return("Score.PS_Ranked_Importance")
+          } else {
+            return("Score.PS")
+          }
+        }
+      ),
+      "Dungeness Crab" = list(
+        data = function(score) {
+          if(score == "Ranked Importance") {
+            return(CRAB_ranked_importance)
+          } else {
+            return(CRAB)
+          }
+        }, 
+        score_column = function(score) {
+          if(score == "Ranked Importance") {
+            return("Score.CRAB_Ranked_Importance")
+          } else {
+            return("Score.CRAB")
+          }
+        }
+      ),
+      "Commercial Troll/Hook and Line Albacore" = list(
+        data = function(score) {
+          if(score == "Ranked Importance") {
+            return(ALCO_ranked_importance)
+          } else {
+            return(ALCO)
+          }
+        }, 
+        score_column = function(score) {
+          if(score == "Ranked Importance") {
+            return("Score.ALCO_Ranked_Importance")
+          } else {
+            return("Score.ALCO")
+          }
+        }
+      ),
+      "Charter Vessel Albacore Troll/Hook and Line" = list(
+        data = function(score) {
+          if(score == "Ranked Importance") {
+            return(ALCH_ranked_importance)
+          } else {
+            return(ALCH)
+          }
+        }, 
+        score_column = function(score) {
+          if(score == "Ranked Importance") {
+            return("Score.ALCH_Ranked_Importance")
+          } else {
+            return("Score.ALCH")
+          }
+        }
+      )
+    )
+    
+    # Get valid configurations
+    valid_configs <- fisheries_valid_configs()
+    
+    # Generate maps using the restructured approach
+    all_results <- list()
+    for(method in selected_methods) {
+      all_results[[method]] <- generate_combined_map_for_method(
+        valid_configs = valid_configs,
+        dataset_mapping = fisheries_dataset_mapping,
+        method = method,
+        map_type = "Fisheries", 
+        aoi_data = filtered_aoi_data(),
+        base_grid = grid_test
+      )
+    }
+    
+    # Store results for all methods
+    if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
+      local({
+        result <- all_results[["geometric_mean"]]
+        output$combinedFisheriesMap_geo <- renderLeaflet({ result$map })
+        combined_maps_data$fisheries_geo <- result$combined_data
+      })
+    }
+    
+    if("lowest" %in% selected_methods && "lowest" %in% names(all_results)) {
+      local({
+        result <- all_results[["lowest"]]
+        output$combinedFisheriesMap_lowest <- renderLeaflet({ result$map })
+        combined_maps_data$fisheries_lowest <- result$combined_data
+      })
+    }
+    
+    if("product" %in% selected_methods && "product" %in% names(all_results)) {  
+      local({
+        result <- all_results[["product"]]
+        output$combinedFisheriesMap_product <- renderLeaflet({ result$map })
+        combined_maps_data$fisheries_product <- result$combined_data  # This was already correct
+      })
+    }
+    
+    # Set flag to indicate combined map has been generated
+    combined_maps_data$fisheries_combined_map_generated <- TRUE
+    
+    # Remove modal spinner
+    removeModal()
+  })
+
+  # Fisheries/Fisheries tab export  
+  output$fisheriesExportRmd <- downloadHandler(
+    filename = function() {
+      paste("Fisheries_Component_Fisheries_Submodel_Report_", 
+            format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+    },
+    content = function(file) {
+      generate_submodel_component_report(
+        component_type = "fisheries",
+        submodel_type = "fisheries",
+        valid_configs = fisheries_valid_configs(), 
+        combined_maps_data = combined_maps_data,
+        input = input,
+        filtered_aoi_data = filtered_aoi_data,
+        file = file
+      )
+    }
+  )
+  
+  # Multiple maps container for trawl fisheries
+  output$multipleMapsContainer_trawl <- renderUI({
+    valid_configs <- fisheries_valid_configs()
+    selected_methods <- input$trawlCalculationMethods %||% character(0)
+    
+    create_maps_container(
+      configs = valid_configs,
+      namespace = "fisheries",
+      combined_map_output_id = "combinedTrawlMap",
+      combined_map_generated = combined_maps_data$trawl_combined_map_generated,
+      combined_map_title = "Combined Map Result",
+      selected_methods = selected_methods
+    )
+  })
+  
+  # Combined map logic
+  observeEvent(input$generateCombinedTrawlMap, {
+    # Get selected calculation methods
+    selected_methods <- input$trawlCalculationMethods
+    
+    if(is.null(selected_methods) || length(selected_methods) == 0) {
+      showNotification("Please select at least one calculation method.", type = "warning")
+      return()
+    }
+    
+    # Show modal with spinner
+    show_spinner_modal("Generating Combined Map(s)", 
+                       paste("Please wait while", length(selected_methods), "combined map(s) are being generated..."))
+    
+    # Add a small delay to ensure the modal is visible
+    Sys.sleep(0.5)
+    
+    # Define dataset mapping for species tab
+    trawl_dataset_mapping <- list(
+      "Trawl Fisheries @ 75%" = list(data = trawl_fisheries, score_column = "Score.Trawl_Fisheries")
+    )
+    
+    # Get valid configurations
+    valid_configs <- fisheries_valid_configs()
+    
+    # Generate maps using the restructured approach
+    all_results <- list()
+    for(method in selected_methods) {
+      all_results[[method]] <- generate_combined_map_for_method(
+        valid_configs = valid_configs,
+        dataset_mapping = trawl_dataset_mapping,
+        method = method,
+        map_type = "Trawl Fisheries",
+        aoi_data = filtered_aoi_data(),
+        base_grid = grid_test
+      )
+    }
+    
+    # Store results for all methods
+    if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
+      local({
+        result <- all_results[["geometric_mean"]]
+        output$combinedTrawlMap_geo <- renderLeaflet({ result$map })
+        combined_maps_data$trawl_geo <- result$combined_data
+      })
+    }
+    
+    if("lowest" %in% selected_methods && "lowest" %in% names(all_results)) {
+      local({
+        result <- all_results[["lowest"]]
+        output$combinedTrawlMap_lowest <- renderLeaflet({ result$map })
+        combined_maps_data$trawl_lowest <- result$combined_data
+      })
+    }
+    
+    if("product" %in% selected_methods && "product" %in% names(all_results)) {  
+      local({
+        result <- all_results[["product"]]
+        output$combinedTrawlMap_product <- renderLeaflet({ result$map })
+        combined_maps_data$trawl_product <- result$combined_data
+      })
+    }
+    
+    # Set flag to indicate combined map has been generated
+    combined_maps_data$trawl_combined_map_generated <- TRUE
+    
+    # Remove modal spinner
+    removeModal()
+  })
+  
+  # Trawl/Fisheries and Operations tab export
+  output$trawlExportRmd <- downloadHandler(
+    filename = function() {
+      paste("Trawl_Fisheries_Component_Industry_Operations_Submodel_Report_", 
+            format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+    },
+    content = function(file) {
+      generate_submodel_component_report(
+        component_type = "trawl", 
+        submodel_type = "fisheries",
+        valid_configs = fisheries_valid_configs(),
         combined_maps_data = combined_maps_data,
         input = input,
         filtered_aoi_data = filtered_aoi_data,
