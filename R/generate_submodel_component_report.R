@@ -35,6 +35,18 @@ generate_submodel_component_report <- function(
       filename_prefix = "Species_Component_Natural_Resources_Submodel_Report_",
       modal_message = "Please wait while the Species Component of the Natural Resources report is being generated..."
     ),
+    fisheries = list(
+      display_name = "Fisheries",
+      tab_name = "Fisheries", 
+      methods_input = "fisheriesCalculationMethods",
+      combined_title = "Combined Fisheries Maps",
+      geo_data = "fisheries_geo",
+      lowest_data = "fisheries_lowest",
+      product_data = "fisheries_product", 
+      generated_flag = "fisheries_combined_map_generated",
+      filename_prefix = "Fisheries_Component_Natural_Resources_Submodel_Report_",
+      modal_message = "Please wait while the Fisheries Component of the Fisheries report is being generated..."
+    ),
     surveys = list(
       display_name = "Surveys",
       tab_name = "Industry and Operations",
