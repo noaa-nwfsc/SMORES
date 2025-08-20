@@ -53,37 +53,40 @@ generate_full_model_report <- function(
   fisheries_enabled <- input$enableFisheries %||% FALSE
   industry_enabled <- input$enableIndustryOperations %||% FALSE
   
-  # Get weights
+  # Get weights (store original values before normalization)
   natural_resources_weight <- input$weightNaturalResources %||% 0
   fisheries_weight <- input$weightFisheries %||% 0
   industry_weight <- input$weightIndustryOperations %||% 0
   
-  # Build submodels_used list
+  # Build submodels_used list and original weights
   submodels_used <- list()
-  submodel_weights <- list()
+  submodel_weights_original <- list()  # Store original weights
+  submodel_weights_normalized <- list()  # Store normalized weights
   
   if(nr_enabled && natural_resources_weight > 0 && 
      !is.null(combined_maps_data$natural_resources_combined_submodel)) {
     submodels_used[["natural_resources"]] <- TRUE
-    submodel_weights[["natural_resources"]] <- natural_resources_weight
+    submodel_weights_original[["natural_resources"]] <- natural_resources_weight
   }
   
   if(fisheries_enabled && fisheries_weight > 0) {
     # Add when fisheries is implemented
     # submodels_used[["fisheries"]] <- TRUE
-    # submodel_weights[["fisheries"]] <- fisheries_weight
+    # submodel_weights_original[["fisheries"]] <- fisheries_weight
   }
   
   if(industry_enabled && industry_weight > 0 && 
      !is.null(combined_maps_data$industry_operations_combined_submodel)) {
     submodels_used[["industry_operations"]] <- TRUE
-    submodel_weights[["industry_operations"]] <- industry_weight
+    submodel_weights_original[["industry_operations"]] <- industry_weight
   }
   
   # Normalize weights to sum to 1
-  total_weight <- sum(unlist(submodel_weights))
+  total_weight <- sum(unlist(submodel_weights_original))
   if(total_weight > 0) {
-    submodel_weights <- lapply(submodel_weights, function(w) w / total_weight)
+    submodel_weights_normalized <- lapply(submodel_weights_original, function(w) w / total_weight)
+  } else {
+    submodel_weights_normalized <- submodel_weights_original
   }
   
   # Get Natural Resources components if enabled
@@ -92,7 +95,10 @@ generate_full_model_report <- function(
     natural_resources_components <- list()
     
     # Check which NR components were used
-    if(input$includeHabitat %||% FALSE) {
+    include_habitat <- input$includeHabitat %||% FALSE
+    include_species <- input$includeSpecies %||% FALSE
+    
+    if(include_habitat) {
       habitat_method <- input$habitatCalculationMethod %||% "geometric_mean"
       natural_resources_components[["Habitat"]] <- "Included"
       # Store method separately for layer details
@@ -102,7 +108,7 @@ generate_full_model_report <- function(
       component_layer_details[["natural_resources"]][["Habitat"]] <- list(method = habitat_method)
     }
     
-    if(input$includeSpecies %||% FALSE) {
+    if(include_species) {
       species_method <- input$speciesCalculationMethod %||% "geometric_mean"
       natural_resources_components[["Species"]] <- "Included"
       # Store method separately for layer details
@@ -119,7 +125,10 @@ generate_full_model_report <- function(
     industry_operations_components <- list()
     
     # Check which IO components were used
-    if(input$includeSurveys %||% FALSE) {
+    include_surveys <- input$includeSurveys %||% FALSE
+    include_cables <- input$includeCables %||% FALSE
+    
+    if(include_surveys) {
       surveys_method <- input$surveysCalculationMethod %||% "geometric_mean"
       industry_operations_components[["Scientific Surveys"]] <- "Included"
       # Store method separately for layer details
@@ -129,7 +138,7 @@ generate_full_model_report <- function(
       component_layer_details[["industry_operations"]][["Scientific Surveys"]] <- list(method = surveys_method)
     }
     
-    if(input$includeCables %||% FALSE) {
+    if(include_cables) {
       cables_method <- input$cablesCalculationMethod %||% "geometric_mean"
       industry_operations_components[["Submarine Cables"]] <- "Included"
       # Store method separately for layer details
@@ -237,10 +246,11 @@ generate_full_model_report <- function(
     output_file = file,
     params = list(
       submodels_used = submodels_used,
-      submodel_weights = submodel_weights,
-      weight_natural_resources = input$weightNaturalResources %||% 0,
-      weight_fisheries = input$weightFisheries %||% 0,
-      weight_industry_operations = input$weightIndustryOperations %||% 0,
+      submodel_weights_original = submodel_weights_original,
+      submodel_weights_normalized = submodel_weights_normalized, 
+      weight_natural_resources = natural_resources_weight,
+      weight_fisheries = fisheries_weight,
+      weight_industry_operations = industry_weight,
       natural_resources_components = natural_resources_components,
       industry_operations_components = industry_operations_components,
       fisheries_components = fisheries_components,
@@ -254,7 +264,6 @@ generate_full_model_report <- function(
     ),
     envir = new.env(parent = globalenv())
   )
-  
   # Remove modal
   removeModal()
 }
