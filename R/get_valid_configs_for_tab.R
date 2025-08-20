@@ -113,14 +113,28 @@ get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colo
         
         if(!is.null(score_value) && score_value != "None") {
           
-          # Handle continuous scoring for fisheries
+          # Handle conditional dataset selection for fisheries layers
           if(score_value == "Ranked Importance") {
+            # Use the ranked importance dataset
+            dataset_to_use <- switch(layer_name,
+                                     "At-Sea Hake Mid-Water Trawl" = ASH_ranked_importance,
+                                     "Shoreside Hake Mid-Water Trawl" = SSH_ranked_importance,
+                                     "Groundfish Bottom Trawl" = GFBT_ranked_importance,
+                                     "Groundfish Pot Gear" = GFP_ranked_importance,
+                                     "Groundfish Long Line Gear" = GFLL_ranked_importance,
+                                     "Pink Shrimp Trawl" = PS_ranked_importance,
+                                     "Dungeness Crab" = CRAB_ranked_importance,
+                                     "Commercial Troll/Hook and Line Albacore" = ALCO_ranked_importance,
+                                     "Charter Vessel Albacore Troll/Hook and Line" = ALCH_ranked_importance,
+                                     layer_data[[layer_name]]  # fallback to original if no match
+            )
+            
             # Use continuous coloring for ranked importance
-            filtered_data <- filter_by_score(layer_data[[layer_name]], score_value)
+            filtered_data <- dataset_to_use
             score_color <- "continuous"  # Flag for continuous coloring
-            color_palette <- create_continuous_palette(filtered_data, "ranked_importance")
+            color_palette <- create_continuous_palette(filtered_data, score_type = "ranked_importance", layer_name = "ranked_importance")
           } else {
-            # For discrete scores (0, 0.01, 0.001), use regular processing
+            # For discrete scores (0, 0.01, 0.001), use the regular dataset
             filtered_data <- filter_by_score(layer_data[[layer_name]], score_value)
             score_color <- score_colors[[score_value]]
             color_palette <- NULL
