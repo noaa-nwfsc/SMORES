@@ -122,8 +122,8 @@ surveys_periodic <- readRDS("data/Surveys_periodic_scored.rds")
 
 ### Submarine Cable Layers 
 submarine_cable <- readRDS("data/submarine_cable_scored.rds")
-submarine_cable_500m <- readRDS("data/submarine_cable_500m_scored.rds")
-submarine_cable_501_1000m <- readRDS("data/submarine_cable_501_1000m_scored.rds")
+
+## Grid
 grid_test <- readRDS("data/2km_grid_norcal.rds")
 
 
@@ -165,7 +165,7 @@ trawl_fisheries_layer <- list(
 )
 
 ## Industry & Operations Submodel
-surveys_layers <- list(
+surveys_layer <- list(
   "Fixed Surveys" = surveys_fixed,
   "Periodic Surveys" = surveys_periodic
 )
