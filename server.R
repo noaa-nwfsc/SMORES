@@ -23,6 +23,11 @@ function(input, output, session) {
     trawl_lowest = NULL,
     trawl_product = NULL,
     trawl_combined_map_generated = FALSE,
+    fisheries_combined_submodel = NULL,
+    fisheries_combined_submodel_generated = FALSE,
+    fisheries_combined_map = NULL,
+    fisheries_combined_map_cropped = NULL,
+    fisheries_combined_map_cropped_normalized = NULL,
     industry = NULL, 
     surveys_geo = NULL,
     surveys_lowest = NULL, 
@@ -360,7 +365,7 @@ function(input, output, session) {
       
       #use function to make trawl fisheries sidebar
       generate_trawl_fisheries_sidebar(
-        trawl_fisheries_layers, 
+        trawl_fisheries_layer, 
         score_values_trawl_fisheries, 
         current_tab = current_tab_fisheries,
         submodel_config = fisheries_config
@@ -1211,10 +1216,16 @@ function(input, output, session) {
     check_submodel_status("natural_resources", combined_maps_data)
   })
   
+  # Fisheries submodel status
+  output$combinedModelStatus_fisheries <- renderUI({
+    check_submodel_status("fisheries", combined_maps_data)
+  })
+  
   # Industry & Operations submodel status  
   output$combinedModelStatus_industry_operations <- renderUI({
     check_submodel_status("industry_operations", combined_maps_data)
   })
+
   
   # Dynamic sidebar content for overall model tab
   output$dynamicSidebar_overall_model <- renderUI({
@@ -1270,8 +1281,12 @@ function(input, output, session) {
         )
       ),
       fisheries = list(
-        available = FALSE,  # Update this when fisheries is a go
-        components = list()
+        available = combined_maps_data$fisheries_combined_map_generated || 
+          combined_maps_data$trawl_combined_map_generated,
+        components = list(
+          fisheries = combined_maps_data$fisheries_combined_map_generated,
+          trawl = combined_maps_data$trawl_combined_map_generated
+        )
       ),
       industry_operations = list(
         available = combined_maps_data$surveys_combined_map_generated || 
@@ -1296,7 +1311,7 @@ function(input, output, session) {
     }
     
     if(status$fisheries$available) {
-      updateCheckboxInput(session, "enableFisheries", value = FALSE)  # Default off
+      updateCheckboxInput(session, "enableFisheries", value = TRUE)  
     } else {
       updateCheckboxInput(session, "enableFisheries", value = FALSE)
     }
@@ -1547,6 +1562,229 @@ function(input, output, session) {
     content = function(file) {
       generate_submodel_combined_report(
         submodel_type = "natural_resources",
+        input = input,
+        combined_maps_data = combined_maps_data,
+        filtered_aoi_data = filtered_aoi_data,
+        data_timestamps = data_timestamps,
+        file = file
+      )
+    }
+  )
+  
+  # Add this output to handle validation messages
+  output$fisheriesCombinedValidation <- renderUI({
+    # Get component selections
+    include_fisheries <- input$includeFisheries %||% FALSE
+    include_trawl <- input$includeTrawl %||% FALSE
+    
+    # Check if any components are selected
+    any_selected <- include_fisheries || include_trawl 
+    
+    if(!any_selected) {
+      div(class = "alert alert-warning", 
+          "Please select at least one component to generate the combined submodel.")
+    } else {
+      # Check if selected components have valid data
+      selected_components <- c()
+      if(include_fisheries && combined_maps_data$fisheries_combined_map_generated) {
+        selected_components <- c(selected_components, "Fisheries")
+      }
+      if(include_trawl && combined_maps_data$trawl_combined_map_generated) {
+        selected_components <- c(selected_components, "Trawl")
+      }
+      if(length(selected_components) == 0) {
+        div(class = "alert alert-danger", 
+            "Selected components do not have combined maps generated. Please generate component maps first.")
+      } else {
+        div(class = "alert alert-success", 
+            paste("✓ Ready to generate combined submodel using:", paste(selected_components, collapse = ", ")))
+      }
+    }
+  })
+  
+  # Add this observeEvent for the generate button
+  observeEvent(input$generateFisheriesCombinedSubmodel, {
+    # Add error handling wrapper
+    tryCatch({
+      # Get component selections
+      include_fisheries <- isTRUE(input$includeFisheries)
+      include_trawl <- isTRUE(input$includeTrawl)
+      
+      # Validate selections
+      if(!include_fisheries && !include_trawl) {
+        showNotification("Please select at least one component.", type = "warning")
+        return()
+      }
+      
+      # Show spinner modal
+      show_spinner_modal("Generating Combined Fisheries Submodel", 
+                         "Please wait while the combined submodel is being calculated...")
+      
+      # Collect component data based on user selections
+      component_data_list <- list()
+      
+      if(include_fisheries && combined_maps_data$fisheries_combined_map_generated) {
+        method <- input$fisheriesCalculationMethod %||% "geometric_mean"
+        
+        fisheries_data <- switch(method,
+                               "geometric_mean" = combined_maps_data$fisheries_geo,
+                               "lowest" = combined_maps_data$fisheries_lowest,
+                               "product" = combined_maps_data$fisheries_product,
+                               combined_maps_data$fisheries_geo)  # fallback
+        
+        if(!is.null(fisheries_data)) {
+          component_data_list[["fisheries"]] <- fisheries_data
+        }
+      }
+      
+      if(include_trawl && combined_maps_data$trawl_combined_map_generated) {
+        method <- input$trawlCalculationMethod %||% "geometric_mean"
+        
+        trawl_data <- switch(method,
+                              "geometric_mean" = combined_maps_data$trawl_geo,
+                              "lowest" = combined_maps_data$trawl_lowest,
+                              "product" = combined_maps_data$trawl_product,
+                              combined_maps_data$trawl_geo)  # fallback
+        
+        if(!is.null(trawl_data)) {
+          component_data_list[["trawl"]] <- trawl_data
+        }
+      }
+      
+      # Generate the combined submodel using geometric mean
+      if(length(component_data_list) > 0) {
+        
+        combined_submodel_result <- create_combined_submodel_map(component_data_list, 
+                                                                 base_grid = grid_test, 
+                                                                 aoi_data_reactive = filtered_aoi_data,
+                                                                 submodel_type = "fisheries")
+        
+        # Store the result
+        combined_maps_data$fisheries_combined_submodel <- combined_submodel_result$combined_data
+        combined_maps_data$fisheries_combined_submodel_generated <- TRUE
+        
+        # Store the map object for rendering
+        combined_maps_data$fisheries_combined_map <- combined_submodel_result$map
+        
+        # Generate and store the cropped map
+        if(!is.null(combined_submodel_result$combined_data)) {
+          cropped_map <- create_aoi_cropped_map(
+            combined_data = combined_submodel_result$combined_data,
+            aoi_data_reactive = filtered_aoi_data,
+            map_title = "Fisheries AOI-Cropped",
+            full_data_range = combined_submodel_result$full_data_range
+          )
+          combined_maps_data$fisheries_combined_map_cropped <- cropped_map
+          
+          # Generate and store the normalized cropped map
+          normalized_cropped_map <- create_aoi_cropped_normalized_map(
+            combined_data = combined_submodel_result$combined_data,
+            aoi_data_reactive = filtered_aoi_data,
+            map_title = "Fisheries AOI-Cropped Normalized"
+          )
+          combined_maps_data$fisheries_combined_map_cropped_normalized <- normalized_cropped_map
+        }
+        
+        showNotification("Combined Fisheries Submodel generated successfully!", type = "message")
+      } else {
+        showNotification("No valid component data available for selected components.", type = "error")
+      }
+      
+      # Remove spinner modal
+      removeModal()
+      
+    }, error = function(e) {
+      # Remove modal on error
+      removeModal()
+      
+      # Show error notification
+      showNotification(paste("Error generating combined submodel:", e$message), 
+                       type = "error", duration = 10)
+    })
+  })
+  
+  # Fisheries 
+  output$fisheriesCombinedMap <- renderLeaflet({
+    # Check if the map is available
+    if(!is.null(combined_maps_data$fisheries_combined_map)) {
+      combined_maps_data$fisheries_combined_map
+    } else {
+      # Return a placeholder map
+      leaflet() %>%
+        addProviderTiles("Esri.OceanBasemap") %>%
+        addControl("Generate combined submodel to see map", position = "center")
+    }
+  })
+  
+  # Fisheries cropped map output
+  output$fisheriesCombinedMapCropped <- renderLeaflet({
+    if(!is.null(combined_maps_data$fisheries_combined_map_cropped)) {
+      combined_maps_data$fisheries_combined_map_cropped
+    } else {
+      leaflet() %>%
+        addProviderTiles("Esri.OceanBasemap") %>%
+        addControl("Generate combined submodel and select a AOI to see cropped map", position = "center")
+    }
+  })
+  
+  # Fisheries normalized cropped map output
+  output$fisheriesCombinedMapCroppedNormalized <- renderLeaflet({
+    if(!is.null(combined_maps_data$fisheries_combined_map_cropped_normalized)) {
+      combined_maps_data$fisheries_combined_map_cropped_normalized
+    } else {
+      leaflet() %>%
+        addProviderTiles("Esri.OceanBasemap") %>%
+        addControl("Generate combined submodel and select a AOI to see normalized cropped map", position = "center")
+    }
+  })
+  
+  # Render the map container content
+  output$fisheriesCombinedMapContainer <- renderUI({
+    
+    if(combined_maps_data$fisheries_combined_submodel_generated) {
+      tagList(
+        # Main combined map section
+        div(
+          h4("Combined Fisheries Submodel Map"),
+          p("This map shows the combined Fisheries submodel calculated using the geometric mean of selected components."),
+          leafletOutput("fisheriesCombinedMap", height = "500px")
+        ),
+        
+        br(),
+        
+        # Cropped map section
+        div(
+          h4("AOI-Cropped Fisheries Submodel Map"),
+          p("This map shows the same combined submodel data cropped to the selected Area of Interest (AOI)."),
+          leafletOutput("fisheriesCombinedMapCropped", height = "500px")
+        ),
+        
+        br(),
+        
+        # Normalized cropped map section
+        div(
+          h4("AOI-Cropped Normalized Fisheries Submodel Map"),
+          p("This map shows the AOI-cropped data normalized to a 0-1 scale for easier comparison across different areas."),
+          leafletOutput("fisheriesCombinedMapCroppedNormalized", height = "500px")
+        )
+      )
+    } else {
+      div(
+        style = "text-align: center; padding: 40px; color: #666;",
+        p("Combined submodel maps will appear here after generation."),
+        p("Use the sidebar to configure and generate the combined submodel.")
+      )
+    }
+  })
+  
+  # Fisheries combined export
+  output$fisheriesCombinedExport <- downloadHandler(
+    filename = function() {
+      paste("Fisheries_Combined_Submodel_Report_", format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+    },
+    content = function(file) {
+      generate_submodel_combined_report(
+        submodel_type = "fisheries",
         input = input,
         combined_maps_data = combined_maps_data,
         filtered_aoi_data = filtered_aoi_data,
