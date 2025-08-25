@@ -44,8 +44,20 @@ generate_submodel_component_report <- function(
       lowest_data = "fisheries_lowest",
       product_data = "fisheries_product", 
       generated_flag = "fisheries_combined_map_generated",
-      filename_prefix = "Fisheries_Component_Natural_Resources_Submodel_Report_",
+      filename_prefix = "Fisheries_Component_Fisheries_Submodel_Report_",
       modal_message = "Please wait while the Fisheries Component of the Fisheries report is being generated..."
+    ),
+    trawl = list(
+      display_name = "Trawl",
+      tab_name = "Fisheries", 
+      methods_input = "trawlCalculationMethods",
+      combined_title = "Combined Trawl Maps",
+      geo_data = "trawl_geo",
+      lowest_data = "trawl_lowest",
+      product_data = "trawl_product", 
+      generated_flag = "trawl_combined_map_generated",
+      filename_prefix = "Trawl_Fisheries_Component_Fisheries_Submodel_Report_",
+      modal_message = "Please wait while the Trawl Fisheries Component of the Fisheries report is being generated..."
     ),
     surveys = list(
       display_name = "Surveys",

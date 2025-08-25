@@ -1,5 +1,5 @@
 generate_submodel_combined_report <- function(
-    submodel_type,  # "natural_resources" or "industry_operations"
+    submodel_type,  # "natural_resources", "fisheries", "industry_operations"
     input,
     combined_maps_data,
     filtered_aoi_data,
@@ -26,6 +26,19 @@ generate_submodel_combined_report <- function(
     aoi_cropped_map <- combined_maps_data$natural_resources_combined_map_cropped
     aoi_cropped_normalized_map <- combined_maps_data$natural_resources_combined_map_cropped_normalized
     
+  } else if(submodel_type == "fisheries") {
+    submodel_display_name <- "Fisheries"
+    fisheries_input <- input$includeFisheries %||% FALSE
+    trawl_input <- input$includeTrawl %||% FALSE
+    
+    fisheries_method <- input$fisheriesCalculationMethod %||% "geometric_mean"
+    trawl_method <- input$trawlCalculationMethod %||% "geometric_mean"
+    
+    combined_data <- combined_maps_data$fisheries_combined_submodel
+    combined_map <- combined_maps_data$fisheries_combined_map
+    aoi_cropped_map <- combined_maps_data$fisheries_combined_map_cropped
+    aoi_cropped_normalized_map <- combined_maps_data$fisheries_combined_map_cropped_normalized
+    
   } else if(submodel_type == "industry_operations") {
     submodel_display_name <- "Industry & Operations"
     surveys_input <- input$includeSurveys %||% FALSE
@@ -40,7 +53,7 @@ generate_submodel_combined_report <- function(
     aoi_cropped_normalized_map <- combined_maps_data$industry_operations_combined_map_cropped_normalized
     
   } else {
-    stop("Invalid submodel_type. Use 'natural_resources' or 'industry_operations'")
+    stop("Invalid submodel_type. Use 'natural_resources', 'fisheries', or 'industry_operations'")
   }
   
   # Get component selections for the report
@@ -113,6 +126,74 @@ generate_submodel_combined_report <- function(
         component_data_summary[["Species"]] <- list(
           data_points = nrow(species_data),
           description = "Critical habitat analysis for protected species"
+        )
+      }
+    }
+    
+  } else if(submodel_type == "fisheries") {
+    # Fisheries components
+    if(fisheries_input) {
+      selected_components <- c(selected_components, "Fisheries")
+      component_methods <- c(component_methods, fisheries_method)
+      
+      # Get surveys layer details with scores
+      fisheries_configs <- get_valid_configs_for_tab(input, "fisheries", fisheries_layer, score_colors, filter_by_score)
+      if(length(fisheries_configs) > 0) {
+        component_layer_details[["Fisheries"]] <- list(
+          method = fisheries_method,
+          layers = lapply(fisheries_configs, function(config) {
+            list(
+              layer_name = config$layer %||% "Unknown",
+              score_used = config$score %||% "Unknown"
+            )
+          })
+        )
+      }
+      
+      # Add data summary
+      fisheries_data <- switch(fisheries_method,
+                             "geometric_mean" = combined_maps_data$fisheries_geo,
+                             "lowest" = combined_maps_data$fisheries_lowest,
+                             "product" = combined_maps_data$fisheries_product,
+                             combined_maps_data$fisheries_geo)
+      
+      if(!is.null(fisheries_data)) {
+        component_data_summary[["Fisheries"]] <- list(
+          data_points = nrow(fisheries_data),
+          description = "Fisheries activities and their spatial impact assessment"
+        )
+      }
+    }
+    
+    if(trawl_input) {
+      selected_components <- c(selected_components, "Trawl Fisheries")
+      component_methods <- c(component_methods, trawl_method)
+      
+      # Get cables layer details with scores
+      trawl_configs <- get_valid_configs_for_tab(input, "trawl", trawl_fisheries_layer, score_colors, filter_by_score)
+      if(length(trawl_configs) > 0) {
+        component_layer_details[["Trawl Fisheries"]] <- list(
+          method = trawl_method,
+          layers = lapply(trawl_configs, function(config) {
+            list(
+              layer_name = config$layer %||% "Unknown",
+              score_used = config$score %||% "Unknown"
+            )
+          })
+        )
+      }
+      
+      # Add data summary
+      trawl_data <- switch(trawl_method,
+                            "geometric_mean" = combined_maps_data$trawl_geo,
+                            "lowest" = combined_maps_data$trawl_lowest,
+                            "product" = combined_maps_data$trawl_product,
+                            combined_maps_data$trawl_geo)
+      
+      if(!is.null(trawl_data)) {
+        component_data_summary[["Trawl Fisheries"]] <- list(
+          data_points = nrow(trawl_data),
+          description = "Trawl Fisheries @ 75%"
         )
       }
     }
