@@ -115,7 +115,7 @@ generate_natural_resources_combined_sidebar <- function(submodel_config, combine
     div(
       style = "margin-top: 15px;",
       conditionalPanel(
-        condition = "input.includeHabitat == true || input.includeSpecies == true || input.includeBirds == true",
+        condition = "input.includeHabitat == true || input.includeSpecies == true",
         actionButton("generateNaturalResourcesCombinedSubmodel",
                      "Generate Combined Natural Resources Submodel",
                      class = "btn-primary btn-block",
