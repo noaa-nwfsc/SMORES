@@ -1,4 +1,4 @@
-create_combined_submodel_map <- function(component_data_list, base_grid = grid_test, aoi_data_reactive = NULL) {
+create_combined_submodel_map <- function(component_data_list, base_grid = grid_test, aoi_data_reactive = NULL, submodel_type = NULL) {
   tryCatch({
     
     # Get AOI data - handle both reactive and direct data
@@ -61,7 +61,7 @@ create_combined_submodel_map <- function(component_data_list, base_grid = grid_t
     }
     
     # Calculate geometric mean
-    combined_data <- calculate_submodel_geometric_mean(combined_data)
+    combined_data <- calculate_submodel_geometric_mean(combined_data, submodel_type = submodel_type)
     
     # Transform to WGS84
     combined_data <- st_transform(combined_data, 4326)
@@ -86,10 +86,11 @@ create_combined_submodel_map <- function(component_data_list, base_grid = grid_t
       # Store the full data range for consistent coloring
       full_data_range <- list(min = min_val, max = max_val)
       
-      # Create popup text
-      map_data$popup_display <- paste0(
-        "Combined Submodel Score:", round(map_data$Geo_mean, 2)
-      )
+      # Create popup text with proper formatting for small values
+      map_data$popup_display <- paste0("Combined Submodel Score:", 
+                                           ifelse(map_data$Geo_mean < 0.01,
+                                                  format(map_data$Geo_mean, scientific = FALSE, digits = 3),
+                                                  round(map_data$Geo_mean, 3)))
       
       # Handle color palette - check if we have variation in values
       if(abs(min_val - max_val) < 1e-10) {
@@ -150,7 +151,15 @@ create_combined_submodel_map <- function(component_data_list, base_grid = grid_t
             pal = pal,
             values = map_data$Geo_mean,
             title = "Combined Submodel Score",
-            opacity = 1
+            opacity = 1,
+            labFormat = labelFormat(
+              digits = 3,
+              transform = function(x) {
+                ifelse(x < 0.01, 
+                       format(x, scientific = FALSE, digits = 3),
+                       round(x, 3))
+              }
+            )
           )
       }
       
