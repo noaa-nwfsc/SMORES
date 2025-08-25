@@ -54,7 +54,7 @@ create_combined_map <- function(combined_data, map_title, method, aoi_data = NUL
     # Make sure geometry is set properly for leaflet
     combined_data <- st_transform(combined_data, '+proj=longlat +datum=WGS84')
     
-    # Get the range of score values
+    # Get the range of score values - preserve precision for small values
     score_values <- combined_data[[score_column]][!is.na(combined_data[[score_column]])]
     
     if(length(score_values) == 0) {
@@ -65,13 +65,16 @@ create_combined_map <- function(combined_data, map_title, method, aoi_data = NUL
       min_val <- min(score_values, na.rm = TRUE)
       max_val <- max(score_values, na.rm = TRUE)
       
-      # Create popup text
-      combined_data$popup_display <- paste(popup_prefix, round(combined_data[[score_column]], 2))
+      # Create popup text with proper formatting for small values
+      combined_data$popup_display <- paste(popup_prefix, 
+                                           ifelse(combined_data[[score_column]] < 0.01,
+                                                  format(combined_data[[score_column]], scientific = FALSE, digits = 3),
+                                                  round(combined_data[[score_column]], 3)))
       
       # Handle coloring based on whether values are constant or varying
-      if(min_val == max_val) {
-        # Constant values - single color
-        single_color <- viridis::viridis(1, begin = 0.5, end = 0.5)
+      if(abs(min_val - max_val) < .Machine$double.eps * 100) {
+        # Constant values (within machine precision) - single color
+        single_color <- viridis::viridis(1, begin = 0.7, end = 0.7)
         
         map <- map %>%
           addPolygons(
@@ -86,14 +89,21 @@ create_combined_map <- function(combined_data, map_title, method, aoi_data = NUL
           addLegend(
             position = "bottomright",
             colors = single_color,
-            labels = paste("Score:", round(min_val, 2)),
+            labels = paste("Score:", 
+                           ifelse(min_val < 0.01,
+                                  format(min_val, scientific = FALSE, digits = 3),
+                                  round(min_val, 3))),
             title = map_title,
             opacity = 1
           )
       } else {
-        # Varying values - continuous palette
+        # Varying values - continuous palette with proper domain handling
+        # Ensure the domain captures the full range including small values
+        palette_domain <- c(min_val, max_val)
+        
+        # Create color palette with explicit domain
         pal <- colorNumeric("viridis",
-                            domain = range(score_values, na.rm = TRUE),
+                            domain = palette_domain,
                             na.color = "transparent")
         
         combined_data$fill_color <- pal(combined_data[[score_column]])
@@ -113,7 +123,16 @@ create_combined_map <- function(combined_data, map_title, method, aoi_data = NUL
             pal = pal,
             values = combined_data[[score_column]],
             title = map_title,
-            opacity = 1
+            opacity = 1,
+            # Custom label formatting for small values
+            labFormat = labelFormat(
+              digits = 3,
+              transform = function(x) {
+                ifelse(x < 0.01, 
+                       format(x, scientific = FALSE, digits = 3),
+                       round(x, 3))
+              }
+            )
           )
       }
       
