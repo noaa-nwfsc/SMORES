@@ -24,6 +24,7 @@ get_data_timestamps <- function(data_dir = "data") {
     "CRAB_scored.rds",
     "ALCO_scored.rds",
     "ALCH_scored.rds",
+    "trawl_fisheries_scored.rds",
     "submarine_cable_scored.rds"
   )
   
@@ -68,6 +69,7 @@ get_data_timestamps <- function(data_dir = "data") {
     "Dungeness Crab",
     "Commercial Troll/Hook and Line Albacore",
     "Charter Vessel Albacore Troll/Hook and Line",
+    "Trawl Fisheries @ 75%", 
     "Submarine Cables"
   )
   
@@ -96,6 +98,7 @@ get_data_timestamps <- function(data_dir = "data") {
     "Dungeness Crab",
     "Commercial Troll/Hook and Line Albacore",
     "Charter Vessel Albacore Troll/Hook and Line",
+    "Grid cells contained within the top 75% of the ranked importance values for the four trawl fisheries",
     "Submarine Cables"
   )
   
@@ -115,15 +118,16 @@ get_data_timestamps <- function(data_dir = "data") {
     "Discrete",         # Leatherback Turtles
     "Discrete",         # Humpback Whales
     "Discrete",         # Blue Whale
-    "Continuous",       # ASH
-    "Continuous",       # SSH
-    "Continuous",       # GFBT
-    "Continuous",       # GFP
-    "Continuous",       # GFLL
-    "Continuous",       # PS
-    "Continuous",       # CRAB
-    "Continuous",       # ALCO
-    "Continuous",       # ALCH
+    "Continuous (*Discrete if static score is selected)",       # ASH
+    "Continuous (*Discrete if static score is selected)",       # SSH
+    "Continuous (*Discrete if static score is selected)",       # GFBT
+    "Continuous (*Discrete if static score is selected)",       # GFP
+    "Continuous (*Discrete if static score is selected)",       # GFLL
+    "Continuous (*Discrete if static score is selected)",       # PS
+    "Continuous (*Discrete if static score is selected)",       # CRAB
+    "Continuous (*Discrete if static score is selected)",       # ALCO
+    "Continuous (*Discrete if static score is selected)",       # ALCH
+    "Discrete",         # trawl fisheries
     "Discrete"          # Submarine Cables
   )
   
