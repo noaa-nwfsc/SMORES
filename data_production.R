@@ -622,14 +622,11 @@ nms_layer <- arc_read(furl_nms, where = "status = 'In Service'
                 or status = 'Under Construction'") %>% 
   st_transform(crsOut)
 
-submarine_cable_buffer_500 <- nms_layer %>% 
-  st_buffer(dist = 500)
-submarine_cable_buffer_1000 <- nms_layer %>% 
-  st_buffer(dist = 1000)
-submarine_cable_buffer_501_1000 <- st_difference(submarine_cable_buffer_1000, submarine_cable_buffer_500)
-
-print(crsOut)
-
+# submarine_cable_buffer_500 <- nms_layer %>% 
+#   st_buffer(dist = 500)
+# submarine_cable_buffer_1000 <- nms_layer %>% 
+#   st_buffer(dist = 1000)
+# submarine_cable_buffer_501_1000 <- st_difference(submarine_cable_buffer_1000, submarine_cable_buffer_500)
 
 submarine_cable.grid <- sf::st_intersection(nms_layer, grd.norcal) %>%
   mutate(Score.submarine_cable = 0) %>%
@@ -645,8 +642,8 @@ submarine_cable_score <- submarine_cable.grid %>%
 submarine_cable_scored <- grd.norcal %>%
   full_join(submarine_cable_score, by = "CellID_2km") %>%
   filter(Score.submarine_cable == 0) %>%
-  rename("1" = Score.submarine_cable) %>%
-  mutate("0" = 0,
+  rename("0" = Score.submarine_cable) %>%
+  mutate("1" = 1,
          "0.01" = 0.01,
          "0.001" = 0.001,
          "0.1" = 0.1,
@@ -658,7 +655,7 @@ submarine_cable_scored <- grd.norcal %>%
          "0.7" = 0.7,
          "0.8" = 0.8,
          "0.9" = 0.9) 
-submarine_cable_scored_long <- pivot_longer(submarine_cable_scored, cols = starts_with(c("0.", "1")), names_to = "submarine_cable", values_to = "Score.submarine_cable") %>% 
+submarine_cable_scored_long <- pivot_longer(submarine_cable_scored, cols = starts_with(c("0", "1")), names_to = "submarine_cable", values_to = "Score.submarine_cable") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-submarine_cable)
 st_crs(DSC_RH_scored_long) == st_crs(submarine_cable_scored_long)
