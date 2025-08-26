@@ -21,7 +21,7 @@ create_aoi_cropped_normalized_map <- function(combined_data, aoi_data_reactive =
       return(leaflet() %>%
                addProviderTiles("Esri.OceanBasemap") %>%
                setView(lng = -124, lat = 38, zoom = 7) %>%
-               addControl("Select a specific WEA area to view normalized cropped data", position = "center"))
+               addControl("Select a specific WEA area to view normalized cropped data", position = "topright"))
     }
     
     # Ensure both datasets are in the same CRS
@@ -44,7 +44,7 @@ create_aoi_cropped_normalized_map <- function(combined_data, aoi_data_reactive =
       return(leaflet() %>%
                addProviderTiles("Esri.OceanBasemap") %>%
                setView(lng = -124, lat = 38, zoom = 7) %>%
-               addControl("No data intersects with selected AOI", position = "center"))
+               addControl("No data intersects with selected AOI", position = "topright"))
     }
     
     # Filter for valid data
@@ -54,7 +54,7 @@ create_aoi_cropped_normalized_map <- function(combined_data, aoi_data_reactive =
       return(leaflet() %>%
                addProviderTiles("Esri.OceanBasemap") %>%
                setView(lng = -124, lat = 38, zoom = 7) %>%
-               addControl("No valid data in selected AOI", position = "center"))
+               addControl("No valid data in selected AOI", position = "topright"))
     }
     
     # Get the min and max values from the CROPPED data only for normalization

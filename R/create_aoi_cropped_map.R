@@ -13,7 +13,7 @@ create_aoi_cropped_map <- function(combined_data, aoi_data_reactive = NULL, map_
       return(leaflet() %>%
                addProviderTiles("Esri.OceanBasemap") %>%
                setView(lng = -124, lat = 38, zoom = 7) %>%
-               addControl("Select a WEA area to view cropped data", position = "center"))
+               addControl("Select a WEA area to view cropped data", position = "topright"))
     }
     
     # Check if "All Areas" is selected (assuming this means no cropping needed)
@@ -21,7 +21,7 @@ create_aoi_cropped_map <- function(combined_data, aoi_data_reactive = NULL, map_
       return(leaflet() %>%
                addProviderTiles("Esri.OceanBasemap") %>%
                setView(lng = -124, lat = 38, zoom = 7) %>%
-               addControl("Select a specific WEA area to view cropped data", position = "center"))
+               addControl("Select a specific WEA area to view cropped data", position = "topright"))
     }
     
     # Ensure both datasets are in the same CRS
@@ -44,7 +44,7 @@ create_aoi_cropped_map <- function(combined_data, aoi_data_reactive = NULL, map_
       return(leaflet() %>%
                addProviderTiles("Esri.OceanBasemap") %>%
                setView(lng = -124, lat = 38, zoom = 7) %>%
-               addControl("No data intersects with selected AOI", position = "center"))
+               addControl("No data intersects with selected AOI", position = "topright"))
     }
     
     # Filter for valid data
@@ -54,7 +54,7 @@ create_aoi_cropped_map <- function(combined_data, aoi_data_reactive = NULL, map_
       return(leaflet() %>%
                addProviderTiles("Esri.OceanBasemap") %>%
                setView(lng = -124, lat = 38, zoom = 7) %>%
-               addControl("No valid data in selected AOI", position = "center"))
+               addControl("No valid data in selected AOI", position = "topright"))
     }
     
     # Use full data range for consistent coloring, or calculate from cropped data if not provided
