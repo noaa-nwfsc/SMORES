@@ -69,10 +69,10 @@ generate_full_model_report <- function(
     submodel_weights_original[["natural_resources"]] <- natural_resources_weight
   }
   
-  if(fisheries_enabled && fisheries_weight > 0) {
-    # Add when fisheries is implemented
-    # submodels_used[["fisheries"]] <- TRUE
-    # submodel_weights_original[["fisheries"]] <- fisheries_weight
+  if(fisheries_enabled && fisheries_weight > 0 && 
+     !is.null(combined_maps_data$fisheries_combined_submodel)) {
+    submodels_used[["fisheries"]] <- TRUE
+    submodel_weights_original[["fisheries"]] <- fisheries_weight
   }
   
   if(industry_enabled && industry_weight > 0 && 
@@ -119,6 +119,36 @@ generate_full_model_report <- function(
     }
   }
   
+  # Get Fisheries components if enabled
+  fisheries_components <- NULL
+  if(fisheries_enabled && !is.null(combined_maps_data$fisheries_combined_submodel)) {
+    fisheries_components <- list()
+    
+    # Check which IO components were used
+    include_fisheries <- input$includeFisheries %||% FALSE
+    include_trawl <- input$includeTrawl %||% FALSE
+    
+    if(include_fisheries) {
+      fisheries_method <- input$fisheriesCalculationMethod %||% "geometric_mean"
+      fisheries_components[["Fisheries"]] <- "Included"
+      # Store method separately for layer details
+      if(is.null(component_layer_details[["fisheries"]])) {
+        component_layer_details[["fisheries"]] <- list()
+      }
+      component_layer_details[["fisheries"]][["Fisheries"]] <- list(method = fisheries_method)
+    }
+    
+    if(include_trawl) {
+      trawl_method <- input$trawlCalculationMethod %||% "geometric_mean"
+      fisheries_components[["Trawl Fisheries"]] <- "Included"
+      # Store method separately for layer details
+      if(is.null(component_layer_details[["fisheries"]])) {
+        component_layer_details[["fisheries"]] <- list()
+      }
+      component_layer_details[["fisheries"]][["Trawl Fisheries"]] <- list(method = fisheries_method)
+    }
+  }
+  
   # Get Industry & Operations components if enabled
   industry_operations_components <- NULL
   if(industry_enabled && !is.null(combined_maps_data$industry_operations_combined_submodel)) {
@@ -149,9 +179,6 @@ generate_full_model_report <- function(
     }
   }
   
-  # Get Fisheries components if enabled (placeholder for future implementation)
-  fisheries_components <- NULL
-  
   # Build comprehensive component layer details with actual layer configurations
   # Natural Resources layer details
   if(!is.null(natural_resources_components)) {
@@ -180,6 +207,43 @@ generate_full_model_report <- function(
         component_layer_details[["natural_resources"]][["Species"]] <- list(
           method = input$speciesCalculationMethod %||% "geometric_mean",
           layers = lapply(species_configs, function(config) {
+            list(
+              layer_name = config$layer %||% "Unknown",
+              score_used = config$score %||% "Unknown"
+            )
+          })
+        )
+      }
+    }
+  }
+  
+  # Fisheries layer details
+  if(!is.null(fisheries_components)) {
+    if(is.null(component_layer_details[["fisheries"]])) {
+      component_layer_details[["fisheries"]] <- list()
+    }
+    
+    if("Fisheries" %in% names(fisheries_components)) {
+      fisheries_configs <- get_valid_configs_for_tab(input, "fisheries", fisheries_layer, score_colors, filter_by_score)
+      if(length(fisheries_configs) > 0) {
+        component_layer_details[["fisheries"]][["Fisheries"]] <- list(
+          method = input$fisheriesCalculationMethod %||% "geometric_mean",
+          layers = lapply(fisheries_configs, function(config) {
+            list(
+              layer_name = config$layer %||% "Unknown",
+              score_used = config$score %||% "Unknown"
+            )
+          })
+        )
+      }
+    }
+    
+    if("Trawl Fisheries" %in% names(fisheries_components)) {
+      trawl_configs <- get_valid_configs_for_tab(input, "trawl", trawl_fisheries_layer, score_colors, filter_by_score)
+      if(length(trawl_configs) > 0) {
+        component_layer_details[["fisheries"]][["Trawl Fisheries"]] <- list(
+          method = input$trawlCalculationMethod %||% "geometric_mean",
+          layers = lapply(trawl_configs, function(config) {
             list(
               layer_name = config$layer %||% "Unknown",
               score_used = config$score %||% "Unknown"
