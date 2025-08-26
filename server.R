@@ -2039,10 +2039,10 @@ function(input, output, session) {
         enabled_weights <- c(enabled_weights, natural_resources_weight)
       }
       
-      if(fisheries_enabled && fisheries_weight > 0) {
-        # Add fisheries here
-        # enabled_submodels <- c(enabled_submodels, "fisheries")
-        # enabled_weights <- c(enabled_weights, fisheries_weight)
+      if(fisheries_enabled && fisheries_weight > 0 && 
+        !is.null(combined_maps_data$fisheries_combined_submodel)) {
+      enabled_submodels <- c(enabled_submodels, "fisheries")
+      enabled_weights <- c(enabled_weights, fisheries_weight)
       }
       
       if(industry_enabled && industry_weight > 0 && 
@@ -2075,11 +2075,13 @@ function(input, output, session) {
         if(submodel_name == "natural_resources") {
           submodels[["natural_resources"]] <- combined_maps_data$natural_resources_combined_submodel
           weights[["natural_resources"]] <- enabled_weights[i]
+        } else if(submodel_name == "fisheries") {
+          submodels[["fisheries"]] <- combined_maps_data$fisheries_combined_submodel
+          weights[["fisheries"]] <- enabled_weights[i]
         } else if(submodel_name == "industry_operations") {
           submodels[["industry_operations"]] <- combined_maps_data$industry_operations_combined_submodel
           weights[["industry_operations"]] <- enabled_weights[i]
         }
-        # Add fisheries here
       }
       
       # Generate the overall combined model
