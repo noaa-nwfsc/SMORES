@@ -152,7 +152,7 @@ create_combined_submodel_map <- function(component_data_list, base_grid = grid_t
               data = map_data,
               weight = 1,
               color = "#333333",
-              fillColor = pal(geo_mean_values),  # Apply palette to explicit numeric values
+              fillColor = pal(geo_mean_values), 
               fillOpacity = 0.7,
               popup = ~popup_display,
               group = "Combined Submodel",
@@ -162,7 +162,7 @@ create_combined_submodel_map <- function(component_data_list, base_grid = grid_t
                 fillOpacity = 0.9,
                 bringToFront = TRUE
               )
-            )
+            ) 
         }, error = function(e) {
           # Fallback to single color if color mapping fails
           map %>%
