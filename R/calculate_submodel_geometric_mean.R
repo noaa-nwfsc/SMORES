@@ -67,6 +67,11 @@ calculate_submodel_geometric_mean <- function(combined_data, submodel_type = NUL
       return(combined_data)
     }
     
+    # Extract numeric data from the valid score columns
+    score_data <- combined_data %>%
+      st_drop_geometry() %>%
+      select(all_of(numeric_score_cols))
+    
     # Convert to matrix
     score_matrix <- as.matrix(score_data)
     
