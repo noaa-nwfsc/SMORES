@@ -1,22 +1,14 @@
+---
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
 Welcome to the Suitability Modeling for Offshore Resources and Energy Siting (SMORES) Shiny Application.
 
 This application was built to create a flexible framework that will allow scientists, decision-makers, and planners to model data inputs that *could* be used as part of the marine spatial planning process when determining new areas of offshore development on the West Coast of the United States.
 
-The dashboard is organized by the navigation bar at the top. There are 6 tabs.
-
-|     <i class="fa-solid fa-house-chimney"></i> **Area of Interest** 
-
-|     <i class="fa-solid fa-sun"></i> **Natural Resources Submodel** 
-
-|     <i class="fa-solid fa-fish-fins"></i> **Fisheries Submodel** 
-
-|     <i class="fa-solid fa-ship"></i> **Industry & Operations Submodel** 
-
-|     <i class="fa-solid fa-calculator"></i> **Full Model** 
-
-|     <i class="fa-solid fa-route"></i> **Methods** 
-
-|     <i class="fa-solid fa-database"></i> **Data** 
+The dashboard is organized by the navigation bar at the top. There are 6 tabs: Area of Interest, Natural Resources Submodel, Fisheries Submodel, Industry & Operations Submodel, Full Model, Methods, and Data.
 
 
 To generate a full model run you will move through the first 5 tabs from left to right.

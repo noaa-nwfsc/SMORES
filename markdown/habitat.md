@@ -1,6 +1,12 @@
+---
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
 Use this page to develop a combined data layer providing the overall scores for selected protected habitats. You can assign scores that range from 0 (a constraint)/0.001 (most vulnerable) to 0.9 (least vulnerable).
 
-NMFS provided 2 scoring scenarios for BOEM's consideration for inclusion in the suitability model. Scenario 2 was chosen for use in the model as it did not contain any constraints (scores of 0). Below is a table to reference the layer and score, for the habitat layers that were outlined in scenario 2.
+NMFS provided 2 scoring scenarios for BOEM's consideration for inclusion in the suitability model. Scenario 2 was chosen for use in the model as it did not contain any constraints (scores of 0) [(NCCOS Report 2.4.2)](https://www.boem.gov/sites/default/files/documents/renewable-energy/state-activities/Appendix%20B_NCCOS%20Final%20WEA%20Report_Oregon.pdf). NMFS used the lowest method equation providing the lowest score for each grid cell for the most sensitive habitats. Below is a table to reference the layer and score, for the habitat layers that were outlined in scenario 2.
 
 \*Note: more layers are available to model than the initial Oregon Siting exercise
 
