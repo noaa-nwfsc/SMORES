@@ -37,7 +37,78 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
 
 ## Repository Structure
 ```{r}
-
+├── _brand.yml                        # Theming for the app
+├── .gitignore 
+├── data_production.R
+├── Full_Model_Report_template.Rmd
+├── global.R
+├── LICENSE                           # Aapache 2.0
+├── markdown                          # Folder containing all markdown files used and where text is stored
+│   ├── area_of_interest.md
+│   ├── cables.md
+│   ├── combined_fisheries_submodel.md
+│   ├── combined_industry_operations_submodel.md
+│   ├── combined_natural_resources_submodel.md
+│   ├── data.md
+│   ├── fisheries.md
+│   ├── habitat.md
+│   ├── methods.html
+│   ├── methods.md
+│   ├── overall_model.md
+│   ├── overview.md
+│   ├── species.md
+│   ├── surveys.md
+│   └── trawl_fisheries.md
+├── R                                # Folder containing all functions used in Shiny App
+│   ├── apply_calculation_method.R
+│   ├── calculate_geometric_mean_combined.R
+│   ├── calculate_lowest_combined.R
+│   ├── calculate_product_combined.R
+│   ├── calculate_submodel_geometric_mean.R
+│   ├── check_submodel_status.R
+│   ├── create_aoi_cropped_map.R
+│   ├── create_aoi_cropped_map_normalized.R
+│   ├── create_continuous_palette.R
+│   ├── create_full_model_map.R
+│   ├── create_individual_map.R
+│   ├── create_maps_container.R
+│   ├── data_timestamps.R
+│   ├── filter_by_score.R
+│   ├── surveys.md
+│   ├── data_timestamps.R
+│   ├── filter_by_score.R
+│   ├── filtered_data_timestamps.R
+│   ├── generate_area_of_interest_sidebar.R
+│   ├── generate_cables_sidebar.R
+│   ├── generate_combined_map_for_method.R
+│   ├── generate_fisheries_combined_sidebar.R
+│   ├── generate_fisheries_sidebar.R
+│   ├── generate_full_model_report.R
+│   ├── generate_full_model_sidebar.R
+│   ├── generate_habitat_sidebar.R
+│   ├── generate_industry_operations_combined_sidebar.R
+│   ├── generate_natural_resources_combined_sidebar.R
+│   ├── generate_species_sidebar.R
+│   ├── generate_submodel_combined_report.R
+│   ├── generate_submodel_component_report.R
+│   ├── generate_surveys_sidebar.R
+│   ├── generate_trawl_fisheries_sidebar.R
+│   ├── get_valid_configs_for_tab.R
+│   ├── make_combined_map_dataset.R
+│   ├── modal.R
+│   ├── sidebar_helpers.R
+│   ├── submodel_configurations.R
+│   └── submodel_status_display.R
+├── README.md
+├── server.R
+├── SMORES.Rproj
+├── Submodel_Combined_Report_Template.Rmd
+├── Submodel_Component_Report_Template.Rmd
+├── ui.R
+└── www                                 # graphics folder
+    ├── logos
+    |  ├── NOAA_FISHERIES_logoH_web.png
+    └── styles.css.png
 ```
 
 ## Resources
