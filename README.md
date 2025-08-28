@@ -28,11 +28,15 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
 
 *At this stage the Natural Resources Submodel that will be included in the Full Model has been generated.*
 
-**Step 5**: Repeat steps 2-4 for the Industry & Operations Submodel which will include selecting scores for scientific surveys and submarine cable layers.
+**Step 5**: Repeat steps 2-4 for the Fisheries Submodel which will include selecting scores for fisheries and trawl fisheries layers. *Note that when you combine the fisheries layers with the trawl fishery layers the trawl fishery score will replace the score in grid cells within the top 75% of the trawl fisheries' ranked importance values. This is a different methodology than previous sections. 
+
+*At this stage the Fisheries Submodel that will be included in the Full Model has been generated.*
+
+**Step 6**: Repeat steps 2-4 for the Industry & Operations Submodel which will include selecting scores for scientific surveys and submarine cable layers.
 
 *At this stage the Industry & Operations Submodel that will be included in the Full Model has been generated.*
 
-**Step 6**: Navigate to the Full Model Tab. You will select which submodels you would like to be included in the calculation of the full model and then select the weight you would like applied to each submodel. Once you have configured your submodels you will click on the generate Full Model button which will produce 3 maps.The first map will represent the full model scores for the whole west coast. The second map will show the full model scores for the area of interest you previously selected. The third map will show the full model for the area of interest normalized using a minimum maximum normalization.You can opt to export a copy of your results by selecting the Export button at the bottom of the page.
+**Step 7**: Navigate to the Full Model Tab. You will select which submodels you would like to be included in the calculation of the full model and then select the weight you would like applied to each submodel. Once you have configured your submodels you will click on the generate Full Model button which will produce 3 maps.The first map will represent the full model scores for the whole west coast. The second map will show the full model scores for the area of interest you previously selected. The third map will show the full model for the area of interest normalized using a minimum maximum normalization.You can opt to export a copy of your results by selecting the Export button at the bottom of the page.
 
 
 ## Repository Structure
