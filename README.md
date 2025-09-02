@@ -3,10 +3,10 @@ Repository to house the materials to develop the Suitability Modeling for Offsho
 
 ## Table of Contents
 
-- [Decription](##Decription)
-- [Usage](##Usage)
-- [Repository Structure](##Repository-Structure)
-- [Resources](##Resources)
+- [Decription](##decription)
+- [Usage](##usage)
+- [Repository Structure](##repository-structure)
+- [Resources](##resources)
 
 
 ## Description
