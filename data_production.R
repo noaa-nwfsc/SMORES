@@ -48,7 +48,7 @@ st_crs(NorCal) == st_crs(grid.2km)
 #grid for regions of interest less than full coast
 grd.norcal <- st_crop(grid.2km, NorCal)
 
-saveRDS(grd.norcal, "U:\\Github\\SMORES\\data\\2km_grid_norcal.rds")
+saveRDS(grd.norcal, "C:\\GitHub\\SMORES\\data\\2km_grid_norcal.rds")
 
 grid_test <- grd.norcal
 
@@ -94,7 +94,7 @@ canyon_scored <- grd.norcal %>%
 canyons_scored_long <- pivot_longer(canyon_scored, cols = starts_with(c("0", "1")), names_to = "Canyon", values_to = "Score.Canyon") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-Canyon)
-saveRDS(canyons_scored_long, "U:\\Github\\SMORES\\data\\canyon_scored.rds")
+saveRDS(canyons_scored_long, "C:\\GitHub\\SMORES\\data\\canyon_scored.rds")
 
 #Deep sea coral robust high - user selected score data set
 DSC.RobustHigh.grid <- sf::st_intersection(DSC.RobustHigh, grd.norcal) %>%
@@ -126,7 +126,7 @@ DSC_RH_scored <- grd.norcal %>%
 DSC_RH_scored_long <- pivot_longer(DSC_RH_scored, cols = starts_with(c("0", "1")), names_to = "DSC_RH", values_to = "Score.DSC_RH") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-DSC_RH)
-saveRDS(DSC_RH_scored_long, "U:\\Github\\SMORES\\data\\DSC_RH_scored.rds")
+saveRDS(DSC_RH_scored_long, "C:\\GitHub\\SMORES\\data\\DSC_RH_scored.rds")
 
 # Deep sea coral robust high - user selected z membership scoring option
 DSC.RobustHigh.grid_z_membership <- sf::st_intersection(DSC.RobustHigh, grd.norcal) %>%
@@ -174,7 +174,7 @@ DSC_RH_z_membership_score <- grd.norcal %>%
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   filter(!is.na(gridcode))
 
-saveRDS(DSC_RH_z_membership_score, "U:\\Github\\SMORES\\data\\DSC_RH_z_membership_scored.rds")
+saveRDS(DSC_RH_z_membership_score, "C:\\GitHub\\SMORES\\data\\DSC_RH_z_membership_scored.rds")
 
 #Surveys fixed
 Surveys.fixed.grid <- sf::st_intersection(Surveys.fixed, grd.norcal) %>%
@@ -184,6 +184,7 @@ Surveys.fixed.grid <- sf::st_intersection(Surveys.fixed, grd.norcal) %>%
   #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
   slice_max(area.part, n = 1) %>%
   select(CellID_2km, Score.Surveys.Fixed) #use for 2km grid
+
 Surveys_fixed <- Surveys.fixed.grid %>%
   st_drop_geometry() %>% 
   group_by(CellID_2km) %>% 
@@ -208,7 +209,7 @@ Surveys_fixed_scored_long <- pivot_longer(Surveys_fixed_scored, cols = starts_wi
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-Surveys_fixed)
 st_crs(DSC_RH_scored_long) == st_crs(Surveys_fixed_scored_long)
-saveRDS(Surveys_fixed_scored_long, "U:\\Github\\SMORES\\data\\Surveys_fixed_scored.rds")
+saveRDS(Surveys_fixed_scored_long, "C:\\GitHub\\SMORES\\data\\Surveys_fixed_scored.rds")
 
 #Surveys periodic grid
 Surveys.per <- sf::st_intersection(Surveys.per, grd.norcal) %>%
@@ -242,7 +243,7 @@ Surveys_periodic_scored_long <- pivot_longer(Surveys_periodic_scored, cols = sta
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-Surveys_periodic)
 st_crs(DSC_RH_scored_long) == st_crs(Surveys_periodic_scored_long)
-saveRDS(Surveys_periodic_scored_long, "U:\\Github\\SMORES\\data\\Surveys_periodic_scored.rds")
+saveRDS(Surveys_periodic_scored_long, "C:\\GitHub\\SMORES\\data\\Surveys_periodic_scored.rds")
 
 #Seeps
 Seeps.grid <- sf::st_intersection(Seeps, grd.norcal) %>%
@@ -276,7 +277,7 @@ Seeps_scored_long <- pivot_longer(Seeps_scored, cols = starts_with(c("0", "1")),
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-Seeps)
 st_crs(DSC_RH_scored_long) == st_crs(Seeps_scored_long)
-saveRDS(Seeps_scored_long, "U:\\Github\\SMORES\\data\\Seeps_scored.rds")
+saveRDS(Seeps_scored_long, "C:\\GitHub\\SMORES\\data\\Seeps_scored.rds")
 
 #Shelfbreaks
 ShlfBrk.grid <- sf::st_intersection(ShlfBrk, grd.norcal) %>%
@@ -310,11 +311,11 @@ ShlfBrk_scored_long <- pivot_longer(ShlfBrk_scored, cols = starts_with(c("0", "1
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-ShlfBrk)
 st_crs(DSC_RH_scored_long) == st_crs(ShlfBrk_scored_long)
-saveRDS(ShlfBrk_scored_long, "U:\\Github\\SMORES\\data\\ShlfBrk_scored.rds")
+saveRDS(ShlfBrk_scored_long, "C:\\GitHub\\SMORES\\data\\ShlfBrk_scored.rds")
 
 #EFHCA
-EFHCA.grid <- readRDS("U:\\Github\\OWEC\\data\\Lyr_EFHCA.rds")
-saveRDS(EFHCA.grid, "U:\\Github\\SMORES\\data\\EFHCA_grid.rds" )
+EFHCA.grid <- readRDS("U:\\Github\\OWEC\\data\\Lyr_EFHCA.rds") #need to make a more longterm solution for this 
+saveRDS(EFHCA.grid, "C:\\GitHub\\SMORES\\data\\EFHCA_grid.rds" )
 EFHCA_score <- EFHCA.grid %>%
   st_drop_geometry() %>% 
   group_by(CellID_2km) %>% 
@@ -339,11 +340,11 @@ EFHCA_scored_long <- pivot_longer(EFHCA_scored, cols = starts_with(c("0", "1")),
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-EFHCA)
 st_crs(DSC_RH_scored_long) == st_crs(EFHCA_scored_long)
-saveRDS(EFHCA_scored_long, "U:\\Github\\SMORES\\data\\EFHCA_scored.rds")
+saveRDS(EFHCA_scored_long, "C:\\GitHub\\SMORES\\data\\EFHCA_scored.rds")
 
 #EFHCA.700
-EFHCA_700.grid <- readRDS("U:\\Github\\OWEC\\data\\Lyr_EFHCA700.rds")
-saveRDS(EFHCA_700.grid, "U:\\Github\\SMORES\\data\\EFHCA_grid.rds" )
+EFHCA_700.grid <- readRDS("U:\\Github\\OWEC\\data\\Lyr_EFHCA700.rds") #need to make a more longterm solutions for this
+saveRDS(EFHCA_700.grid, "C:\\GitHub\\SMORES\\data\\EFHCA_grid.rds" )
 EFHCA_700_score <- EFHCA_700.grid %>%
   st_drop_geometry() %>% 
   group_by(CellID_2km) %>% 
@@ -368,11 +369,11 @@ EFHCA_700_scored_long <- pivot_longer(EFHCA_700_scored, cols = starts_with(c("0"
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-EFHCA_700)
 st_crs(DSC_RH_scored_long) == st_crs(EFHCA_700_scored_long)
-saveRDS(EFHCA_700_scored_long, "U:\\Github\\SMORES\\data\\EFHCA_700_scored.rds")
+saveRDS(EFHCA_700_scored_long, "C:\\GitHub\\SMORES\\data\\EFHCA_700_scored.rds")
 
 # HAPCAOI
 HAPCaoi.grid <- readRDS("U:\\Github\\OWEC\\data\\Lyr_HAPCaoi.rds")
-saveRDS(HAPCaoi.grid, "U:\\Github\\SMORES\\data\\HAPCaoi_grid.rds" )
+saveRDS(HAPCaoi.grid, "C:\\GitHub\\SMORES\\data\\HAPCaoi_grid.rds" )
 HAPCaoi_score <- HAPCaoi.grid %>%
   st_drop_geometry() %>% 
   group_by(CellID_2km) %>% 
@@ -397,11 +398,11 @@ HAPCaoi_scored_long <- pivot_longer(HAPCaoi_scored, cols = starts_with(c("0", "1
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-HAPCaoi)
 st_crs(DSC_RH_scored_long) == st_crs(HAPCaoi_scored_long)
-saveRDS(HAPCaoi_scored_long, "U:\\Github\\SMORES\\data\\HAPCaoi_scored.rds")
+saveRDS(HAPCaoi_scored_long, "C:\\GitHub\\SMORES\\data\\HAPCaoi_scored.rds")
 
 #HAPCReef
-HAPCreef.grid <- readRDS("U:\\Github\\SMORES\\data\\Lyr_20250701_HAPCReef.rds")
-saveRDS(HAPCreef.grid, "U:\\Github\\SMORES\\data\\HAPCreef_grid.rds" )
+HAPCreef.grid <- readRDS("U:\\Github\\OWEC\\data\\Lyr_HAPCreef.rds")
+saveRDS(HAPCreef.grid, "C:\\GitHub\\SMORES\\data\\HAPCreef_grid.rds" )
 HAPCreef_score <- HAPCreef.grid %>%
   st_drop_geometry() %>% 
   group_by(CellID_2km) %>% 
@@ -426,7 +427,7 @@ HAPCreef_scored_long <- pivot_longer(HAPCreef_scored, cols = starts_with(c("0", 
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-HAPCreef)
 st_crs(DSC_RH_scored_long) == st_crs(HAPCreef_scored_long)
-saveRDS(HAPCreef_scored_long, "U:\\Github\\SMORES\\data\\HAPCreef_scored.rds")
+saveRDS(HAPCreef_scored_long, "C:\\GitHub\\SMORES\\data\\HAPCreef_scored.rds")
 
 ## Species Layers
 ESA_Critical_Habitat <- sf::st_read(dsn = "Z:\\ArcGIS\\Projects\\OWEC\\p30\\protected_species_density_layers\\nmfs_combined\\Critical_Habitat_Areas_by_the_National_Marine_Fisheries_Service\\Critical_Habitat_Areas_by_the_National_Marine_Fisheries_Service.shp")  
@@ -472,7 +473,7 @@ killer_whale_scored_long <- pivot_longer(killer_whale_scored, cols = starts_with
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-killer_whale)
 st_crs(DSC_RH_scored_long) == st_crs(killer_whale_scored_long)
-saveRDS(killer_whale_scored_long, "U:\\Github\\SMORES\\data\\killer_whale_scored.rds")
+saveRDS(killer_whale_scored_long, "C:\\GitHub\\SMORES\\data\\killer_whale_scored.rds")
 
 # leatherback sea turtle 
 leatherback_turtle <- ESA_Critical_Habitat %>% 
@@ -510,7 +511,7 @@ leatherback_turtle_scored_long <- pivot_longer(leatherback_turtle_scored, cols =
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-leatherback_turtle)
 st_crs(DSC_RH_scored_long) == st_crs(leatherback_turtle_scored_long)
-saveRDS(leatherback_turtle_scored_long, "U:\\Github\\SMORES\\data\\leatherback_turtle_scored.rds")
+saveRDS(leatherback_turtle_scored_long, "C:\\GitHub\\SMORES\\data\\leatherback_turtle_scored.rds")
 
 #humpback whale - mexico and central dps
 humpback_whale <- ESA_Critical_Habitat %>% 
@@ -577,7 +578,7 @@ humpback_whale_scored_long <- pivot_longer(humpback_whale_scored, cols = starts_
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-humpback_whale)
 st_crs(DSC_RH_scored_long) == st_crs(humpback_whale_scored_long)
-saveRDS(humpback_whale_scored_long, "U:\\Github\\SMORES\\data\\humpback_whale_scored.rds")
+saveRDS(humpback_whale_scored_long, "C:\\GitHub\\SMORES\\data\\humpback_whale_scored.rds")
 
 #blue whale 
 blue_whale <- bia_bw_nms_layer %>% 
@@ -614,7 +615,7 @@ blue_whale_scored_long <- pivot_longer(blue_whale_scored, cols = starts_with(c("
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-blue_whale)
 st_crs(DSC_RH_scored_long) == st_crs(blue_whale_scored_long)
-saveRDS(blue_whale_scored_long, "U:\\Github\\SMORES\\data\\blue_whale_scored.rds")
+saveRDS(blue_whale_scored_long, "C:\\GitHub\\SMORES\\data\\blue_whale_scored.rds")
 
 #submarine cables
 furl_nms <- "https://coast.noaa.gov/arcgis/rest/services/Hosted/SubmarineCables/FeatureServer/0"
@@ -659,7 +660,7 @@ submarine_cable_scored_long <- pivot_longer(submarine_cable_scored, cols = start
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-submarine_cable)
 st_crs(DSC_RH_scored_long) == st_crs(submarine_cable_scored_long)
-saveRDS(submarine_cable_scored_long, "U:\\Github\\SMORES\\data\\submarine_cable_scored.rds")
+saveRDS(submarine_cable_scored_long, "C:\\GitHub\\SMORES\\data\\submarine_cable_scored.rds")
 
 #Fisheries data
 # appears to be for just Coos Bay + Brookings
@@ -676,7 +677,7 @@ ASH.grid_RI <- sf::st_intersection(ASH, grd.norcal) %>%
   filter(!is.na(Score.ASH_Ranked_Importance)) %>% 
   sf::st_transform('+proj=longlat +datum=WGS84')
 st_crs(DSC_RH_scored_long) == st_crs(ASH.grid_RI)
-saveRDS(ASH.grid_RI, "U:\\Github\\SMORES\\data\\ASH_Ranked_Importance_scored.rds")
+saveRDS(ASH.grid_RI, "C:\\GitHub\\SMORES\\data\\ASH_Ranked_Importance_scored.rds")
 
 # to make the user selected score options 
 ASH.grid <- ASH.grid_RI %>%
@@ -694,7 +695,7 @@ ASH_scored <- grd.norcal %>%
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-ASH)
 st_crs(DSC_RH_scored_long) == st_crs(ASH_scored)
-saveRDS(ASH_scored, "U:\\Github\\SMORES\\data\\ASH_scored.rds")
+saveRDS(ASH_scored, "C:\\GitHub\\SMORES\\data\\ASH_scored.rds")
 
 # Shoreside hake mid-water trawl = SSH_RI in fisheries dataset
 SSH <- Fisheries %>% 
@@ -708,7 +709,7 @@ SSH.grid_RI <- sf::st_intersection(SSH, grd.norcal) %>%
   filter(!is.na(Score.SSH_Ranked_Importance)) %>% 
   sf::st_transform('+proj=longlat +datum=WGS84')
 st_crs(DSC_RH_scored_long) == st_crs(SSH.grid_RI)
-saveRDS(SSH.grid_RI, "U:\\Github\\SMORES\\data\\SSH_Ranked_Importance_scored.rds")
+saveRDS(SSH.grid_RI, "C:\\GitHub\\SMORES\\data\\SSH_Ranked_Importance_scored.rds")
 
 # to make the user selected score options 
 SSH.grid <- SSH.grid_RI %>%
@@ -726,7 +727,7 @@ SSH_scored <- grd.norcal %>%
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-SSH)
 st_crs(DSC_RH_scored_long) == st_crs(SSH_scored)
-saveRDS(SSH_scored, "U:\\Github\\SMORES\\data\\SSH_scored.rds")
+saveRDS(SSH_scored, "C:\\GitHub\\SMORES\\data\\SSH_scored.rds")
 
 # Groundfish bottom trawl = GFBT_RI in fisheries dataset
 GFBT <- Fisheries %>% 
@@ -740,7 +741,7 @@ GFBT.grid_RI <- sf::st_intersection(GFBT, grd.norcal) %>%
   filter(!is.na(Score.GFBT_Ranked_Importance)) %>% 
   sf::st_transform('+proj=longlat +datum=WGS84')
 st_crs(DSC_RH_scored_long) == st_crs(GFBT.grid_RI)
-saveRDS(GFBT.grid_RI, "U:\\Github\\SMORES\\data\\GFBT_Ranked_Importance_scored.rds")
+saveRDS(GFBT.grid_RI, "C:\\GitHub\\SMORES\\data\\GFBT_Ranked_Importance_scored.rds")
 
 # to make the user selected score options 
 GFBT.grid <- GFBT.grid_RI %>%
@@ -758,7 +759,7 @@ GFBT_scored <- grd.norcal %>%
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-GFBT)
 st_crs(DSC_RH_scored_long) == st_crs(GFBT_scored)
-saveRDS(GFBT_scored, "U:\\Github\\SMORES\\data\\GFBT_scored.rds")
+saveRDS(GFBT_scored, "C:\\GitHub\\SMORES\\data\\GFBT_scored.rds")
 
 # Groundfish pot gear = GFP_RI in fisheries dataset
 GFP <- Fisheries %>% 
@@ -772,7 +773,7 @@ GFP.grid_RI <- sf::st_intersection(GFP, grd.norcal) %>%
   filter(!is.na(Score.GFP_Ranked_Importance)) %>% 
   sf::st_transform('+proj=longlat +datum=WGS84')
 st_crs(DSC_RH_scored_long) == st_crs(GFP.grid_RI)
-saveRDS(GFP.grid_RI, "U:\\Github\\SMORES\\data\\GFP_Ranked_Importance_scored.rds")
+saveRDS(GFP.grid_RI, "C:\\GitHub\\SMORES\\data\\GFP_Ranked_Importance_scored.rds")
 
 # to make the user selected score options 
 GFP.grid <- GFP.grid_RI %>%
@@ -790,7 +791,7 @@ GFP_scored <- grd.norcal %>%
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-GFP)
 st_crs(DSC_RH_scored_long) == st_crs(GFP_scored)
-saveRDS(GFP_scored, "U:\\Github\\SMORES\\data\\GFP_scored.rds")
+saveRDS(GFP_scored, "C:\\GitHub\\SMORES\\data\\GFP_scored.rds")
 
 # Groundfish longline gear = GFLL_RI in fisheries dataset
 GFLL <- Fisheries %>% 
@@ -804,7 +805,7 @@ GFLL.grid_RI <- sf::st_intersection(GFLL, grd.norcal) %>%
   filter(!is.na(Score.GFLL_Ranked_Importance)) %>% 
   sf::st_transform('+proj=longlat +datum=WGS84')
 st_crs(DSC_RH_scored_long) == st_crs(GFLL.grid_RI)
-saveRDS(GFLL.grid_RI, "U:\\Github\\SMORES\\data\\GFLL_Ranked_Importance_scored.rds")
+saveRDS(GFLL.grid_RI, "C:\\GitHub\\SMORES\\data\\GFLL_Ranked_Importance_scored.rds")
 
 # to make the user selected score options 
 GFLL.grid <- GFLL.grid_RI %>%
@@ -822,7 +823,7 @@ GFLL_scored <- grd.norcal %>%
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-GFLL)
 st_crs(DSC_RH_scored_long) == st_crs(GFLL_scored)
-saveRDS(GFLL_scored, "U:\\Github\\SMORES\\data\\GFLL_scored.rds")
+saveRDS(GFLL_scored, "C:\\GitHub\\SMORES\\data\\GFLL_scored.rds")
 
 # Pink shrimp trawl = PS_RI in fisheries dataset
 PS <- Fisheries %>% 
@@ -836,7 +837,7 @@ PS.grid_RI <- sf::st_intersection(PS, grd.norcal) %>%
   filter(!is.na(Score.PS_Ranked_Importance)) %>% 
   sf::st_transform('+proj=longlat +datum=WGS84')
 st_crs(DSC_RH_scored_long) == st_crs(PS.grid_RI)
-saveRDS(PS.grid_RI, "U:\\Github\\SMORES\\data\\PS_Ranked_Importance_scored.rds")
+saveRDS(PS.grid_RI, "C:\\GitHub\\SMORES\\data\\PS_Ranked_Importance_scored.rds")
 
 # to make the user selected score options 
 PS.grid <- PS.grid_RI %>%
@@ -854,7 +855,7 @@ PS_scored <- grd.norcal %>%
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-PS)
 st_crs(DSC_RH_scored_long) == st_crs(PS_scored)
-saveRDS(PS_scored, "U:\\Github\\SMORES\\data\\PS_scored.rds")
+saveRDS(PS_scored, "C:\\GitHub\\SMORES\\data\\PS_scored.rds")
 
 # Dungeness Crab = CRAB_RI in fisheries dataset
 CRAB <- Fisheries %>% 
@@ -868,7 +869,7 @@ CRAB.grid_RI <- sf::st_intersection(CRAB, grd.norcal) %>%
   filter(!is.na(Score.CRAB_Ranked_Importance)) %>% 
   sf::st_transform('+proj=longlat +datum=WGS84')
 st_crs(DSC_RH_scored_long) == st_crs(CRAB.grid_RI)
-saveRDS(CRAB.grid_RI, "U:\\Github\\SMORES\\data\\CRAB_Ranked_Importance_scored.rds")
+saveRDS(CRAB.grid_RI, "C:\\GitHub\\SMORES\\data\\CRAB_Ranked_Importance_scored.rds")
 
 # to make the user selected score options 
 CRAB.grid <- CRAB.grid_RI %>%
@@ -886,7 +887,7 @@ CRAB_scored <- grd.norcal %>%
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-CRAB)
 st_crs(DSC_RH_scored_long) == st_crs(CRAB_scored)
-saveRDS(CRAB_scored, "U:\\Github\\SMORES\\data\\CRAB_scored.rds")
+saveRDS(CRAB_scored, "C:\\GitHub\\SMORES\\data\\CRAB_scored.rds")
 
 # Commercial troll/hook and line albacore = ALCO_RI in fisheries dataset
 ALCO <- Fisheries %>% 
@@ -900,7 +901,7 @@ ALCO.grid_RI <- sf::st_intersection(ALCO, grd.norcal) %>%
   filter(!is.na(Score.ALCO_Ranked_Importance)) %>% 
   sf::st_transform('+proj=longlat +datum=WGS84')
 st_crs(DSC_RH_scored_long) == st_crs(ALCO.grid_RI)
-saveRDS(ALCO.grid_RI, "U:\\Github\\SMORES\\data\\ALCO_Ranked_Importance_scored.rds")
+saveRDS(ALCO.grid_RI, "C:\\GitHub\\SMORES\\data\\ALCO_Ranked_Importance_scored.rds")
 
 # to make the user selected score options 
 ALCO.grid <- ALCO.grid_RI %>%
@@ -918,7 +919,7 @@ ALCO_scored <- grd.norcal %>%
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-ALCO)
 st_crs(DSC_RH_scored_long) == st_crs(ALCO_scored)
-saveRDS(ALCO_scored, "U:\\Github\\SMORES\\data\\ALCO_scored.rds")
+saveRDS(ALCO_scored, "C:\\GitHub\\SMORES\\data\\ALCO_scored.rds")
 
 # Charter vessel albacore troll/hook and line = ALCH_RI in fisheries dataset
 ALCH <- Fisheries %>% 
@@ -932,7 +933,7 @@ ALCH.grid_RI <- sf::st_intersection(ALCH, grd.norcal) %>%
   filter(!is.na(Score.ALCH_Ranked_Importance)) %>%
   sf::st_transform('+proj=longlat +datum=WGS84')
 st_crs(DSC_RH_scored_long) == st_crs(ALCH.grid_RI)
-saveRDS(ALCH.grid_RI, "U:\\Github\\SMORES\\data\\ALCH_Ranked_Importance_scored.rds")
+saveRDS(ALCH.grid_RI, "C:\\GitHub\\SMORES\\data\\ALCH_Ranked_Importance_scored.rds")
 
 # to make the user selected score options 
 ALCH.grid <- ALCH.grid_RI %>%
@@ -950,7 +951,7 @@ ALCH_scored <- grd.norcal %>%
   sf::st_transform('+proj=longlat +datum=WGS84') %>% 
   select(-ALCH)
 st_crs(DSC_RH_scored_long) == st_crs(ALCH_scored)
-saveRDS(ALCH_scored, "U:\\Github\\SMORES\\data\\ALCH_scored.rds")
+saveRDS(ALCH_scored, "C:\\GitHub\\SMORES\\data\\ALCH_scored.rds")
 
 # Trawl Fisheries
 ggplot(Trawl_Fisheries) +
@@ -968,7 +969,7 @@ trawl_fisheries <- Trawl_Fisheries %>%
   sf::st_transform('+proj=longlat +datum=WGS84')
   
 st_crs(DSC_RH_scored_long) == st_crs(trawl_fisheries)
-saveRDS(trawl_fisheries, "U:\\Github\\SMORES\\data\\trawl_fisheries_scored.rds")
+saveRDS(trawl_fisheries, "C:\\GitHub\\SMORES\\data\\trawl_fisheries_scored.rds")
 
 
 #WEA's
@@ -976,5 +977,5 @@ BOEM.gdb <- "Z:\\ArcGIS\\Projects\\OWEC\\p30\\boem_offshorewindenergy.gdb"
 WEA <- sf::st_read(dsn = BOEM.gdb, layer = "BOEM_CA_OR_WEAs_merge_new") %>% 
   filter(AreaType == "WEA") %>% 
   sf::st_transform('+proj=longlat +datum=WGS84')
-saveRDS(WEA, "U:\\Github\\SMORES\\data\\WEA.rds")
+saveRDS(WEA, "C:\\GitHub\\SMORES\\data\\WEA.rds")
 
