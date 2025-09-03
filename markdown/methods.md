@@ -20,4 +20,31 @@ data layers and submodels had equal weight within the suitability model.
 
 The Geometric mean equation used was:
 
-$$GM = \left(\prod_{i=1}^{n} x_i\right)^{\frac{1}{n}}$$
+$$\text{g} = \sqrt[n]{x_1 \times x_2 \times \ldots \times x_i}$$
+
+<center>
+n = number of variables<br>
+x₁ = variable 1<br>
+x₂ = variable 2<br>
+xᵢ = additional variables
+</center>
+
+The Product equation used was:
+
+$$\text{p} = x_1 \times x_2 \times \ldots \times x_i$$
+
+<center>
+x₁ = variable 1<br>
+x₂ = variable 2<br>
+xᵢ = additional variables
+</center>
+
+The lowest equation used was:
+
+$$\text{l} = \min(x_1, x_2, \ldots, x_i)$$
+
+<center>
+x₁ = variable 1<br>
+x₂ = variable 2<br>
+xᵢ = additional variables
+</center>
