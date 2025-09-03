@@ -51,7 +51,7 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
 ├── data_production.R
 ├── Full_Model_Report_template.Rmd
 ├── global.R
-├── LICENSE                           # Aapache 2.0
+├── LICENSE                           # Apache 2.0
 ├── markdown                          # Folder containing all markdown files used and where text is stored
 │   ├── area_of_interest.md
 │   ├── cables.md

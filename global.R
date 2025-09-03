@@ -15,6 +15,7 @@ library(viridis)
 library(knitr)
 library(fontawesome)
 
+# Code to add _brand.yml theming
 theme <- bslib::bs_theme()
 
 # Load custom functions 
