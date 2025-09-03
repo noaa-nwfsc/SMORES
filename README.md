@@ -3,10 +3,10 @@ Repository to house the materials to develop the Suitability Modeling for Offsho
 
 ## Table of Contents
 
-- [Decription](##decription)
-- [Usage](##usage)
-- [Repository Structure](##repository-structure)
-- [Resources](##resources)
+- [Decription](##-decription)
+- [Usage](##-usage)
+- [Repository Structure](##-repository-structure)
+- [Resources](##-resources)
 
 
 ## Description
@@ -116,7 +116,7 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
 ├── ui.R
 └── www                                 # graphics folder
     ├── logos
-    |  ├── NOAA_FISHERIES_logoH_web.png
+    |  ├── NOAA_FISHERIES_logoH.png
     └── styles.css.png
 ```
 
