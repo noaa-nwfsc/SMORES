@@ -298,7 +298,7 @@ tagList(
       card(
         card_header("Methods"),
         card_body(
-          includeMarkdown("markdown/methods.md")
+          withMathJax(includeMarkdown("markdown/methods.md")) # function within R Shiny to render LaTex equations
         )
       )
     ), 
