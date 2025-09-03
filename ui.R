@@ -18,7 +18,7 @@ tagList(
     # Right side will have NOAA logo
     div(
       # note do not include www folder in file path or link will appear broken
-      img(src = "logos/NOAA_FISHERIES_logoH_web.png", height = "60px", alt = "NOAA Fisheries Logo")
+      img(src = "logos/NOAA_FISHERIES_logoH.png", height = "60px", alt = "NOAA Fisheries Logo")
     )
   ),
   
