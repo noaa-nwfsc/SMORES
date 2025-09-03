@@ -1,23 +1,23 @@
 # SMORES
+
 Repository to house the materials to develop the Suitability Modeling for Offshore Resources and Energy Siting (SMORES) Shiny Application.
 
 ## Table of Contents
 
-- [Decription](#decription)
-- [Usage](#usage)
-- [Repository Structure](#repository-structure)
-- [Resources](#resources)
-
+-   [Decription](#decription)
+-   [Usage](#usage)
+-   [Repository Structure](#repository-structure)
+-   [Resources](#resources)
 
 ## Description
 
 Repository to house the materials to develop the Suitability Modeling for Offshore Resources and Energy Siting (SMORES) Shiny Application.
 
-## Usage
- This application was built to create a flexible framework that will allow scientists, decision-makers, and planners to model data inputs that *could* be used as part of the marine spatial planning process when determining new areas of offshore development on the West Coast of the United States.
+## Usage {#usage}
+
+This application was built to create a flexible framework that will allow scientists, decision-makers, and planners to model data inputs that *could* be used as part of the marine spatial planning process when determining new areas of offshore development on the West Coast of the United States.
 
 The dashboard is organized by the navigation bar at the top. There are 6 tabs: Area of Interest, Natural Resources Submodel, Fisheries Submodel, Industry & Operations Submodel, Full Model, Methods, and Data.
-
 
 To generate a full model run you will move through the first 5 tabs from left to right.
 
@@ -33,7 +33,7 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
 
 *At this stage the Natural Resources Submodel that will be included in the Full Model has been generated.*
 
-**Step 5**: Repeat steps 2-4 for the Fisheries Submodel which will include selecting scores for fisheries and trawl fisheries layers. *Note that when you combine the fisheries layers with the trawl fishery layers the trawl fishery score will replace the score in grid cells within the top 75% of the trawl fisheries' ranked importance values. This is a different methodology than previous sections. 
+**Step 5**: Repeat steps 2-4 for the Fisheries Submodel which will include selecting scores for fisheries and trawl fisheries layers. \*Note that when you combine the fisheries layers with the trawl fishery layers the trawl fishery score will replace the score in grid cells within the top 75% of the trawl fisheries' ranked importance values. This is a different methodology than previous sections.
 
 *At this stage the Fisheries Submodel that will be included in the Full Model has been generated.*
 
@@ -43,8 +43,8 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
 
 **Step 7**: Navigate to the Full Model Tab. You will select which submodels you would like to be included in the calculation of the full model and then select the weight you would like applied to each submodel. Once you have configured your submodels you will click on the generate Full Model button which will produce 3 maps.The first map will represent the full model scores for the whole west coast. The second map will show the full model scores for the area of interest you previously selected. The third map will show the full model for the area of interest normalized using a minimum maximum normalization.You can opt to export a copy of your results by selecting the Export button at the bottom of the page.
 
+## Repository Structure {#repository-structure}
 
-## Repository Structure
 ```{r}
 ├── _brand.yml                        # Theming for the app
 ├── .gitignore 
@@ -120,4 +120,8 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
     └── styles.css.png
 ```
 
-## Resources
+## Resources {#resources}
+
+A Wind Energy Area Siting Analysis for the Oregon Call Areas [[Link]](https://www.boem.gov/sites/default/files/documents/environment/BOEM_2024-015.pdf)
+
+Citation: Carlton J, Jossart JA, Pendleton F, Sumait N, Miller J, Thurston-Keller J, Reeb D, Gilbane L, Pereksta D, Schroeder D, Morris Jr JA. 2024. A wind energy area siting analysis for the Oregon Call Areas. Camarillo (CA): U.S. Department of the Interior, Bureau of Ocean Energy Management. 237 p. Report No.: OCS Study BOEM 2024-015.
