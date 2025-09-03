@@ -13,7 +13,7 @@ Repository to house the materials to develop the Suitability Modeling for Offsho
 
 Repository to house the materials to develop the Suitability Modeling for Offshore Resources and Energy Siting (SMORES) Shiny Application.
 
-## Usage {#usage}
+## Usage
 
 This application was built to create a flexible framework that will allow scientists, decision-makers, and planners to model data inputs that *could* be used as part of the marine spatial planning process when determining new areas of offshore development on the West Coast of the United States.
 
@@ -43,7 +43,7 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
 
 **Step 7**: Navigate to the Full Model Tab. You will select which submodels you would like to be included in the calculation of the full model and then select the weight you would like applied to each submodel. Once you have configured your submodels you will click on the generate Full Model button which will produce 3 maps.The first map will represent the full model scores for the whole west coast. The second map will show the full model scores for the area of interest you previously selected. The third map will show the full model for the area of interest normalized using a minimum maximum normalization.You can opt to export a copy of your results by selecting the Export button at the bottom of the page.
 
-## Repository Structure {#repository-structure}
+## Repository Structure
 
 ```{r}
 ├── _brand.yml                        # Theming for the app
@@ -120,7 +120,7 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
     └── styles.css.png
 ```
 
-## Resources {#resources}
+## Resources
 
 A Wind Energy Area Siting Analysis for the Oregon Call Areas [[Link]](https://www.boem.gov/sites/default/files/documents/environment/BOEM_2024-015.pdf)
 
