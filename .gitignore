@@ -4,16 +4,13 @@ data/
 #test document
 test.R
 
-#www folder with logo images for now
-www/
-
 # History files
 .Rhistory
 .Rapp.history
 
 # Session Data files
 .RData
-.RDataTmp
+.RDataTmp*
 
 # User-specific files
 .Ruserdata
