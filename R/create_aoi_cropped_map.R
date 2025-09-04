@@ -88,14 +88,38 @@ create_aoi_cropped_map <- function(combined_data, aoi_data_reactive = NULL, map_
       addProviderTiles("Esri.OceanBasemap") %>%
       setView(lng = center_lng, lat = center_lat, zoom = 10)
     
-    # Handle color palette - use the same logic as the full map
-    if(abs(min_val - max_val) < 1e-10) {
-      # All values are the same - use single color
+    # Get the actual cropped data values to check for uniformity
+    cropped_score_values <- map_data$Geo_mean
+    cropped_min <- min(cropped_score_values, na.rm = TRUE)
+    cropped_max <- max(cropped_score_values, na.rm = TRUE)
+    
+    # Use full data range for palette domain, but check cropped data for uniformity
+    if(!is.null(full_data_range)) {
+      min_val <- full_data_range$min
+      max_val <- full_data_range$max
+    } else {
+      # Fall back to calculating from the full combined_data
+      full_score_values <- combined_data$Geo_mean[!is.na(combined_data$Geo_mean)]
+      min_val <- min(full_score_values, na.rm = TRUE)
+      max_val <- max(full_score_values, na.rm = TRUE)
+    }
+    
+    # Check if CROPPED values are all the same (not full range)
+    if(abs(cropped_min - cropped_max) < 1e-10) {
+      # All CROPPED values are the same - use single color logic
+      pal <- colorNumeric(
+        palette = "viridis",
+        domain = c(min_val, max_val),  # Still use full range for consistent coloring
+        na.color = "transparent"
+      )
+      
+      single_color <- pal(cropped_min)  # Color for the single cropped value
+      
       map <- map %>%
         addPolygons(
           weight = 1,
           color = "#333333",
-          fillColor = "#440154",  # Dark purple
+          fillColor = single_color,  # Use the palette-determined color
           fillOpacity = 0.7,
           popup = ~popup_display,
           highlightOptions = highlightOptions(
@@ -108,6 +132,13 @@ create_aoi_cropped_map <- function(combined_data, aoi_data_reactive = NULL, map_
         addControl(
           paste("All areas have the same score:", format(min_val, digits = 3)),
           position = "bottomright"
+        ) %>%
+        addLegend(
+          position = "bottomright",
+          colors = single_color,
+          labels = format(min_val, digits = 3),
+          title = paste(map_title, "Score"),
+          opacity = 1
         )
     } else {
       # Create color palette using the same domain as the full map

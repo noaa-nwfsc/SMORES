@@ -111,6 +111,13 @@ create_aoi_cropped_normalized_map <- function(combined_data, aoi_data_reactive =
         addControl(
           paste("All areas have the same normalized score:", format(norm_min_val, digits = 3)),
           position = "bottomright"
+        ) %>% 
+        addLegend(
+          position = "bottomright",
+          colors = "#d62728",
+          labels = format(norm_min_val, digits = 3),
+          title = paste(map_title, "Score"),
+          opacity = 1
         )
     } else {
       # Create color palette for normalized values using a different color scheme
