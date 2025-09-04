@@ -315,7 +315,6 @@ saveRDS(ShlfBrk_scored_long, "C:\\GitHub\\SMORES\\data\\ShlfBrk_scored.rds")
 
 #EFHCA
 EFHCA.grid <- readRDS("U:\\Github\\OWEC\\data\\Lyr_EFHCA.rds") #need to make a more longterm solution for this 
-saveRDS(EFHCA.grid, "C:\\GitHub\\SMORES\\data\\EFHCA_grid.rds" )
 EFHCA_score <- EFHCA.grid %>%
   st_drop_geometry() %>% 
   group_by(CellID_2km) %>% 
@@ -344,7 +343,6 @@ saveRDS(EFHCA_scored_long, "C:\\GitHub\\SMORES\\data\\EFHCA_scored.rds")
 
 #EFHCA.700
 EFHCA_700.grid <- readRDS("U:\\Github\\OWEC\\data\\Lyr_EFHCA700.rds") #need to make a more longterm solutions for this
-saveRDS(EFHCA_700.grid, "C:\\GitHub\\SMORES\\data\\EFHCA_grid.rds" )
 EFHCA_700_score <- EFHCA_700.grid %>%
   st_drop_geometry() %>% 
   group_by(CellID_2km) %>% 
@@ -373,7 +371,6 @@ saveRDS(EFHCA_700_scored_long, "C:\\GitHub\\SMORES\\data\\EFHCA_700_scored.rds")
 
 # HAPCAOI
 HAPCaoi.grid <- readRDS("U:\\Github\\OWEC\\data\\Lyr_HAPCaoi.rds")
-saveRDS(HAPCaoi.grid, "C:\\GitHub\\SMORES\\data\\HAPCaoi_grid.rds" )
 HAPCaoi_score <- HAPCaoi.grid %>%
   st_drop_geometry() %>% 
   group_by(CellID_2km) %>% 
@@ -401,8 +398,7 @@ st_crs(DSC_RH_scored_long) == st_crs(HAPCaoi_scored_long)
 saveRDS(HAPCaoi_scored_long, "C:\\GitHub\\SMORES\\data\\HAPCaoi_scored.rds")
 
 #HAPCReef
-HAPCreef.grid <- readRDS("U:\\Github\\OWEC\\data\\Lyr_HAPCreef.rds")
-saveRDS(HAPCreef.grid, "C:\\GitHub\\SMORES\\data\\HAPCreef_grid.rds" )
+HAPCreef.grid <- readRDS("Z:\\GIS_Base\\OSW\\R_files\\Lyr_20250701_HAPCreef.rds")
 HAPCreef_score <- HAPCreef.grid %>%
   st_drop_geometry() %>% 
   group_by(CellID_2km) %>% 
