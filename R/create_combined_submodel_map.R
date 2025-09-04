@@ -124,9 +124,15 @@ create_combined_submodel_map <- function(component_data_list, base_grid = grid_t
               bringToFront = TRUE
             )
           ) %>%
-          addControl(
-            paste("All areas have the same score:", format(min_val, digits = 3)),
-            position = "bottomright"
+          addLegend(
+            position = "bottomright",
+            colors = single_color,
+            labels = paste("Score:", 
+                           ifelse(min_val < 0.01,
+                                  format(min_val, scientific = FALSE, digits = 3),
+                                  round(min_val, 3))),
+            title = "Combined Submodel",
+            opacity = 1
           )
       } else {
         # We have variation - create proper color palette
@@ -162,7 +168,14 @@ create_combined_submodel_map <- function(component_data_list, base_grid = grid_t
                 fillOpacity = 0.9,
                 bringToFront = TRUE
               )
-            ) 
+            ) %>% 
+            addLegend(
+              position = "bottomright",
+              pal = pal,
+              values = geo_mean_values,
+              title = "Combined Submodel",
+              opacity = 1
+            )
         }, error = function(e) {
           # Fallback to single color if color mapping fails
           map %>%
