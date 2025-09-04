@@ -950,9 +950,6 @@ st_crs(DSC_RH_scored_long) == st_crs(ALCH_scored)
 saveRDS(ALCH_scored, "C:\\GitHub\\SMORES\\data\\ALCH_scored.rds")
 
 # Trawl Fisheries
-ggplot(Trawl_Fisheries) +
-  geom_sf()
-
 trawl_fisheries <- Trawl_Fisheries %>% 
   sf::st_intersection(grd.norcal) %>% 
   mutate(Score.Trawl_Fisheries = FID) %>% 
