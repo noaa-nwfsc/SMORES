@@ -127,7 +127,7 @@ generate_industry_operations_combined_sidebar <- function(submodel_config, combi
     # Export Section
     h5("Export"),
       downloadButton("industryOperationsCombinedExport",
-                     "Export Combined Submodel",
+                     "Export Industry & Operations Combined Submodel Report",
                      icon = icon("file-export"),
                      class = "btn-info btn-block")
   )

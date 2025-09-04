@@ -52,7 +52,7 @@ generate_species_sidebar <- function(species_layers, score_values, current_tab =
     # Export button
     hr(),
     h4("Export"),
-    downloadButton("speciesExportRmd", "Export to R Markdown",
+    downloadButton("speciesExportRmd", "Export Species Component Report",
                    icon = icon("file-export"),
                    class = "btn-info btn-block")
   )

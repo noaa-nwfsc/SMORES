@@ -47,7 +47,7 @@ generate_fisheries_sidebar <- function(fisheries_layer, score_values_ranked_impo
     # Export button
     hr(),
     h4("Export"),
-    downloadButton("fisheriesExportRmd", "Export to HTML File",
+    downloadButton("fisheriesExportRmd", "Export Fisheries Component",
                    icon = icon("file-export"),
                    class = "btn-info btn-block")
   )

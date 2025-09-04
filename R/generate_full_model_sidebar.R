@@ -4,7 +4,7 @@ generate_overall_model_sidebar <- function() {
     h5("Submodel Availability"),
     htmlOutput("overallModelSubmodelStatus"),
     hr(),
-    h4("Overall Model Settings"),
+    h4("Full Model Settings"),
     hr(),
     
     # Submodel Selection Section

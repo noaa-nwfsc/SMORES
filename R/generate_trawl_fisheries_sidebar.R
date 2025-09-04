@@ -52,7 +52,7 @@ generate_trawl_fisheries_sidebar <- function(trawl_fisheries_layer, score_values
     # Export button
     hr(),
     h4("Export"),
-    downloadButton("trawlExportRmd", "Export to HTML File",
+    downloadButton("trawlExportRmd", "Export Trawl Fisheries Component Report",
                    icon = icon("file-export"),
                    class = "btn-info btn-block")
   )

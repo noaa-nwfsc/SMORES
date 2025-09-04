@@ -52,7 +52,7 @@ generate_surveys_sidebar <- function(surveys_layers, score_values, current_tab =
     # Export button
     hr(),
     h4("Export"),
-    downloadButton("surveysExportRmd", "Export to R Markdown",
+    downloadButton("surveysExportRmd", "Export Scientific Surveys Component Report",
                    icon = icon("file-export"),
                    class = "btn-info btn-block")
   )

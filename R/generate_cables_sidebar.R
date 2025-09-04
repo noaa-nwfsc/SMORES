@@ -52,7 +52,7 @@ generate_cables_sidebar <- function(submarine_cables_layer, score_values, curren
     # Export button
     hr(),
     h4("Export"),
-    downloadButton("cablesExportRmd", "Export to R Markdown",
+    downloadButton("cablesExportRmd", "Export Submarine Cables Component Report",
                    icon = icon("file-export"),
                    class = "btn-info btn-block")
   )

@@ -126,7 +126,7 @@ generate_natural_resources_combined_sidebar <- function(submodel_config, combine
     # Export Section
     h5("Export"),
       downloadButton("naturalResourcesCombinedExport",
-                     "Export Combined Submodel",
+                     "Export Natural Resources Combined Submodel Report",
                      icon = icon("file-export"),
                      class = "btn-info btn-block")
   )

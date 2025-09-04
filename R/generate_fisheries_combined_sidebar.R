@@ -126,7 +126,7 @@ generate_fisheries_combined_sidebar <- function(submodel_config, combined_maps_d
     # Export Section
     h5("Export"),
     downloadButton("fisheriesCombinedExport",
-                   "Export Combined Submodel",
+                   "Export Fisheries Combined Submodel Report",
                    icon = icon("file-export"),
                    class = "btn-info btn-block")
   )
