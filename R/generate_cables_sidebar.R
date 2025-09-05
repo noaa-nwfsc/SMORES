@@ -47,7 +47,7 @@ generate_cables_sidebar <- function(submarine_cables_layer, score_values, curren
                        selected = "geometric_mean"),
     hr(),
     h4("Combined Map Settings"),
-    actionButton("generateCombinedCablesMap", "Generate Combined Map", 
+    actionButton("generateCombinedCablesMap", "Generate Combined Map(s)", 
                  class = "btn-primary btn-block"),
     # Export button
     hr(),

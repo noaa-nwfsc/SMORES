@@ -47,7 +47,7 @@ generate_surveys_sidebar <- function(surveys_layers, score_values, current_tab =
                        selected = "geometric_mean"),
     hr(),
     h4("Combined Map Settings"),
-    actionButton("generateCombinedSurveysMap", "Generate Combined Map", 
+    actionButton("generateCombinedSurveysMap", "Generate Combined Map(s)", 
                  class = "btn-primary btn-block"),
     # Export button
     hr(),

@@ -56,7 +56,7 @@ generate_habitat_sidebar <- function(habitat_layers, score_values, current_tab =
     # Export button
     hr(),
     h4("Export"),
-    downloadButton("habitatExportRmd", "Export to R Markdown",
+    downloadButton("habitatExportRmd", "Export Habitat Component Report",
                    icon = icon("file-export"),
                    class = "btn-info btn-block")
   )

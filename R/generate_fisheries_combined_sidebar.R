@@ -117,7 +117,7 @@ generate_fisheries_combined_sidebar <- function(submodel_config, combined_maps_d
       conditionalPanel(
         condition = "input.includeFisheries == true || input.includeTrawl == true",
         actionButton("generateFisheriesCombinedSubmodel",
-                     "Generate Combined Fisheries Submodel",
+                     "Generate Combined Fisheries Submodel Maps",
                      class = "btn-primary btn-block",
                      icon = icon("calculator"))
       )

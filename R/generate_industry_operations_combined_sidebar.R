@@ -118,7 +118,7 @@ generate_industry_operations_combined_sidebar <- function(submodel_config, combi
       conditionalPanel(
         condition = "input.includeSurveys == true || input.includeCables == true",
         actionButton("generateIndustryOperationsCombinedSubmodel",
-                     "Generate Combined Industry & Operations Submodel",
+                     "Generate Combined Industry & Operations Submodel Maps",
                      class = "btn-primary btn-block",
                      icon = icon("calculator"))
       )

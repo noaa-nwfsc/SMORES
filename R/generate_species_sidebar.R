@@ -47,7 +47,7 @@ generate_species_sidebar <- function(species_layers, score_values, current_tab =
                        selected = "geometric_mean"),
     hr(),
     h4("Combined Map Settings"),
-    actionButton("generateCombinedSpeciesMap", "Generate Combined Map", 
+    actionButton("generateCombinedSpeciesMap", "Generate Combined Map(s)", 
                  class = "btn-primary btn-block"),
     # Export button
     hr(),

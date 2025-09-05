@@ -47,7 +47,7 @@ generate_trawl_fisheries_sidebar <- function(trawl_fisheries_layer, score_values
                        selected = "geometric_mean"),
     hr(),
     h4("Combined Map Settings"),
-    actionButton("generateCombinedTrawlMap", "Generate Combined Map", 
+    actionButton("generateCombinedTrawlMap", "Generate Combined Map(s)", 
                  class = "btn-primary btn-block"),
     # Export button
     hr(),
