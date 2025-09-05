@@ -1,7 +1,7 @@
 ---
 editor_options: 
-  markdown: 
-    wrap: 72
+markdown: 
+wrap: 72
 ---
 
 Each data layer was scored on a 0 to 1 scale, with scores approaching 0
@@ -17,34 +17,54 @@ equal importance to each variable and provides a non-biased weighting of
 each submodel as they interact with each other (Bovee 1986; Longdill et
 al. 2008; Silva et al. 2011; Muñoz-Mas et al. 2012). Furthermore, all
 data layers and submodels had equal weight within the suitability model.
+However, we also wanted to provide the functionality to weight each
+submodel if that is eventuallly utilised in the future.
 
-The Geometric mean equation used was:
+Combined maps for the different sub-tabs (habitat, fisheries, scientific
+surveys, etc.) used the following equations. If you would like to see
+the code behind these equations please click on the equation names.
+
+The [geometric
+mean](https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_geometric_mean_combined.R)
+equation used was:
 
 $$\text{g} = \sqrt[n]{x_1 \times x_2 \times \ldots \times x_i}$$
 
 <center>
-n = number of variables<br>
-x₁ = variable 1<br>
-x₂ = variable 2<br>
-xᵢ = additional variables
+n = number of variables<br> x₁ = variable 1<br> x₂ = variable
+2<br> xᵢ = additional variables
 </center>
 
-The Product equation used was:
+The
+[product](https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_product_combined.R)
+equation used was:
 
 $$\text{p} = x_1 \times x_2 \times \ldots \times x_i$$
 
 <center>
-x₁ = variable 1<br>
-x₂ = variable 2<br>
-xᵢ = additional variables
+x₁ = variable 1<br> x₂ = variable 2<br> xᵢ = additional
+variables
 </center>
 
-The lowest equation used was:
+The
+[lowest](https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_lowest_combined.R)
+equation used was:
 
 $$\text{l} = \min(x_1, x_2, \ldots, x_i)$$
 
 <center>
-x₁ = variable 1<br>
-x₂ = variable 2<br>
-xᵢ = additional variables
+x₁ = variable 1<br> x₂ = variable 2<br> xᵢ = additional
+variables
+</center>
+
+To generate the full model map a [weighted geometric
+mean](https://github.com/noaa-nwfsc/SMORES/blob/main/R/create_full_model_map.R)
+calculation was used:
+
+$$\text{wg} = \sqrt[n]{x_1^{w_1} \times x_2^{w_2} \times \ldots \times x_i^{w_i}}$$
+
+<center>
+n = number of variables<br> x₁ = variable 1<br> x₂ = variable
+2<br> xᵢ = additional variables<br> w₁ = weight for variable 1<br> w₂ =
+weight for variable 2<br> wᵢ = weights for additional variables
 </center>
