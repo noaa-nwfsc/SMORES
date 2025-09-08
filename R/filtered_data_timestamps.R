@@ -30,7 +30,7 @@ get_filtered_timestamp_data <- function(valid_configs, layer_type = "habitat") {
       "Seeps" = "Seeps",
       "Shelf Break" = "Shelf Break",
       "EFHCA" = "EFHCA",
-      "EFHCA 700 fathom" = "EFHCA 700 fathoms",
+      "EFHCA 700 fathoms" = "EFHCA 700 fathoms",
       "HAPC AOI" = "HAPC AOI",
       "HAPC Rocky Reef" = "HAPC Rocky Reef"
     )

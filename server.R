@@ -471,7 +471,7 @@ function(input, output, session) {
       "Seeps" = list(data = seeps, score_column = "Score.Seeps"),
       "Shelf Break" = list(data = shlfbrk, score_column = "Score.ShlfBrk"),
       "EFHCA" = list(data = efhca, score_column = "Score.EFHCA"), 
-      "EFHCA 700 fathom" = list(data = efhca_700, score_column = "Score.EFHCA.700"), 
+      "EFHCA 700 fathoms" = list(data = efhca_700, score_column = "Score.EFHCA.700"), 
       "HAPC AOI" = list(data = HAPCaoi, score_column = "Score.HAPC.AOI"), 
       "HAPC Rocky Reef" = list(data = HAPCreef, score_column = "Score.HAPC.Reef")
     )

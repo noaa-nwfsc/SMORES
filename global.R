@@ -136,7 +136,7 @@ habitat_layer <- list(
   "Seeps" = seeps, 
   "Shelf Break" = shlfbrk, 
   "EFHCA" = efhca,
-  "EFHCA 700 fathom" = efhca_700, 
+  "EFHCA 700 fathoms" = efhca_700, 
   "HAPC AOI" = HAPCaoi,
   "HAPC Rocky Reef" = HAPCreef
 )
