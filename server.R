@@ -42,11 +42,11 @@ function(input, output, session) {
     industry_operations_combined_map = NULL,
     industry_operations_combined_map_cropped = NULL, 
     industry_operations_combined_map_cropped_normalized = NULL,
-    overall_combined_model = NULL,
-    overall_combined_model_generated = FALSE,
-    overall_combined_map = NULL,
-    overall_combined_map_cropped = NULL, 
-    overall_combined_map_cropped_normalized = NULL
+    full_model = NULL,
+    full_model_generated = FALSE,
+    full_map = NULL,
+    full_map_cropped = NULL, 
+    full_map_cropped_normalized = NULL
   )
   
   #AOI selector options
@@ -1227,13 +1227,13 @@ function(input, output, session) {
   })
 
   
-  # Dynamic sidebar content for overall model tab
-  output$dynamicSidebar_overall_model <- renderUI({
-    generate_overall_model_sidebar()
+  # Dynamic sidebar content for full model tab
+  output$dynamicSidebar_full_model <- renderUI({
+    generate_full_model_sidebar()
   })
   
-  # Weight validation for overall model
-  output$overallWeightValidation <- renderUI({
+  # Weight validation for full model
+  output$fullWeightValidation <- renderUI({
     # Get the current weight values
     natural_resources_weight <- input$weightNaturalResources %||% 0
     fisheries_weight <- input$weightFisheries %||% 0
@@ -1324,7 +1324,7 @@ function(input, output, session) {
   })
   
   # status for each submodel
-  output$overallModelSubmodelStatus <- renderUI({
+  output$fullModelSubmodelStatus <- renderUI({
     status <- submodel_status()
     
     tagList(
@@ -2016,8 +2016,8 @@ function(input, output, session) {
     }
   )
   
-  # Generate Overall Model Button Logic
-  observeEvent(input$generateOverallModel, {
+  # Generate full Model Button Logic
+  observeEvent(input$generateFullModel, {
     tryCatch({
       # Get weight values
       natural_resources_weight <- input$weightNaturalResources %||% 0
@@ -2061,8 +2061,8 @@ function(input, output, session) {
       }
       
       # Show spinner modal
-      show_spinner_modal("Generating Overall Combined Model", 
-                         paste("Please wait while the overall model is being calculated using", 
+      show_spinner_modal("Generating Full Model", 
+                         paste("Please wait while the full model is being calculated using", 
                                length(enabled_submodels), "submodel(s)..."))
       
       # Collect submodel data and weights
@@ -2084,8 +2084,8 @@ function(input, output, session) {
         }
       }
       
-      # Generate the overall combined model
-      overall_result <- create_full_model_map(
+      # Generate the full model
+      full_result <- create_full_model_map(
         submodels = submodels,
         weights = weights,
         base_grid = grid_test,
@@ -2093,46 +2093,46 @@ function(input, output, session) {
       )
       
       # Store the results
-      combined_maps_data$overall_combined_model <- overall_result$combined_data
-      combined_maps_data$overall_combined_model_generated <- TRUE
-      combined_maps_data$overall_combined_map <- overall_result$map
+      combined_maps_data$full_model <- full_result$combined_data
+      combined_maps_data$full_model_generated <- TRUE
+      combined_maps_data$full_map <- full_result$map
       
       # Generate cropped maps if we have valid data
-      if(!is.null(overall_result$combined_data) && 
-         "Overall_Geo_mean" %in% names(overall_result$combined_data)) {
+      if(!is.null(full_result$combined_data) && 
+         "Overall_Geo_mean" %in% names(full_result$combined_data)) {
         
         # Create a modified version of the data with Geo_mean column for compatibility
-        cropped_data <- overall_result$combined_data %>%
+        cropped_data <- full_result$combined_data %>%
           mutate(Geo_mean = Overall_Geo_mean)
         
         # Get the data range for consistent coloring
-        overall_values <- cropped_data$Geo_mean[!is.na(cropped_data$Geo_mean)]
+        full_values <- cropped_data$Geo_mean[!is.na(cropped_data$Geo_mean)]
         full_data_range <- list(
-          min = min(overall_values, na.rm = TRUE),
-          max = max(overall_values, na.rm = TRUE)
+          min = min(full_values, na.rm = TRUE),
+          max = max(full_values, na.rm = TRUE)
         )
         
         # Generate AOI-cropped map
         cropped_map <- create_aoi_cropped_map(
           combined_data = cropped_data,
           aoi_data_reactive = filtered_aoi_data,
-          map_title = "Overall Model AOI-Cropped",
+          map_title = "Full Model AOI-Cropped",
           full_data_range = full_data_range
         )
-        combined_maps_data$overall_combined_map_cropped <- cropped_map
+        combined_maps_data$full_map_cropped <- cropped_map
         
         # Generate normalized cropped map
         normalized_cropped_map <- create_aoi_cropped_normalized_map(
           combined_data = cropped_data,
           aoi_data_reactive = filtered_aoi_data,
-          map_title = "Overall Model AOI-Cropped Normalized"
+          map_title = "Full Model AOI-Cropped Normalized"
         )
-        combined_maps_data$overall_combined_map_cropped_normalized <- normalized_cropped_map
+        combined_maps_data$full_map_cropped_normalized <- normalized_cropped_map
       }
       
       # Show success notification
       showNotification(
-        paste("Overall Combined Model generated successfully using", 
+        paste("Full Model generated successfully using", 
               length(enabled_submodels), "submodel(s)!"), 
         type = "message"
       )
@@ -2146,78 +2146,78 @@ function(input, output, session) {
       
       # Show error notification
       showNotification(
-        paste("Error generating overall combined model:", e$message), 
+        paste("Error generating full model:", e$message), 
         type = "error", 
         duration = 10
       )
     })
   })
   
-  output$overallCombinedMapContainer <- renderUI({
-    if(combined_maps_data$overall_combined_model_generated) {
+  output$fullCombinedMapContainer <- renderUI({
+    if(combined_maps_data$full_model_generated) {
       tagList(
         # Main combined map section
         div(
-          h4("Overall Combined Model Map"),
-          p("This map shows the overall combined model calculated using the weighted geometric mean of selected submodels."),
-          leafletOutput("overallCombinedMap", height = "500px")
+          h4("Full Model Map"),
+          p("This map shows the full model calculated using the weighted geometric mean of selected submodels."),
+          leafletOutput("fullMap", height = "500px")
         ),
         
         br(),
         
         # Cropped map section
         div(
-          h4("AOI-Cropped Overall Model Map"),
-          p("This map shows the same overall model data cropped to the selected Area of Interest (AOI)."),
-          leafletOutput("overallCombinedMapCropped", height = "500px")
+          h4("AOI-Cropped Full Model Map"),
+          p("This map shows the same full model data cropped to the selected Area of Interest (AOI)."),
+          leafletOutput("fullMapCropped", height = "500px")
         ),
         
         br(),
         
         # Normalized cropped map section
         div(
-          h4("AOI-Cropped Normalized Overall Model Map"),
+          h4("AOI-Cropped Normalized Full Model Map"),
           p("This map shows the AOI-cropped data normalized to a 0-1 scale for easier comparison across different areas."),
-          leafletOutput("overallCombinedMapCroppedNormalized", height = "500px")
+          leafletOutput("fullMapCroppedNormalized", height = "500px")
         )
       )
     } else {
       div(
         style = "text-align: center; padding: 40px; color: #666;",
-        p("Overall model maps will appear here after generation."),
-        p("Use the sidebar to configure and generate the overall model.")
+        p("Full model maps will appear here after generation."),
+        p("Use the sidebar to configure and generate the full model.")
       )
     }
   })
   
-  # Overall Combined Model map outputs
-  output$overallCombinedMap <- renderLeaflet({
-    if(!is.null(combined_maps_data$overall_combined_map)) {
-      combined_maps_data$overall_combined_map
+  # Full Model map outputs
+  output$fullMap <- renderLeaflet({
+    if(!is.null(combined_maps_data$full_map)) {
+      combined_maps_data$full_map
     } else {
       leaflet() %>%
         addProviderTiles("Esri.OceanBasemap") %>%
-        addControl("Generate overall model to see map", position = "center")
+        addControl("Generate full model to see map", position = "center")
     }
   })
   
-  output$overallCombinedMapCropped <- renderLeaflet({
-    if(!is.null(combined_maps_data$overall_combined_map_cropped)) {
-      combined_maps_data$overall_combined_map_cropped
+  output$fullMapCropped <- renderLeaflet({
+    if(!is.null(combined_maps_data$full_map_cropped)) {
+      combined_maps_data$full_map_cropped
     } else {
       leaflet() %>%
         addProviderTiles("Esri.OceanBasemap") %>%
-        addControl("Generate overall model and select an AOI to see cropped map", position = "center")
+        addControl("Generate full model and select an AOI to see cropped map", position = "center")
     }
   })
   
-  output$overallCombinedMapCroppedNormalized <- renderLeaflet({
-    if(!is.null(combined_maps_data$overall_combined_map_cropped_normalized)) {
-      combined_maps_data$overall_combined_map_cropped_normalized
+  output$fullMapCroppedNormalized <- renderLeaflet({
+    if(!is.null(combined_maps_data$full_map_cropped_normalized)) {
+      combined_maps_data$full_map_cropped_normalized
     } else {
       leaflet() %>%
         addProviderTiles("Esri.OceanBasemap") %>%
-        addControl("Generate overall model and select an AOI to see normalized cropped map", position = "center")
+        addControl("Generate full model and select an AOI to see normalized cropped map", position = "center")
     }
   })
   

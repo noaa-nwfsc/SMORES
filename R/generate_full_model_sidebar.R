@@ -1,8 +1,8 @@
 # Generate sidebar for overall model tab
-generate_overall_model_sidebar <- function() {
+generate_full_model_sidebar <- function() {
   tagList(
     h5("Submodel Availability"),
-    htmlOutput("overallModelSubmodelStatus"),
+    htmlOutput("fullModelSubmodelStatus"),
     hr(),
     h4("Full Model Settings"),
     hr(),
@@ -67,13 +67,13 @@ generate_overall_model_sidebar <- function() {
     
     # Weight validation display
     h5("Weight Summary"),
-    htmlOutput("overallWeightValidation"),
+    htmlOutput("fullWeightValidation"),
     hr(),
     
     # Generate final model button
     actionButton(
-      "generateOverallModel", 
-      "Generate Overall Combined Model", 
+      "generateFullModel", 
+      "Generate Full Model", 
       class = "btn-primary btn-block",
       icon = icon("calculator")
     ),

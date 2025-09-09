@@ -298,11 +298,11 @@ generate_full_model_report <- function(
   # Get filtered AOI data for the report
   aoi_data <- filtered_aoi_data()
   
-  # Get the overall model data and maps
-  overall_combined_data <- combined_maps_data$overall_combined_model
-  overall_combined_map <- combined_maps_data$overall_combined_map
-  overall_aoi_cropped_map <- combined_maps_data$overall_combined_map_cropped
-  overall_aoi_cropped_normalized_map <- combined_maps_data$overall_combined_map_cropped_normalized
+  # Get the full model data and maps
+  full_data <- combined_maps_data$full_model
+  full_map <- combined_maps_data$full_map
+  full_aoi_cropped_map <- combined_maps_data$full_map_cropped
+  full_aoi_cropped_normalized_map <- combined_maps_data$full_map_cropped_normalized
   
   # Render the full model report
   rmarkdown::render(
@@ -319,10 +319,10 @@ generate_full_model_report <- function(
       industry_operations_components = industry_operations_components,
       fisheries_components = fisheries_components,
       component_layer_details = component_layer_details,
-      overall_combined_data = overall_combined_data,
-      overall_combined_map = overall_combined_map,
-      overall_aoi_cropped_map = overall_aoi_cropped_map,
-      overall_aoi_cropped_normalized_map = overall_aoi_cropped_normalized_map,
+      full_combined_data = full_data,
+      full_combined_map = full_map,
+      full_aoi_cropped_map = full_aoi_cropped_map,
+      full_aoi_cropped_normalized_map = full_aoi_cropped_normalized_map,
       data_timestamps = data_timestamps,
       aoi_data = aoi_data
     ),

@@ -276,17 +276,17 @@ tagList(
       # Layout with sidebar
       layout_sidebar(
         sidebar = sidebar(
-          uiOutput("dynamicSidebar_overall_model")
+          uiOutput("dynamicSidebar_full_model")
         ),
         
         # Main content area
         card(
-          card_header("Overall Combined Model"),
+          card_header("Full Combined Model"),
           card_body(
-            includeMarkdown("markdown/overall_model.md"),
+            includeMarkdown("markdown/full_model.md"),
             
             # Add the single line here:
-            htmlOutput("overallCombinedMapContainer")
+            htmlOutput("fullCombinedMapContainer")
           )
         )
       )

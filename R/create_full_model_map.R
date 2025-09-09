@@ -1,23 +1,5 @@
-#' Generate Overall Combined Model from Multiple Submodels
-#'
-#' This function creates an overall combined model by applying weights to 
-#' submodel results and calculating their weighted geometric mean.
-#'
-#' @param submodels List of submodel spatial data
-#' @param weights List of weights corresponding to each submodel
-#' @param base_grid The base spatial grid to use for combining data
-#' @return A list containing the combined data and the leaflet map
-#'
 create_full_model_map <- function(submodels, weights, base_grid = grid_test, aoi_data_reactive = NULL) {
   tryCatch({
-    
-    # Console output for debugging
-    cat("=== STARTING create_full_model_map ===\n")
-    cat("Number of submodels received:", length(submodels), "\n")
-    cat("Submodel names:", names(submodels), "\n")
-    cat("Number of weights received:", length(weights), "\n")
-    cat("Weight names:", names(weights), "\n")
-    cat("Weight values:", unlist(weights), "\n")
     
     # Initialize result structure
     result <- list(
@@ -27,17 +9,15 @@ create_full_model_map <- function(submodels, weights, base_grid = grid_test, aoi
     
     if(length(submodels) == 0) {
       # No submodels - return empty map with message
-      cat("ERROR: No submodels provided!\n")
       result$map <- leaflet() %>%
         addProviderTiles("Esri.OceanBasemap") %>%
-        addControl("No submodels available for overall model generation.", position = "topright")
+        addControl("No submodels available for full model generation.", position = "topright")
       
       return(result)
     }
     
     # Normalize weights to sum to 1
     total_weight <- sum(unlist(weights))
-    cat("Total weight before normalization:", total_weight, "\n")
     
     if(total_weight > 0) {
       normalized_weights <- lapply(names(weights), function(name) {
@@ -51,11 +31,8 @@ create_full_model_map <- function(submodels, weights, base_grid = grid_test, aoi
       names(normalized_weights) <- names(weights)
     }
     
-    cat("Normalized weights:", unlist(normalized_weights), "\n")
-    
     # Start with base grid
     combined_data <- base_grid
-    cat("Base grid rows:", nrow(combined_data), "\n")
     
     # Apply weights and combine submodels
     weighted_columns <- c()
@@ -65,25 +42,18 @@ create_full_model_map <- function(submodels, weights, base_grid = grid_test, aoi
       submodel_data <- submodels[[i]]
       weight <- normalized_weights[[i]]
       
-      cat("Processing submodel", i, ":", submodel_name, "\n")
-      cat("  Weight:", weight, "\n")
-      cat("  Submodel data rows:", ifelse(is.null(submodel_data), "NULL", nrow(submodel_data)), "\n")
-      
       # Check if submodel has Geo_mean column
       if(is.null(submodel_data)) {
-        cat("  ERROR: Submodel data is NULL. Skipping.\n")
         next
       }
       
       if(!"Geo_mean" %in% names(submodel_data)) {
-        cat("  ERROR: Submodel", submodel_name, "does not have Geo_mean column. Available columns:", names(submodel_data), "\n")
         warning(paste("Submodel", submodel_name, "does not have Geo_mean column. Skipping."))
         next
       }
       
       # Create weighted column name
       weighted_col_name <- paste0("Weighted_", submodel_name)
-      cat("  Creating weighted column:", weighted_col_name, "\n")
       
       # Extract geometric mean and apply weight
       temp_data <- submodel_data %>%
@@ -92,22 +62,15 @@ create_full_model_map <- function(submodels, weights, base_grid = grid_test, aoi
         mutate(!!weighted_col_name := Geo_mean^weight) %>%
         select(CellID_2km, !!weighted_col_name)
       
-      cat("  Temp data rows:", nrow(temp_data), "\n")
-      cat("  Non-NA values in weighted column:", sum(!is.na(temp_data[[weighted_col_name]])), "\n")
-      
       # Join with combined data
       combined_data <- left_join(combined_data, temp_data, by = "CellID_2km")
       
       # Track weighted columns for final calculation
       weighted_columns <- c(weighted_columns, weighted_col_name)
-      cat("  Successfully added weighted column. Total weighted columns so far:", length(weighted_columns), "\n")
     }
-    
-    cat("Final weighted columns:", weighted_columns, "\n")
     
     # Calculate overall geometric mean from weighted components
     if(length(weighted_columns) > 0) {
-      cat("Calculating overall geometric mean using", length(weighted_columns), "weighted columns\n")
       
       combined_data <- combined_data %>%
         rowwise() %>%
@@ -136,16 +99,7 @@ create_full_model_map <- function(submodels, weights, base_grid = grid_test, aoi
         ungroup()
       
       # Report results
-      overall_values <- combined_data$Overall_Geo_mean[!is.na(combined_data$Overall_Geo_mean)]
-      cat("Overall calculation complete:\n")
-      cat("  Non-NA overall values:", length(overall_values), "\n")
-      if(length(overall_values) > 0) {
-        cat("  Min overall value:", min(overall_values), "\n")
-        cat("  Max overall value:", max(overall_values), "\n")
-        cat("  Mean overall value:", mean(overall_values), "\n")
-      }
-    } else {
-      cat("ERROR: No weighted columns available for calculation!\n")
+      full_values <- combined_data$Overall_Geo_mean[!is.na(combined_data$Overall_Geo_mean)]
     }
     
     aoi_data <- NULL
@@ -174,8 +128,6 @@ create_full_model_map <- function(submodels, weights, base_grid = grid_test, aoi
     if("Overall_Geo_mean" %in% names(combined_data) && 
        any(!is.na(combined_data$Overall_Geo_mean))) {
       
-      cat("Creating map with Overall_Geo_mean data\n")
-      
       # Transform for leaflet
       combined_data <- st_transform(combined_data, '+proj=longlat +datum=WGS84')
       
@@ -198,9 +150,9 @@ create_full_model_map <- function(submodels, weights, base_grid = grid_test, aoi
       }
       
       # Get range of values
-      overall_values <- combined_data$Overall_Geo_mean[!is.na(combined_data$Overall_Geo_mean)]
-      min_val <- min(overall_values, na.rm = TRUE)
-      max_val <- max(overall_values, na.rm = TRUE)
+      full_values <- combined_data$Overall_Geo_mean[!is.na(combined_data$Overall_Geo_mean)]
+      min_val <- min(full_values, na.rm = TRUE)
+      max_val <- max(full_values, na.rm = TRUE)
       
       # Create map with color palette
       if(min_val == max_val) {
@@ -218,14 +170,14 @@ create_full_model_map <- function(submodels, weights, base_grid = grid_test, aoi
             weight = 1, 
             fillColor = single_color, 
             fillOpacity = 1,
-            popup = ~paste("Overall Model Score:", round(Overall_Geo_mean, 2)),
-            group = "Overall Model Data"
+            popup = ~paste("Full Model Score:", round(Overall_Geo_mean, 2)),
+            group = "Full Model Data"
           ) %>%
           addLegend(
             position = "bottomright",
             colors = single_color,
             labels = paste("Score:", round(min_val, 2)),
-            title = "Overall Model Score",
+            title = "Full Model Score",
             opacity = 1
           )
       } else {
@@ -245,14 +197,14 @@ create_full_model_map <- function(submodels, weights, base_grid = grid_test, aoi
             weight = 1, 
             fillColor = ~pal(Overall_Geo_mean), 
             fillOpacity = 1,
-            popup = ~paste("Overall Model Score:", round(Overall_Geo_mean, 2)),
-            group = "Overall Model Data"
+            popup = ~paste("Full Model Score:", round(Overall_Geo_mean, 2)),
+            group = "Full Model Data"
           ) %>%
           addLegend(
             position = "bottomright",
             pal = pal,
             values = combined_data$Overall_Geo_mean,
-            title = "Overall Model Score",
+            title = "Full Model Score",
             opacity = 1
           )
       }
@@ -276,13 +228,9 @@ create_full_model_map <- function(submodels, weights, base_grid = grid_test, aoi
             color = "red",
             weight = 3,
             fillOpacity = 0,
-            group = "AOI Boundaries"
-            # path = pathOptions(
-            #   interactive = FALSE
-            # )
-          ) %>%
+            group = "AOI Boundaries") %>%
           addLayersControl(
-            overlayGroups = c("Overall Model Data", "AOI Boundaries"),
+            overlayGroups = c("Full Model Data", "AOI Boundaries"),
             options = layersControlOptions(collapsed = FALSE)
           )
       }
@@ -291,7 +239,7 @@ create_full_model_map <- function(submodels, weights, base_grid = grid_test, aoi
       # No valid data
       result$map <- leaflet() %>%
         addProviderTiles("Esri.OceanBasemap") %>%
-        addControl("No valid score data available for overall model.", position = "topright")
+        addControl("No valid score data available for full model.", position = "topright")
     }
     
     # Store combined data
@@ -303,7 +251,6 @@ create_full_model_map <- function(submodels, weights, base_grid = grid_test, aoi
       full_data_range = list(min = min_val, max = max_val)
     ))
   }, error = function(e) {
-    cat("ERROR in create_full_model_map:", e$message, "\n")
     
     # Return error map
     error_map <- leaflet() %>%
