@@ -153,15 +153,15 @@ create_combined_map <- function(combined_data, map_title, method, aoi_data = NUL
                   data = combined_data,
                   color = "#33333300",
                   weight = 1,
-                  fillColor = fill_colors,  # Use direct color vector instead of formula
+                  fillColor = fill_colors,  
                   fillOpacity = 1,
-                  popup = combined_data$popup_display,  # Use direct column instead of formula
+                  popup = combined_data$popup_display,  
                   group = "Combined Data"
                 ) %>%
                 addLegend(
                   position = "bottomright",
                   pal = pal,
-                  values = clean_values,  # Use clean values for legend
+                  values = clean_values,
                   title = map_title,
                   opacity = 1
                 )

@@ -154,6 +154,12 @@ create_full_model_map <- function(submodels, weights, base_grid = grid_test, aoi
       min_val <- min(full_values, na.rm = TRUE)
       max_val <- max(full_values, na.rm = TRUE)
       
+      # Create popup text with proper formatting
+      combined_data$popup_display <- paste0("Full Model Score: ", 
+                                            ifelse(combined_data$Overall_Geo_mean < 0.01,
+                                                   format(combined_data$Overall_Geo_mean, scientific = FALSE, digits = 3),
+                                                   round(combined_data$Overall_Geo_mean, 3)))
+      
       # Create map with color palette
       if(min_val == max_val) {
         # Single color for constant values
@@ -170,7 +176,7 @@ create_full_model_map <- function(submodels, weights, base_grid = grid_test, aoi
             weight = 1, 
             fillColor = single_color, 
             fillOpacity = 1,
-            popup = ~paste("Full Model Score:", round(Overall_Geo_mean, 2)),
+            popup = ~popup_display,
             group = "Full Model Data"
           ) %>%
           addLegend(
@@ -197,7 +203,7 @@ create_full_model_map <- function(submodels, weights, base_grid = grid_test, aoi
             weight = 1, 
             fillColor = ~pal(Overall_Geo_mean), 
             fillOpacity = 1,
-            popup = ~paste("Full Model Score:", round(Overall_Geo_mean, 2)),
+            popup = ~popup_display,
             group = "Full Model Data"
           ) %>%
           addLegend(
@@ -228,10 +234,14 @@ create_full_model_map <- function(submodels, weights, base_grid = grid_test, aoi
             color = "red",
             weight = 3,
             fillOpacity = 0,
-            group = "AOI Boundaries") %>%
+            group = "AOI Boundaries",
+            options = pathOptions(
+              interactive = FALSE
+              )
+            ) %>%
           addLayersControl(
             overlayGroups = c("Full Model Data", "AOI Boundaries"),
-            options = layersControlOptions(collapsed = FALSE)
+            options = layersControlOptions(collapsed = FALSE) 
           )
       }
       
