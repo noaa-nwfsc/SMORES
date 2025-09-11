@@ -17,10 +17,10 @@ params:
   industry_operations_components: NULL
   fisheries_components: NULL
   component_layer_details: NULL
-  overall_combined_data: NULL
-  overall_combined_map: NULL
-  overall_aoi_cropped_map: NULL
-  overall_aoi_cropped_normalized_map: NULL
+  full_combined_data: NULL
+  full_combined_map: NULL
+  full_aoi_cropped_map: NULL
+  full_aoi_cropped_normalized_map: NULL
   data_timestamps: NULL
   aoi_data: NULL
   weight_natural_resources: NULL
