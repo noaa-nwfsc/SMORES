@@ -17,10 +17,10 @@ params:
   industry_operations_components: NULL
   fisheries_components: NULL
   component_layer_details: NULL
-  full_combined_data: NULL
-  full_combined_map: NULL
-  full_aoi_cropped_map: NULL
-  full_aoi_cropped_normalized_map: NULL
+  combined_maps_data: NULL
+  full_map: NULL
+  full_map_cropped: NULL
+  full_map_cropped_normalized: NULL
   data_timestamps: NULL
   aoi_data: NULL
   weight_natural_resources: NULL
@@ -276,23 +276,23 @@ if (!is.null(params$component_layer_details) && length(params$component_layer_de
 The full combined model represents the integration of all selected submodels using their specified weights. The final combination is calculated using the weighted geometric mean of the submodel scores to produce a unified assessment across all selected domains.
 
 ```{r}
-if (!is.null(params$overall_combined_data)) {
+if (!is.null(params$combined_maps_data)) {
   # Check if combined_data has the geometry and expected columns
-  if (inherits(params$overall_combined_data, 'sf')) {
-    cat("**Full Model Data Points:** ", nrow(params$overall_combined_data), "  \n")
+  if (inherits(params$combined_maps_data, 'sf')) {
+    cat("**Full Model Data Points:** ", nrow(params$combined_maps_data), "  \n")
     cat("**Final Combination Method:** Weighted Geometric Mean of Submodel Scores  \n")
     
     # Show value column information
-    value_column <- if("Overall_Geo_mean" %in% names(params$overall_combined_data)) {
+    value_column <- if("Overall_Geo_mean" %in% names(params$combined_maps_data)) {
       "Overall_Geo_mean"
-    } else if("Geo_mean" %in% names(params$overall_combined_data)) {
+    } else if("Geo_mean" %in% names(params$combined_maps_data)) {
       "Geo_mean"
     } else {
       "Combined_Score"
     }
     
-    if (value_column %in% names(params$overall_combined_data)) {
-      valid_values <- params$overall_combined_data[[value_column]][!is.na(params$overall_combined_data[[value_column]])]
+    if (value_column %in% names(params$combined_maps_data)) {
+      valid_values <- params$combined_maps_data[[value_column]][!is.na(params$combined_maps_data[[value_column]])]
       if(length(valid_values) > 0) {
         cat("**Value Range:** ", round(min(valid_values), 3), " to ", round(max(valid_values), 3), "  \n")
       }
@@ -303,10 +303,10 @@ if (!is.null(params$overall_combined_data)) {
   cat("*Full model data not available.*\n\n")
 }
 
-if (!is.null(params$overall_combined_map)) {
-  params$overall_combined_map
+if (!is.null(params$full_map)) {
+  params$full_map
 } else {
-  cat("*Full combined model map not available.*\n")
+  cat("*Full model map not available.*\n")
 }
 ```
 
@@ -315,8 +315,8 @@ if (!is.null(params$overall_combined_map)) {
 The AOI-cropped map shows the same full combined model data filtered to the selected aoi, maintaing the original full model color scale for consistency with the complete dataset 
 
 ```{r}
-if (!is.null(params$overall_aoi_cropped_map)) {
-  params$overall_aoi_cropped_map
+if (!is.null(params$full_map_cropped)) {
+  params$full_map_cropped
 } else {
   cat("*AOI-cropped map not available. Please select a specific AOI area.*\n")
 }
@@ -327,8 +327,8 @@ if (!is.null(params$overall_aoi_cropped_map)) {
 The normalized AOI-cropped map shows the AOI-filtered data rescaled to a 0-1 range using min-max normalization for only the values within the selected area, making it easier to compare relative differences within the AOI.
 
 ```{r}
-if (!is.null(params$overall_aoi_cropped_normalized_map)) {
-  params$overall_aoi_cropped_normalized_map
+if (!is.null(params$full_map_cropped_normalized)) {
+  params$full_map_cropped_normalized
 } else {
   cat("*AOI-cropped normalized map not available. Please select a specific AOI area.*\n")
 }
