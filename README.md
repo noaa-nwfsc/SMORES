@@ -14,7 +14,7 @@ Repository to house the materials to develop the Suitability Modeling for Offsho
 
 Repository to house the materials to develop the Suitability Modeling for Offshore Resources and Energy Siting (SMORES) Shiny Application.
 
-## Usage {#usage}
+## Usage
 
 This application was built to create a flexible framework that will allow scientists, decision-makers, and planners to model data inputs that *could* be used as part of the marine spatial planning process when determining new areas of offshore development on the West Coast of the United States.
 
@@ -44,7 +44,10 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
 
 **Step 7**: Navigate to the Full Model Tab. You will select which submodels you would like to be included in the calculation of the full model and then select the weight you would like applied to each submodel. Once you have configured your submodels you will click on the generate Full Model button which will produce 3 maps.The first map will represent the full model scores for the whole west coast. The second map will show the full model scores for the area of interest you previously selected. The third map will show the full model for the area of interest normalized using a minimum maximum normalization.You can opt to export a copy of your results by selecting the Export button at the bottom of the page.
 
-## Repository Structure {#repository-structure}
+## Repository Structure
+<details>
+
+<summary>To view the repository structure view the collapsed section</summary>
 
 ```{r}
 ├── _brand.yml                        # Theming for the app
@@ -120,13 +123,14 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
     |  ├── NOAA_FISHERIES_logoH.png
     └── styles.css.png
 ```
+</details>
 
-## Resources {#resources}
+## Resources
 
 A Wind Energy Area Siting Analysis for the Oregon Call Areas [[Link]](https://www.boem.gov/sites/default/files/documents/environment/BOEM_2024-015.pdf)
 
 Citation: Carlton J, Jossart JA, Pendleton F, Sumait N, Miller J, Thurston-Keller J, Reeb D, Gilbane L, Pereksta D, Schroeder D, Morris Jr JA. 2024. A wind energy area siting analysis for the Oregon Call Areas. Camarillo (CA): U.S. Department of the Interior, Bureau of Ocean Energy Management. 237 p. Report No.: OCS Study BOEM 2024-015.
 
-## Disclaimer {#disclaimer}
+## Disclaimer
 
 This repository is a scientific product and is not official communication of the National Oceanic and Atmospheric Administration, or the United States Department of Commerce. All NOAA GitHub project code is provided on an ‘as is’ basis and the user assumes responsibility for its use. Any claims against the Department of Commerce or Department of Commerce bureaus stemming from the use of this GitHub project will be governed by all applicable Federal law. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by the Department of Commerce. The Department of Commerce seal and logo, or the seal and logo of a DOC bureau, shall not be used in any manner to imply endorsement of any commercial product or activity by DOC or the United States Government.
