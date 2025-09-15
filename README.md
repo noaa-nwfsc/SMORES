@@ -7,6 +7,7 @@ Repository to house the materials to develop the Suitability Modeling for Offsho
 -   [Decription](#decription)
 -   [Usage](#usage)
 -   [Repository Structure](#repository-structure)
+-   [Deployment](#deployment)
 -   [Resources](#resources)
 -   [Disclaimer](#disclaimer)
 
@@ -124,6 +125,10 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
     └── styles.css.png
 ```
 </details>
+
+## Deployment
+
+The SMORES application is deployed on NOAA Fisheries [Posit Connect Test Instance](https://test-connect.fisheries.noaa.gov/connect/#/content/listing?q=is:published). To access the published application you need to have a CAC login. At this time this app is only accessible to NOAA Fisheries staff, and affiliates for scenario modeling purposes.
 
 ## Resources
 
