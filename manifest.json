@@ -205,6 +205,40 @@
         "Archs": "x64"
       }
     },
+    "arrow": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "description": {
+        "Package": "arrow",
+        "Title": "Integration to 'Apache' 'Arrow'",
+        "Version": "21.0.0.1",
+        "Authors@R": "c(\n    person(\"Neal\", \"Richardson\", email = \"neal.p.richardson@gmail.com\", role = c(\"aut\")),\n    person(\"Ian\", \"Cook\", email = \"ianmcook@gmail.com\", role = c(\"aut\")),\n    person(\"Nic\", \"Crane\", email = \"thisisnic@gmail.com\", role = c(\"aut\")),\n    person(\"Dewey\", \"Dunnington\", role = c(\"aut\"), email = \"dewey@fishandwhistle.net\", comment = c(ORCID = \"0000-0002-9415-4582\")),\n    person(\"Romain\", \"Fran\\u00e7ois\", role = c(\"aut\"), comment = c(ORCID = \"0000-0002-2444-4226\")),\n    person(\"Jonathan\", \"Keane\", email = \"jkeane@gmail.com\", role = c(\"aut\", \"cre\")),\n    person(\"Drago\\u0219\", \"Moldovan-Gr\\u00fcnfeld\", email = \"dragos.mold@gmail.com\", role = c(\"aut\")),\n    person(\"Jeroen\", \"Ooms\", email = \"jeroen@berkeley.edu\", role = c(\"aut\")),\n    person(\"Jacob\", \"Wujciak-Jens\", email = \"jacob@wujciak.de\", role = c(\"aut\")),\n    person(\"Javier\", \"Luraschi\", email = \"javier@rstudio.com\", role = c(\"ctb\")),\n    person(\"Karl\", \"Dunkle Werner\", email = \"karldw@users.noreply.github.com\", role = c(\"ctb\"), comment = c(ORCID = \"0000-0003-0523-7309\")),\n    person(\"Jeffrey\", \"Wong\", email = \"jeffreyw@netflix.com\", role = c(\"ctb\")),\n    person(\"Apache Arrow\", email = \"dev@arrow.apache.org\", role = c(\"aut\", \"cph\"))\n  )",
+        "Description": "'Apache' 'Arrow' <https://arrow.apache.org/> is a cross-language\n    development platform for in-memory data. It specifies a standardized\n    language-independent columnar memory format for flat and hierarchical data,\n    organized for efficient analytic operations on modern hardware. This\n    package provides an interface to the 'Arrow C++' library.",
+        "Depends": "R (>= 4.0)",
+        "License": "Apache License (>= 2.0)",
+        "URL": "https://github.com/apache/arrow/, https://arrow.apache.org/docs/r/",
+        "BugReports": "https://github.com/apache/arrow/issues",
+        "Encoding": "UTF-8",
+        "Language": "en-US",
+        "SystemRequirements": "C++17; for AWS S3 support on Linux, libcurl and\nopenssl (optional); cmake >= 3.25 (build-time only, and only\nfor full source build)",
+        "Biarch": "true",
+        "Imports": "assertthat, bit64 (>= 0.9-7), glue, methods, purrr, R6, rlang\n(>= 1.0.0), stats, tidyselect (>= 1.0.0), utils, vctrs",
+        "RoxygenNote": "7.3.2",
+        "Config/testthat/edition": "3",
+        "Config/build/bootstrap": "TRUE",
+        "Suggests": "blob, curl, cli, DBI, dbplyr, decor, distro, dplyr, duckdb\n(>= 0.2.8), hms, jsonlite, knitr, lubridate, pillar, pkgload,\nreticulate, rmarkdown, stringi, stringr, sys, testthat (>=\n3.1.0), tibble, tzdb, withr",
+        "LinkingTo": "cpp11 (>= 0.4.2)",
+        "Collate": "'arrowExports.R' 'enums.R' 'arrow-object.R' 'type.R'\n'array-data.R' 'arrow-datum.R' 'array.R' 'arrow-info.R'\n'arrow-package.R' 'arrow-tabular.R' 'buffer.R'\n'chunked-array.R' 'io.R' 'compression.R' 'scalar.R' 'compute.R'\n'config.R' 'csv.R' 'dataset.R' 'dataset-factory.R'\n'dataset-format.R' 'dataset-partition.R' 'dataset-scan.R'\n'dataset-write.R' 'dictionary.R' 'dplyr-across.R'\n'dplyr-arrange.R' 'dplyr-by.R' 'dplyr-collect.R'\n'dplyr-count.R' 'dplyr-datetime-helpers.R' 'dplyr-distinct.R'\n'dplyr-eval.R' 'dplyr-filter.R' 'dplyr-funcs-agg.R'\n'dplyr-funcs-augmented.R' 'dplyr-funcs-conditional.R'\n'dplyr-funcs-datetime.R' 'dplyr-funcs-doc.R'\n'dplyr-funcs-math.R' 'dplyr-funcs-simple.R'\n'dplyr-funcs-string.R' 'dplyr-funcs-type.R' 'expression.R'\n'dplyr-funcs.R' 'dplyr-glimpse.R' 'dplyr-group-by.R'\n'dplyr-join.R' 'dplyr-mutate.R' 'dplyr-select.R'\n'dplyr-slice.R' 'dplyr-summarize.R' 'dplyr-union.R'\n'record-batch.R' 'table.R' 'dplyr.R' 'duckdb.R' 'extension.R'\n'feather.R' 'field.R' 'filesystem.R' 'flight.R'\n'install-arrow.R' 'ipc-stream.R' 'json.R' 'memory-pool.R'\n'message.R' 'metadata.R' 'parquet.R' 'python.R'\n'query-engine.R' 'record-batch-reader.R'\n'record-batch-writer.R' 'reexports-bit64.R'\n'reexports-tidyselect.R' 'schema.R' 'udf.R' 'util.R'",
+        "NeedsCompilation": "yes",
+        "Packaged": "2025-08-15 14:57:00 UTC; nic",
+        "Author": "Neal Richardson [aut],\n  Ian Cook [aut],\n  Nic Crane [aut],\n  Dewey Dunnington [aut] (ORCID: <https://orcid.org/0000-0002-9415-4582>),\n  Romain François [aut] (ORCID: <https://orcid.org/0000-0002-2444-4226>),\n  Jonathan Keane [aut, cre],\n  Dragoș Moldovan-Grünfeld [aut],\n  Jeroen Ooms [aut],\n  Jacob Wujciak-Jens [aut],\n  Javier Luraschi [ctb],\n  Karl Dunkle Werner [ctb] (ORCID:\n    <https://orcid.org/0000-0003-0523-7309>),\n  Jeffrey Wong [ctb],\n  Apache Arrow [aut, cph]",
+        "Maintainer": "Jonathan Keane <jkeane@gmail.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2025-08-18 17:50:02 UTC",
+        "Built": "R 4.4.3; x86_64-w64-mingw32; 2025-09-17 02:36:42 UTC; windows",
+        "Archs": "x64"
+      }
+    },
     "askpass": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
@@ -231,6 +265,29 @@
         "Date/Publication": "2024-10-04 07:20:03 UTC",
         "Built": "R 4.4.2; x86_64-w64-mingw32; 2025-01-21 02:15:00 UTC; windows",
         "Archs": "x64"
+      }
+    },
+    "assertthat": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "description": {
+        "Package": "assertthat",
+        "Title": "Easy Pre and Post Assertions",
+        "Version": "0.2.1",
+        "Authors@R": "\n  person(\"Hadley\", \"Wickham\", , \"hadley@rstudio.com\", c(\"aut\", \"cre\"))",
+        "Description": "An extension to stopifnot() that makes it easy to declare \n    the pre and post conditions that you code should satisfy, while also \n    producing friendly error messages so that your users know what's gone\n    wrong.",
+        "License": "GPL-3",
+        "Imports": "tools",
+        "Suggests": "testthat, covr",
+        "RoxygenNote": "6.0.1",
+        "Collate": "'assert-that.r' 'on-failure.r' 'assertions-file.r'\n'assertions-scalar.R' 'assertions.r' 'base.r'\n'base-comparison.r' 'base-is.r' 'base-logical.r' 'base-misc.r'\n'utils.r' 'validate-that.R'",
+        "NeedsCompilation": "no",
+        "Packaged": "2019-03-21 13:11:01 UTC; hadley",
+        "Author": "Hadley Wickham [aut, cre]",
+        "Maintainer": "Hadley Wickham <hadley@rstudio.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2019-03-21 14:53:46 UTC",
+        "Built": "R 4.4.3; ; 2025-09-17 00:43:38 UTC; windows"
       }
     },
     "backports": {
@@ -1234,28 +1291,28 @@
       "description": {
         "Package": "gargle",
         "Title": "Utilities for Working with Google APIs",
-        "Version": "1.5.2",
+        "Version": "1.6.0",
         "Authors@R": "c(\n    person(\"Jennifer\", \"Bryan\", , \"jenny@posit.co\", role = c(\"aut\", \"cre\"),\n           comment = c(ORCID = \"0000-0002-6983-2759\")),\n    person(\"Craig\", \"Citro\", , \"craigcitro@google.com\", role = \"aut\"),\n    person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = \"aut\",\n           comment = c(ORCID = \"0000-0003-4757-117X\")),\n    person(\"Google Inc\", role = \"cph\"),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"))\n  )",
         "Description": "Provides utilities for working with Google APIs\n    <https://developers.google.com/apis-explorer>.  This includes\n    functions and classes for handling common credential types and for\n    preparing, executing, and processing HTTP requests.",
         "License": "MIT + file LICENSE",
         "URL": "https://gargle.r-lib.org, https://github.com/r-lib/gargle",
         "BugReports": "https://github.com/r-lib/gargle/issues",
         "Depends": "R (>= 3.6)",
-        "Imports": "cli (>= 3.0.1), fs (>= 1.3.1), glue (>= 1.3.0), httr (>=\n1.4.5), jsonlite, lifecycle, openssl, rappdirs, rlang (>=\n1.1.0), stats, utils, withr",
+        "Imports": "cli (>= 3.0.1), fs (>= 1.3.1), glue (>= 1.3.0), httr (>=\n1.4.5), jsonlite, lifecycle (>= 0.2.0), openssl, rappdirs,\nrlang (>= 1.1.0), stats, utils, withr",
         "Suggests": "aws.ec2metadata, aws.signature, covr, httpuv, knitr,\nrmarkdown, sodium, spelling, testthat (>= 3.1.7)",
         "VignetteBuilder": "knitr",
         "Config/Needs/website": "tidyverse/tidytemplate",
         "Config/testthat/edition": "3",
         "Encoding": "UTF-8",
         "Language": "en-US",
-        "RoxygenNote": "7.2.3",
+        "RoxygenNote": "7.3.2.9000",
         "NeedsCompilation": "no",
-        "Packaged": "2023-07-20 18:17:52 UTC; jenny",
-        "Author": "Jennifer Bryan [aut, cre] (<https://orcid.org/0000-0002-6983-2759>),\n  Craig Citro [aut],\n  Hadley Wickham [aut] (<https://orcid.org/0000-0003-4757-117X>),\n  Google Inc [cph],\n  Posit Software, PBC [cph, fnd]",
+        "Packaged": "2025-09-03 02:41:38 UTC; jenny",
+        "Author": "Jennifer Bryan [aut, cre] (ORCID:\n    <https://orcid.org/0000-0002-6983-2759>),\n  Craig Citro [aut],\n  Hadley Wickham [aut] (ORCID: <https://orcid.org/0000-0003-4757-117X>),\n  Google Inc [cph],\n  Posit Software, PBC [cph, fnd]",
         "Maintainer": "Jennifer Bryan <jenny@posit.co>",
         "Repository": "CRAN",
-        "Date/Publication": "2023-07-20 18:50:08 UTC",
-        "Built": "R 4.4.2; ; 2025-01-25 03:37:41 UTC; windows"
+        "Date/Publication": "2025-09-03 05:10:02 UTC",
+        "Built": "R 4.4.3; ; 2025-09-17 02:35:26 UTC; windows"
       }
     },
     "generics": {
@@ -1448,28 +1505,28 @@
       "description": {
         "Package": "googlesheets4",
         "Title": "Access Google Sheets using the Sheets API V4",
-        "Version": "1.1.1",
+        "Version": "1.1.2",
         "Authors@R": "c(\n    person(\"Jennifer\", \"Bryan\", , \"jenny@posit.co\", role = c(\"cre\", \"aut\"),\n           comment = c(ORCID = \"0000-0002-6983-2759\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"))\n  )",
         "Description": "Interact with Google Sheets through the Sheets API v4\n    <https://developers.google.com/sheets/api>. \"API\" is an acronym for\n    \"application programming interface\"; the Sheets API allows users to\n    interact with Google Sheets programmatically, instead of via a web\n    browser. The \"v4\" refers to the fact that the Sheets API is currently\n    at version 4. This package can read and write both the metadata and\n    the cell data in a Sheet.",
         "License": "MIT + file LICENSE",
         "URL": "https://googlesheets4.tidyverse.org,\nhttps://github.com/tidyverse/googlesheets4",
         "BugReports": "https://github.com/tidyverse/googlesheets4/issues",
         "Depends": "R (>= 3.6)",
-        "Imports": "cellranger, cli (>= 3.0.0), curl, gargle (>= 1.5.0), glue (>=\n1.3.0), googledrive (>= 2.1.0), httr, ids, lifecycle, magrittr,\nmethods, purrr, rematch2, rlang (>= 1.0.2), tibble (>= 2.1.1),\nutils, vctrs (>= 0.2.3), withr",
+        "Imports": "cellranger, cli (>= 3.0.0), curl, gargle (>= 1.6.0), glue (>=\n1.3.0), googledrive (>= 2.1.0), httr, ids, lifecycle, magrittr,\nmethods, purrr, rematch2, rlang (>= 1.0.2), tibble (>= 2.1.1),\nutils, vctrs (>= 0.2.3), withr",
         "Suggests": "readr, rmarkdown, spelling, testthat (>= 3.1.7)",
         "ByteCompile": "true",
         "Config/Needs/website": "tidyverse, tidyverse/tidytemplate",
         "Config/testthat/edition": "3",
         "Encoding": "UTF-8",
         "Language": "en-US",
-        "RoxygenNote": "7.2.3",
+        "RoxygenNote": "7.3.2.9000",
         "NeedsCompilation": "no",
-        "Packaged": "2023-06-11 01:11:05 UTC; jenny",
-        "Author": "Jennifer Bryan [cre, aut] (<https://orcid.org/0000-0002-6983-2759>),\n  Posit Software, PBC [cph, fnd]",
+        "Packaged": "2025-09-03 23:00:43 UTC; jenny",
+        "Author": "Jennifer Bryan [cre, aut] (ORCID:\n    <https://orcid.org/0000-0002-6983-2759>),\n  Posit Software, PBC [cph, fnd]",
         "Maintainer": "Jennifer Bryan <jenny@posit.co>",
         "Repository": "CRAN",
-        "Date/Publication": "2023-06-11 04:00:02 UTC",
-        "Built": "R 4.4.2; ; 2025-01-25 04:06:28 UTC; windows"
+        "Date/Publication": "2025-09-03 23:20:02 UTC",
+        "Built": "R 4.4.3; ; 2025-09-17 03:16:16 UTC; windows"
       }
     },
     "gridExtra": {
@@ -3381,6 +3438,33 @@
         "Archs": "x64"
       }
     },
+    "sfarrow": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "description": {
+        "Package": "sfarrow",
+        "Title": "Read/Write Simple Feature Objects ('sf') with 'Apache' 'Arrow'",
+        "Version": "0.4.1",
+        "Date": "2021-10-25",
+        "Authors@R": "\n    person(given = \"Chris\",\n           family = \"Jochem\",\n           role = c(\"aut\", \"cre\"),\n           email = \"w.c.jochem@soton.ac.uk\",\n           comment = c(ORCID = \"0000-0003-2192-5988\"))",
+        "Description": "Support for reading/writing simple feature ('sf') spatial objects from/to 'Parquet' files. 'Parquet' files are an open-source, column-oriented data storage format from Apache (<https://parquet.apache.org/>), now popular across programming languages. This implementation converts simple feature list geometries into well-known binary format for use by 'arrow', and coordinate reference system information is maintained in a standard metadata format.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://github.com/wcjochem/sfarrow,\nhttps://wcjochem.github.io/sfarrow/",
+        "BugReports": "https://github.com/wcjochem/sfarrow/issues",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.1.1",
+        "Imports": "sf, arrow, jsonlite, dplyr,",
+        "Suggests": "knitr, rmarkdown",
+        "VignetteBuilder": "knitr",
+        "NeedsCompilation": "no",
+        "Packaged": "2021-10-27 16:15:34 UTC; jochem",
+        "Author": "Chris Jochem [aut, cre] (<https://orcid.org/0000-0003-2192-5988>)",
+        "Maintainer": "Chris Jochem <w.c.jochem@soton.ac.uk>",
+        "Repository": "CRAN",
+        "Date/Publication": "2021-10-27 16:30:02 UTC",
+        "Built": "R 4.4.3; ; 2025-09-17 03:12:56 UTC; windows"
+      }
+    },
     "sfheaders": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
@@ -4376,7 +4460,7 @@
   },
   "files": {
     ".RData": {
-      "checksum": "bf1d19955675871360c28c736671d2c9"
+      "checksum": "ec5bc6d3e487f3bf59082c79b40814b0"
     },
     ".RDataTmp": {
       "checksum": "d697596f477ad843de1a8bf77e8e5c26"
@@ -4387,125 +4471,341 @@
     "_brand.yml": {
       "checksum": "d2cdab908bb159c84e7c89635cd93a08"
     },
+    "data/2km_grid_full.parquet": {
+      "checksum": "49f56798f28ffc19efc7932e06e39ffa"
+    },
+    "data/2km_grid_full.rds": {
+      "checksum": "a2abe9b395e286e79c8707ec0e9b3d39"
+    },
     "data/2km_grid_norcal.rds": {
       "checksum": "13160464f0487034ae15ef4405f65c20"
     },
     "data/ALCH_Ranked_Importance_scored.rds": {
       "checksum": "6b29c11ec77fb408f3e359a884fd515d"
     },
+    "data/ALCH_Ranked_Importance_scored_full.parquet": {
+      "checksum": "e9bef4e6726727de4c56fd0d4d3de1fd"
+    },
+    "data/ALCH_Ranked_Importance_scored_full.rds": {
+      "checksum": "a2d1a569893d9938ff70e2fd4d9d2ed0"
+    },
     "data/ALCH_scored.rds": {
       "checksum": "9f4e308bd80e0e7f23a8a141c4a86911"
+    },
+    "data/ALCH_scored_full.parquet": {
+      "checksum": "9085e26448037bea6c255539784e3fcd"
+    },
+    "data/ALCH_scored_full.rds": {
+      "checksum": "6812cb1b4338fffbc89a8946a41abae8"
     },
     "data/ALCO_Ranked_Importance_scored.rds": {
       "checksum": "5a692a6529ecc3b8f032f7d634882515"
     },
+    "data/ALCO_Ranked_Importance_scored_full.parquet": {
+      "checksum": "1e83d766129f5148039a71afb908e579"
+    },
+    "data/ALCO_Ranked_Importance_scored_full.rds": {
+      "checksum": "f06c368f329513930c8873baa06cff78"
+    },
     "data/ALCO_scored.rds": {
       "checksum": "b31ad77be46ab2e70071f75f75cd542f"
+    },
+    "data/ALCO_scored_full.parquet": {
+      "checksum": "06dcdfa6b664b4cb038f154d5371993b"
+    },
+    "data/ALCO_scored_full.rds": {
+      "checksum": "c3ae0eec2e38b9e93acbdf6a3620911a"
     },
     "data/ASH_Ranked_Importance_scored.rds": {
       "checksum": "f314b4474a72c7812be0b22ffb8f3b87"
     },
+    "data/ASH_Ranked_Importance_scored_full.parquet": {
+      "checksum": "9891da7b5496a5ffc399873ccfa3bc06"
+    },
+    "data/ASH_Ranked_Importance_scored_full.rds": {
+      "checksum": "99b19270c24775ac3e9176baead56f5a"
+    },
     "data/ASH_scored.rds": {
       "checksum": "cfdc9b25d4475a19f57d969d95e5edbc"
+    },
+    "data/ASH_scored_full.parquet": {
+      "checksum": "d5bac5274ec0c05640733a7ed2d2729d"
+    },
+    "data/ASH_scored_full.rds": {
+      "checksum": "f11590c0d701878d344a863eb6ff3d75"
     },
     "data/blue_whale_scored.rds": {
       "checksum": "62c2d76dde8b7d1c43b05a1107ac219f"
     },
+    "data/blue_whale_scored_full.parquet": {
+      "checksum": "2bbd84816ec9ca626e4d6faf32bb7b8d"
+    },
+    "data/blue_whale_scored_full.rds": {
+      "checksum": "4ba1d7be4e9e9447ce717890a17a23f1"
+    },
     "data/canyon_scored.rds": {
       "checksum": "b245f2bb2ce63c091a7fd337de448558"
+    },
+    "data/canyon_scored_full.parquet": {
+      "checksum": "ac2daf9332cba7fea4a6a8d9c951a030"
+    },
+    "data/canyon_scored_full.rds": {
+      "checksum": "e643ac66e9a31ee97393eebdee77c308"
     },
     "data/CRAB_Ranked_Importance_scored.rds": {
       "checksum": "fde2c6b379cb7250afcadf1959faadb3"
     },
+    "data/CRAB_Ranked_Importance_scored_full.parquet": {
+      "checksum": "32af9fa1d14a95e102bf66bcdc72d689"
+    },
+    "data/CRAB_Ranked_Importance_scored_full.rds": {
+      "checksum": "13775222222792584e9f970e457f07a0"
+    },
     "data/CRAB_scored.rds": {
       "checksum": "976f27acd4b7a3d484dba5b6544d5d80"
+    },
+    "data/CRAB_scored_full.parquet": {
+      "checksum": "9a2643a2dcf1163d9b5819f29eb6a603"
+    },
+    "data/CRAB_scored_full.rds": {
+      "checksum": "7b04ca6ca409ce2a067a599da0a19372"
     },
     "data/DSC_RH_scored.rds": {
       "checksum": "78683b85d6bd599dc70def7f040ca30f"
     },
+    "data/DSC_RH_scored_full.parquet": {
+      "checksum": "75cfb89dc68c322229be6f30fcc02b7f"
+    },
+    "data/DSC_RH_scored_full.rds": {
+      "checksum": "a0f80daa168127c3017e6351469efa3a"
+    },
     "data/DSC_RH_z_membership_scored.rds": {
       "checksum": "a9237904114c0f97c2923cec6c1c160e"
+    },
+    "data/DSC_RH_z_membership_scored_full.parquet": {
+      "checksum": "974de48f1912d52d3be27dcae4bddcb4"
+    },
+    "data/DSC_RH_z_membership_scored_full.rds": {
+      "checksum": "793d69c38bf70ca2831642a964b8c58b"
     },
     "data/EFHCA_700_scored.rds": {
       "checksum": "6ee00630b0bc145c4bcad2f435122349"
     },
+    "data/EFHCA_700_scored_full.parquet": {
+      "checksum": "00a9e84936c2e329c3e5de7a585e6642"
+    },
+    "data/EFHCA_700_scored_full.rds": {
+      "checksum": "5982f515bcf2d8bf40de3be2da13851e"
+    },
     "data/EFHCA_scored.rds": {
       "checksum": "caf4886210c9fe3e8bbe97141e689cdd"
+    },
+    "data/EFHCA_scored_full.parquet": {
+      "checksum": "fef6d7961315bc4d7594816c129cc8dc"
+    },
+    "data/EFHCA_scored_full.rds": {
+      "checksum": "38ea1446d836f53cd3d6e4db27056916"
     },
     "data/GFBT_Ranked_Importance_scored.rds": {
       "checksum": "ac1eb80338581809f1602d912bf53bbe"
     },
+    "data/GFBT_Ranked_Importance_scored_full.parquet": {
+      "checksum": "6055704338fb8bab88847451dd7b169e"
+    },
+    "data/GFBT_Ranked_Importance_scored_full.rds": {
+      "checksum": "9c5a74eb9ff1abc56fd130c5a790e49f"
+    },
     "data/GFBT_scored.rds": {
       "checksum": "c0bacac8fac3840d9b4d523ffb2e98ff"
+    },
+    "data/GFBT_scored_full.parquet": {
+      "checksum": "150daa5b399bd7be0aeb31c2e4bfd8a8"
+    },
+    "data/GFBT_scored_full.rds": {
+      "checksum": "bfea578aa139ece6aa5c7da1562ed2f6"
     },
     "data/GFLL_Ranked_Importance_scored.rds": {
       "checksum": "d7828b8e161ff993b39bf6de3f656eb1"
     },
+    "data/GFLL_Ranked_Importance_scored_full.parquet": {
+      "checksum": "00d3d6e3f227090c91aef59cc6ae65f6"
+    },
+    "data/GFLL_Ranked_Importance_scored_full.rds": {
+      "checksum": "d0e7de7816108477e056c5ee470c1588"
+    },
     "data/GFLL_scored.rds": {
       "checksum": "141507f46d47e4ba058a21f3c940e068"
+    },
+    "data/GFLL_scored_full.parquet": {
+      "checksum": "c19630c8304fb45670a51344f2fea862"
+    },
+    "data/GFLL_scored_full.rds": {
+      "checksum": "5ee5c681b8e054447fbb64866d287d5c"
     },
     "data/GFP_Ranked_Importance_scored.rds": {
       "checksum": "cddc563743e230b9490b45bcfe5aa7b1"
     },
+    "data/GFP_Ranked_Importance_scored_full.parquet": {
+      "checksum": "481ed978111258af6fa8a207abf65eb2"
+    },
+    "data/GFP_Ranked_Importance_scored_full.rds": {
+      "checksum": "b3cd1f04351c16209fa86f0c14ca72b2"
+    },
     "data/GFP_scored.rds": {
       "checksum": "3b9fb641f9208df90ebb340b19312eaf"
+    },
+    "data/GFP_scored_full.parquet": {
+      "checksum": "432c17b25d09b63e91309a530849af51"
+    },
+    "data/GFP_scored_full.rds": {
+      "checksum": "de0389db588be00ced9c58f4dc1aff55"
     },
     "data/HAPCaoi_scored.rds": {
       "checksum": "63f6ebb1d08c600cfa53ce04345000e6"
     },
+    "data/HAPCaoi_scored_full.parquet": {
+      "checksum": "8977f2959f811eb3bc1f879f64296a94"
+    },
+    "data/HAPCaoi_scored_full.rds": {
+      "checksum": "6b1efaa6d22769960bb565da7a7a64b0"
+    },
     "data/HAPCreef_scored.rds": {
+      "checksum": "29f20722eb793b2f3e57402a68cdf7d6"
+    },
+    "data/HAPCreef_scored_full.parquet": {
+      "checksum": "404cb06c2f5351a3f011652e132953cc"
+    },
+    "data/HAPCreef_scored_full.rds": {
       "checksum": "29f20722eb793b2f3e57402a68cdf7d6"
     },
     "data/humpback_whale_scored.rds": {
       "checksum": "c034eaeae9aee83464b1a9297e7cb9da"
     },
+    "data/humpback_whale_scored_full.parquet": {
+      "checksum": "af3df39f95d322f7b4ba426ae1e2b73d"
+    },
+    "data/humpback_whale_scored_full.rds": {
+      "checksum": "17d3bea2b56da046e2a3a83bbf43212f"
+    },
     "data/killer_whale_scored.rds": {
       "checksum": "5123828c00fde946fed3da742c4912bf"
+    },
+    "data/killer_whale_scored_full.parquet": {
+      "checksum": "beb1b17618054b96038556c76b84486f"
+    },
+    "data/killer_whale_scored_full.rds": {
+      "checksum": "be5394e2af202ad4e712a95ab86b47c5"
     },
     "data/leatherback_turtle_scored.rds": {
       "checksum": "dbdc55aa61443ad902932c60da5ba3b9"
     },
+    "data/leatherback_turtle_scored_full.parquet": {
+      "checksum": "4ed51352459d5ca85a7bc9ac8e8fa247"
+    },
+    "data/leatherback_turtle_scored_full.rds": {
+      "checksum": "1e8b627131d12a08506fe513ece4ace9"
+    },
     "data/PS_Ranked_Importance_scored.rds": {
       "checksum": "ee7cd2e98084a2585313e4640c84b864"
+    },
+    "data/PS_Ranked_Importance_scored_full.rds": {
+      "checksum": "7cf6adad95791cc57b0ec79933962390"
     },
     "data/PS_scored.rds": {
       "checksum": "d0e38a0f4789862c78ee1c95a54886b1"
     },
+    "data/PS_scored_full.parquet": {
+      "checksum": "658fe4f1b125a71bbaa5b9f118c4e9cb"
+    },
+    "data/PS_scored_full.rds": {
+      "checksum": "248d5066e6330fec92d79dc57f878603"
+    },
     "data/Seeps_scored.rds": {
       "checksum": "18ebdc045bf34895047faf854776c3b4"
+    },
+    "data/Seeps_scored_full.parquet": {
+      "checksum": "194272d3a815ee666937490f6ad0462b"
+    },
+    "data/Seeps_scored_full.rds": {
+      "checksum": "3deec1cd6582cacc1baa030a81f6efd9"
     },
     "data/ShlfBrk_scored.rds": {
       "checksum": "1225b4fefb91898e2676a3d0f07f21b3"
     },
+    "data/ShlfBrk_scored_full.parquet": {
+      "checksum": "144702643616fe301453905915641500"
+    },
+    "data/ShlfBrk_scored_full.rds": {
+      "checksum": "97ba6a05983aa72dfc53921208ad8217"
+    },
     "data/SSH_Ranked_Importance_scored.rds": {
       "checksum": "e781b6f1ae38cd8d4924afc9a01fc61f"
+    },
+    "data/SSH_Ranked_Importance_scored_full.parquet": {
+      "checksum": "86d5069315ad49dc0bb039b4a07a7849"
+    },
+    "data/SSH_Ranked_Importance_scored_full.rds": {
+      "checksum": "e11e6da4062a54ff5339f1a57dda9165"
     },
     "data/SSH_scored.rds": {
       "checksum": "4b5e045e8fd4917a4d4b60f52f33c046"
     },
+    "data/SSH_scored_full.parquet": {
+      "checksum": "d9b758c773a6afccf01cc0b3aa17b54b"
+    },
+    "data/SSH_scored_full.rds": {
+      "checksum": "4281d8e980674a65d56a52d61ff4cdee"
+    },
     "data/submarine_cable_scored.rds": {
       "checksum": "5ec7ebb06d0a5f7618dd5f717f0ca892"
+    },
+    "data/submarine_cable_scored_full.parquet": {
+      "checksum": "8bed7e469c4a8c129efff83b1a8b8150"
+    },
+    "data/submarine_cable_scored_full.rds": {
+      "checksum": "4ea643dd031c2d668a99ee43559bca7a"
     },
     "data/Surveys_fixed_scored.rds": {
       "checksum": "8464c0460c2b612801312292fb6eeda2"
     },
+    "data/Surveys_fixed_scored_full.parquet": {
+      "checksum": "16a58ed3ef43889e1e8e25c090a78ad3"
+    },
+    "data/Surveys_fixed_scored_full.rds": {
+      "checksum": "e2ecb9e4e48dc34e57ed7fa194a8a6a7"
+    },
     "data/Surveys_periodic_scored.rds": {
       "checksum": "09476e4641bbfeaf7c42ec9064080aea"
     },
+    "data/Surveys_periodic_scored_full.parquet": {
+      "checksum": "c4af180ac2c204bbf6c30f8e52439f32"
+    },
+    "data/Surveys_periodic_scored_full.rds": {
+      "checksum": "eac7d59e00976690768223d4f12456c8"
+    },
     "data/trawl_fisheries_scored.rds": {
       "checksum": "8dbbf11c7dd9cfa4ade03ceb05ac928b"
+    },
+    "data/trawl_fisheries_scored_full.parquet": {
+      "checksum": "0d6a97aa6ef465e9b95f56905019f01f"
+    },
+    "data/trawl_fisheries_scored_full.rds": {
+      "checksum": "e573b8fe20b6471d97b048cf1e42a85d"
+    },
+    "data/WEA.parquet": {
+      "checksum": "44235dcd2d15b9a6532e57edc7ff04d6"
     },
     "data/WEA.rds": {
       "checksum": "49d0d124d8d194f5237c06d2604b5562"
     },
     "data_production.R": {
-      "checksum": "b251ab09af657ee3641b2587c6d032e6"
+      "checksum": "e036d882d4691ca2c09663ad4612e362"
     },
     "Full_Model_Report_Template.Rmd": {
       "checksum": "5f356e2c8743b8c38334b65047af0a75"
     },
     "global.R": {
-      "checksum": "25b4252b5fc533c5f1e54d15124e8860"
+      "checksum": "7008b31a2ffa575c76e043361a01459a"
     },
     "LICENSE": {
       "checksum": "d229da563da18fe5d58cd95a6467d584"
@@ -4577,7 +4877,7 @@
       "checksum": "21c0b2ef10c1cf7bb1583d8a273b877e"
     },
     "R/create_combined_map.R": {
-      "checksum": "4086fb75bc98ea317971b0de9416efa3"
+      "checksum": "aecc9bb512e5f6abac0b331c76907cfd"
     },
     "R/create_combined_submodel_map.R": {
       "checksum": "d91982820fa7466789b4397d8754e1c9"
@@ -4586,16 +4886,16 @@
       "checksum": "3ea7c432b6c2985d0266f2a972c2e4af"
     },
     "R/create_full_model_map.R": {
-      "checksum": "b95a237973df240ea96bae77e62d4a15"
+      "checksum": "53b0271dc349cbd59c2e83ab4ccdd857"
     },
     "R/create_individual_map.R": {
-      "checksum": "384caf48a94251aff0b7ae7ba0772524"
+      "checksum": "464f90bfdb3bdb8a460f494a3a1e3828"
     },
     "R/create_maps_container.R": {
       "checksum": "f5639c62afe4f4720288e93414514026"
     },
     "R/data_timestamps.R": {
-      "checksum": "404b9d7c41cfbc4d34857808cd1c1831"
+      "checksum": "d2428517e2a268871f01191d9671c351"
     },
     "R/filter_by_score.R": {
       "checksum": "3e70194951174d76728ccb7b1905770a"
@@ -4657,6 +4957,9 @@
     "R/modal.R": {
       "checksum": "cb8bd4822fb8011ae303d8a1ef1aa601"
     },
+    "R/preprocess_spatial_data.R": {
+      "checksum": "8cdea749002897bd480ee56b86a06238"
+    },
     "R/sidebar_helpers.R": {
       "checksum": "39c9e5e1804623cc965928a4299ff46d"
     },
@@ -4667,10 +4970,10 @@
       "checksum": "f4755128423445ec5e67a5f718a09bf9"
     },
     "README.md": {
-      "checksum": "322d848847c13cf92ed02aa1636bfbc9"
+      "checksum": "3a8f7e57289642cb74b619a3f91befa6"
     },
     "server.R": {
-      "checksum": "86ebd6b3085ac1ce755b3ae3e21dfbeb"
+      "checksum": "cd1b8a6a17237c1cd9f4b6f9884a39ff"
     },
     "Submodel_Combined_Report_Template.Rmd": {
       "checksum": "bd46621019e1041d7f7caffe357ce1a2"
