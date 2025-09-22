@@ -5,34 +5,27 @@ create_individual_map <- function(config, aoi_data = NULL) {
     aoi_data <- AOI
   }
   
-  # Transform AOI data to WGS84 if available and needed
-  if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-    if(!st_is_longlat(aoi_data)) {
-      aoi_data <- st_transform(aoi_data, 4326)
-    }
-    aoi_data <- st_zm(aoi_data)
-  }
-  
-  # Calculate map bounds based on AOI if available, otherwise use data bounds
+  # Calculate map bounds based on AOI if available
   map_bounds <- NULL
   if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-    # Use AOI bounds for centering the map
-    bbox <- st_bbox(aoi_data)
-    map_bounds <- list(
-      lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
-      lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
-    )
-  } else if(!is.null(config$data) && nrow(config$data) > 0) {
-    # Fallback to data bounds if no AOI
-    data_transformed <- config$data
-    if(!st_is_longlat(data_transformed)) {
-      data_transformed <- st_transform(data_transformed, 4326)
-    }
-    bbox <- st_bbox(data_transformed)
-    map_bounds <- list(
-      lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
-      lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
-    )
+    tryCatch({
+      bbox <- st_bbox(aoi_data)
+      map_bounds <- list(
+        lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
+        lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
+      )
+    }, error = function(e) {
+      # Error calculating AOI bounds - fall back to data bounds
+      if(!is.null(config$data) && nrow(config$data) > 0) {
+        bbox <- get_bbox_fast(config$data)
+        if(!is.null(bbox)) {
+          map_bounds <<- list(
+            lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
+            lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
+          )
+        }
+      }
+    })
   }
   
   # Ensure we have data to display
@@ -46,32 +39,40 @@ create_individual_map <- function(config, aoi_data = NULL) {
     
     # Set map view based on bounds
     if(!is.null(map_bounds)) {
-      base_map <- base_map %>%
-        fitBounds(
-          lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
-          lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
-          options = list(padding = c(20, 20))  # Add some padding around the bounds
-        )
+      tryCatch({
+        base_map <- base_map %>%
+          fitBounds(
+            lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
+            lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
+            options = list(padding = c(20, 20))
+          )
+      }, error = function(e) {
+        # Error setting bounds
+      })
     }
     
-    # Add AOI polygon - always include it
+    # Add AOI polygon
     if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-      base_map <- base_map %>%
-        addPolygons(
-          data = aoi_data,
-          fillColor = "transparent",
-          color = "red",
-          weight = 3,
-          fillOpacity = 0,
-          popup = ~paste("AOI Area:", if("Area_Name" %in% names(aoi_data)) Area_Name else "Selected Area"),
-          group = "AOI Area"
-        )
+      tryCatch({
+        base_map <- base_map %>%
+          addPolygons(
+            data = aoi_data,
+            fillColor = "transparent",
+            color = "red",
+            weight = 3,
+            fillOpacity = 0,
+            popup = ~paste("AOI Area:", if("Area_Name" %in% names(aoi_data)) Area_Name else "Selected Area"),
+            group = "AOI Area"
+          )
+      }, error = function(e) {
+        # Error adding AOI polygon
+      })
     }
     
     return(base_map)
   }
   
-  # Create the map with legend
+  # Create the map with legend 
   map <- leaflet() %>%
     addProviderTiles("Esri.OceanBasemap",
                      options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
@@ -85,14 +86,13 @@ create_individual_map <- function(config, aoi_data = NULL) {
     map <- map %>%
       addPolygons(
         data = config$data, 
-        color = "#33333300",  # transparent border
+        color = "#33333300",
         weight = 1,            
         fillColor = ~config$color_palette(Score.Z_Membership),
         fillOpacity = 0.7,
         popup = ~paste("Cell Score:", round(Score.Z_Membership, 3)),
         group = "Data Layer"
       ) %>%
-      # Add continuous legend for Z Membership
       addLegend(
         position = "bottomright",
         pal = config$color_palette,
@@ -103,7 +103,6 @@ create_individual_map <- function(config, aoi_data = NULL) {
   } else if(!is.null(config$score) && config$score == "Ranked Importance" && 
             !is.null(config$color_palette)) {
     # Handle continuous Ranked Importance coloring for fisheries
-    # Determine the score column name based on the layer
     score_column <- switch(config$layer,
                            "At-Sea Hake Mid-Water Trawl" = "Score.ASH_Ranked_Importance",
                            "Shoreside Hake Mid-Water Trawl" = "Score.SSH_Ranked_Importance",
@@ -114,25 +113,19 @@ create_individual_map <- function(config, aoi_data = NULL) {
                            "Dungeness Crab" = "Score.CRAB_Ranked_Importance",
                            "Commercial Troll/Hook and Line Albacore" = "Score.ALCO_Ranked_Importance",
                            "Charter Vessel Albacore Troll/Hook and Line" = "Score.ALCH_Ranked_Importance",
-                           NULL  # fallback
-    )
+                           NULL)
     
     if(!is.null(score_column) && score_column %in% names(config$data)) {
-      # Create fillColor formula dynamically
-      fill_color_formula <- paste0("~config$color_palette(", score_column, ")")
-      popup_formula <- paste0("~paste('Cell Score: Ranked Importance:', round(", score_column, ", 3))")
-      
       map <- map %>%
         addPolygons(
           data = config$data, 
-          color = "#33333300",  # transparent border
+          color = "#33333300",
           weight = 1,            
           fillColor = config$color_palette(config$data[[score_column]]),
           fillOpacity = 0.7,
           popup = ~paste("Cell Score:", round(get(score_column), 3)),
           group = "Data Layer"
         ) %>%
-        # Add continuous legend for Ranked Importance
         addLegend(
           position = "bottomright",
           pal = config$color_palette,
@@ -146,14 +139,13 @@ create_individual_map <- function(config, aoi_data = NULL) {
     map <- map %>%
       addPolygons(
         data = config$data, 
-        color = "#33333300",  # transparent border
+        color = "#33333300",
         weight = 1,            
         fillColor = config$color,
         fillOpacity = 0.7,
         popup = ~paste("Cell Score:", config$score),
         group = "Data Layer"
       ) %>%
-      # Add discrete legend
       addLegend(
         position = "bottomright",
         colors = config$color,
@@ -163,40 +155,58 @@ create_individual_map <- function(config, aoi_data = NULL) {
       )
   }
   
-  # Add AOI polygon AFTER data layer with smart interactivity
-  if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-    map <- map %>%
-      addPolygons(
-        data = aoi_data,
-        fillColor = "transparent",
-        color = "red",
-        weight = 3,
-        fillOpacity = 0,  # Completely transparent fill
-        popup = ~paste("AOI Area:", if("Area_Name" %in% names(aoi_data)) Area_Name else "Selected Area"),
-        group = "AOI Area",
-        options = pathOptions(
-          interactive = FALSE
+  # If no AOI bounds available, calculate from data (fallback - using preprocessed data)
+  if(is.null(map_bounds) && !is.null(config$data) && nrow(config$data) > 0) {
+    tryCatch({
+      bbox <- get_bbox_fast(config$data)
+      if(!is.null(bbox)) {
+        map_bounds <- list(
+          lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
+          lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
         )
-      )
+      }
+    }, error = function(e) {
+      # Error calculating data bounds
+    })
   }
   
-  # Set map view based on bounds (prioritize AOI bounds)
-  if(!is.null(map_bounds)) {
-    map <- map %>%
-      fitBounds(
-        lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
-        lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
-        options = list(padding = c(20, 20))  # Add some padding around the bounds
-      )
-  }
-  
-  # Add layers control
+  # Add AOI polygon AFTER data layer
   if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-    map <- map %>%
-      addLayersControl(
-        overlayGroups = c("Data Layer", "AOI Area"),
-        options = layersControlOptions(collapsed = FALSE)
-      )
+    tryCatch({
+      map <- map %>%
+        addPolygons(
+          data = aoi_data,
+          fillColor = "transparent",
+          color = "red",
+          weight = 3,
+          fillOpacity = 0,
+          popup = ~paste("AOI Area:", if("Area_Name" %in% names(aoi_data)) Area_Name else "Selected Area"),
+          group = "AOI Area",
+          options = pathOptions(
+            interactive = FALSE
+          )
+        ) %>%
+        addLayersControl(
+          overlayGroups = c("Data Layer", "AOI Area"),
+          options = layersControlOptions(collapsed = FALSE)
+        )
+    }, error = function(e) {
+      # Error adding AOI polygon
+    })
+  }
+  
+  # Set map view bounds (same approach as combined map)
+  if(!is.null(map_bounds)) {
+    tryCatch({
+      map <- map %>%
+        fitBounds(
+          lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
+          lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
+          options = list(padding = c(20, 20))
+        )
+    }, error = function(e) {
+      # Error setting bounds
+    })
   }
   
   return(map)

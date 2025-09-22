@@ -116,14 +116,6 @@ create_full_model_map <- function(submodels, weights, base_grid = grid_test, aoi
       aoi_data <- AOI
     }
     
-    # Transform AOI data to WGS84 if available and needed
-    if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-      if(!st_is_longlat(aoi_data)) {
-        aoi_data <- st_transform(aoi_data, 4326)
-      }
-      aoi_data <- st_zm(aoi_data)
-    }
-    
     # Create the map
     if("Overall_Geo_mean" %in% names(combined_data) && 
        any(!is.na(combined_data$Overall_Geo_mean))) {

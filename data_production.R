@@ -9,13 +9,15 @@
 # library(magrittr)
 # library(tidyr)
 # library(arcgis)
-# 
+# library(arrow)
+# library(sfarrow)
 # 
 # # set working directory
 # grid.2km <- sf::st_read(dsn = "Z:\\GIS_Base\\OSW\\Grid.gdb", layer = "grid2km")
 # saveRDS(grid.2km, "C:\\GitHub\\SMORES\\data\\2km_grid_full.rds")
+# st_write_parquet(grid.2km, "C:\\GitHub\\SMORES\\data\\2km_grid_full.parquet")
 # 
-# #set standard coordinate reference system if using 2 km square grid
+# # set standard coordinate reference system if using 2 km square grid
 # crsOut <- st_crs(grid.2km)
 # 
 # #convert each layer to sf object
@@ -56,7 +58,7 @@
 # # st_crs(NorCal) == st_crs(grid.2km)
 # # #grid for regions of interest less than full coast
 # # grd.norcal <- st_crop(grid.2km, NorCal)
-# # 
+# #
 # # saveRDS(grd.norcal, "C:\\GitHub\\SMORES\\data\\2km_grid_norcal.rds")
 # 
 # grid_test <- grid.2km
@@ -104,6 +106,7 @@
 #   sf::st_transform('+proj=longlat +datum=WGS84') %>%
 #   select(-Canyon)
 # saveRDS(canyons_scored_long, "C:\\GitHub\\SMORES\\data\\canyon_scored_full.rds")
+# st_write_parquet(canyons_scored_long, "C:\\GitHub\\SMORES\\data\\canyon_scored_full.parquet")
 # 
 # #Deep sea coral robust high - user selected score data set
 # DSC.RobustHigh.grid <- sf::st_intersection(DSC.RobustHigh, grid_test) %>%
@@ -136,6 +139,7 @@
 #   sf::st_transform('+proj=longlat +datum=WGS84') %>%
 #   select(-DSC_RH)
 # saveRDS(DSC_RH_scored_long, "C:\\GitHub\\SMORES\\data\\DSC_RH_scored_full.rds")
+# st_write_parquet(DSC_RH_scored_long, "C:\\GitHub\\SMORES\\data\\DSC_RH_scored_full.parquet")
 # 
 # # Deep sea coral robust high - user selected z membership scoring option
 # DSC.RobustHigh.grid_z_membership <- sf::st_intersection(DSC.RobustHigh, grid_test) %>%
@@ -184,6 +188,7 @@
 #   filter(!is.na(gridcode))
 # 
 # saveRDS(DSC_RH_z_membership_score, "C:\\GitHub\\SMORES\\data\\DSC_RH_z_membership_scored_full.rds")
+# st_write_parquet(DSC_RH_z_membership_score, "C:\\GitHub\\SMORES\\data\\DSC_RH_z_membership_scored_full.parquet")
 # 
 # #Surveys fixed
 # Surveys.fixed.grid <- sf::st_intersection(Surveys.fixed, grid_test) %>%
@@ -219,6 +224,7 @@
 #   select(-Surveys_fixed)
 # st_crs(DSC_RH_scored_long) == st_crs(Surveys_fixed_scored_long)
 # saveRDS(Surveys_fixed_scored_long, "C:\\GitHub\\SMORES\\data\\Surveys_fixed_scored_full.rds")
+# st_write_parquet(Surveys_fixed_scored_long, "C:\\GitHub\\SMORES\\data\\Surveys_fixed_scored_full.parquet")
 # 
 # #Surveys periodic grid
 # Surveys.per <- sf::st_intersection(Surveys.per, grid_test) %>%
@@ -253,6 +259,7 @@
 #   select(-Surveys_periodic)
 # st_crs(DSC_RH_scored_long) == st_crs(Surveys_periodic_scored_long)
 # saveRDS(Surveys_periodic_scored_long, "C:\\GitHub\\SMORES\\data\\Surveys_periodic_scored_full.rds")
+# st_write_parquet(Surveys_periodic_scored_long, "C:\\GitHub\\SMORES\\data\\Surveys_periodic_scored_full.parquet")
 # 
 # #Seeps
 # Seeps.grid <- sf::st_intersection(Seeps, grid_test) %>%
@@ -287,6 +294,7 @@
 #   select(-Seeps)
 # st_crs(DSC_RH_scored_long) == st_crs(Seeps_scored_long)
 # saveRDS(Seeps_scored_long, "C:\\GitHub\\SMORES\\data\\Seeps_scored_full.rds")
+# st_write_parquet(Seeps_scored_long, "C:\\GitHub\\SMORES\\data\\Seeps_scored_full.parquet")
 # 
 # #Shelfbreaks
 # ShlfBrk.grid <- sf::st_intersection(ShlfBrk, grid_test) %>%
@@ -321,6 +329,7 @@
 #   select(-ShlfBrk)
 # st_crs(DSC_RH_scored_long) == st_crs(ShlfBrk_scored_long)
 # saveRDS(ShlfBrk_scored_long, "C:\\GitHub\\SMORES\\data\\ShlfBrk_scored_full.rds")
+# st_write_parquet(ShlfBrk_scored_long, "C:\\GitHub\\SMORES\\data\\ShlfBrk_scored_full.parquet")
 # 
 # #EFHCA
 # EFHCA.grid <- sf::st_intersection(EFHCA, grid_test) %>%
@@ -355,6 +364,7 @@
 #   select(-EFHCA)
 # st_crs(DSC_RH_scored_long) == st_crs(EFHCA_scored_long)
 # saveRDS(EFHCA_scored_long, "C:\\GitHub\\SMORES\\data\\EFHCA_scored_full.rds")
+# st_write_parquet(EFHCA_scored_long, "C:\\GitHub\\SMORES\\data\\EFHCA_scored_full.parquet")
 # 
 # #EFHCA.700
 # EFHCA_700.grid <- sf::st_intersection(EFHCA_700, grid_test) %>%
@@ -389,11 +399,12 @@
 #   select(-EFHCA_700)
 # st_crs(DSC_RH_scored_long) == st_crs(EFHCA_700_scored_long)
 # saveRDS(EFHCA_700_scored_long, "C:\\GitHub\\SMORES\\data\\EFHCA_700_scored_full.rds")
+# st_write_parquet(EFHCA_700_scored_long, "C:\\GitHub\\SMORES\\data\\EFHCA_700_scored_full.parquet")
 # 
 # # HAPCAOI
-# HAPCaoi.grid <- sf::st_intersection(HAPCaoi, grid_test) %>% 
+# HAPCaoi.grid <- sf::st_intersection(HAPCaoi, grid_test) %>%
 #               mutate(Score.HAPC.AOI = HAPC.AOI.Score) %>%
-#               mutate(area.part = st_area(.)) %>% 
+#               mutate(area.part = st_area(.)) %>%
 #               group_by(CellID_2km) %>% #use for 2km grid
 #               #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
 #               slice_max(area.part, n = 1) %>%
@@ -423,11 +434,12 @@
 #   select(-HAPCaoi)
 # st_crs(DSC_RH_scored_long) == st_crs(HAPCaoi_scored_long)
 # saveRDS(HAPCaoi_scored_long, "C:\\GitHub\\SMORES\\data\\HAPCaoi_scored_full.rds")
+# st_write_parquet(HAPCaoi_scored_long, "C:\\GitHub\\SMORES\\data\\HAPCaoi_scored_full.parquet")
 # 
 # #HAPCReef
-# HAPCreef.grid <- sf::st_intersection(HAPCreef, grid_test) %>% 
+# HAPCreef.grid <- sf::st_intersection(HAPCreef, grid_test) %>%
 #   mutate(Score.HAPC.Reef = HAPC.RR.Score) %>%
-#   mutate(area.part = st_area(.)) %>% 
+#   mutate(area.part = st_area(.)) %>%
 #   group_by(CellID_2km) %>% #use for 2km grid
 #   #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
 #   slice_max(area.part, n = 1) %>%
@@ -457,6 +469,7 @@
 #   select(-HAPCreef)
 # st_crs(DSC_RH_scored_long) == st_crs(HAPCreef_scored_long)
 # saveRDS(HAPCreef_scored_long, "C:\\GitHub\\SMORES\\data\\HAPCreef_scored_full.rds")
+# st_write_parquet(HAPCreef_scored_long, "C:\\GitHub\\SMORES\\data\\HAPCreef_scored_full.parquet")
 # 
 # ## Species Layers
 # ESA_Critical_Habitat <- sf::st_read(dsn = "Z:\\ArcGIS\\Projects\\OWEC\\p30\\protected_species_density_layers\\nmfs_combined\\Critical_Habitat_Areas_by_the_National_Marine_Fisheries_Service\\Critical_Habitat_Areas_by_the_National_Marine_Fisheries_Service.shp")
@@ -503,6 +516,7 @@
 #   select(-killer_whale)
 # st_crs(DSC_RH_scored_long) == st_crs(killer_whale_scored_long)
 # saveRDS(killer_whale_scored_long, "C:\\GitHub\\SMORES\\data\\killer_whale_scored_full.rds")
+# st_write_parquet(killer_whale_scored_long, "C:\\GitHub\\SMORES\\data\\killer_whale_scored_full.parquet")
 # 
 # # leatherback sea turtle
 # leatherback_turtle <- ESA_Critical_Habitat %>%
@@ -541,6 +555,7 @@
 #   select(-leatherback_turtle)
 # st_crs(DSC_RH_scored_long) == st_crs(leatherback_turtle_scored_long)
 # saveRDS(leatherback_turtle_scored_long, "C:\\GitHub\\SMORES\\data\\leatherback_turtle_scored_full.rds")
+# st_write_parquet(leatherback_turtle_scored_long, "C:\\GitHub\\SMORES\\data\\leatherback_turtle_scored_full.parquet")
 # 
 # #humpback whale - mexico and central dps
 # humpback_whale <- ESA_Critical_Habitat %>%
@@ -608,6 +623,7 @@
 #   select(-humpback_whale)
 # st_crs(DSC_RH_scored_long) == st_crs(humpback_whale_scored_long)
 # saveRDS(humpback_whale_scored_long, "C:\\GitHub\\SMORES\\data\\humpback_whale_scored_full.rds")
+# st_write_parquet(humpback_whale_scored_long, "C:\\GitHub\\SMORES\\data\\humpback_whale_scored_full.parquet")
 # 
 # #blue whale
 # blue_whale <- bia_bw_nms_layer %>%
@@ -645,6 +661,7 @@
 #   select(-blue_whale)
 # st_crs(DSC_RH_scored_long) == st_crs(blue_whale_scored_long)
 # saveRDS(blue_whale_scored_long, "C:\\GitHub\\SMORES\\data\\blue_whale_scored_full.rds")
+# st_write_parquet(blue_whale_scored_long, "C:\\GitHub\\SMORES\\data\\blue_whale_scored_full.parquet")
 # 
 # #submarine cables
 # furl_nms <- "https://coast.noaa.gov/arcgis/rest/services/Hosted/SubmarineCables/FeatureServer/0"
@@ -690,6 +707,7 @@
 #   select(-submarine_cable)
 # st_crs(DSC_RH_scored_long) == st_crs(submarine_cable_scored_long)
 # saveRDS(submarine_cable_scored_long, "C:\\GitHub\\SMORES\\data\\submarine_cable_scored_full.rds")
+# st_write_parquet(submarine_cable_scored_long, "C:\\GitHub\\SMORES\\data\\submarine_cable_scored_full.parquet")
 # 
 # #Fisheries data
 # # appears to be for just Coos Bay + Brookings
@@ -707,6 +725,7 @@
 #   sf::st_transform('+proj=longlat +datum=WGS84')
 # st_crs(DSC_RH_scored_long) == st_crs(ASH.grid_RI)
 # saveRDS(ASH.grid_RI, "C:\\GitHub\\SMORES\\data\\ASH_Ranked_Importance_scored_full.rds")
+# st_write_parquet(ASH.grid_RI, "C:\\GitHub\\SMORES\\data\\ASH_Ranked_Importance_scored_full.parquet")
 # 
 # # to make the user selected score options
 # ASH.grid <- ASH.grid_RI %>%
@@ -725,6 +744,7 @@
 #   select(-ASH)
 # st_crs(DSC_RH_scored_long) == st_crs(ASH_scored)
 # saveRDS(ASH_scored, "C:\\GitHub\\SMORES\\data\\ASH_scored_full.rds")
+# st_write_parquet(ASH_scored, "C:\\GitHub\\SMORES\\data\\ASH_scored_full.parquet")
 # 
 # # Shoreside hake mid-water trawl = SSH_RI in fisheries dataset
 # SSH <- Fisheries %>%
@@ -739,6 +759,7 @@
 #   sf::st_transform('+proj=longlat +datum=WGS84')
 # st_crs(DSC_RH_scored_long) == st_crs(SSH.grid_RI)
 # saveRDS(SSH.grid_RI, "C:\\GitHub\\SMORES\\data\\SSH_Ranked_Importance_scored_full.rds")
+# st_write_parquet(SSH.grid_RI, "C:\\GitHub\\SMORES\\data\\SSH_Ranked_Importance_scored_full.parquet")
 # 
 # # to make the user selected score options
 # SSH.grid <- SSH.grid_RI %>%
@@ -757,6 +778,7 @@
 #   select(-SSH)
 # st_crs(DSC_RH_scored_long) == st_crs(SSH_scored)
 # saveRDS(SSH_scored, "C:\\GitHub\\SMORES\\data\\SSH_scored_full.rds")
+# st_write_parquet(SSH_scored, "C:\\GitHub\\SMORES\\data\\SSH_scored_full.parquet")
 # 
 # # Groundfish bottom trawl = GFBT_RI in fisheries dataset
 # GFBT <- Fisheries %>%
@@ -771,6 +793,7 @@
 #   sf::st_transform('+proj=longlat +datum=WGS84')
 # st_crs(DSC_RH_scored_long) == st_crs(GFBT.grid_RI)
 # saveRDS(GFBT.grid_RI, "C:\\GitHub\\SMORES\\data\\GFBT_Ranked_Importance_scored_full.rds")
+# st_write_parquet(GFBT.grid_RI, "C:\\GitHub\\SMORES\\data\\GFBT_Ranked_Importance_scored_full.parquet")
 # 
 # # to make the user selected score options
 # GFBT.grid <- GFBT.grid_RI %>%
@@ -789,6 +812,7 @@
 #   select(-GFBT)
 # st_crs(DSC_RH_scored_long) == st_crs(GFBT_scored)
 # saveRDS(GFBT_scored, "C:\\GitHub\\SMORES\\data\\GFBT_scored_full.rds")
+# st_write_parquet(GFBT_scored, "C:\\GitHub\\SMORES\\data\\GFBT_scored_full.parquet")
 # 
 # # Groundfish pot gear = GFP_RI in fisheries dataset
 # GFP <- Fisheries %>%
@@ -803,6 +827,7 @@
 #   sf::st_transform('+proj=longlat +datum=WGS84')
 # st_crs(DSC_RH_scored_long) == st_crs(GFP.grid_RI)
 # saveRDS(GFP.grid_RI, "C:\\GitHub\\SMORES\\data\\GFP_Ranked_Importance_scored_full.rds")
+# st_write_parquet(GFP.grid_RI, "C:\\GitHub\\SMORES\\data\\GFP_Ranked_Importance_scored_full.parquet")
 # 
 # # to make the user selected score options
 # GFP.grid <- GFP.grid_RI %>%
@@ -820,7 +845,7 @@
 #   sf::st_transform('+proj=longlat +datum=WGS84') %>%
 #   select(-GFP)
 # st_crs(DSC_RH_scored_long) == st_crs(GFP_scored)
-# saveRDS(GFP_scored, "C:\\GitHub\\SMORES\\data\\GFP_scored_full.rds")
+# st_write_parquet(GFP_scored, "C:\\GitHub\\SMORES\\data\\GFP_scored_full.parquet")
 # 
 # # Groundfish longline gear = GFLL_RI in fisheries dataset
 # GFLL <- Fisheries %>%
@@ -835,6 +860,7 @@
 #   sf::st_transform('+proj=longlat +datum=WGS84')
 # st_crs(DSC_RH_scored_long) == st_crs(GFLL.grid_RI)
 # saveRDS(GFLL.grid_RI, "C:\\GitHub\\SMORES\\data\\GFLL_Ranked_Importance_scored_full.rds")
+# st_write_parquet(GFLL.grid_RI, "C:\\GitHub\\SMORES\\data\\GFLL_Ranked_Importance_scored_full.parquet")
 # 
 # # to make the user selected score options
 # GFLL.grid <- GFLL.grid_RI %>%
@@ -853,6 +879,7 @@
 #   select(-GFLL)
 # st_crs(DSC_RH_scored_long) == st_crs(GFLL_scored)
 # saveRDS(GFLL_scored, "C:\\GitHub\\SMORES\\data\\GFLL_scored_full.rds")
+# st_write_parquet(GFLL_scored, "C:\\GitHub\\SMORES\\data\\GFLL_scored_full.parquet")
 # 
 # # Pink shrimp trawl = PS_RI in fisheries dataset
 # PS <- Fisheries %>%
@@ -867,6 +894,7 @@
 #   sf::st_transform('+proj=longlat +datum=WGS84')
 # st_crs(DSC_RH_scored_long) == st_crs(PS.grid_RI)
 # saveRDS(PS.grid_RI, "C:\\GitHub\\SMORES\\data\\PS_Ranked_Importance_scored_full.rds")
+# st_write_parquet(PS.grid_RI, "C:\\GitHub\\SMORES\\data\\PS_Ranked_Importance_scored_full.parquet")
 # 
 # # to make the user selected score options
 # PS.grid <- PS.grid_RI %>%
@@ -885,6 +913,7 @@
 #   select(-PS)
 # st_crs(DSC_RH_scored_long) == st_crs(PS_scored)
 # saveRDS(PS_scored, "C:\\GitHub\\SMORES\\data\\PS_scored_full.rds")
+# st_write_parquet(PS_scored, "C:\\GitHub\\SMORES\\data\\PS_scored_full.parquet")
 # 
 # # Dungeness Crab = CRAB_RI in fisheries dataset
 # CRAB <- Fisheries %>%
@@ -899,6 +928,7 @@
 #   sf::st_transform('+proj=longlat +datum=WGS84')
 # st_crs(DSC_RH_scored_long) == st_crs(CRAB.grid_RI)
 # saveRDS(CRAB.grid_RI, "C:\\GitHub\\SMORES\\data\\CRAB_Ranked_Importance_scored_full.rds")
+# st_write_parquet(CRAB.grid_RI, "C:\\GitHub\\SMORES\\data\\CRAB_Ranked_Importance_scored_full.parquet")
 # 
 # # to make the user selected score options
 # CRAB.grid <- CRAB.grid_RI %>%
@@ -917,6 +947,7 @@
 #   select(-CRAB)
 # st_crs(DSC_RH_scored_long) == st_crs(CRAB_scored)
 # saveRDS(CRAB_scored, "C:\\GitHub\\SMORES\\data\\CRAB_scored_full.rds")
+# st_write_parquet(CRAB_scored, "C:\\GitHub\\SMORES\\data\\CRAB_scored_full.parquet")
 # 
 # # Commercial troll/hook and line albacore = ALCO_RI in fisheries dataset
 # ALCO <- Fisheries %>%
@@ -931,6 +962,7 @@
 #   sf::st_transform('+proj=longlat +datum=WGS84')
 # st_crs(DSC_RH_scored_long) == st_crs(ALCO.grid_RI)
 # saveRDS(ALCO.grid_RI, "C:\\GitHub\\SMORES\\data\\ALCO_Ranked_Importance_scored_full.rds")
+# st_write_parquet(ALCO.grid_RI, "C:\\GitHub\\SMORES\\data\\ALCO_Ranked_Importance_scored_full.parquet")
 # 
 # # to make the user selected score options
 # ALCO.grid <- ALCO.grid_RI %>%
@@ -949,6 +981,7 @@
 #   select(-ALCO)
 # st_crs(DSC_RH_scored_long) == st_crs(ALCO_scored)
 # saveRDS(ALCO_scored, "C:\\GitHub\\SMORES\\data\\ALCO_scored_full.rds")
+# st_write_parquet(ALCO_scored, "C:\\GitHub\\SMORES\\data\\ALCO_scored_full.parquet")
 # 
 # # Charter vessel albacore troll/hook and line = ALCH_RI in fisheries dataset
 # ALCH <- Fisheries %>%
@@ -963,6 +996,7 @@
 #   sf::st_transform('+proj=longlat +datum=WGS84')
 # st_crs(DSC_RH_scored_long) == st_crs(ALCH.grid_RI)
 # saveRDS(ALCH.grid_RI, "C:\\GitHub\\SMORES\\data\\ALCH_Ranked_Importance_scored_full.rds")
+# st_write_parquet(ALCH.grid_RI, "C:\\GitHub\\SMORES\\data\\ALCH_Ranked_Importance_scored_full.parquet")
 # 
 # # to make the user selected score options
 # ALCH.grid <- ALCH.grid_RI %>%
@@ -981,6 +1015,7 @@
 #   select(-ALCH)
 # st_crs(DSC_RH_scored_long) == st_crs(ALCH_scored)
 # saveRDS(ALCH_scored, "C:\\GitHub\\SMORES\\data\\ALCH_scored_full.rds")
+# st_write_parquet(ALCH_scored, "C:\\GitHub\\SMORES\\data\\ALCH_scored_full.parquet")
 # 
 # # Trawl Fisheries
 # trawl_fisheries <- Trawl_Fisheries %>%
@@ -996,7 +1031,7 @@
 # 
 # st_crs(DSC_RH_scored_long) == st_crs(trawl_fisheries)
 # saveRDS(trawl_fisheries, "C:\\GitHub\\SMORES\\data\\trawl_fisheries_scored_full.rds")
-# 
+# st_write_parquet(trawl_fisheries, "C:\\GitHub\\SMORES\\data\\trawl_fisheries_scored_full.parquet")
 # 
 # #WEA's
 # BOEM.gdb <- "Z:\\ArcGIS\\Projects\\OWEC\\p30\\boem_offshorewindenergy.gdb"
@@ -1004,4 +1039,4 @@
 #   filter(AreaType == "WEA") %>%
 #   sf::st_transform('+proj=longlat +datum=WGS84')
 # saveRDS(WEA, "C:\\GitHub\\SMORES\\data\\WEA.rds")
-# 
+# st_write_parquet(WEA, "C:\\GitHub\\SMORES\\data\\WEA.parquet")
