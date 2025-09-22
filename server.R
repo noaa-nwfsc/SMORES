@@ -1,6 +1,20 @@
 function(input, output, session) {
  
-  # Create a reactive values object to store data so it can be used throughout the app
+  # Track which individual map outputs have been created
+  individual_maps_created <- reactiveValues(
+    naturalresources = character(0),
+    fisheries = character(0), 
+    industryoperations = character(0)
+  )
+  
+  # Track the last known configurations for each individual map
+  individual_maps_last_configs <- reactiveValues(
+    naturalresources = list(),
+    fisheries = list(), 
+    industryoperations = list()
+  )
+  
+   # Create a reactive values object to store data so it can be used throughout the app
   combined_maps_data <- reactiveValues(
     habitat_geo = NULL,
     habitat_lowest = NULL,
@@ -89,14 +103,6 @@ function(input, output, session) {
                  addProviderTiles("Esri.OceanBasemap") %>% 
                  addControl("No Area of Interest data available", position = "center"))
       }
-      
-      # Transform to WGS84 if needed
-      if(!st_is_longlat(aoi_data)) {
-        aoi_data <- st_transform(aoi_data, 4326)
-      }
-      
-      # Remove Z & M dimensions for leaflet compatability
-      aoi_data <- st_zm(aoi_data)
       
       # Create the map with different styling based on selection
       map <- leaflet() %>%
@@ -249,62 +255,136 @@ function(input, output, session) {
   })
   
   # Natural Resources maps
-  observe({
+  observeEvent(natural_resources_valid_configs(), {
     valid_configs <- natural_resources_valid_configs()
     aoi_data <- filtered_aoi_data()
     
-    # Generate each map directly using the pure function
+    # Check each config to see if it has changed
     for(config in valid_configs) {
       local({
         local_config <- config
         map_id <- paste0("naturalresources_map_", local_config$index)
         
-        # Generate map using pure function and assign to output
-        output[[map_id]] <- renderLeaflet({
-          create_individual_map(local_config, aoi_data)
-        })
+        # Create a unique identifier for this configuration
+        config_key <- paste(local_config$layer, local_config$score, local_config$index, sep = "_")
+        
+        # Check if this configuration has changed
+        last_config <- individual_maps_last_configs$naturalresources[[config_key]]
+        current_config_hash <- digest::digest(list(
+          layer = local_config$layer,
+          score = local_config$score,
+          index = local_config$index,
+          aoi_area = input$aoiAreaSelector %||% "all"
+        ))
+        
+        # Only update if configuration has changed OR map doesn't exist yet
+        if(is.null(last_config) || last_config != current_config_hash || 
+           !map_id %in% individual_maps_created$naturalresources) {
+          
+          # Update the map
+          output[[map_id]] <- renderLeaflet({
+            create_individual_map(local_config, aoi_data)
+          })
+          
+          # Store the current configuration hash
+          individual_maps_last_configs$naturalresources[[config_key]] <- current_config_hash
+          
+          # Mark as created if not already tracked
+          if(!map_id %in% individual_maps_created$naturalresources) {
+            individual_maps_created$naturalresources <- c(individual_maps_created$naturalresources, map_id)
+          }
+        }
       })
     }
-  })
+  }, ignoreNULL = FALSE, ignoreInit = FALSE)
   
-  # Fisheries maps
-  observe({
+  # Fisheries maps - UPDATED to only regenerate when specific configs change
+  observeEvent(fisheries_valid_configs(), {
     valid_configs <- fisheries_valid_configs()
-    
     aoi_data <- filtered_aoi_data()
     
-    # Generate each map directly using the pure function
+    # Check each config to see if it has changed
     for(config in valid_configs) {
       local({
         local_config <- config
         map_id <- paste0("fisheries_map_", local_config$index)
         
-        # Generate map using pure function and assign to output
-        output[[map_id]] <- renderLeaflet({
-          create_individual_map(local_config, aoi_data)
-        })
+        # Create a unique identifier for this configuration
+        config_key <- paste(local_config$layer, local_config$score, local_config$index, sep = "_")
+        
+        # Check if this configuration has changed
+        last_config <- individual_maps_last_configs$fisheries[[config_key]]
+        current_config_hash <- digest::digest(list(
+          layer = local_config$layer,
+          score = local_config$score,
+          index = local_config$index,
+          aoi_area = input$aoiAreaSelector %||% "all"
+        ))
+        
+        # Only update if configuration has changed OR map doesn't exist yet
+        if(is.null(last_config) || last_config != current_config_hash || 
+           !map_id %in% individual_maps_created$fisheries) {
+          
+          # Update the map
+          output[[map_id]] <- renderLeaflet({
+            create_individual_map(local_config, aoi_data)
+          })
+          
+          # Store the current configuration hash
+          individual_maps_last_configs$fisheries[[config_key]] <- current_config_hash
+          
+          # Mark as created if not already tracked
+          if(!map_id %in% individual_maps_created$fisheries) {
+            individual_maps_created$fisheries <- c(individual_maps_created$fisheries, map_id)
+          }
+        }
       })
     }
-  })
+  }, ignoreNULL = FALSE, ignoreInit = FALSE)
   
-  # Industry & Operations maps
-  observe({
+  # Industry & Operations maps - UPDATED to only regenerate when specific configs change
+  observeEvent(industry_operations_valid_configs(), {
     valid_configs <- industry_operations_valid_configs()
     aoi_data <- filtered_aoi_data()
     
-    # Generate each map directly using the pure function
+    # Check each config to see if it has changed
     for(config in valid_configs) {
       local({
         local_config <- config
         map_id <- paste0("industryoperations_map_", local_config$index)
         
-        # Generate map using pure function and assign to output
-        output[[map_id]] <- renderLeaflet({
-          create_individual_map(local_config, aoi_data)
-        })
+        # Create a unique identifier for this configuration
+        config_key <- paste(local_config$layer, local_config$score, local_config$index, sep = "_")
+        
+        # Check if this configuration has changed
+        last_config <- individual_maps_last_configs$industryoperations[[config_key]]
+        current_config_hash <- digest::digest(list(
+          layer = local_config$layer,
+          score = local_config$score,
+          index = local_config$index,
+          aoi_area = input$aoiAreaSelector %||% "all"
+        ))
+        
+        # Only update if configuration has changed OR map doesn't exist yet
+        if(is.null(last_config) || last_config != current_config_hash || 
+           !map_id %in% individual_maps_created$industryoperations) {
+          
+          # Update the map
+          output[[map_id]] <- renderLeaflet({
+            create_individual_map(local_config, aoi_data)
+          })
+          
+          # Store the current configuration hash
+          individual_maps_last_configs$industryoperations[[config_key]] <- current_config_hash
+          
+          # Mark as created if not already tracked
+          if(!map_id %in% individual_maps_created$industryoperations) {
+            individual_maps_created$industryoperations <- c(individual_maps_created$industryoperations, map_id)
+          }
+        }
       })
     }
-  })
+  }, ignoreNULL = FALSE, ignoreInit = FALSE)
   
   # Dynamic sidebar content
   output$dynamicSidebar_natural_resources <- renderUI({

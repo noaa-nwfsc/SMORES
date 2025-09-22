@@ -14,6 +14,9 @@ library(rmarkdown)
 library(viridis)
 library(knitr)
 library(fontawesome)
+library(arrow)
+library(sfarrow)
+library(digest)
 
 # Code to add _brand.yml theming
 theme <- bslib::bs_theme()
@@ -51,6 +54,7 @@ source("R/generate_combined_map_for_method.R")
 source("R/calculate_geometric_mean_combined.R")
 source("R/calculate_lowest_combined.R")
 source("R/calculate_product_combined.R")
+source("R/preprocess_spatial_data.R")
 
 ## Reporting Functions
 source("R/generate_submodel_component_report.R")
@@ -67,66 +71,65 @@ timestamp_info <- get_data_timestamps()
 data_timestamps <- timestamp_info$data_timestamps
 most_recent_update <- timestamp_info$most_recent_update
 
-# Load datasets
+# Load datasets with automatic preprocessing
 #WEA
-AOI <- readRDS("data/WEA.rds")
+AOI <- readRDS_preprocessed("data/WEA.parquet", "AOI")
 
 ## Natural Resources Layers
 
 ### Habitat Layers
-canyon <- readRDS("data/canyon_scored_full.rds")
-DSC_RH <- readRDS("data/DSC_RH_scored_full.rds")
-DSC_RH_z_membership <- readRDS("data/DSC_RH_z_membership_scored_full.rds")
-surveys_fixed <- readRDS("data/Surveys_fixed_scored_full.rds")
-surveys_periodic <- readRDS("data/Surveys_periodic_scored_full.rds")
-seeps <- readRDS("data/Seeps_scored_full.rds")
-shlfbrk <- readRDS("data/ShlfBrk_scored_full.rds")
-efhca <- readRDS("data/EFHCA_scored_full.rds")
-efhca_700 <- readRDS("data/EFHCA_700_scored_full.rds")
-HAPCaoi <- readRDS("data/HAPCaoi_scored_full.rds")
-HAPCreef <- readRDS("data/HAPCreef_scored_full.rds")
+canyon <- readRDS_preprocessed("data/canyon_scored_full.parquet", "Canyon")
+DSC_RH <- readRDS_preprocessed("data/DSC_RH_scored_full.parquet", "DSC_RH")
+DSC_RH_z_membership <- readRDS_preprocessed("data/DSC_RH_z_membership_scored_full.parquet", "DSC_RH_z_membership")
+seeps <- readRDS_preprocessed("data/Seeps_scored_full.parquet", "Seeps")
+shlfbrk <- readRDS_preprocessed("data/ShlfBrk_scored_full.parquet", "Shelf_Break")
+efhca <- readRDS_preprocessed("data/EFHCA_scored_full.parquet", "EFHCA")
+efhca_700 <- readRDS_preprocessed("data/EFHCA_700_scored_full.parquet", "EFHCA_700")
+HAPCaoi <- readRDS_preprocessed("data/HAPCaoi_scored_full.parquet", "HAPC_AOI")
+HAPCreef <- readRDS_preprocessed("data/HAPCreef_scored_full.parquet", "HAPC_Rocky_Reef")
 
 ### Species Layers
-killer_whale <- readRDS("data/killer_whale_scored_full.rds")
-leatherback_turtle <- readRDS("data/leatherback_turtle_scored_full.rds")
-humpback_whale <- readRDS("data/humpback_whale_scored_full.rds")
-blue_whale <- readRDS("data/blue_whale_scored_full.rds")
+killer_whale <- readRDS_preprocessed("data/killer_whale_scored_full.parquet", "Killer_Whale")
+leatherback_turtle <- readRDS_preprocessed("data/leatherback_turtle_scored_full.parquet", "Leatherback_Turtle")
+humpback_whale <- readRDS_preprocessed("data/humpback_whale_scored_full.parquet", "Humpback_Whale")
+blue_whale <- readRDS_preprocessed("data/blue_whale_scored_full.parquet", "Blue_Whale")
 
 ## Fisheries Layers 
-ASH <- readRDS("data/ASH_scored_full.rds")
-ASH_ranked_importance <- readRDS("data/ASH_Ranked_Importance_scored_full.rds")
-SSH <- readRDS("data/SSH_scored_full.rds")
-SSH_ranked_importance <- readRDS("data/SSH_Ranked_Importance_scored_full.rds")
-GFBT <- readRDS("data/GFBT_scored_full.rds")
-GFBT_ranked_importance <- readRDS("data/GFBT_Ranked_Importance_scored_full.rds")
-GFP <- readRDS("data/GFP_scored.rds")
-GFP_ranked_importance <- readRDS("data/GFP_Ranked_Importance_scored_full.rds")
-GFLL <- readRDS("data/GFLL_scored_full.rds")
-GFLL_ranked_importance <- readRDS("data/GFLL_Ranked_Importance_scored_full.rds")
-PS <- readRDS("data/PS_scored_full.rds")
-PS_ranked_importance <- readRDS("data/PS_Ranked_Importance_scored_full.rds")
-CRAB <- readRDS("data/CRAB_scored_full.rds")
-CRAB_ranked_importance <- readRDS("data/CRAB_Ranked_Importance_scored_full.rds")
-ALCO <- readRDS("data/ALCO_scored_full.rds")
-ALCO_ranked_importance <- readRDS("data/ALCO_Ranked_Importance_scored_full.rds")
-ALCH <- readRDS("data/ALCH_scored_full.rds")
-ALCH_ranked_importance <- readRDS("data/ALCH_Ranked_Importance_scored_full.rds")
+ASH <- readRDS_preprocessed("data/ASH_scored_full.parquet", "ASH")
+ASH_ranked_importance <- readRDS_preprocessed("data/ASH_Ranked_Importance_scored_full.parquet", "ASH_ranked_importance")
+SSH <- readRDS_preprocessed("data/SSH_scored_full.parquet", "SSH")
+SSH_ranked_importance <- readRDS_preprocessed("data/SSH_Ranked_Importance_scored_full.parquet", "SSH_ranked_importance")
+GFBT <- readRDS_preprocessed("data/GFBT_scored_full.parquet", "GFBT")
+GFBT_ranked_importance <- readRDS_preprocessed("data/GFBT_Ranked_Importance_scored_full.parquet", "GFBT_ranked_importance")
+GFP <- readRDS_preprocessed("data/GFP_scored.parquet", "GFP")
+GFP_ranked_importance <- readRDS_preprocessed("data/GFP_Ranked_Importance_scored_full.parquet", "GFP_ranked_importance")
+GFLL <- readRDS_preprocessed("data/GFLL_scored_full.parquet", "GFLL")
+GFLL_ranked_importance <- readRDS_preprocessed("data/GFLL_Ranked_Importance_scored_full.parquet", "GFLL_ranked_importance")
+PS <- readRDS_preprocessed("data/PS_scored_full.parquet", "PS")
+PS_ranked_importance <- readRDS_preprocessed("data/PS_Ranked_Importance_scored_full.parquet", "PS_ranked_importance")
+CRAB <- readRDS_preprocessed("data/CRAB_scored_full.parquet", "CRAB")
+CRAB_ranked_importance <- readRDS_preprocessed("data/CRAB_Ranked_Importance_scored_full.parquet", "CRAB_ranked_importance")
+ALCO <- readRDS_preprocessed("data/ALCO_scored_full.parquet", "ALCO")
+ALCO_ranked_importance <- readRDS_preprocessed("data/ALCO_Ranked_Importance_scored_full.parquet", "ALCO_ranked_importance")
+ALCH <- readRDS_preprocessed("data/ALCH_scored_full.parquet", "ALCH")
+ALCH_ranked_importance <- readRDS_preprocessed("data/ALCH_Ranked_Importance_scored_full.parquet", "ALCH_ranked_importance")
 
 ## Trawl Fisheries
-trawl_fisheries <- readRDS("data/trawl_fisheries_scored_full.rds")
+trawl_fisheries <- readRDS_preprocessed("data/trawl_fisheries_scored_full.parquet", "Trawl_Fisheries")
 
 ## Industry & Operations Layers
 
 ### Survey Layers
-surveys_fixed <- readRDS("data/Surveys_fixed_scored_full.rds")
-surveys_periodic <- readRDS("data/Surveys_periodic_scored_full.rds")
+surveys_fixed <- readRDS_preprocessed("data/Surveys_fixed_scored_full.parquet", "Surveys_Fixed")
+surveys_periodic <- readRDS_preprocessed("data/Surveys_periodic_scored_full.parquet", "Surveys_Periodic")
 
 ### Submarine Cable Layers 
-submarine_cable <- readRDS("data/submarine_cable_scored_full.rds")
+submarine_cable <- readRDS_preprocessed("data/submarine_cable_scored_full.parquet", "Submarine_Cable")
 
 ## Grid
-grid_test <- readRDS("data/2km_grid_full.rds")
+grid_test <- readRDS_preprocessed("data/2km_grid_full.parquet", "Grid")
 
+cat("All spatial datasets loaded and preprocessed successfully!\n\n")
 
 ## Natural Resources Submodel
 # Create a list of all datasets

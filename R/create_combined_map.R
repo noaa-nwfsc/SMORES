@@ -9,14 +9,6 @@ create_combined_map <- function(combined_data, map_title, method, aoi_data = NUL
     # No AOI data available
   }
   
-  # Transform AOI data to WGS84 if available and needed
-  if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-    if(!st_is_longlat(aoi_data)) {
-      aoi_data <- st_transform(aoi_data, 4326)
-    }
-    aoi_data <- st_zm(aoi_data)
-  }
-  
   # Calculate map bounds based on AOI if available
   map_bounds <- NULL
   if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
@@ -61,13 +53,6 @@ create_combined_map <- function(combined_data, map_title, method, aoi_data = NUL
     map <- map %>%
       addControl("No data available for combined map", position = "topright")
   } else {
-    
-    # Make sure geometry is set properly for leaflet
-    tryCatch({
-      combined_data <- st_transform(combined_data, '+proj=longlat +datum=WGS84')
-    }, error = function(e) {
-      # Error transforming combined data
-    })
     
     # Get the range of score values - preserve precision for small values
     score_values <- combined_data[[score_column]][!is.na(combined_data[[score_column]])]
