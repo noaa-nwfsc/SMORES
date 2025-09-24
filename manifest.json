@@ -4460,7 +4460,7 @@
   },
   "files": {
     ".RData": {
-      "checksum": "ec5bc6d3e487f3bf59082c79b40814b0"
+      "checksum": "7c6bba54163781d35ab9984dd0854d76"
     },
     ".RDataTmp": {
       "checksum": "d697596f477ad843de1a8bf77e8e5c26"
@@ -4547,7 +4547,7 @@
       "checksum": "b245f2bb2ce63c091a7fd337de448558"
     },
     "data/canyon_scored_full.parquet": {
-      "checksum": "ac2daf9332cba7fea4a6a8d9c951a030"
+      "checksum": "26f96836980268fa3dfafb81a849007a"
     },
     "data/canyon_scored_full.rds": {
       "checksum": "e643ac66e9a31ee97393eebdee77c308"
@@ -4574,7 +4574,7 @@
       "checksum": "78683b85d6bd599dc70def7f040ca30f"
     },
     "data/DSC_RH_scored_full.parquet": {
-      "checksum": "75cfb89dc68c322229be6f30fcc02b7f"
+      "checksum": "9f67e4fa71334b3ae9de0406e722afd1"
     },
     "data/DSC_RH_scored_full.rds": {
       "checksum": "a0f80daa168127c3017e6351469efa3a"
@@ -4583,7 +4583,7 @@
       "checksum": "a9237904114c0f97c2923cec6c1c160e"
     },
     "data/DSC_RH_z_membership_scored_full.parquet": {
-      "checksum": "974de48f1912d52d3be27dcae4bddcb4"
+      "checksum": "e45bad4ad47194ffb5d33fb0f6f3f965"
     },
     "data/DSC_RH_z_membership_scored_full.rds": {
       "checksum": "793d69c38bf70ca2831642a964b8c58b"
@@ -4724,7 +4724,7 @@
       "checksum": "18ebdc045bf34895047faf854776c3b4"
     },
     "data/Seeps_scored_full.parquet": {
-      "checksum": "194272d3a815ee666937490f6ad0462b"
+      "checksum": "f69578960e8e1972ebc603f7a4450615"
     },
     "data/Seeps_scored_full.rds": {
       "checksum": "3deec1cd6582cacc1baa030a81f6efd9"
@@ -4733,7 +4733,7 @@
       "checksum": "1225b4fefb91898e2676a3d0f07f21b3"
     },
     "data/ShlfBrk_scored_full.parquet": {
-      "checksum": "144702643616fe301453905915641500"
+      "checksum": "2fa39a52a5d528679368040d9cff60fd"
     },
     "data/ShlfBrk_scored_full.rds": {
       "checksum": "97ba6a05983aa72dfc53921208ad8217"
@@ -4760,16 +4760,16 @@
       "checksum": "5ec7ebb06d0a5f7618dd5f717f0ca892"
     },
     "data/submarine_cable_scored_full.parquet": {
-      "checksum": "8bed7e469c4a8c129efff83b1a8b8150"
+      "checksum": "1e9e3dfa35fbf699a7a8bbbbacb05d4f"
     },
     "data/submarine_cable_scored_full.rds": {
-      "checksum": "4ea643dd031c2d668a99ee43559bca7a"
+      "checksum": "1d97863e78b413d9916e2f343cb6434d"
     },
     "data/Surveys_fixed_scored.rds": {
       "checksum": "8464c0460c2b612801312292fb6eeda2"
     },
     "data/Surveys_fixed_scored_full.parquet": {
-      "checksum": "16a58ed3ef43889e1e8e25c090a78ad3"
+      "checksum": "ede5d41f61d0bbc514b7cf55295de6f2"
     },
     "data/Surveys_fixed_scored_full.rds": {
       "checksum": "e2ecb9e4e48dc34e57ed7fa194a8a6a7"
@@ -4778,10 +4778,10 @@
       "checksum": "09476e4641bbfeaf7c42ec9064080aea"
     },
     "data/Surveys_periodic_scored_full.parquet": {
-      "checksum": "c4af180ac2c204bbf6c30f8e52439f32"
+      "checksum": "bcb51a0c0faf31f3fdefc3c9e7e23f18"
     },
     "data/Surveys_periodic_scored_full.rds": {
-      "checksum": "eac7d59e00976690768223d4f12456c8"
+      "checksum": "9f034a6ab297e8afee665bf5b4330cf7"
     },
     "data/trawl_fisheries_scored.rds": {
       "checksum": "8dbbf11c7dd9cfa4ade03ceb05ac928b"
@@ -4799,7 +4799,7 @@
       "checksum": "49d0d124d8d194f5237c06d2604b5562"
     },
     "data_production.R": {
-      "checksum": "e036d882d4691ca2c09663ad4612e362"
+      "checksum": "186c22a97bfe38296ebb60e4a3456dce"
     },
     "Full_Model_Report_Template.Rmd": {
       "checksum": "5f356e2c8743b8c38334b65047af0a75"
