@@ -669,13 +669,10 @@
 #                 or status = 'Under Construction'") %>%
 #   st_transform(crsOut)
 # 
-# # submarine_cable_buffer_500 <- nms_layer %>%
-# #   st_buffer(dist = 500)
-# # submarine_cable_buffer_1000 <- nms_layer %>%
-# #   st_buffer(dist = 1000)
-# # submarine_cable_buffer_501_1000 <- st_difference(submarine_cable_buffer_1000, submarine_cable_buffer_500)
+# st_is_valid(nms_layer, reason = TRUE)
+# nms_layer2 <- st_make_valid(nms_layer)
 # 
-# submarine_cable.grid <- sf::st_intersection(nms_layer, grid_test) %>%
+# submarine_cable.grid <- sf::st_intersection(nms_layer2, grid_test) %>%
 #   mutate(Score.submarine_cable = 0) %>%
 #   mutate(area.part = st_area(.)) %>%
 #   group_by(CellID_2km) %>% #use for 2km grid
@@ -710,7 +707,7 @@
 # st_write_parquet(submarine_cable_scored_long, "C:\\GitHub\\SMORES\\data\\submarine_cable_scored_full.parquet")
 # 
 # #Fisheries data
-# # appears to be for just Coos Bay + Brookings
+# # for just Coos Bay + Brookings
 # 
 # #At-Sea hake mid-water trawl = ASH_RI in fisheries dataset
 # ASH <- Fisheries %>%
@@ -883,7 +880,11 @@
 # 
 # # Pink shrimp trawl = PS_RI in fisheries dataset
 # PS <- Fisheries %>%
-#   select(PS_RI)
+#   select(PS_RI) %>% 
+#   sf::st_transform('+proj=longlat +datum=WGS84')
+# 
+# st_crs(PS)
+# st_crs(grid_test)
 # PS.grid_RI <- sf::st_intersection(PS, grid_test) %>%
 #   mutate(Score.PS_Ranked_Importance = PS_RI) %>%
 #   mutate(area.part = st_area(.)) %>%
