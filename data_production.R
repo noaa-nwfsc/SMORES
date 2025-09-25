@@ -46,8 +46,10 @@
 # 
 # Fisheries <- sf::st_read("G:\\My Drive\\SMORES\\NCCOSfisherieslayers20250815081621\\Non-Confidential_NMFS_fisheries_submodel_data_2km_grid.shp") %>%
 #   st_transform(crsOut)
-# Trawl_Fisheries <- sf::st_read("G:\\My Drive\\SMORES\\Scenario_4_trawl_polygon\\Scenario_4_trawl_polygon.shp") %>%
-#   st_transform(crsOut)
+# Trawl_Fisheries <- sf::st_read("G:\\My Drive\\SMORES\\Scenario_4_trawl_polygon\\Scenario_4_trawl_polygon.shp") 
+# trawl_fisheries_transformed <- Trawl_Fisheries %>% 
+#   st_transform(crs = crsOut)
+# st_crs(trawl_fisheries_transformed)
 # 
 # # #area of Interest for analysis - this is the area that data will be cropped and summarized across
 # # #for Northern CA analysis:
@@ -62,6 +64,7 @@
 # # saveRDS(grd.norcal, "C:\\GitHub\\SMORES\\data\\2km_grid_norcal.rds")
 # 
 # grid_test <- grid.2km
+# st_crs(grid_test)
 # 
 # #NCCOS values to run in modeling
 # HAPC.RR.Score = 0.001
@@ -1017,7 +1020,7 @@
 # st_write_parquet(ALCH_scored, "C:\\GitHub\\SMORES\\data\\ALCH_scored_full.parquet")
 # 
 # # Trawl Fisheries
-# trawl_fisheries <- Trawl_Fisheries %>%
+# trawl_fisheries <- trawl_fisheries_transformed %>%
 #   sf::st_intersection(grid_test) %>%
 #   mutate(Score.Trawl_Fisheries = FID) %>%
 #   mutate(Score.Trawl_Fisheries = 0.001) %>%
@@ -1028,7 +1031,35 @@
 #   filter(!is.na(Score.Trawl_Fisheries)) %>%
 #   sf::st_transform('+proj=longlat +datum=WGS84')
 # 
-# st_crs(DSC_RH_scored_long) == st_crs(trawl_fisheries)
+# # returns FALSE
+# any(st_is_empty(trawl_fisheries))
+# # returns FALSE
+# any(st_is_empty(Trawl_Fisheries))
+# # returns [1] GEOMETRY
+# st_geometry_type(trawl_fisheries, by_geometry = FALSE)
+# # GEOMETRYCOLLECTION at row 310
+# st_geometry_type(trawl_fisheries)
+# 
+# # let's plot it to see what we are looking at
+# geometrycollection <- trawl_fisheries[310, ]
+# test <- trawl_fisheries[309, ]
+# 
+# plot(geometrycollection)
+# plot(test)
+# plot(trawl_fisheries, reset = FALSE)
+# plot(geometrycollection, col = "red", add=TRUE)
+# 
+# geometry_collection_extract <- st_collection_extract(geometrycollection, type = "POLYGON")
+# plot(geometry_collection_extract, col = "pink", add=TRUE)
+# 
+# intersection <- st_intersects(geometrycollection, geometry_collection_extract)
+# plot(intersection, col = "red")
+# 
+# trawl_fisheries[310, ] <- geometry_collection_extract[1, ]
+# 
+# # check for row 310 to see if index replacement worked
+# st_geometry_type(trawl_fisheries)
+# 
 # saveRDS(trawl_fisheries, "C:\\GitHub\\SMORES\\data\\trawl_fisheries_scored_full.rds")
 # st_write_parquet(trawl_fisheries, "C:\\GitHub\\SMORES\\data\\trawl_fisheries_scored_full.parquet")
 # 
