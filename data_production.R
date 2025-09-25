@@ -577,10 +577,10 @@
 # # TopologyException: side location conflict at 92746.754168340936 936246.12987604213. This can occur if the input geometry is invalid.
 # 
 # # returns false for row 5 and 17 of data
-# st_is_valid(humpback_whale)
+# # st_is_valid(humpback_whale)
 # 
 # # returns that the two false rows have a self-intersection [92746.7541682779 936246.129876046]
-# st_is_valid(humpback_whale, reason = TRUE)
+# # st_is_valid(humpback_whale, reason = TRUE)
 # 
 # # suggestion is to apply a buffer of 0 to force the creation of a new geometry -> stack overflow article https://stackoverflow.com/questions/66584191/sfst-intersection-virtually-random-error-action
 # humpback_whale_buffer <- humpback_whale %>%
@@ -636,6 +636,7 @@
 #   #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
 #   slice_max(area.part, n = 1) %>%
 #   select(CellID_2km, Score.blue_whale) #use for 2km grid
+# 
 # blue_whale_score <- blue_whale.grid %>% #no duplicates
 #   st_drop_geometry() %>%
 #   group_by(CellID_2km) %>%
