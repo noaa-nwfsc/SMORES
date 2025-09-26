@@ -129,8 +129,6 @@ submarine_cable <- readRDS_preprocessed("data/submarine_cable_scored_full.parque
 ## Grid
 grid_test <- readRDS_preprocessed("data/2km_grid_full.parquet", "Grid")
 
-cat("All spatial datasets loaded and preprocessed successfully!\n\n")
-
 ## Natural Resources Submodel
 # Create a list of all datasets
 habitat_layer <- list(
