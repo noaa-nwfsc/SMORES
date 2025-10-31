@@ -4460,7 +4460,7 @@
   },
   "files": {
     ".RData": {
-      "checksum": "7c6bba54163781d35ab9984dd0854d76"
+      "checksum": "6d9aa9cc8617430f2afc2cd0dfcc430c"
     },
     ".RDataTmp": {
       "checksum": "d697596f477ad843de1a8bf77e8e5c26"
@@ -4474,9 +4474,6 @@
     "data/2km_grid_full.parquet": {
       "checksum": "49f56798f28ffc19efc7932e06e39ffa"
     },
-    "data/2km_grid_full.rds": {
-      "checksum": "a2abe9b395e286e79c8707ec0e9b3d39"
-    },
     "data/2km_grid_norcal.rds": {
       "checksum": "13160464f0487034ae15ef4405f65c20"
     },
@@ -4486,17 +4483,11 @@
     "data/ALCH_Ranked_Importance_scored_full.parquet": {
       "checksum": "d19ac9c3138681c91887b38004ab4aef"
     },
-    "data/ALCH_Ranked_Importance_scored_full.rds": {
-      "checksum": "a2d1a569893d9938ff70e2fd4d9d2ed0"
-    },
     "data/ALCH_scored.rds": {
       "checksum": "9f4e308bd80e0e7f23a8a141c4a86911"
     },
     "data/ALCH_scored_full.parquet": {
       "checksum": "470e7036c88c00e215cdd455665b12f6"
-    },
-    "data/ALCH_scored_full.rds": {
-      "checksum": "6812cb1b4338fffbc89a8946a41abae8"
     },
     "data/ALCO_Ranked_Importance_scored.rds": {
       "checksum": "5a692a6529ecc3b8f032f7d634882515"
@@ -4504,17 +4495,11 @@
     "data/ALCO_Ranked_Importance_scored_full.parquet": {
       "checksum": "e20f42e6da19bad902b6efe4a08dc5b9"
     },
-    "data/ALCO_Ranked_Importance_scored_full.rds": {
-      "checksum": "f06c368f329513930c8873baa06cff78"
-    },
     "data/ALCO_scored.rds": {
       "checksum": "b31ad77be46ab2e70071f75f75cd542f"
     },
     "data/ALCO_scored_full.parquet": {
       "checksum": "a945715e41c837d992d3e703e4769a24"
-    },
-    "data/ALCO_scored_full.rds": {
-      "checksum": "c3ae0eec2e38b9e93acbdf6a3620911a"
     },
     "data/ASH_Ranked_Importance_scored.rds": {
       "checksum": "f314b4474a72c7812be0b22ffb8f3b87"
@@ -4522,17 +4507,11 @@
     "data/ASH_Ranked_Importance_scored_full.parquet": {
       "checksum": "bac94d1a9ef3910d1cad636cd19e94d0"
     },
-    "data/ASH_Ranked_Importance_scored_full.rds": {
-      "checksum": "99b19270c24775ac3e9176baead56f5a"
-    },
     "data/ASH_scored.rds": {
       "checksum": "cfdc9b25d4475a19f57d969d95e5edbc"
     },
     "data/ASH_scored_full.parquet": {
       "checksum": "979c66107a78fc0dc9d28451d2e49152"
-    },
-    "data/ASH_scored_full.rds": {
-      "checksum": "f11590c0d701878d344a863eb6ff3d75"
     },
     "data/blue_whale_scored.rds": {
       "checksum": "62c2d76dde8b7d1c43b05a1107ac219f"
@@ -4540,17 +4519,11 @@
     "data/blue_whale_scored_full.parquet": {
       "checksum": "de40fd02eae8979dc86b2f6dca204a34"
     },
-    "data/blue_whale_scored_full.rds": {
-      "checksum": "4ba1d7be4e9e9447ce717890a17a23f1"
-    },
     "data/canyon_scored.rds": {
       "checksum": "b245f2bb2ce63c091a7fd337de448558"
     },
     "data/canyon_scored_full.parquet": {
       "checksum": "26f96836980268fa3dfafb81a849007a"
-    },
-    "data/canyon_scored_full.rds": {
-      "checksum": "e643ac66e9a31ee97393eebdee77c308"
     },
     "data/CRAB_Ranked_Importance_scored.rds": {
       "checksum": "fde2c6b379cb7250afcadf1959faadb3"
@@ -4558,17 +4531,11 @@
     "data/CRAB_Ranked_Importance_scored_full.parquet": {
       "checksum": "d19eead873eb0d36ba375628b3d3ca68"
     },
-    "data/CRAB_Ranked_Importance_scored_full.rds": {
-      "checksum": "13775222222792584e9f970e457f07a0"
-    },
     "data/CRAB_scored.rds": {
       "checksum": "976f27acd4b7a3d484dba5b6544d5d80"
     },
     "data/CRAB_scored_full.parquet": {
       "checksum": "8779f5b665d19c5337ef9fa0297e0158"
-    },
-    "data/CRAB_scored_full.rds": {
-      "checksum": "7b04ca6ca409ce2a067a599da0a19372"
     },
     "data/DSC_RH_scored.rds": {
       "checksum": "78683b85d6bd599dc70def7f040ca30f"
@@ -4576,23 +4543,17 @@
     "data/DSC_RH_scored_full.parquet": {
       "checksum": "9f67e4fa71334b3ae9de0406e722afd1"
     },
-    "data/DSC_RH_scored_full.rds": {
-      "checksum": "a0f80daa168127c3017e6351469efa3a"
-    },
     "data/DSC_RH_z_membership_scored.rds": {
       "checksum": "a9237904114c0f97c2923cec6c1c160e"
     },
     "data/DSC_RH_z_membership_scored_full.parquet": {
       "checksum": "e45bad4ad47194ffb5d33fb0f6f3f965"
     },
-    "data/DSC_RH_z_membership_scored_full.rds": {
-      "checksum": "793d69c38bf70ca2831642a964b8c58b"
-    },
     "data/EFHCA_700_scored.rds": {
       "checksum": "6ee00630b0bc145c4bcad2f435122349"
     },
     "data/EFHCA_700_scored_full.parquet": {
-      "checksum": "00a9e84936c2e329c3e5de7a585e6642"
+      "checksum": "6b49b2dc171f2a680faf7c1fe61d22b4"
     },
     "data/EFHCA_700_scored_full.rds": {
       "checksum": "5982f515bcf2d8bf40de3be2da13851e"
@@ -4601,7 +4562,7 @@
       "checksum": "caf4886210c9fe3e8bbe97141e689cdd"
     },
     "data/EFHCA_scored_full.parquet": {
-      "checksum": "fef6d7961315bc4d7594816c129cc8dc"
+      "checksum": "c561ea9aad8631752bbfbeadda47d5f2"
     },
     "data/EFHCA_scored_full.rds": {
       "checksum": "38ea1446d836f53cd3d6e4db27056916"
@@ -4612,17 +4573,11 @@
     "data/GFBT_Ranked_Importance_scored_full.parquet": {
       "checksum": "370d2d6b7cebd6cac21979b6f4db156a"
     },
-    "data/GFBT_Ranked_Importance_scored_full.rds": {
-      "checksum": "9c5a74eb9ff1abc56fd130c5a790e49f"
-    },
     "data/GFBT_scored.rds": {
       "checksum": "c0bacac8fac3840d9b4d523ffb2e98ff"
     },
     "data/GFBT_scored_full.parquet": {
       "checksum": "55b7e6e41c6cc18ecce63f491c1901e6"
-    },
-    "data/GFBT_scored_full.rds": {
-      "checksum": "bfea578aa139ece6aa5c7da1562ed2f6"
     },
     "data/GFLL_Ranked_Importance_scored.rds": {
       "checksum": "d7828b8e161ff993b39bf6de3f656eb1"
@@ -4630,17 +4585,11 @@
     "data/GFLL_Ranked_Importance_scored_full.parquet": {
       "checksum": "12bbc91269f0f9f680f1896b7823d3c0"
     },
-    "data/GFLL_Ranked_Importance_scored_full.rds": {
-      "checksum": "d0e7de7816108477e056c5ee470c1588"
-    },
     "data/GFLL_scored.rds": {
       "checksum": "141507f46d47e4ba058a21f3c940e068"
     },
     "data/GFLL_scored_full.parquet": {
       "checksum": "fd2009e254db541df3a424396eef0b0c"
-    },
-    "data/GFLL_scored_full.rds": {
-      "checksum": "5ee5c681b8e054447fbb64866d287d5c"
     },
     "data/GFP_Ranked_Importance_scored.rds": {
       "checksum": "cddc563743e230b9490b45bcfe5aa7b1"
@@ -4648,35 +4597,23 @@
     "data/GFP_Ranked_Importance_scored_full.parquet": {
       "checksum": "5b36f44ab4c544f6580c6611dbc47556"
     },
-    "data/GFP_Ranked_Importance_scored_full.rds": {
-      "checksum": "b3cd1f04351c16209fa86f0c14ca72b2"
-    },
     "data/GFP_scored.rds": {
       "checksum": "3b9fb641f9208df90ebb340b19312eaf"
     },
     "data/GFP_scored_full.parquet": {
       "checksum": "90d9bd6b996cbe8b0a00ec5f70d7c4c4"
     },
-    "data/GFP_scored_full.rds": {
-      "checksum": "de0389db588be00ced9c58f4dc1aff55"
-    },
     "data/HAPCaoi_scored.rds": {
       "checksum": "63f6ebb1d08c600cfa53ce04345000e6"
     },
     "data/HAPCaoi_scored_full.parquet": {
-      "checksum": "8977f2959f811eb3bc1f879f64296a94"
-    },
-    "data/HAPCaoi_scored_full.rds": {
-      "checksum": "6b1efaa6d22769960bb565da7a7a64b0"
+      "checksum": "55ef73620f42088398e2f251f7f6ed12"
     },
     "data/HAPCreef_scored.rds": {
       "checksum": "29f20722eb793b2f3e57402a68cdf7d6"
     },
     "data/HAPCreef_scored_full.parquet": {
-      "checksum": "404cb06c2f5351a3f011652e132953cc"
-    },
-    "data/HAPCreef_scored_full.rds": {
-      "checksum": "29f20722eb793b2f3e57402a68cdf7d6"
+      "checksum": "57963a395610cf209da6557e0ddc1773"
     },
     "data/humpback_whale_scored.rds": {
       "checksum": "c034eaeae9aee83464b1a9297e7cb9da"
@@ -4684,17 +4621,11 @@
     "data/humpback_whale_scored_full.parquet": {
       "checksum": "c425667d0af637b3fea0b3111ae6f493"
     },
-    "data/humpback_whale_scored_full.rds": {
-      "checksum": "17d3bea2b56da046e2a3a83bbf43212f"
-    },
     "data/killer_whale_scored.rds": {
       "checksum": "5123828c00fde946fed3da742c4912bf"
     },
     "data/killer_whale_scored_full.parquet": {
       "checksum": "244c45d0ed29e942a73c65cbe27cb4cf"
-    },
-    "data/killer_whale_scored_full.rds": {
-      "checksum": "be5394e2af202ad4e712a95ab86b47c5"
     },
     "data/leatherback_turtle_scored.rds": {
       "checksum": "dbdc55aa61443ad902932c60da5ba3b9"
@@ -4702,17 +4633,11 @@
     "data/leatherback_turtle_scored_full.parquet": {
       "checksum": "fad00f4ece86990786726b64ee5096b7"
     },
-    "data/leatherback_turtle_scored_full.rds": {
-      "checksum": "1e8b627131d12a08506fe513ece4ace9"
-    },
     "data/PS_Ranked_Importance_scored.rds": {
       "checksum": "ee7cd2e98084a2585313e4640c84b864"
     },
     "data/PS_Ranked_Importance_scored_full.parquet": {
       "checksum": "ebb2e1c8a2b04f3b65a975dbc0e326c7"
-    },
-    "data/PS_Ranked_Importance_scored_full.rds": {
-      "checksum": "7cf6adad95791cc57b0ec79933962390"
     },
     "data/PS_scored.rds": {
       "checksum": "d0e38a0f4789862c78ee1c95a54886b1"
@@ -4720,17 +4645,11 @@
     "data/PS_scored_full.parquet": {
       "checksum": "7dcaca27a5be3d1678351a3ae19e2336"
     },
-    "data/PS_scored_full.rds": {
-      "checksum": "248d5066e6330fec92d79dc57f878603"
-    },
     "data/Seeps_scored.rds": {
       "checksum": "18ebdc045bf34895047faf854776c3b4"
     },
     "data/Seeps_scored_full.parquet": {
       "checksum": "f69578960e8e1972ebc603f7a4450615"
-    },
-    "data/Seeps_scored_full.rds": {
-      "checksum": "3deec1cd6582cacc1baa030a81f6efd9"
     },
     "data/ShlfBrk_scored.rds": {
       "checksum": "1225b4fefb91898e2676a3d0f07f21b3"
@@ -4738,17 +4657,11 @@
     "data/ShlfBrk_scored_full.parquet": {
       "checksum": "2fa39a52a5d528679368040d9cff60fd"
     },
-    "data/ShlfBrk_scored_full.rds": {
-      "checksum": "97ba6a05983aa72dfc53921208ad8217"
-    },
     "data/SSH_Ranked_Importance_scored.rds": {
       "checksum": "e781b6f1ae38cd8d4924afc9a01fc61f"
     },
     "data/SSH_Ranked_Importance_scored_full.parquet": {
       "checksum": "d43690aee83608bbd43736dd85b9bbb8"
-    },
-    "data/SSH_Ranked_Importance_scored_full.rds": {
-      "checksum": "e11e6da4062a54ff5339f1a57dda9165"
     },
     "data/SSH_scored.rds": {
       "checksum": "4b5e045e8fd4917a4d4b60f52f33c046"
@@ -4756,17 +4669,11 @@
     "data/SSH_scored_full.parquet": {
       "checksum": "cd3ed45aa265343af51633fb5103a071"
     },
-    "data/SSH_scored_full.rds": {
-      "checksum": "4281d8e980674a65d56a52d61ff4cdee"
-    },
     "data/submarine_cable_scored.rds": {
       "checksum": "5ec7ebb06d0a5f7618dd5f717f0ca892"
     },
     "data/submarine_cable_scored_full.parquet": {
       "checksum": "1e9e3dfa35fbf699a7a8bbbbacb05d4f"
-    },
-    "data/submarine_cable_scored_full.rds": {
-      "checksum": "1d97863e78b413d9916e2f343cb6434d"
     },
     "data/Surveys_fixed_scored.rds": {
       "checksum": "8464c0460c2b612801312292fb6eeda2"
@@ -4774,26 +4681,17 @@
     "data/Surveys_fixed_scored_full.parquet": {
       "checksum": "ede5d41f61d0bbc514b7cf55295de6f2"
     },
-    "data/Surveys_fixed_scored_full.rds": {
-      "checksum": "e2ecb9e4e48dc34e57ed7fa194a8a6a7"
-    },
     "data/Surveys_periodic_scored.rds": {
       "checksum": "09476e4641bbfeaf7c42ec9064080aea"
     },
     "data/Surveys_periodic_scored_full.parquet": {
-      "checksum": "bcb51a0c0faf31f3fdefc3c9e7e23f18"
-    },
-    "data/Surveys_periodic_scored_full.rds": {
-      "checksum": "9f034a6ab297e8afee665bf5b4330cf7"
+      "checksum": "d7b909715cf4d342ff28bc81d789d748"
     },
     "data/trawl_fisheries_scored.rds": {
       "checksum": "8dbbf11c7dd9cfa4ade03ceb05ac928b"
     },
     "data/trawl_fisheries_scored_full.parquet": {
-      "checksum": "0d6a97aa6ef465e9b95f56905019f01f"
-    },
-    "data/trawl_fisheries_scored_full.rds": {
-      "checksum": "e573b8fe20b6471d97b048cf1e42a85d"
+      "checksum": "23bb956f4f83ca9a92527081e107c94a"
     },
     "data/WEA.parquet": {
       "checksum": "44235dcd2d15b9a6532e57edc7ff04d6"
@@ -4802,13 +4700,13 @@
       "checksum": "49d0d124d8d194f5237c06d2604b5562"
     },
     "data_production.R": {
-      "checksum": "4e8bdfb1e345815df3637187f0cac967"
+      "checksum": "eb30930b00d7e7c2f555825eaf6036e6"
     },
     "Full_Model_Report_Template.Rmd": {
       "checksum": "5f356e2c8743b8c38334b65047af0a75"
     },
     "global.R": {
-      "checksum": "7c2facb9137096231518f13c45add1d3"
+      "checksum": "1207fd8dae5ff637e58c646d783b66f0"
     },
     "LICENSE": {
       "checksum": "d229da563da18fe5d58cd95a6467d584"
