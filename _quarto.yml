@@ -2,13 +2,21 @@ project:
   type: website
 
 website:
-  title: "quarto_site"
+  title: "SMORES Documentation"
+  search: true
   navbar:
     left:
       - href: index.qmd
         text: Home
-      - about.qmd
-      - 
+      - Access.qmd
+      - GUI.qmd
+      - text: Methods
+        menu: 
+          - Methods.qmd
+          - Functions.qmd
+      - Data.qmd
+  page-footer: 
+    right: Made with [Quarto](https://quarto.org/)
 
 format:
   html:

@@ -1,7 +1,29 @@
 ---
-title: "quarto_site"
+title: ""
 ---
 
-This is a Quarto website.
+Welcome to the documentation guide for the SMORES Shiny App. 
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+![](www/Images/SMORES_opener.png)
+
+# What does SMORES stand for anyway?
+
+SMORES is an acronym for the Suitability Modeling for Offshore Resources and Energy Siting Shiny Application.
+
+# Who is SMORES built for?
+
+SMORES was built for NOAA NMFS teams to be able to use as a fast and interactive tester for scenarios provided to BOEM during the energy use area siting process. The most recent example of this was when the West Coast NOAA offices were working together on the Oregon wind energy areas.
+
+Previously, teams worked relatively separately and would have a hard time quickly seeing how their scores would be impacted when combined with other teams (ie. protected habitat and industry). SMORES allows teams to enter their scores and see how the model would run when combined with other sets of scores.
+
+# Where does SMORES live?
+
+The SMORES Shiny Application was built in RStudio and is hosted on the NOAA NWFSC Github Enterprise account. The Application is also available on the Posit Connect Test Instance. For more information about accessing the SMORES app please visit the SMORES Access Guide page. 
+
+# How do I report issues or bugs in the app?
+
+To report any issues or bugs within the code please create an issue on the Github repository. The issues for this repository can be found [here](https://github.com/noaa-nwfsc/SMORES/issues).
+
+# Disclaimer
+
+This application is a scientific product and is not official communication of the National Oceanic and Atmospheric Administration, or the United States Department of Commerce. All NOAA GitHub project code is provided on an ‘as is’ basis and the user assumes responsibility for its use. Any claims against the Department of Commerce or Department of Commerce bureaus stemming from the use of this GitHub project will be governed by all applicable Federal law. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by the Department of Commerce. The Department of Commerce seal and logo, or the seal and logo of a DOC bureau, shall not be used in any manner to imply endorsement of any commercial product or activity by DOC or the United States Government.
