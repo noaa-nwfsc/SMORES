@@ -3,3 +3,54 @@ title: " SMORES Functions"
 format: html
 ---
 
+The SMORES app uses a variety of custom functions to create a model run. Some of these functions are for the structure of the Shiny App while others focus on the methods to combine layers, calculate combined scores, or generate maps. The purpose of this page is to provide an overview of the different functions and where this function is stored should you have questions regarding the underlying processes used to create a visualization or a model run. 
+
+## Functions used for Mapping and Aesthetics:
+
+#### create_individual_map()
+
+#### create_combined_map()
+
+#### filter_by_score()
+
+#### calculate_submodel_geometric_mean()
+
+#### create_continuous_palette()
+
+#### check_submodel_status()
+
+#### submodel_configurations()
+
+#### create_combined_submodel_map()
+
+#### create_aoi_cropped_map()
+
+#### create_full_model_map()
+
+#### submodel_status_display()
+
+#### apply_calculation_method()
+
+#### make_combined_map_dataset()
+
+#### generate_combined_map_for_method()
+
+#### calculate_geometric_mean_combined()
+
+#### calculate_lowest_combined()
+
+#### calculate_product_combined()
+
+## Functions used for data:
+
+#### data_timestamps()
+
+#### filtered_data_timestamps()
+
+## Functions used for generating reports:
+
+#### generate_submodel_component_report()
+
+#### generate_submodel_combined_report()
+
+#### generate_full_model_report()
