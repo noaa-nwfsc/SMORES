@@ -137,10 +137,7 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#functions-used-for-mapping-and-aesthetics" id="toc-functions-used-for-mapping-and-aesthetics" class="nav-link active" data-scroll-target="#functions-used-for-mapping-and-aesthetics">Functions used for Mapping and Aesthetics:</a></li>
   <li><a href="#functions-used-for-data" id="toc-functions-used-for-data" class="nav-link" data-scroll-target="#functions-used-for-data">Functions used for data:</a></li>
-  <li><a href="#functions-used-for-generating-reports" id="toc-functions-used-for-generating-reports" class="nav-link" data-scroll-target="#functions-used-for-generating-reports">Functions used for generating reports:</a>
-  <ul class="collapse">
-  <li><a href="#generate_submodel_component_report" id="toc-generate_submodel_component_report" class="nav-link" data-scroll-target="#generate_submodel_component_report">generate_submodel_component_report()</a></li>
-  </ul></li>
+  <li><a href="#functions-used-for-generating-reports" id="toc-functions-used-for-generating-reports" class="nav-link" data-scroll-target="#functions-used-for-generating-reports">Functions used for generating reports:</a></li>
   </ul>
 </nav>
     </div>
@@ -169,41 +166,79 @@ ul.task-list li input[type="checkbox"] {
 <p>The SMORES app uses a variety of custom functions to create a model run. Some of these functions are for the structure of the Shiny App while others focus on the methods to combine layers, calculate combined scores, or generate maps. The purpose of this page is to provide an overview of the different functions and where this function is stored should you have questions regarding the underlying processes used to create a visualization or a model run.</p>
 <section id="functions-used-for-mapping-and-aesthetics" class="level2">
 <h2 class="anchored" data-anchor-id="functions-used-for-mapping-and-aesthetics">Functions used for Mapping and Aesthetics:</h2>
-<p>create_individual_map()</p>
-<p>create_combined_map()</p>
-<p>filter_by_score()</p>
-<p>calculate_submodel_geometric_mean()</p>
-<p>create_continuous_palette()</p>
-<p>check_submodel_status()</p>
-<p>submodel_configurations()</p>
-<p>create_combined_submodel_map()</p>
-<p>create_aoi_cropped_map()</p>
-<p>create_full_model_map()</p>
-<p>submodel_status_display()</p>
-<p>apply_calculation_method()</p>
-<p>make_combined_map_dataset()</p>
-<p>generate_combined_map_for_method()</p>
-<p>calculate_geometric_mean_combined()</p>
-<p>calculate_lowest_combined()</p>
-<p>calculate_product_combined()</p>
+<section id="filter_by_score" class="level4">
+<h4 class="anchored" data-anchor-id="filter_by_score">filter_by_score()</h4>
+</section>
+<section id="calculate_submodel_geometric_mean" class="level4">
+<h4 class="anchored" data-anchor-id="calculate_submodel_geometric_mean">calculate_submodel_geometric_mean()</h4>
+</section>
+<section id="create_continuous_palette" class="level4">
+<h4 class="anchored" data-anchor-id="create_continuous_palette">create_continuous_palette()</h4>
+</section>
+<section id="check_submodel_status" class="level4">
+<h4 class="anchored" data-anchor-id="check_submodel_status">check_submodel_status()</h4>
+</section>
+<section id="submodel_configurations" class="level4">
+<h4 class="anchored" data-anchor-id="submodel_configurations">submodel_configurations()</h4>
+</section>
+<section id="create_combined_submodel_map" class="level4">
+<h4 class="anchored" data-anchor-id="create_combined_submodel_map">create_combined_submodel_map()</h4>
+</section>
+<section id="create_aoi_cropped_map" class="level4">
+<h4 class="anchored" data-anchor-id="create_aoi_cropped_map">create_aoi_cropped_map()</h4>
+</section>
+<section id="create_full_model_map" class="level4">
+<h4 class="anchored" data-anchor-id="create_full_model_map">create_full_model_map()</h4>
+</section>
+<section id="submodel_status_display" class="level4">
+<h4 class="anchored" data-anchor-id="submodel_status_display">submodel_status_display()</h4>
+</section>
+<section id="apply_calculation_method" class="level4">
+<h4 class="anchored" data-anchor-id="apply_calculation_method">apply_calculation_method()</h4>
+</section>
+<section id="make_combined_map_dataset" class="level4">
+<h4 class="anchored" data-anchor-id="make_combined_map_dataset">make_combined_map_dataset()</h4>
+</section>
+<section id="generate_combined_map_for_method" class="level4">
+<h4 class="anchored" data-anchor-id="generate_combined_map_for_method">generate_combined_map_for_method()</h4>
+</section>
+<section id="calculate_geometric_mean_combined" class="level4">
+<h4 class="anchored" data-anchor-id="calculate_geometric_mean_combined">calculate_geometric_mean_combined()</h4>
+</section>
+<section id="calculate_lowest_combined" class="level4">
+<h4 class="anchored" data-anchor-id="calculate_lowest_combined">calculate_lowest_combined()</h4>
+</section>
+<section id="calculate_product_combined" class="level4">
+<h4 class="anchored" data-anchor-id="calculate_product_combined">calculate_product_combined()</h4>
+</section>
+<section id="create_individual_map" class="level4">
+<h4 class="anchored" data-anchor-id="create_individual_map">create_individual_map()</h4>
+</section>
+<section id="create_combined_map" class="level4">
+<h4 class="anchored" data-anchor-id="create_combined_map">create_combined_map()</h4>
+</section>
 </section>
 <section id="functions-used-for-data" class="level2">
 <h2 class="anchored" data-anchor-id="functions-used-for-data">Functions used for data:</h2>
-<p>data_timestamps()</p>
-<p>filtered_data_timestamps()</p>
+<section id="data_timestamps" class="level4">
+<h4 class="anchored" data-anchor-id="data_timestamps">data_timestamps()</h4>
+</section>
+<section id="filtered_data_timestamps" class="level4">
+<h4 class="anchored" data-anchor-id="filtered_data_timestamps">filtered_data_timestamps()</h4>
+</section>
 </section>
 <section id="functions-used-for-generating-reports" class="level2">
 <h2 class="anchored" data-anchor-id="functions-used-for-generating-reports">Functions used for generating reports:</h2>
-<section id="generate_submodel_component_report" class="level3">
-<h3 class="anchored" data-anchor-id="generate_submodel_component_report">generate_submodel_component_report()</h3>
+<section id="generate_submodel_component_report" class="level4">
+<h4 class="anchored" data-anchor-id="generate_submodel_component_report">generate_submodel_component_report()</h4>
+</section>
 <section id="generate_submodel_combined_report" class="level4">
 <h4 class="anchored" data-anchor-id="generate_submodel_combined_report">generate_submodel_combined_report()</h4>
-<section id="generate_full_model_report" class="level5">
-<h5 class="anchored" data-anchor-id="generate_full_model_report">generate_full_model_report()</h5>
+</section>
+<section id="generate_full_model_report" class="level4">
+<h4 class="anchored" data-anchor-id="generate_full_model_report">generate_full_model_report()</h4>
 
 
-</section>
-</section>
 </section>
 </section>
 

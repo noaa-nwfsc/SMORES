@@ -32,20 +32,20 @@
     "href": "Functions.html#functions-used-for-mapping-and-aesthetics",
     "title": "SMORES Functions",
     "section": "Functions used for Mapping and Aesthetics:",
-    "text": "Functions used for Mapping and Aesthetics:\ncreate_individual_map()\ncreate_combined_map()\nfilter_by_score()\ncalculate_submodel_geometric_mean()\ncreate_continuous_palette()\ncheck_submodel_status()\nsubmodel_configurations()\ncreate_combined_submodel_map()\ncreate_aoi_cropped_map()\ncreate_full_model_map()\nsubmodel_status_display()\napply_calculation_method()\nmake_combined_map_dataset()\ngenerate_combined_map_for_method()\ncalculate_geometric_mean_combined()\ncalculate_lowest_combined()\ncalculate_product_combined()"
+    "text": "Functions used for Mapping and Aesthetics:\n\nfilter_by_score()\n\n\ncalculate_submodel_geometric_mean()\n\n\ncreate_continuous_palette()\n\n\ncheck_submodel_status()\n\n\nsubmodel_configurations()\n\n\ncreate_combined_submodel_map()\n\n\ncreate_aoi_cropped_map()\n\n\ncreate_full_model_map()\n\n\nsubmodel_status_display()\n\n\napply_calculation_method()\n\n\nmake_combined_map_dataset()\n\n\ngenerate_combined_map_for_method()\n\n\ncalculate_geometric_mean_combined()\n\n\ncalculate_lowest_combined()\n\n\ncalculate_product_combined()\n\n\ncreate_individual_map()\n\n\ncreate_combined_map()"
   },
   {
     "objectID": "Functions.html#functions-used-for-data",
     "href": "Functions.html#functions-used-for-data",
     "title": "SMORES Functions",
     "section": "Functions used for data:",
-    "text": "Functions used for data:\ndata_timestamps()\nfiltered_data_timestamps()"
+    "text": "Functions used for data:\n\ndata_timestamps()\n\n\nfiltered_data_timestamps()"
   },
   {
     "objectID": "Functions.html#functions-used-for-generating-reports",
     "href": "Functions.html#functions-used-for-generating-reports",
     "title": "SMORES Functions",
     "section": "Functions used for generating reports:",
-    "text": "Functions used for generating reports:\n\ngenerate_submodel_component_report()\n\ngenerate_submodel_combined_report()\n\ngenerate_full_model_report()"
+    "text": "Functions used for generating reports:\n\ngenerate_submodel_component_report()\n\n\ngenerate_submodel_combined_report()\n\n\ngenerate_full_model_report()"
   }
 ]
