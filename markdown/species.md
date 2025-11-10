@@ -37,7 +37,7 @@ designated as depleted under the MMPA.”
 NMFS provided three scoring scenarios for BOEM's consideration for
 inclusion in the suitability model. Scenario 3 was chosen for use in the
 model as it did not contain any constraints (scores of 0) [(NCCOS Report
-2.4.1)](https://www.boem.gov/sites/default/files/documents/renewable-energy/state-activities/Appendix%20B_NCCOS%20Final%20WEA%20Report_Oregon.pdf).
+2.4.1)](https://www.boem.gov/sites/default/files/documents/renewable-energy/state-activities/Appendix%20B_NCCOS%20Final%20WEA%20Report_Oregon.pdf){target="_blank"}.
 Below is a table to reference the score, status and trend, for the
 species included in this application that were chosen in scenario 3.To
 calculate the layer for protected species NMFS used the product method

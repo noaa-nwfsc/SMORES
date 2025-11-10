@@ -11,7 +11,7 @@ reasonably operate, NMFS and ODFW identified grid cells contained within the top
 
 NMFS and ODFW provided NCCOS with 5 recommended scoring scenarios for modeling and for BOEM consideration, in order of preference from Scenario 1 (most preferred) to Scenario 5 (least preferred). BOEM selected Scenario 4 because it was the most
 conservative scenario that did not include constraints, and suitability scores of 0.001 replaced the geometric mean in grid cells within the top 75% of the trawl fisheries’ ranked importance
-values [(NCCOS Report 2.4.4)](https://www.boem.gov/sites/default/files/documents/renewable-energy/state-activities/Appendix%20B_NCCOS%20Final%20WEA%20Report_Oregon.pdf). Areas outside of the trawl fisheries polygon retained the suitability score calculated across all nine fisheries.
+values [(NCCOS Report 2.4.4)](https://www.boem.gov/sites/default/files/documents/renewable-energy/state-activities/Appendix%20B_NCCOS%20Final%20WEA%20Report_Oregon.pdf){target="_blank"}. Areas outside of the trawl fisheries polygon retained the suitability score calculated across all nine fisheries.
 
 |   | Fisheries | Scenario 1 - Trawl \@ 75% | Scenario 2 - Trawl \@ 60% | Scenario 3 - Trawl \@ 50% | Scenario 4 - Trawl \@ 75% | Scenario 5 - "Baseline" |
 |-----------|-----------|-----------|-----------|-----------|-----------|-----------|

@@ -4,7 +4,7 @@ markdown:
 wrap: 72
 ---
 
-The methods for this application were based largely on suitability modeling detailed in [Morris et al. 2021](https://repository.library.noaa.gov/view/noaa/33303) and [Farmer et al. 2022](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0267333). Each data layer was scored on a 0 to 1 scale, with scores approaching 0
+The methods for this application were based largely on suitability modeling detailed in [Morris et al. 2021](https://repository.library.noaa.gov/view/noaa/33303){target="_blank"} and [Farmer et al. 2022](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0267333){target="_blank"}. Each data layer was scored on a 0 to 1 scale, with scores approaching 0
 representing low suitability and 1 representing high suitability
 relative to the other grid cells for wind energy. Then a component
 suitability score was calculated for each submodel component using the
@@ -25,7 +25,7 @@ Combined maps for the different sub-tabs (habitat, fisheries, scientific
 surveys, etc.) used the following equations.
 
 The [geometric
-mean](https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_geometric_mean_combined.R)
+mean](https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_geometric_mean_combined.R){target="_blank"}
 equation used was:
 
 $$\text{g} = \sqrt[n]{x_1 \times x_2 \times \ldots \times x_i}$$
@@ -36,7 +36,7 @@ n = number of variables<br> x₁ = variable 1<br> x₂ = variable
 </center>
 
 The
-[product](https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_product_combined.R)
+[product](https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_product_combined.R){target="_blank"}
 equation used was:
 
 $$\text{p} = x_1 \times x_2 \times \ldots \times x_i$$
@@ -47,7 +47,7 @@ variables
 </center>
 
 The
-[lowest](https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_lowest_combined.R)
+[lowest](https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_lowest_combined.R){target="_blank"}
 equation used was:
 
 $$\text{l} = \min(x_1, x_2, \ldots, x_i)$$
@@ -58,7 +58,7 @@ variables
 </center>
 
 To generate the full model map a [weighted geometric
-mean](https://github.com/noaa-nwfsc/SMORES/blob/main/R/create_full_model_map.R)
+mean](https://github.com/noaa-nwfsc/SMORES/blob/main/R/create_full_model_map.R){target="_blank"}
 calculation was used:
 
 $$\text{wg} = \sqrt[n]{x_1^{w_1} \times x_2^{w_2} \times \ldots \times x_i^{w_i}}$$
