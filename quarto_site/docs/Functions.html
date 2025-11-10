@@ -163,7 +163,7 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>The SMORES app uses a variety of custom functions to create a model run. Some of these functions are for the structure of the Shiny App while others focus on the methods to combine layers, calculate combined scores, or generate maps. The purpose of this page is to provide an overview of the different functions and where this function is stored should you have questions regarding the underlying processes used to create a visualization or a model run.</p>
+<p>The SMORES app uses a variety of custom functions to create a model run. Some of these functions are for the structure of the Shiny App while others focus on the methods to combine layers, calculate combined scores, or generate maps. The purpose of this page is to provide an overview of the different functions should you have questions regarding the underlying processes used to create a visualization or a model run. If you would like to access the functions and see the underlying code please visit the <a href="https://github.com/noaa-nwfsc/SMORES/tree/main/R">R</a>{target = “_blank”} folder in the data <a href="https://github.com/noaa-nwfsc/SMORES" target="_blank">repository</a> on the Github enterprise.</p>
 <section id="functions-used-for-mapping-and-aesthetics" class="level2">
 <h2 class="anchored" data-anchor-id="functions-used-for-mapping-and-aesthetics">Functions used for Mapping and Aesthetics:</h2>
 <section id="filter_by_score" class="level4">
@@ -223,9 +223,11 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="functions-used-for-data">Functions used for data:</h2>
 <section id="data_timestamps" class="level4">
 <h4 class="anchored" data-anchor-id="data_timestamps">data_timestamps()</h4>
+<p>Function to set the names, definition, data type, and retrieve the last time the data were updated in the SMORES repository for display on the data page.</p>
 </section>
 <section id="filtered_data_timestamps" class="level4">
 <h4 class="anchored" data-anchor-id="filtered_data_timestamps">filtered_data_timestamps()</h4>
+<p>Function to filter which datasets are in use within the app for the SMORES reports.</p>
 </section>
 </section>
 <section id="functions-used-for-generating-reports" class="level2">
