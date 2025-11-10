@@ -3,7 +3,7 @@ title: "SMORES Functions"
 format: html
 ---
 
-The SMORES app uses a variety of custom functions to create a model run. Some of these functions are for the structure of the Shiny App while others focus on the methods to combine layers, calculate combined scores, or generate maps. The purpose of this page is to provide an overview of the different functions and where this function is stored should you have questions regarding the underlying processes used to create a visualization or a model run. 
+The SMORES app uses a variety of custom functions to create a model run. Some of these functions are for the structure of the Shiny App while others focus on the methods to combine layers, calculate combined scores, or generate maps. The purpose of this page is to provide an overview of the different functions should you have questions regarding the underlying processes used to create a visualization or a model run. If you would like to access the functions and see the underlying code please visit the [R](https://github.com/noaa-nwfsc/SMORES/tree/main/R){target = "_blank"} folder in the data [repository](https://github.com/noaa-nwfsc/SMORES){target="_blank"} on the Github enterprise. 
 
 ## Functions used for Mapping and Aesthetics:
 
@@ -63,7 +63,11 @@ Function to create the full model run map. This function applies the user-select
 
 #### data_timestamps()
 
+Function to set the names, definition, data type, and retrieve the last time the data were updated in the SMORES repository for display on the data page. 
+
 #### filtered_data_timestamps()
+
+Function to filter which datasets are in use within the app for the SMORES reports. 
 
 ## Functions used for generating reports:
 
