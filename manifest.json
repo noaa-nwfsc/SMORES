@@ -4350,7 +4350,7 @@
   },
   "files": {
     ".RData": {
-      "checksum": "0f97648d3c261625d9adc74ab51e90ad"
+      "checksum": "f7270cb9f5ef72bd388cc314c8b2b6e0"
     },
     ".RDataTmp": {
       "checksum": "d697596f477ad843de1a8bf77e8e5c26"
@@ -4602,10 +4602,10 @@
       "checksum": "d229da563da18fe5d58cd95a6467d584"
     },
     "markdown/area_of_interest.md": {
-      "checksum": "bc3b58bfecc6a1bcc92803165fed2baf"
+      "checksum": "8e3744529ced31690e36f2a0e4a1a9a5"
     },
     "markdown/cables.md": {
-      "checksum": "62cf02017b18f45de9af59cbcee3b7ed"
+      "checksum": "f09c05d8d12cc89241e154a1d7662c95"
     },
     "markdown/combined_fisheries_submodel.md": {
       "checksum": "dd387eae0bde09bec605869c3d155f4f"
@@ -4620,100 +4620,178 @@
       "checksum": "17643c6a91e624cc42dbfd3defae7284"
     },
     "markdown/fisheries.md": {
-      "checksum": "9955168b70c9122d751b03828e29e327"
+      "checksum": "93ecbd829558a86ff494cdb003436c51"
     },
     "markdown/full_model.md": {
       "checksum": "940f51ad0d1d7b770bfb860cc87ee6f4"
     },
     "markdown/habitat.md": {
-      "checksum": "e1f18c9b7ea0debde6c6dda0992e3f91"
+      "checksum": "a93c65af1cde3acd67aeb90e335555b7"
     },
     "markdown/methods.md": {
-      "checksum": "dbff5b65f899f7b99cd85ee983dc22e2"
+      "checksum": "f86a262e4ffe8f5930854901cd671031"
     },
     "markdown/overview.md": {
       "checksum": "7dcded48f21d1ea07c1271e70099d806"
     },
     "markdown/species.md": {
-      "checksum": "013c67c9e5444ac46122fc1607774fa9"
+      "checksum": "0936dbabf615c15318307fb8f2d398f5"
     },
     "markdown/surveys.md": {
-      "checksum": "9daac16af9d5e251deb2d4ca0d1d2232"
+      "checksum": "196a61ce718d72ef031ddf7d0cd32f39"
     },
     "markdown/trawl_fisheries.md": {
-      "checksum": "56cd07455720c2f0359c948bcaeae71b"
+      "checksum": "3e5e31a5af71e1748aa8a553d3865de7"
+    },
+    "quarto_site/.nojekyll": {
+      "checksum": "d41d8cd98f00b204e9800998ecf8427e"
     },
     "quarto_site/_quarto.yml": {
-      "checksum": "29b3c1641c9eb8b382ba771ebc283d9d"
+      "checksum": "9d27f02cd110659f01d9348bbd52c39e"
     },
-    "quarto_site/_site/about.html": {
-      "checksum": "56cdb4cbb0de1f7e53c0b4d3c44ec86b"
+    "quarto_site/Access.qmd": {
+      "checksum": "703e6e709f5c1f884527cb736a408a9e"
     },
-    "quarto_site/_site/index.html": {
-      "checksum": "c0eba45954622f7d8cb52bc4da85ad3d"
+    "quarto_site/Data.qmd": {
+      "checksum": "88f2f9eb615f62e718c50b0220b97d4f"
     },
-    "quarto_site/_site/search.json": {
-      "checksum": "60822aad8def70a53d96661f7303bd6c"
+    "quarto_site/docs/.nojekyll": {
+      "checksum": "d41d8cd98f00b204e9800998ecf8427e"
     },
-    "quarto_site/_site/site_libs/bootstrap/bootstrap-icons.css": {
-      "checksum": "2318f137d201fbf51601fa0faba6bef7"
+    "quarto_site/docs/Access.html": {
+      "checksum": "137839690df99f1b9aa3b83289a29ba2"
     },
-    "quarto_site/_site/site_libs/bootstrap/bootstrap-icons.woff": {
+    "quarto_site/docs/Data.html": {
+      "checksum": "446a5cb1e50c8af601afd594e55d6797"
+    },
+    "quarto_site/docs/Functions.html": {
+      "checksum": "4d548be64b5f70867d4b8c3790f2828b"
+    },
+    "quarto_site/docs/GUI.html": {
+      "checksum": "cf908e74b8cf0663b3d0dca93cbb32e8"
+    },
+    "quarto_site/docs/index.html": {
+      "checksum": "13b4cbba1e092be050b780873f044575"
+    },
+    "quarto_site/docs/Methods.html": {
+      "checksum": "514fe2a580c96ba69569a0a027f42a6c"
+    },
+    "quarto_site/docs/search.json": {
+      "checksum": "523f76ebd9dfb67ec94ac18df6ef07ff"
+    },
+    "quarto_site/docs/site_libs/bootstrap/bootstrap-icons.css": {
+      "checksum": "7b398b1069853b0425186226963a7aad"
+    },
+    "quarto_site/docs/site_libs/bootstrap/bootstrap-icons.woff": {
       "checksum": "1a51dfbe5467607389d603c02a77cd10"
     },
-    "quarto_site/_site/site_libs/bootstrap/bootstrap.min.css": {
-      "checksum": "b3aa81baa0616bf572fc7383990a0146"
+    "quarto_site/docs/site_libs/bootstrap/bootstrap.min.css": {
+      "checksum": "ed2d5f5ebf6a1bd7308a59a6d59da120"
     },
-    "quarto_site/_site/site_libs/bootstrap/bootstrap.min.js": {
-      "checksum": "e2b09c06f0e714b6144a6788a28e3950"
+    "quarto_site/docs/site_libs/bootstrap/bootstrap.min.js": {
+      "checksum": "13e7cde0b66bf81424927231819f2616"
     },
-    "quarto_site/_site/site_libs/clipboard/clipboard.min.js": {
-      "checksum": "15f52a1ee547f2bdd46e56747332ca2d"
+    "quarto_site/docs/site_libs/clipboard/clipboard.min.js": {
+      "checksum": "722242f7b6e0fa3b8d25070388a5c826"
     },
-    "quarto_site/_site/site_libs/quarto-html/anchor.min.js": {
-      "checksum": "91bcf6cd1fd88fec3f109811e5fc3546"
+    "quarto_site/docs/site_libs/quarto-html/anchor.min.js": {
+      "checksum": "1d0d5a0fbdee0fe4cad01b18ca781d13"
     },
-    "quarto_site/_site/site_libs/quarto-html/popper.min.js": {
-      "checksum": "3a4a291ccf3f1ea0f82b641542fd3827"
+    "quarto_site/docs/site_libs/quarto-html/popper.min.js": {
+      "checksum": "c04c707933aaedbb017737dfe0a0de7f"
     },
-    "quarto_site/_site/site_libs/quarto-html/quarto-syntax-highlighting.css": {
-      "checksum": "ab2b9e94a89b131e869fd951d6355545"
+    "quarto_site/docs/site_libs/quarto-html/quarto-syntax-highlighting.css": {
+      "checksum": "4d4cc9cb11bfceb525fe29efe28849b8"
     },
-    "quarto_site/_site/site_libs/quarto-html/quarto.js": {
-      "checksum": "7563d37e31580c9573af5b12aa3779a2"
+    "quarto_site/docs/site_libs/quarto-html/quarto.js": {
+      "checksum": "25e84f818691a6ba87ac582b86e4bf4b"
     },
-    "quarto_site/_site/site_libs/quarto-html/tippy.css": {
+    "quarto_site/docs/site_libs/quarto-html/tippy.css": {
       "checksum": "ebd6f8ce46a677e1a4f5f8a8317109a9"
     },
-    "quarto_site/_site/site_libs/quarto-html/tippy.umd.min.js": {
-      "checksum": "d828775275749701b48bd9d958814111"
+    "quarto_site/docs/site_libs/quarto-html/tippy.umd.min.js": {
+      "checksum": "c767a9ffc932cac8690dd2e0321a121d"
     },
-    "quarto_site/_site/site_libs/quarto-nav/headroom.min.js": {
-      "checksum": "ace0360e576db9b6e7df48ac68ddbbf4"
+    "quarto_site/docs/site_libs/quarto-nav/headroom.min.js": {
+      "checksum": "ed4117a78fe4e7dad50c6b5c37a55c7d"
     },
-    "quarto_site/_site/site_libs/quarto-nav/quarto-nav.js": {
-      "checksum": "12d334846b27bdb493298c08277bdf7f"
+    "quarto_site/docs/site_libs/quarto-nav/quarto-nav.js": {
+      "checksum": "651e328734d3ce102a2155ecee15a511"
     },
-    "quarto_site/_site/site_libs/quarto-search/autocomplete.umd.js": {
-      "checksum": "c64544db941e048f2652217cb9a7f29c"
+    "quarto_site/docs/site_libs/quarto-search/autocomplete.umd.js": {
+      "checksum": "31a896fbd1167d8fa62c4e152fa9c4f3"
     },
-    "quarto_site/_site/site_libs/quarto-search/fuse.min.js": {
-      "checksum": "de7d60e4a6881074275feca14b84a49d"
+    "quarto_site/docs/site_libs/quarto-search/fuse.min.js": {
+      "checksum": "5f8e6fb5de2ff90ffb8678b5236ec4ad"
     },
-    "quarto_site/_site/site_libs/quarto-search/quarto-search.js": {
-      "checksum": "bb16b7e73be13eba97c99d25b2a476b3"
+    "quarto_site/docs/site_libs/quarto-search/quarto-search.js": {
+      "checksum": "9cd7674eb53665e3336c596ecfdfa92a"
     },
-    "quarto_site/_site/styles.css": {
-      "checksum": "e31c3cdea03dfab8a29456978017bd10"
+    "quarto_site/docs/styles.css": {
+      "checksum": "3e0a5886ee37eb39ae077807262d47e4"
     },
-    "quarto_site/about.qmd": {
-      "checksum": "b3260e8597e68ac0d3a7951d26a2e945"
+    "quarto_site/docs/www/Images/individual_maps.png": {
+      "checksum": "62e2d34a5e381c76a44d0f751a9018f1"
+    },
+    "quarto_site/docs/www/Images/score_selection.png": {
+      "checksum": "b07555f58080e20cf64e5784648ebe22"
+    },
+    "quarto_site/docs/www/Images/SMORES_AOI_opener.png": {
+      "checksum": "35256f4e082c8d865e6291e1faac96d9"
+    },
+    "quarto_site/docs/www/Images/SMORES_NR_CS_opener.png": {
+      "checksum": "8b857588952beb69295259c616b70402"
+    },
+    "quarto_site/docs/www/Images/SMORES_NR_H_opener_selected.png": {
+      "checksum": "07c115926c3446c59bf72c356dbd908b"
+    },
+    "quarto_site/docs/www/Images/SMORES_NR_S_opener.png": {
+      "checksum": "c15c2a6e428f387914e15ed03f7c6453"
+    },
+    "quarto_site/docs/www/Images/SMORES_opener.png": {
+      "checksum": "5766b539d1d05e3727dc7bafa0da6ac7"
+    },
+    "quarto_site/Functions.qmd": {
+      "checksum": "14b95224234106723cbe03787e0356ab"
+    },
+    "quarto_site/GUI.qmd": {
+      "checksum": "7ad870be3f1cfc67c1a8a8d191e5461f"
     },
     "quarto_site/index.qmd": {
-      "checksum": "acd8171f432a4d210619e8813266e8b1"
+      "checksum": "08513adb55d8414b20236ea108a0be1a"
+    },
+    "quarto_site/Methods.qmd": {
+      "checksum": "9cc69e7fa26f2a040ce23c200c494230"
     },
     "quarto_site/styles.css": {
       "checksum": "e31c3cdea03dfab8a29456978017bd10"
+    },
+    "quarto_site/www/Images/individual_maps.png": {
+      "checksum": "62e2d34a5e381c76a44d0f751a9018f1"
+    },
+    "quarto_site/www/Images/score_selection.png": {
+      "checksum": "b07555f58080e20cf64e5784648ebe22"
+    },
+    "quarto_site/www/Images/score_selection_map.png": {
+      "checksum": "b6d328f36f8acd4716da5c85b6577e9b"
+    },
+    "quarto_site/www/Images/SMORES_AOI_opener.png": {
+      "checksum": "35256f4e082c8d865e6291e1faac96d9"
+    },
+    "quarto_site/www/Images/SMORES_NR_CS_opener.png": {
+      "checksum": "8b857588952beb69295259c616b70402"
+    },
+    "quarto_site/www/Images/SMORES_NR_H_opener.png": {
+      "checksum": "264600cdcb74441d3bf688115c13352a"
+    },
+    "quarto_site/www/Images/SMORES_NR_H_opener_selected.png": {
+      "checksum": "07c115926c3446c59bf72c356dbd908b"
+    },
+    "quarto_site/www/Images/SMORES_NR_S_opener.png": {
+      "checksum": "c15c2a6e428f387914e15ed03f7c6453"
+    },
+    "quarto_site/www/Images/SMORES_opener.png": {
+      "checksum": "5766b539d1d05e3727dc7bafa0da6ac7"
     },
     "R/apply_calculation_method.R": {
       "checksum": "fdc4548d6cfa00ad4920abad9c769030"
