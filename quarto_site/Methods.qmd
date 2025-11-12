@@ -5,7 +5,7 @@ format: html
 
 The SMORES application was built from the spatial planning processes developed for *A Wind Energy Area Siting Analysis for the Oregon Call Areas* and the *Aquaculture Opportunity Atlas's*. These projects provided the marine spatial planning framework that is used by this application.
 
-- Additional Information about *A Wind Energy Area Siting Analysis for the Oregon Call Areas* can be found in this works [documentation](https://www.boem.gov/sites/default/files/documents/environment/BOEM_2024-015.pdf){target="_blank"}. This groups work can be cited as: Carlton J, Jossart JA, Pendleton F, Sumait N, Miller J, Thurston-Keller J, Reeb D, Gilbane L, Pereksta D, Schroeder D, Morris Jr JA. 2024. A wind energy area siting analysis for the Oregon Call Areas. Camarillo (CA): U.S. Department of the Interior, Bureau of Ocean Energy Management. 237 p. Report No.: OCS Study BOEM 2024-015.
+- Additional Information about *A Wind Energy Area Siting Analysis for the Oregon Call Areas* can be found in this [documentation](https://www.boem.gov/sites/default/files/documents/environment/BOEM_2024-015.pdf){target="_blank"}. This groups work can be cited as: Carlton J, Jossart JA, Pendleton F, Sumait N, Miller J, Thurston-Keller J, Reeb D, Gilbane L, Pereksta D, Schroeder D, Morris Jr JA. 2024. A wind energy area siting analysis for the Oregon Call Areas. Camarillo (CA): U.S. Department of the Interior, Bureau of Ocean Energy Management. 237 p. Report No.: OCS Study BOEM 2024-015.
 
 This application is broken up into different components. These components are carried through the application and provide clarity in when different functions are applied. These components are as follows:
 
@@ -24,3 +24,5 @@ Submodels are the result from combining submodel components. An example of a sub
 - **Full Model**
 
 The full model is the result of combining submodels. In the application you can choose which submodels you would like to have included in the full model. 
+
+
