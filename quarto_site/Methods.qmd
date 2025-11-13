@@ -2,10 +2,13 @@
 title: "Methods"
 format: html
 ---
+## Background
 
 The SMORES application was built from the spatial planning processes developed for *A Wind Energy Area Siting Analysis for the Oregon Call Areas* and the *Aquaculture Opportunity Atlas's*. These projects provided the marine spatial planning framework that is used by this application.
 
 - Additional Information about *A Wind Energy Area Siting Analysis for the Oregon Call Areas* can be found in this [documentation](https://www.boem.gov/sites/default/files/documents/environment/BOEM_2024-015.pdf){target="_blank"}. This groups work can be cited as: Carlton J, Jossart JA, Pendleton F, Sumait N, Miller J, Thurston-Keller J, Reeb D, Gilbane L, Pereksta D, Schroeder D, Morris Jr JA. 2024. A wind energy area siting analysis for the Oregon Call Areas. Camarillo (CA): U.S. Department of the Interior, Bureau of Ocean Energy Management. 237 p. Report No.: OCS Study BOEM 2024-015.
+
+## Components
 
 This application is broken up into different components. These components are carried through the application and provide clarity in when different functions are applied. These components are as follows:
 
@@ -24,5 +27,27 @@ Submodels are the result from combining submodel components. An example of a sub
 - **Full Model**
 
 The full model is the result of combining submodels. In the application you can choose which submodels you would like to have included in the full model. 
+
+## Pre-processing 
+
+To generate an individual data layer data sources are processed before they are loaded into the app. This pre-processing step ensures that data layers are in the correct coordinate reference system, overlaid with the grid, and ready to be digested by the application. Pre-processing is done with two main files. [Data_productions.R](https://github.com/noaa-nwfsc/SMORES/blob/main/data_production.R){target="_blank"} prepares the raw data files while [preprocess_spatial_data()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/preprocess_spatial_data.R){target="_blank"} prepares the files for application compatibility. The key steps that are taken by these functions are the following:
+
+- 2 km grid for the west coast of the United States is accessed
+
+- St_intersection() is run between the individual layer and the 2 km grid to identify grid cells that have data for the individual layer
+
+- Grid cells that have values are selected and fitted with a placeholder value (this applies for any layer that is a presence/absence data value)
+
+- New columns are made for each value a user might select and grid cells are populated with these values
+
+- Data frame is pivoted to the long format so that each grid cell has a list of values available to it if the grid cell had a presence of data
+
+- Data is transformed to be in the WGS 84 coordinate system for compatibility with [leaflet()](https://leafletjs.com/){target="_blank"} mapping
+
+- Data is saved as a [geoparquet](https://geoparquet.org/){target="_blank"} file format. This format was chosen for its ability to efficiently store large spatial data files 
+
+Data is now prepared to be loaded into the application. 
+
+
 
 

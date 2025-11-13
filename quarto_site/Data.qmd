@@ -1,6 +1,256 @@
 ---
-title: "Data"
+title: "Data Sources"
 format: html
 ---
 
-Information about project data will live here. 
+## Canyons
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## Deep Sea Coral Robust High Suitability
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## Fixed Surveys
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## Periodic Surveys
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## Seeps
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## Shelf Break
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## EFHCA
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## EFHCA 700 fathoms
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## HAPC AOI
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## HAPC Rocky Reef
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## ESA Critical Habitat for Southern Resident Killer Whales
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## ESA Critical Habitat for Leatherback Sea Turtles
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## ESA Critical Habitat for Humpback Whales - Mexico and Central DPS
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## Biologically Important Area - Blue Whale
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## At-Sea Hake Mid-Water Trawl
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## Shoreside Hake Mid-Water Trawl
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## Groundfish Bottom Trawl
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## Groundfish Pot Gear
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## Groundfish Long Line Gear
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## Pink Shrimp Trawl
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## Dungeness Crab
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## Commercial Troll/Hook and Line Albacore
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## Charter Vessel Albacore Troll/Hook and Line
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## Trawl Fisheries 
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## Submarine Cables
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+
