@@ -53,7 +53,7 @@
     "href": "Data.html#deep-sea-coral-robust-high-suitability",
     "title": "Data Sources",
     "section": "Deep Sea Coral Robust High Suitability",
-    "text": "Deep Sea Coral Robust High Suitability\nBrief Description\nAccessed\nUnits\nCitation"
+    "text": "Deep Sea Coral Robust High Suitability\nBrief Description: Two data products on deep-sea coral and sponges were considered: 1) NOAA National Database for Deep-Sea Corals and Sponges focuses on occurrences within the United States Exclusive Economic Zone (McGuinn et al. 2020), and 2) BOEM-funded Cross-Shelf Habitat Suitability Modeling of Coral and Sponge Habitat Suitability provides spatial predictions of relative habitat suitability for a number of coral and sponge taxa (Poti et al. 2020). Since the national database only represents where surveys have occurred and does not include absence records, we felt the predicted habitat suitability products better represent the potential distributions of these important biogenic habitat-forming organisms. In order to examine patterns of habitat suitability across multiple taxa, the Poti et al. (2020) study developed two aggregate products, both of which we felt would be most useful to the NCCOS model: 1) Number of deep-sea coral taxa associated with hard substrate that were predicted to have high habitat suitability, and 2) Number of deep-sea coral taxa associated with hard substrate that were predicted to have robust-high habitat suitability. Instead of integrating habitat suitability models for individual taxa, these two aggregate products show the number of taxa predicted to have high or robust-high habitat suitability, respectively, for each grid cell. We specified the robust-high product to be a constraint in the model, with the more inclusive high habitat suitability product to be considered as an alternative. The aggregate products exclude sea pens because most sea pen species do not associate with hard substrate, and exclude sponges due to the low taxonomic specificity, and consequent broad substrate affinities, of input records. Like many deep-sea corals, some sponges, especially glass sponges (e.g., Heterochone calyx) provide structural habitat for other organisms including some groundfishes. These structure-forming sponges are also vulnerable to mechanical damage. We advise that 158 NCCOS consider including individual structure-forming sponge habitat suitability products from Poti et al. in future model runs. Rescaling was conducted sing the fuzzy logic Z-shaped membership function from 0.0–1\nAccessed\nUnits\nCitation: Poti et al. 2020. https://espis.boem.gov/final%20reports/BOEM_2020-021.pdf"
   },
   {
     "objectID": "Data.html#fixed-surveys",
@@ -74,21 +74,21 @@
     "href": "Data.html#seeps",
     "title": "Data Sources",
     "section": "Seeps",
-    "text": "Seeps\nBrief Description\nAccessed\nUnits\nCitation"
+    "text": "Seeps\nBrief Description: Methane bubble streams identified during multibeam sonar surveys often indicate the location of methane seeps and associated seep communities on the seafloor. We curated data layers from recent publications that summarize the point locations of these bubble streams. Recent remotely operated vehicle (ROV) surveys have confirmed active gas venting on the seafloor for some of these locations, as well as the presence of methane seep communities.\nAccessed\nUnits\nCitation"
   },
   {
     "objectID": "Data.html#shelf-break",
     "href": "Data.html#shelf-break",
     "title": "Data Sources",
     "section": "Shelf Break",
-    "text": "Shelf Break\nBrief Description\nAccessed\nUnits\nCitation"
+    "text": "Shelf Break\nBrief Description: The continental shelf break is a physiographic feature tht is sometimes represented as a particular isobath but is more appropriately delineated from geophysical data. The Goldfinger et al. 2014 Surficial Geologic Habitat v.4.0 layer to be the boundary between continental “shelf” and “slope” physiographic habitat types. The line between these polygons was extracted and buffered by 10-km on either side.\nAccessed:\nUnits\nCitation: Goldfinger et al. 2014 Surficial Geologic Habitat v.4.0; https://www.boem.gov/sites/default/files/environmentalstewardship/Environmental-Studies/PacificRegion/Studies/BOEM2014-662-Vol-1.pdf"
   },
   {
     "objectID": "Data.html#efhca",
     "href": "Data.html#efhca",
     "title": "Data Sources",
     "section": "EFHCA",
-    "text": "EFHCA\nBrief Description\nAccessed\nUnits\nCitation"
+    "text": "EFHCA\nBrief Description: Shapefiles depicting boundaries of EFH conservation areas. These shapefiles are not legal boundaries but are rather geospatial representations of what is published in the Code of Federal Regulations (50 CFR 660)\nAccessed: The can be accessed via the NMFS EFH resource site.\nUnits\nCitation"
   },
   {
     "objectID": "Data.html#efhca-700-fathoms",
