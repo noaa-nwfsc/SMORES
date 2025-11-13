@@ -34,7 +34,7 @@ To generate an individual data layer data sources are processed before they are 
 
 - 2 km grid for the west coast of the United States is accessed
 
-- St_intersection() is run between the individual layer and the 2 km grid to identify grid cells that have data for the individual layer
+- [St_intersection()](https://r-spatial.github.io/sf/reference/geos_binary_ops.html){target="_blank} is run between the individual layer and the 2 km grid to identify grid cells that have data for the individual layer
 
 - Grid cells that have values are selected and fitted with a placeholder value (this applies for any layer that is a presence/absence data value)
 
