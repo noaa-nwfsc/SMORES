@@ -54,5 +54,208 @@
     "title": "What does SMORES stand for?",
     "section": "",
     "text": "Welcome to the documentation guide for the SMORES Shiny App.\n\n\nWhat does SMORES stand for?\nSMORES is an acronym for the Suitability Modeling for Offshore Resources and Energy Siting Shiny Application.\n\n\nWho is SMORES built for?\nSMORES was built for NOAA NMFS teams to be able to use as a fast and interactive tester for scenarios provided to BOEM during the energy use area siting process. The most recent example of this was when the West Coast NOAA offices were working together on the Oregon wind energy areas.\nPreviously, teams worked relatively separately and would have a hard time quickly seeing how their scores would be impacted when combined with other teams (ie. protected habitat and industry). SMORES allows teams to enter their scores and see how the model would run when combined with other sets of scores.\n\n\nWhere does SMORES live?\nThe SMORES Shiny Application was built in RStudio and is hosted on the NOAA NWFSC Github Enterprise account. The Application is also available on the Posit Connect Test Instance. For more information about accessing the SMORES app please visit the SMORES Access Guide page.\n\n\nHow do I report issues or bugs in the app?\nTo report any issues or bugs within the code please create an issue on the Github repository. The issues for this repository can be found here.\n\n\nDisclaimer\nThis application is a scientific product and is not official communication of the National Oceanic and Atmospheric Administration, or the United States Department of Commerce. All NOAA GitHub project code is provided on an ‘as is’ basis and the user assumes responsibility for its use. Any claims against the Department of Commerce or Department of Commerce bureaus stemming from the use of this GitHub project will be governed by all applicable Federal law. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by the Department of Commerce. The Department of Commerce seal and logo, or the seal and logo of a DOC bureau, shall not be used in any manner to imply endorsement of any commercial product or activity by DOC or the United States Government."
+  },
+  {
+    "objectID": "Data.html",
+    "href": "Data.html",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation\n\n\n\nBrief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#canyons",
+    "href": "Data.html#canyons",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#deep-sea-coral-robust-high-suitability",
+    "href": "Data.html#deep-sea-coral-robust-high-suitability",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#fixed-surveys",
+    "href": "Data.html#fixed-surveys",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#periodic-surveys",
+    "href": "Data.html#periodic-surveys",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#seeps",
+    "href": "Data.html#seeps",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#shelf-break",
+    "href": "Data.html#shelf-break",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#efhca",
+    "href": "Data.html#efhca",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#efhca-700-fathoms",
+    "href": "Data.html#efhca-700-fathoms",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#hapc-aoi",
+    "href": "Data.html#hapc-aoi",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#hapc-rocky-reef",
+    "href": "Data.html#hapc-rocky-reef",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#esa-critical-habitat-for-southern-resident-killer-whales",
+    "href": "Data.html#esa-critical-habitat-for-southern-resident-killer-whales",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#esa-critical-habitat-for-leatherback-sea-turtles",
+    "href": "Data.html#esa-critical-habitat-for-leatherback-sea-turtles",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#esa-critical-habitat-for-humpback-whales---mexico-and-central-dps",
+    "href": "Data.html#esa-critical-habitat-for-humpback-whales---mexico-and-central-dps",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#biologically-important-area---blue-whale",
+    "href": "Data.html#biologically-important-area---blue-whale",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#at-sea-hake-mid-water-trawl",
+    "href": "Data.html#at-sea-hake-mid-water-trawl",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#shoreside-hake-mid-water-trawl",
+    "href": "Data.html#shoreside-hake-mid-water-trawl",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#groundfish-bottom-trawl",
+    "href": "Data.html#groundfish-bottom-trawl",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#groundfish-pot-gear",
+    "href": "Data.html#groundfish-pot-gear",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#groundfish-long-line-gear",
+    "href": "Data.html#groundfish-long-line-gear",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#pink-shrimp-trawl",
+    "href": "Data.html#pink-shrimp-trawl",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#dungeness-crab",
+    "href": "Data.html#dungeness-crab",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#commercial-trollhook-and-line-albacore",
+    "href": "Data.html#commercial-trollhook-and-line-albacore",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#charter-vessel-albacore-trollhook-and-line",
+    "href": "Data.html#charter-vessel-albacore-trollhook-and-line",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#trawl-fisheries",
+    "href": "Data.html#trawl-fisheries",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Data.html#submarine-cables",
+    "href": "Data.html#submarine-cables",
+    "title": "Data",
+    "section": "",
+    "text": "Brief Description\nAccessed\nUnits\nCitation"
+  },
+  {
+    "objectID": "Methods.html#background",
+    "href": "Methods.html#background",
+    "title": "Methods",
+    "section": "",
+    "text": "The SMORES application was built from the spatial planning processes developed for A Wind Energy Area Siting Analysis for the Oregon Call Areas and the Aquaculture Opportunity Atlas’s. These projects provided the marine spatial planning framework that is used by this application.\n\nAdditional Information about A Wind Energy Area Siting Analysis for the Oregon Call Areas can be found in this documentation. This groups work can be cited as: Carlton J, Jossart JA, Pendleton F, Sumait N, Miller J, Thurston-Keller J, Reeb D, Gilbane L, Pereksta D, Schroeder D, Morris Jr JA. 2024. A wind energy area siting analysis for the Oregon Call Areas. Camarillo (CA): U.S. Department of the Interior, Bureau of Ocean Energy Management. 237 p. Report No.: OCS Study BOEM 2024-015."
+  },
+  {
+    "objectID": "Methods.html#components",
+    "href": "Methods.html#components",
+    "title": "Methods",
+    "section": "Components",
+    "text": "Components\nThis application is broken up into different components. These components are carried through the application and provide clarity in when different functions are applied. These components are as follows:\n\nIndividual Layers\n\nIndividual Layers are any layer or data set that is being used in a model run before it is combined with any additional layers.\n\nSubmodel Components\n\nSubmodel components are the subgroups of each submodel. These are the result of combining individual layers that all fall within the same general category. An example of a submodel component for the application would be the combined individual layers that fall within the habitat category. This combination of indivudal layers would result in the habitat submodel component of the natural resources submodel.\n\nSubmodels\n\nSubmodels are the result from combining submodel components. An example of a submodel for the application would be the natural resources submodel which is made up of two submodel components: habitat, and species.\n\nFull Model\n\nThe full model is the result of combining submodels. In the application you can choose which submodels you would like to have included in the full model."
+  },
+  {
+    "objectID": "Methods.html#pre-processing",
+    "href": "Methods.html#pre-processing",
+    "title": "Methods",
+    "section": "Pre-processing",
+    "text": "Pre-processing\nTo generate an individual data layer data sources are processed before they are loaded into the app. This pre-processing step ensures that data layers are in the correct coordinate reference system, overlaid with the grid, and ready to be digested by the application. Pre-processing is done with two main files. Data_productions.R prepares the raw data files while preprocess_spatial_data() prepares the files for application compatibility. The key steps that are taken by these functions are the following:\n\n2 km grid for the west coast of the United States is accessed\nSt_intersection() is run between the individual layer and the 2 km grid to identify grid cells that have data for the individual layer\nGrid cells that have values are selected and fitted with a placeholder value (this applies for any layer that is a presence/absence data value)\nNew columns are made for each value a user might select and grid cells are populated with these values\nData frame is pivoted to the long format so that each grid cell has a list of values available to it if the grid cell had a presence of data\nData is transformed to be in the WGS 84 coordinate system for compatibility with leaflet() mapping\nData is saved as a geoparquet file format. This format was chosen for its ability to efficiently store large spatial data files\n\nData is now prepared to be loaded into the application."
   }
 ]
