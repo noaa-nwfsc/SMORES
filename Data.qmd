@@ -49,7 +49,7 @@ membership function from 0.0–1
 
 **Brief Description**: Methane bubble streams identified during multibeam sonar surveys often indicate the location of methane seeps and associated seep communities on the seafloor. We curated data layers from recent publications that summarize the point locations of these bubble streams. Recent remotely operated vehicle (ROV) surveys have confirmed active gas venting on the seafloor for some of these locations, as well as the presence of methane seep communities. 
 
-**Accessed**
+**Accessed**: Unpublished
 
 **Units**
 
@@ -110,17 +110,17 @@ Surficial Geologic Habitat v.4.0; https://www.boem.gov/sites/default/files/envir
 
 **Brief Description**
 
-**Accessed**
+**Accessed**: [Data reference](https://www.fisheries.noaa.gov/action/critical-habitat-southern-resident-killer-whale){target="_blank"}
 
 **Units**
 
-**Citation**
+**Citation**: NOAA NMFS
 
 ## ESA Critical Habitat for Leatherback Sea Turtles
 
 **Brief Description**
 
-**Accessed**
+**Accessed**: Unpublished
 
 **Units**
 
@@ -130,27 +130,27 @@ Surficial Geologic Habitat v.4.0; https://www.boem.gov/sites/default/files/envir
 
 **Brief Description**
 
-**Accessed**
+**Accessed**: Unpublished
 
 **Units**
 
-**Citation**
+**Citation**: NOAA NMFS
 
 ## Biologically Important Area - Blue Whale
 
 **Brief Description**
 
-**Accessed**
+**Accessed**: Unpublished
 
 **Units**
 
-**Citation**
+**Citation**: NOAA NMFS
 
 ## At-Sea Hake Mid-Water Trawl
 
-**Brief Description**
+**Brief Description**: Logbooks from PacFIN via the NMFS NWSC observer program
 
-**Accessed**
+**Accessed**: Unpublished
 
 **Units**
 
@@ -158,9 +158,9 @@ Surficial Geologic Habitat v.4.0; https://www.boem.gov/sites/default/files/envir
 
 ## Shoreside Hake Mid-Water Trawl
 
-**Brief Description**
+**Brief Description**: Logbooks from PacFIN via the observer database and from ODFW, NMFS NWFSC Observer Program
 
-**Accessed**
+**Accessed**: Unpublished
 
 **Units**
 
@@ -168,9 +168,9 @@ Surficial Geologic Habitat v.4.0; https://www.boem.gov/sites/default/files/envir
 
 ## Groundfish Bottom Trawl
 
-**Brief Description**
+**Brief Description**: Logbooks from PacFIN via the NMFS NWSC observer program database
 
-**Accessed**
+**Accessed**: Unpublished
 
 **Units**
 
@@ -180,7 +180,7 @@ Surficial Geologic Habitat v.4.0; https://www.boem.gov/sites/default/files/envir
 
 **Brief Description**
 
-**Accessed**
+**Accessed**: Unpublished
 
 **Units**
 
@@ -190,7 +190,7 @@ Surficial Geologic Habitat v.4.0; https://www.boem.gov/sites/default/files/envir
 
 **Brief Description**
 
-**Accessed**
+**Accessed**: Unpublished
 
 **Units**
 
@@ -198,9 +198,9 @@ Surficial Geologic Habitat v.4.0; https://www.boem.gov/sites/default/files/envir
 
 ## Pink Shrimp Trawl
 
-**Brief Description**
+**Brief Description**: ODFW logbook, PacFIN
 
-**Accessed**
+**Accessed**: Unpublished
 
 **Units**
 
@@ -208,9 +208,9 @@ Surficial Geologic Habitat v.4.0; https://www.boem.gov/sites/default/files/envir
 
 ## Dungeness Crab
 
-**Brief Description**
+**Brief Description**: ODFW logbook, PacFIN
 
-**Accessed**
+**Accessed**: Unpublished
 
 **Units**
 
@@ -218,9 +218,9 @@ Surficial Geologic Habitat v.4.0; https://www.boem.gov/sites/default/files/envir
 
 ## Commercial Troll/Hook and Line Albacore
 
-**Brief Description**
+**Brief Description**: NMFS SWFSC, PacFIN
 
-**Accessed**
+**Accessed**: Unpublished
 
 **Units**
 
@@ -228,9 +228,9 @@ Surficial Geologic Habitat v.4.0; https://www.boem.gov/sites/default/files/envir
 
 ## Charter Vessel Albacore Troll/Hook and Line
 
-**Brief Description**
+**Brief Description**: 
 
-**Accessed**
+**Accessed**: Unpublished
 
 **Units**
 
@@ -238,13 +238,15 @@ Surficial Geologic Habitat v.4.0; https://www.boem.gov/sites/default/files/envir
 
 ## Trawl Fisheries 
 
-**Brief Description**
+**Brief Description**: Trawl fisheries (bottom and mid-water trawl), in particular, have little flexibility in where they fish due to their operational logistics. The gear requires large spaces for maneuverability and is incompatible with other structures and cables/mooring lines in the water, including what would likely be infrastructure for floating offshore wind platforms and anchors. The targeted species are also associated with locations along the shelf and slope and specific depth ranges. Therefore, these fisheries are especially vulnerable to fragmentation of fishing grounds. Four trawl fisheries operate within the two OR Call Areas: Groundfish bottom trawl (Federal), At-sea hake mid-water trawl (Federal), Shoreside hake mid-water trawl (Federal), Pink shrimp trawl (State).
 
-**Accessed**
+For the four trawl fisheries, NMFS and ODFW calculated the regions where the top 75% of the ranked importance values occur. 
+
+**Accessed**: Unpublished
 
 **Units**
 
-**Citation**
+**Citation**: If you have additional questions please refer to the Fisheries Considerations provided by NOAA's National Marine Fisheries Service (NMFS) and Oregon Department of Fish and Wildlife (ODFW) included in the NCCOS Spatial Modeling of Oregon Call Areas as [Appendix E](https://www.boem.gov/sites/default/files/documents/renewable-energy/state-activities/Appendix%20B_NCCOS%20Final%20WEA%20Report_Oregon.pdf){target="_blank"}. 
 
 ## Submarine Cables
 
