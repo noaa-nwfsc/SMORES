@@ -25,7 +25,14 @@
     "href": "Methods.html#pre-processing",
     "title": "Methods",
     "section": "Pre-processing",
-    "text": "Pre-processing\nTo generate an individual data layer data sources are processed before they are loaded into the app. This pre-processing step ensures that data layers are in the correct coordinate reference system, overlaid with the grid, and ready to be digested by the application. Pre-processing is done with two main files. Data_productions.R prepares the raw data files while preprocess_spatial_data() prepares the files for application compatibility. The key steps that are taken by these functions are the following:\n\n2 km grid for the west coast of the United States is accessed\nSt_intersection() is run between the individual layer and the 2 km grid to identify grid cells that have data for the individual layer\nGrid cells that have values are selected and fitted with a placeholder value (this applies for any layer that is a presence/absence data value)\nNew columns are made for each value a user might select and grid cells are populated with these values\nData frame is pivoted to the long format so that each grid cell has a list of values available to it if the grid cell had a presence of data\nData is transformed to be in the WGS 84 coordinate system for compatibility with leaflet() mapping\nData is saved as a geoparquet file format. This format was chosen for its ability to efficiently store large spatial data files\n\nData is now prepared to be loaded into the application."
+    "text": "Pre-processing\nTo generate an individual data layer data sources are processed before they are loaded into the app. This pre-processing step ensures that data layers are in the correct coordinate reference system, overlaid with the grid, and ready to be digested by the application. Pre-processing is done with two main files. Data_productions.R prepares the raw data files while preprocess_spatial_data() prepares the files for application compatibility. The key steps that are taken by these functions are the following:\n\n2 km grid for the west coast of the United States is accessed\nSt_intersection() is run between the individual layer and the 2 km grid to identify grid cells that have data for the individual layer\nGrid cells that have values are selected and fitted with a placeholder value (this applies for any layer that is a presence/absence data value)\nNew columns are made for each value a user might select and grid cells are populated with these values\nData frame is pivoted to the long format so that each grid cell has a list of values available to it if the grid cell had a presence of data\nData is transformed to be in the WGS 84 coordinate system for compatibility with leaflet() mapping\nData is saved as a geoparquet file format. This format was chosen for its ability to efficiently store large spatial data files.\n\nData is now prepared to be loaded into the application."
+  },
+  {
+    "objectID": "Methods.html#score-options",
+    "href": "Methods.html#score-options",
+    "title": "Methods",
+    "section": "Score Options",
+    "text": "Score Options\nOne of the main goals of the SMORES application was to allow for NMFS to model the impacts of different scoring scenarios before recommending scoring scenarios to BOEM. In order to achieve this different individual layers within the app have score drop down menus to allow for different score selection options. Based on how data were created and the best practices for that data type individual layers have three options for the scores presented: static, z-membership, and ranked importance.\n\nStatic Score\nStatic scored data is selected when data are represented with a single value (ie. 0, 0.9, etc.). These data represent the presence or absence of an individual layer for a given 2x2-km cell that is then assigned a value. These values have been standardized within the application between 0 to 1 with a step of 0.1, or values to represent constraints such as 0.01, or 0.001. Scores are to be determined by the individual who is running model scenarios. However, there are scoring recommendations and guidelines from the Oregon siting exercise. Recommended scoring scenarios are presented on the application for the component you are viewing (ie. recommended species scores are shown on the species sub-tab of the natural resource submodel).\n\n\nZ-Membership\nZ-membership data is selected when data has been re-scaled using a fuzzy logic Z-shaped membership function from 0 to 1. The Z membership function is applied in the data_production.R file.\n\n\nRanked Importance\nRanked Importance data is used to represent fisheries data. Per the fisheries data and methods provided by NMFS in Appendix E of the Oregon Final Wind Energy Areas Report ranked importance was calculated by:\nFishing location information and duration fished were extracted or calculated from State and Federal logbook and Federal observer program datasets for each fishing event for each of the nine fisheries. Straight lines were drawn between the fishing start and end geocoordinates to create fishing event lines when both values were available; point locations were created when only a single fishing event geocoordinate was available. Each line or point location was matched to corresponding Pacific Fisheries Information Network (PacFIN) fish ticket information to retrieve inflation-adjusted ex-vessel (in 2020 USD) revenue derived from each fishing event. These lines and points of fishing effort and revenue were then overlaid and summarized on a 2x2-km grid.\nExploratory analyses suggested that highly skewed distributions of fishing effort and revenue, in which a very small number of grid cells had exceptionally high values of effort and/or revenue, would grossly underestimate the amount of ocean space used by these nine fisheries. In order to account for these skewed distributions, we rank-transformed the fishing effort and revenue data. In order to combine and capture the most important characteristic (either ‘effort’ or ‘revenue’) of each fishery for each grid cell, we normalized (between 0 and 1) the rank-transformed effort and revenue data and then selected the highest normalized value for each grid cell. We term this final metric “Ranked Importance”."
   },
   {
     "objectID": "GUI.html",
@@ -74,7 +81,7 @@
     "href": "Data.html#seeps",
     "title": "Data Sources",
     "section": "Seeps",
-    "text": "Seeps\nBrief Description: Methane bubble streams identified during multibeam sonar surveys often indicate the location of methane seeps and associated seep communities on the seafloor. We curated data layers from recent publications that summarize the point locations of these bubble streams. Recent remotely operated vehicle (ROV) surveys have confirmed active gas venting on the seafloor for some of these locations, as well as the presence of methane seep communities.\nAccessed\nUnits\nCitation"
+    "text": "Seeps\nBrief Description: Methane bubble streams identified during multibeam sonar surveys often indicate the location of methane seeps and associated seep communities on the seafloor. We curated data layers from recent publications that summarize the point locations of these bubble streams. Recent remotely operated vehicle (ROV) surveys have confirmed active gas venting on the seafloor for some of these locations, as well as the presence of methane seep communities.\nAccessed: Unpublished\nUnits\nCitation"
   },
   {
     "objectID": "Data.html#shelf-break",
@@ -116,98 +123,98 @@
     "href": "Data.html#esa-critical-habitat-for-southern-resident-killer-whales",
     "title": "Data Sources",
     "section": "ESA Critical Habitat for Southern Resident Killer Whales",
-    "text": "ESA Critical Habitat for Southern Resident Killer Whales\nBrief Description\nAccessed\nUnits\nCitation"
+    "text": "ESA Critical Habitat for Southern Resident Killer Whales\nBrief Description\nAccessed: Data reference\nUnits\nCitation: NOAA NMFS"
   },
   {
     "objectID": "Data.html#esa-critical-habitat-for-leatherback-sea-turtles",
     "href": "Data.html#esa-critical-habitat-for-leatherback-sea-turtles",
     "title": "Data Sources",
     "section": "ESA Critical Habitat for Leatherback Sea Turtles",
-    "text": "ESA Critical Habitat for Leatherback Sea Turtles\nBrief Description\nAccessed\nUnits\nCitation"
+    "text": "ESA Critical Habitat for Leatherback Sea Turtles\nBrief Description\nAccessed: Unpublished\nUnits\nCitation"
   },
   {
     "objectID": "Data.html#esa-critical-habitat-for-humpback-whales---mexico-and-central-dps",
     "href": "Data.html#esa-critical-habitat-for-humpback-whales---mexico-and-central-dps",
     "title": "Data Sources",
     "section": "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS",
-    "text": "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS\nBrief Description\nAccessed\nUnits\nCitation"
+    "text": "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS\nBrief Description\nAccessed: Unpublished\nUnits\nCitation: NOAA NMFS"
   },
   {
     "objectID": "Data.html#biologically-important-area---blue-whale",
     "href": "Data.html#biologically-important-area---blue-whale",
     "title": "Data Sources",
     "section": "Biologically Important Area - Blue Whale",
-    "text": "Biologically Important Area - Blue Whale\nBrief Description\nAccessed\nUnits\nCitation"
+    "text": "Biologically Important Area - Blue Whale\nBrief Description\nAccessed: Unpublished\nUnits\nCitation: NOAA NMFS"
   },
   {
     "objectID": "Data.html#at-sea-hake-mid-water-trawl",
     "href": "Data.html#at-sea-hake-mid-water-trawl",
     "title": "Data Sources",
     "section": "At-Sea Hake Mid-Water Trawl",
-    "text": "At-Sea Hake Mid-Water Trawl\nBrief Description\nAccessed\nUnits\nCitation"
+    "text": "At-Sea Hake Mid-Water Trawl\nBrief Description: Logbooks from PacFIN via the NMFS NWSC observer program\nAccessed: Unpublished\nUnits\nCitation"
   },
   {
     "objectID": "Data.html#shoreside-hake-mid-water-trawl",
     "href": "Data.html#shoreside-hake-mid-water-trawl",
     "title": "Data Sources",
     "section": "Shoreside Hake Mid-Water Trawl",
-    "text": "Shoreside Hake Mid-Water Trawl\nBrief Description\nAccessed\nUnits\nCitation"
+    "text": "Shoreside Hake Mid-Water Trawl\nBrief Description: Logbooks from PacFIN via the observer database and from ODFW, NMFS NWFSC Observer Program\nAccessed: Unpublished\nUnits\nCitation"
   },
   {
     "objectID": "Data.html#groundfish-bottom-trawl",
     "href": "Data.html#groundfish-bottom-trawl",
     "title": "Data Sources",
     "section": "Groundfish Bottom Trawl",
-    "text": "Groundfish Bottom Trawl\nBrief Description\nAccessed\nUnits\nCitation"
+    "text": "Groundfish Bottom Trawl\nBrief Description: Logbooks from PacFIN via the NMFS NWSC observer program database\nAccessed: Unpublished\nUnits\nCitation"
   },
   {
     "objectID": "Data.html#groundfish-pot-gear",
     "href": "Data.html#groundfish-pot-gear",
     "title": "Data Sources",
     "section": "Groundfish Pot Gear",
-    "text": "Groundfish Pot Gear\nBrief Description\nAccessed\nUnits\nCitation"
+    "text": "Groundfish Pot Gear\nBrief Description\nAccessed: Unpublished\nUnits\nCitation"
   },
   {
     "objectID": "Data.html#groundfish-long-line-gear",
     "href": "Data.html#groundfish-long-line-gear",
     "title": "Data Sources",
     "section": "Groundfish Long Line Gear",
-    "text": "Groundfish Long Line Gear\nBrief Description\nAccessed\nUnits\nCitation"
+    "text": "Groundfish Long Line Gear\nBrief Description\nAccessed: Unpublished\nUnits\nCitation"
   },
   {
     "objectID": "Data.html#pink-shrimp-trawl",
     "href": "Data.html#pink-shrimp-trawl",
     "title": "Data Sources",
     "section": "Pink Shrimp Trawl",
-    "text": "Pink Shrimp Trawl\nBrief Description\nAccessed\nUnits\nCitation"
+    "text": "Pink Shrimp Trawl\nBrief Description: ODFW logbook, PacFIN\nAccessed: Unpublished\nUnits\nCitation"
   },
   {
     "objectID": "Data.html#dungeness-crab",
     "href": "Data.html#dungeness-crab",
     "title": "Data Sources",
     "section": "Dungeness Crab",
-    "text": "Dungeness Crab\nBrief Description\nAccessed\nUnits\nCitation"
+    "text": "Dungeness Crab\nBrief Description: ODFW logbook, PacFIN\nAccessed: Unpublished\nUnits\nCitation"
   },
   {
     "objectID": "Data.html#commercial-trollhook-and-line-albacore",
     "href": "Data.html#commercial-trollhook-and-line-albacore",
     "title": "Data Sources",
     "section": "Commercial Troll/Hook and Line Albacore",
-    "text": "Commercial Troll/Hook and Line Albacore\nBrief Description\nAccessed\nUnits\nCitation"
+    "text": "Commercial Troll/Hook and Line Albacore\nBrief Description: NMFS SWFSC, PacFIN\nAccessed: Unpublished\nUnits\nCitation"
   },
   {
     "objectID": "Data.html#charter-vessel-albacore-trollhook-and-line",
     "href": "Data.html#charter-vessel-albacore-trollhook-and-line",
     "title": "Data Sources",
     "section": "Charter Vessel Albacore Troll/Hook and Line",
-    "text": "Charter Vessel Albacore Troll/Hook and Line\nBrief Description\nAccessed\nUnits\nCitation"
+    "text": "Charter Vessel Albacore Troll/Hook and Line\nBrief Description:\nAccessed: Unpublished\nUnits\nCitation"
   },
   {
     "objectID": "Data.html#trawl-fisheries",
     "href": "Data.html#trawl-fisheries",
     "title": "Data Sources",
     "section": "Trawl Fisheries",
-    "text": "Trawl Fisheries\nBrief Description\nAccessed\nUnits\nCitation"
+    "text": "Trawl Fisheries\nBrief Description: Trawl fisheries (bottom and mid-water trawl), in particular, have little flexibility in where they fish due to their operational logistics. The gear requires large spaces for maneuverability and is incompatible with other structures and cables/mooring lines in the water, including what would likely be infrastructure for floating offshore wind platforms and anchors. The targeted species are also associated with locations along the shelf and slope and specific depth ranges. Therefore, these fisheries are especially vulnerable to fragmentation of fishing grounds. Four trawl fisheries operate within the two OR Call Areas: Groundfish bottom trawl (Federal), At-sea hake mid-water trawl (Federal), Shoreside hake mid-water trawl (Federal), Pink shrimp trawl (State).\nFor the four trawl fisheries, NMFS and ODFW calculated the regions where the top 75% of the ranked importance values occur.\nAccessed: Unpublished\nUnits\nCitation: If you have additional questions please refer to the Fisheries Considerations provided by NOAA’s National Marine Fisheries Service (NMFS) and Oregon Department of Fish and Wildlife (ODFW) included in the NCCOS Spatial Modeling of Oregon Call Areas as Appendix E."
   },
   {
     "objectID": "Data.html#submarine-cables",

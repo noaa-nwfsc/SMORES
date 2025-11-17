@@ -44,10 +44,27 @@ To generate an individual data layer data sources are processed before they are 
 
 - Data is transformed to be in the WGS 84 coordinate system for compatibility with [leaflet()](https://leafletjs.com/){target="_blank"} mapping
 
-- Data is saved as a [geoparquet](https://geoparquet.org/){target="_blank"} file format. This format was chosen for its ability to efficiently store large spatial data files 
+- Data is saved as a [geoparquet](https://geoparquet.org/){target="_blank"} file format. This format was chosen for its ability to efficiently store large spatial data files.
 
 Data is now prepared to be loaded into the application. 
 
+## Score Options
 
+One of the main goals of the SMORES application was to allow for NMFS to model the impacts of different scoring scenarios before recommending scoring scenarios to BOEM. In order to achieve this different individual layers within the app have score drop down menus to allow for different score selection options. Based on how data were created and the best practices for that data type individual layers have three options for the scores presented: static, z-membership, and ranked importance. 
 
+### Static Score
+
+Static scored data is selected when data are represented with a single value (ie. 0, 0.9, etc.). These data represent the presence or absence of an individual layer for a given 2x2-km cell that is then assigned a value. These values have been standardized within the application between 0 to 1 with a step of 0.1, or values to represent constraints such as 0.01, or 0.001. Scores are to be determined by the individual who is running model scenarios. However, there are scoring recommendations and guidelines from the Oregon siting exercise. Recommended scoring scenarios are presented on the application for the component you are viewing (ie. recommended species scores are shown on the species sub-tab of the natural resource submodel).
+
+### Z-Membership
+
+Z-membership data is selected when data has been re-scaled using a fuzzy logic Z-shaped membership function from 0 to 1. The Z membership function is applied in the [data_production.R file](https://github.com/noaa-nwfsc/SMORES/blob/ecb863dbe7226e34f3212eab3c53b90d42cc905c/data_production.R#L160){target="_blank"}. 
+
+### Ranked Importance
+
+Ranked Importance data is used to represent fisheries data. Per the fisheries data and methods provided by NMFS in Appendix E of the [Oregon Final Wind Energy Areas Report](https://www.boem.gov/sites/default/files/documents/renewable-energy/state-activities/Appendix%20B_NCCOS%20Final%20WEA%20Report_Oregon.pdf){target="_blank"} ranked importance was calculated by:
+
+Fishing location information and duration fished were extracted or calculated from State and Federal logbook and Federal observer program datasets for each fishing event for each of the nine fisheries. Straight lines were drawn between the fishing start and end geocoordinates to create fishing event lines when both values were available; point locations were created when only a single fishing event geocoordinate was available. Each line or point location was matched to corresponding Pacific Fisheries Information Network (PacFIN) fish ticket information to retrieve inflation-adjusted ex-vessel (in 2020 USD) revenue derived from each fishing event. These lines and points of fishing effort and revenue were then overlaid and summarized on a 2x2-km grid. 
+
+Exploratory analyses suggested that highly skewed distributions of fishing effort and revenue, in which a very small number of grid cells had exceptionally high values of effort and/or revenue, would grossly underestimate the amount of ocean space used by these nine fisheries. In order to account for these skewed distributions, we rank-transformed the fishing effort and revenue data. In order to combine and capture the most important characteristic (either ‘effort’ or ‘revenue’) of each fishery for each grid cell, we normalized (between 0 and 1) the rank-transformed effort and revenue data and then selected the highest normalized value for each grid cell. We term this final metric “Ranked Importance”. 
 
