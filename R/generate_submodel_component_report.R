@@ -1,87 +1,58 @@
 # Function to generate component reports
+# Optimized function to generate component reports using app data
 generate_submodel_component_report <- function(
-    component_type,          # "habitat", "species", "surveys", "cables"
-    submodel_type,           # "natural_resources", "industry_operations"
-    valid_configs,           # The configuration data
-    combined_maps_data,      # Reactive values object
-    input,                   # Shiny input object
-    filtered_aoi_data,       # AOI data function
-    file                     # Output file path
+    component_type,
+    submodel_type,
+    valid_configs,
+    combined_data_extracted, # Change this parameter name from combined_maps_data
+    input,
+    filtered_aoi_data,
+    file
 ) {
   
-  # Component-specific mappings
+  # Component configuration
   component_config <- list(
     habitat = list(
       display_name = "Habitat",
       tab_name = "Natural Resources",
       methods_input = "habitatCalculationMethods",
       combined_title = "Combined Habitat Maps",
-      geo_data = "habitat_geo",
-      lowest_data = "habitat_lowest", 
-      product_data = "habitat_product",
-      generated_flag = "habitat_combined_map_generated",
-      filename_prefix = "Habitat_Component_Natural_Resources_Submodel_Report_",
-      modal_message = "Please wait while the Habitat Component of the Natural Resources report is being generated..."
+      modal_message = "Please wait while the Habitat Component report is being generated..."
     ),
     species = list(
       display_name = "Species",
       tab_name = "Natural Resources", 
       methods_input = "speciesCalculationMethods",
       combined_title = "Combined Species Maps",
-      geo_data = "species_geo",
-      lowest_data = "species_lowest",
-      product_data = "species_product", 
-      generated_flag = "species_combined_map_generated",
-      filename_prefix = "Species_Component_Natural_Resources_Submodel_Report_",
-      modal_message = "Please wait while the Species Component of the Natural Resources report is being generated..."
+      modal_message = "Please wait while the Species Component report is being generated..."
     ),
     fisheries = list(
       display_name = "Fisheries",
       tab_name = "Fisheries", 
       methods_input = "fisheriesCalculationMethods",
       combined_title = "Combined Fisheries Maps",
-      geo_data = "fisheries_geo",
-      lowest_data = "fisheries_lowest",
-      product_data = "fisheries_product", 
-      generated_flag = "fisheries_combined_map_generated",
-      filename_prefix = "Fisheries_Component_Fisheries_Submodel_Report_",
-      modal_message = "Please wait while the Fisheries Component of the Fisheries report is being generated..."
+      modal_message = "Please wait while the Fisheries Component report is being generated..."
     ),
     trawl = list(
       display_name = "Trawl",
       tab_name = "Fisheries", 
       methods_input = "trawlCalculationMethods",
       combined_title = "Combined Trawl Maps",
-      geo_data = "trawl_geo",
-      lowest_data = "trawl_lowest",
-      product_data = "trawl_product", 
-      generated_flag = "trawl_combined_map_generated",
-      filename_prefix = "Trawl_Fisheries_Component_Fisheries_Submodel_Report_",
-      modal_message = "Please wait while the Trawl Fisheries Component of the Fisheries report is being generated..."
+      modal_message = "Please wait while the Trawl Component report is being generated..."
     ),
     surveys = list(
       display_name = "Surveys",
       tab_name = "Industry and Operations",
       methods_input = "surveysCalculationMethods", 
       combined_title = "Combined Surveys Maps",
-      geo_data = "surveys_geo",
-      lowest_data = "surveys_lowest",
-      product_data = "surveys_product",
-      generated_flag = "surveys_combined_map_generated",
-      filename_prefix = "Surveys_Component_Industry_Operations_Submodel_Report_",
-      modal_message = "Please wait while the Surveys Component of the Industry and Operations report is being generated..."
+      modal_message = "Please wait while the Surveys Component report is being generated..."
     ),
     cables = list(
       display_name = "Cables", 
       tab_name = "Industry and Operations",
       methods_input = "cablesCalculationMethods",
       combined_title = "Combined Cables Maps", 
-      geo_data = "cables_geo",
-      lowest_data = "cables_lowest",
-      product_data = "cables_product",
-      generated_flag = "cables_combined_map_generated", 
-      filename_prefix = "Submarine_Cables_Component_Industry_Operations_Submodel_Report_",
-      modal_message = "Please wait while the Submarine Cables Component of the Industry and Operations report is being generated..."
+      modal_message = "Please wait while the Submarine Cables Component report is being generated..."
     )
   )
   
@@ -94,43 +65,35 @@ generate_submodel_component_report <- function(
   # Show modal with spinner
   show_spinner_modal("Generating Report", config$modal_message)
   
-  # Get filtered timestamp information for the selected layers
+  # Get filtered timestamp information
   timestamp_info <- get_filtered_timestamp_data(valid_configs, component_type)
   
-  # Get filtered AOI data for the report
+  # Get AOI data
   aoi_data <- filtered_aoi_data()
-  
-  # Make sure each valid_config has valid spatial data
-  for(i in seq_along(valid_configs)) {
-    # Ensure data is transformed to WGS84 for leaflet
-    if(!is.null(valid_configs[[i]]$data) && inherits(valid_configs[[i]]$data, "sf")) {
-      valid_configs[[i]]$data <- st_transform(valid_configs[[i]]$data, '+proj=longlat +datum=WGS84')
-    }
-  }
   
   # Get selected calculation methods
   selected_methods <- input[[config$methods_input]] %||% character(0)
   
-  # Get combined data for each selected method if available
+  # Prepare combined data list from the extracted data
   combined_data_list <- list()
-  if(combined_maps_data[[config$generated_flag]] && length(selected_methods) > 0) {
-    
-    if("geometric_mean" %in% selected_methods && !is.null(combined_maps_data[[config$geo_data]])) {
-      combined_data_list[["geometric_mean"]] <- combined_maps_data[[config$geo_data]]
+  
+  # Use the extracted data for each component type
+  if(component_type == "fisheries") {
+    if("geometric_mean" %in% selected_methods && !is.null(combined_data_extracted$fisheries_geo)) {
+      combined_data_list[["geometric_mean"]] <- combined_data_extracted$fisheries_geo
     }
-    
-    if("lowest" %in% selected_methods && !is.null(combined_maps_data[[config$lowest_data]])) {
-      combined_data_list[["lowest"]] <- combined_maps_data[[config$lowest_data]]
+    if("lowest" %in% selected_methods && !is.null(combined_data_extracted$fisheries_lowest)) {
+      combined_data_list[["lowest"]] <- combined_data_extracted$fisheries_lowest
     }
-    
-    if("product" %in% selected_methods && !is.null(combined_maps_data[[config$product_data]])) {
-      combined_data_list[["product"]] <- combined_maps_data[[config$product_data]]
+    if("product" %in% selected_methods && !is.null(combined_data_extracted$fisheries_product)) {
+      combined_data_list[["product"]] <- combined_data_extracted$fisheries_product
     }
   }
+  # Add similar blocks for other component types if needed...
   
-  # Render the RMarkdown report with updated parameters
+  # Render the RMarkdown report
   rmarkdown::render(
-    input = "Submodel_Component_Report_Template.Rmd", 
+    input = "Submodel_Component_Report_Template.Rmd",
     output_file = file,
     params = list(
       map_configs = valid_configs,

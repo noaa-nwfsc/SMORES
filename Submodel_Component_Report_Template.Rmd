@@ -1,5 +1,5 @@
 ---
-title: " `r paste(params$component_name)` Component of the `r paste(params$tab_name, 'Submodel Report')`"
+title: "`r paste(params$component_name)` Component of the `r paste(params$tab_name, 'Submodel Report')`"
 date: "`r format(Sys.time(), '%B %d, %Y at %H:%M:%S')`"
 output: 
   html_document:
@@ -11,7 +11,6 @@ output:
     self_contained: true
 params:
   map_configs: NULL
-  combined_data: NULL
   combined_data_list: NULL    
   selected_methods: NULL    
   tab_name: NULL
@@ -114,17 +113,133 @@ margin-right: auto;
 ```
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.width = 12, fig.height = 8)
-# load all packages and custom functions without having to identify individual functions
-source("global.R")
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
-# Function to render individual maps using function directly
-render_individual_map_from_config <- function(config) {
-  # Get AOI data same way as the server
-  aoi_data <- params$aoi_data
-  
-  # Call the pure function directly - this generates the exact same map as the app
-  return(create_individual_map(config, aoi_data))
+# Load only essential libraries for report generation
+library(leaflet)
+library(sf)
+library(dplyr)
+library(knitr)
+library(htmltools)
+library(htmlwidgets)
+
+# NO SOURCING OF GLOBAL.R - USE DATA ALREADY LOADED IN APP
+# Source only essential functions directly - use the correct environment
+if (file.exists("R/create_individual_map.R")) {
+  source("R/create_individual_map.R", local = environment())
+  cat("✓ create_individual_map.R sourced successfully\n")
+} else {
+  cat("✗ create_individual_map.R not found\n")
+}
+
+if (file.exists("R/create_combined_map.R")) {
+  source("R/create_combined_map.R", local = environment()) 
+  cat("✓ create_combined_map.R sourced successfully\n")
+} else {
+  cat("✗ create_combined_map.R not found\n")
+}
+
+if (file.exists("R/create_continuous_palette.R")) {
+  source("R/create_continuous_palette.R", local = environment())
+  cat("✓ create_continuous_palette.R sourced successfully\n")
+} else {
+  cat("✗ create_continuous_palette.R not found\n")
+}
+
+if (file.exists("R/filter_by_score.R")) {
+  source("R/filter_by_score.R", local = environment())
+  cat("✓ filter_by_score.R sourced successfully\n")
+} else {
+  cat("✗ filter_by_score.R not found\n")
+}
+
+# Get essential data objects directly from global environment
+score_colors <- list(
+  "0" = "#000000",     # black
+  "0.01" =  "#0D5359", #turquoise   
+  "0.001" = "#91CB3E", # lime
+  "0.1" = "#E41A1C",  # red
+  "0.2" = "#03045E",  # blue
+  "0.3" = "#08A045",  # green
+  "0.4" = "#805D93",  # purple
+  "0.5" = "#EC4E20",  # orange
+  "0.6" = "#FEEA00",  # yellow
+  "0.7" = "#540b0E",  # brown
+  "0.8" = "#F49FBC",  # pink
+  "0.9" = "#791E94",  # bright purple 
+  "1" = "#BE3E82" # berry
+)
+
+# Access the data objects that are already loaded in the app environment
+# Use get() with proper error handling
+safe_get <- function(obj_name, env = .GlobalEnv) {
+  if (exists(obj_name, envir = env)) {
+    cat("✓ Found", obj_name, "in global environment\n")
+    return(get(obj_name, envir = env))
+  } else {
+    cat("✗ Missing", obj_name, "in global environment\n")
+    return(NULL)
+  }
+}
+
+# Debug: Check what's available in global environment
+cat("\n=== DEBUGGING GLOBAL ENVIRONMENT ===\n")
+cat("Objects in .GlobalEnv:\n")
+global_objects <- ls(envir = .GlobalEnv)
+cat(paste(global_objects, collapse = ", "), "\n")
+
+# Get all the datasets using the safe_get function
+canyon <- safe_get("canyon")
+ASH <- safe_get("ASH")
+ASH_ranked_importance <- safe_get("ASH_ranked_importance")
+SSH <- safe_get("SSH")
+SSH_ranked_importance <- safe_get("SSH_ranked_importance")
+GFBT <- safe_get("GFBT")
+GFBT_ranked_importance <- safe_get("GFBT_ranked_importance")
+GFP <- safe_get("GFP")
+GFP_ranked_importance <- safe_get("GFP_ranked_importance")
+GFLL <- safe_get("GFLL")
+GFLL_ranked_importance <- safe_get("GFLL_ranked_importance")
+grid_test <- safe_get("grid_test")
+
+# Test if the functions are available
+cat("\n=== FUNCTION AVAILABILITY CHECKS ===\n")
+if (exists("create_individual_map", envir = environment())) {
+  cat("✓ create_individual_map function is available\n")
+} else {
+  cat("✗ create_individual_map function is NOT available\n")
+}
+
+if (exists("create_combined_map", envir = environment())) {
+  cat("✓ create_combined_map function is available\n")
+} else {
+  cat("✗ create_combined_map function is NOT available\n")
+}
+
+# Debug: Check parameters passed to the report
+cat("\n=== PARAMETER DEBUGGING ===\n")
+cat("map_configs is null:", is.null(params$map_configs), "\n")
+if (!is.null(params$map_configs)) {
+  cat("Number of map configs:", length(params$map_configs), "\n")
+  for(i in 1:min(3, length(params$map_configs))) {
+    config <- params$map_configs[[i]]
+    cat("Config", i, "- Layer:", config$layer, "Score:", config$score, "\n")
+    cat("Config", i, "- Data is null:", is.null(config$data), "\n")
+    if (!is.null(config$data)) {
+      cat("Config", i, "- Data rows:", nrow(config$data), "\n")
+    }
+  }
+}
+
+cat("combined_data_list is null:", is.null(params$combined_data_list), "\n")
+if (!is.null(params$combined_data_list)) {
+  cat("Combined data list length:", length(params$combined_data_list), "\n")
+  cat("Combined data list names:", names(params$combined_data_list), "\n")
+}
+
+cat("aoi_data is null:", is.null(params$aoi_data), "\n")
+if (!is.null(params$aoi_data)) {
+  cat("AOI data rows:", nrow(params$aoi_data), "\n")
 }
 ```
 
@@ -168,107 +283,51 @@ if (!is.null(data_timestamps_table)) {
 
 The following maps are individual data layers that have been visualized for the study area. The maps are zoomed to the area of interest that was previously selected, and shown in a red outline. To view the wider study area select the zoom out button on the map. To more closely analyze a cell click on the cell of interest and a pop-up will generate with the assigned score. Above each of the maps is a block containing relevant information: layer name, score assigned, and the number of cells that are represented by this data layer.
 
-```{r}
-if(!is.null(params$map_configs) && length(params$map_configs) >= 1) {
-  config <- params$map_configs[[1]]
-  cat("Map 1:", config$layer, "(Score:", config$score, ")\n\n")
-  cat("Layer: ", config$layer, "  \n")
-  cat("Score: ", config$score, "  \n") 
-  cat("Data Points: ", nrow(config$data), "  \n\n")
+```{r individual-maps, results='asis', fig.align='center'}
 
-  # Generate the map
-  render_individual_map_from_config(config)
-}
-```
-
-```{r}
-if(!is.null(params$map_configs) && length(params$map_configs) >= 2) {
-  config <- params$map_configs[[2]]
-  cat("Map 2:", config$layer, "(Score:", config$score, ")\n\n")
-  cat("Layer: ", config$layer, "  \n")
-  cat("Score: ", config$score, "  \n") 
-  cat("Data Points: ", nrow(config$data), "  \n\n")
+if(!is.null(params$map_configs)) {
   
-  # Generate the map
-  render_individual_map_from_config(config)
-}
-```
+  for(i in seq_along(params$map_configs)) {
+    config <- params$map_configs[[i]]
+    
+    cat("\n\n### Map", i, ":", config$layer, "\n\n")
+    cat("**Score:** ", config$score, "  \n")
+    cat("**Data Points:** ", nrow(config$data), "  \n\n")
+    
+    # Try to create the map with detailed error handling
+    tryCatch({
+      map_result <- create_individual_map(config, params$aoi_data)
+      
+      # CRITICAL: Use htmltools to properly render the widget
+      if (inherits(map_result, "leaflet")) {
+     
+        temp_file <- tempfile(fileext = ".html")
+        htmlwidgets::saveWidget(map_result, temp_file, selfcontained = TRUE)
 
-```{r}
-if(!is.null(params$map_configs) && length(params$map_configs) >= 3) {
-  config <- params$map_configs[[3]]
-  cat("Map 3:", config$layer, "(Score:", config$score, ")\n\n")
-  cat("Layer: ", config$layer, "  \n")
-  cat("Score: ", config$score, "  \n") 
-  cat("Data Points: ", nrow(config$data), "  \n\n")
-
-  # Generate the map
-  render_individual_map_from_config(config)
-}
-```
-
-```{r}
-if(!is.null(params$map_configs) && length(params$map_configs) >= 4) {
-  config <- params$map_configs[[4]]
-  cat("Map 4:", config$layer, "(Score:", config$score, ")\n\n")
-  cat("Layer: ", config$layer, "  \n")
-  cat("Score: ", config$score, "  \n") 
-  cat("Data Points: ", nrow(config$data), "  \n\n")
- 
-  # Generate the map
-  render_individual_map_from_config(config)
-}
-```
-
-```{r}
-if(!is.null(params$map_configs) && length(params$map_configs) >= 5) {
-  config <- params$map_configs[[5]]
-  cat("Map 5:", config$layer, "(Score:", config$score, ")\n\n")
-  cat("Layer: ", config$layer, "  \n")
-  cat("Score: ", config$score, "  \n") 
-  cat("Data Points: ", nrow(config$data), "  \n\n")
-
-  # Generate the map
-  render_individual_map_from_config(config)
-}
-```
-
-```{r}
-if(!is.null(params$map_configs) && length(params$map_configs) >= 6) {
-  config <- params$map_configs[[6]]
-  cat("Map 6:", config$layer, "(Score:", config$score, ")\n\n")
-  cat("Layer: ", config$layer, "  \n")
-  cat("Score: ", config$score, "  \n") 
-  cat("Data Points: ", nrow(config$data), "  \n\n")
-
-  # Generate the map
-  render_individual_map_from_config(config)
-}
-```
-
-```{r}
-if(!is.null(params$map_configs) && length(params$map_configs) >= 7) {
-  config <- params$map_configs[[7]]
-  cat("Map 7:", config$layer, "(Score:", config$score, ")\n\n")
-  cat("Layer: ", config$layer, "  \n")
-  cat("Score: ", config$score, "  \n") 
-  cat("Data Points: ", nrow(config$data), "  \n\n")
-
-  # Generate the map
-  render_individual_map_from_config(config)
-}
-```
-
-```{r}
-if(!is.null(params$map_configs) && length(params$map_configs) >= 8) {
-  config <- params$map_configs[[8]]
-  cat("Map 8:", config$layer, "(Score:", config$score, ")\n\n")
-  cat("Layer: ", config$layer, "  \n")
-  cat("Score: ", config$score, "  \n") 
-  cat("Data Points: ", nrow(config$data), "  \n\n")
-
-  # Generate the map
-  render_individual_map_from_config(config)
+        # Include the saved widget
+        cat('<iframe src="', temp_file, '" width="100%" height="500px" frameborder="0"></iframe>\n')
+        
+      } else {
+        cat("ERROR: Map result is not a leaflet object\n")
+        # Create a simple placeholder map
+        placeholder <- leaflet() %>% 
+          addTiles() %>% 
+          addControl("Map generation failed", position = "center")
+        print(htmltools::tagList(placeholder))
+      }
+    }, error = function(e) {
+      cat("ERROR creating map:", e$message, "\n")
+      # Create error placeholder map
+      error_map <- leaflet() %>% 
+        addTiles() %>% 
+        addControl(paste("Map generation failed:", e$message), position = "center")
+      print(htmltools::tagList(error_map))
+    })
+    
+    cat("\n\n")
+  }
+} else {
+  cat("ERROR: No map configurations available - params$map_configs is NULL\n")
 }
 ```
 
@@ -276,77 +335,43 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 8) {
 
 The following maps are combined data layers that have been calculated and visualized for the study area. The maps are zoomed to the area of interest that was previously selected, and shown in a red outline. To view the wider study area select the zoom out button on the map. To more closely analyze a cell click on the cell of interest and a pop-up will generate with the assigned score. Above each of the maps is a block containing relevant information: the number of cells that are represented by this data layer, and the calculation method used (geometric mean, lowest value, or product method).
 
-```{r}
-if (!is.null(params$selected_methods) && "geometric_mean" %in% params$selected_methods &&
-    !is.null(params$combined_data_list) && "geometric_mean" %in% names(params$combined_data_list)) {
-  combined_data <- params$combined_data_list[["geometric_mean"]]
-  if(!is.null(combined_data)) {
-    # Count only cells with scores not equal to 0 or NA
-    valid_data_points <- nrow(combined_data[!is.na(combined_data$Geo_mean) & combined_data$Geo_mean != 0, ])
-    cat("**Combined Data Points:** ", valid_data_points, "  \n")
-    cat("**Calculation Method:** Geometric Mean  \n\n")
+```{r combined-maps, results='asis', fig.align='center'}
+if(!is.null(params$combined_data_list) && length(params$combined_data_list) > 0) {
+  for(method in names(params$combined_data_list)) {
+    combined_data <- params$combined_data_list[[method]]
+    
+    cat("\n\n### Combined Map -", tools::toTitleCase(gsub("_", " ", method)), "\n\n")
+    
+    # Create the combined map with error handling
+    tryCatch({
+      map_result <- create_combined_map(combined_data, 
+                                       paste(params$combined_map_title, "-", method), 
+                                       method, 
+                                       aoi_data = params$aoi_data)
+      
+      # CRITICAL: Use htmltools to properly render the widget
+      if (inherits(map_result, "leaflet")) {
+      
+        temp_file <- tempfile(fileext = ".html")
+        htmlwidgets::saveWidget(map_result, temp_file, selfcontained = TRUE)
+        
+        # Include the saved widget
+        cat('<iframe src="', temp_file, '" width="100%" height="500px" frameborder="0"></iframe>\n')
+        
+      } else {
+        cat("ERROR: Map result is not a leaflet object\n")
+      }
+    }, error = function(e) {
+      cat("Error creating combined map:", e$message, "\n")
+      error_map <- leaflet() %>% 
+        addTiles() %>% 
+        addControl("Combined map generation failed", position = "center")
+      print(htmltools::tagList(error_map))
+    })
+    
+    cat("\n\n")
   }
 } else {
-  cat("*Geometric mean calculation method was not selected or data is not available.*\n\n")
-}
-
-if (!is.null(params$selected_methods) && "geometric_mean" %in% params$selected_methods &&
-    !is.null(params$combined_data_list) && "geometric_mean" %in% names(params$combined_data_list)) {
-  combined_data <- params$combined_data_list[["geometric_mean"]]
-  if(!is.null(combined_data)) {
-    create_combined_map(combined_data, paste(params$combined_map_title, "- Geometric Mean"), "geometric_mean", aoi_data = params$aoi_data)
-  }
-}
-```
-
-```{r}
-if (!is.null(params$selected_methods) && "lowest" %in% params$selected_methods &&
-    !is.null(params$combined_data_list) && "lowest" %in% names(params$combined_data_list)) {
-  combined_data <- params$combined_data_list[["lowest"]]
-  if(!is.null(combined_data)) {
-    # Count only cells with scores not equal to 0 or NA
-    value_column <- if("Lowest" %in% names(combined_data)) "Lowest" else "Lowest_value"
-    valid_data_points <- nrow(combined_data[!is.na(combined_data[[value_column]]) & combined_data[[value_column]] != 0, ])
-    cat("**Combined Data Points:** ", valid_data_points, "  \n")
-    cat("**Calculation Method:** Lowest Score  \n\n")
-  }
-} else {
-  cat("*Lowest score calculation method was not selected or data is not available.*\n\n")
-}
-```
-
-```{r}
-if (!is.null(params$selected_methods) && "lowest" %in% params$selected_methods &&
-    !is.null(params$combined_data_list) && "lowest" %in% names(params$combined_data_list)) {
-  combined_data <- params$combined_data_list[["lowest"]]
-  if(!is.null(combined_data)) {
-    create_combined_map(combined_data, paste(params$combined_map_title, "- Lowest Score"), "lowest", aoi_data = params$aoi_data)
-  }
-}
-```
-
-```{r}
-if (!is.null(params$selected_methods) && "product" %in% params$selected_methods &&
-    !is.null(params$combined_data_list) && "product" %in% names(params$combined_data_list)) {
-  combined_data <- params$combined_data_list[["product"]]
-  if(!is.null(combined_data)) {
-    # Count only cells with scores not equal to 0 or NA
-    value_column <- if("Product" %in% names(combined_data)) "Product" else "Product_value"
-    valid_data_points <- nrow(combined_data[!is.na(combined_data[[value_column]]) & combined_data[[value_column]] != 0, ])
-    cat("**Combined Data Points:** ", valid_data_points, "  \n")
-    cat("**Calculation Method:** Product  \n\n")
-  }
-} else {
-  cat("*Product calculation method was not selected or data is not available.*\n\n")
-}
-```
-
-```{r}
-if (!is.null(params$selected_methods) && "product" %in% params$selected_methods &&
-    !is.null(params$combined_data_list) && "product" %in% names(params$combined_data_list)) {
-  combined_data <- params$combined_data_list[["product"]]
-  if(!is.null(combined_data)) {
-    create_combined_map(combined_data, paste(params$combined_map_title, "- Product"), "product", aoi_data = params$aoi_data)
-  }
+  cat("No combined map data available.\n")
 }
 ```

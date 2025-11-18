@@ -965,11 +965,27 @@ function(input, output, session) {
             format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
     },
     content = function(file) {
+      # Extract data from ReactiveValues BEFORE passing to report function
+      combined_data_extracted <- list()
+      
+      # Extract fisheries data if it exists
+      if(isTRUE(combined_maps_data$fisheries_combined_map_generated)) {
+        if(!is.null(combined_maps_data$fisheries_geo)) {
+          combined_data_extracted$fisheries_geo <- combined_maps_data$fisheries_geo
+        }
+        if(!is.null(combined_maps_data$fisheries_lowest)) {
+          combined_data_extracted$fisheries_lowest <- combined_maps_data$fisheries_lowest
+        }
+        if(!is.null(combined_maps_data$fisheries_product)) {
+          combined_data_extracted$fisheries_product <- combined_maps_data$fisheries_product
+        }
+      }
+      
       generate_submodel_component_report(
         component_type = "fisheries",
         submodel_type = "fisheries",
         valid_configs = fisheries_valid_configs(), 
-        combined_maps_data = combined_maps_data,
+        combined_data_extracted = combined_data_extracted, # Pass extracted data instead of ReactiveValues
         input = input,
         filtered_aoi_data = filtered_aoi_data,
         file = file
