@@ -221,7 +221,7 @@
     "href": "Data.html#submarine-cables",
     "title": "Data Sources",
     "section": "Submarine Cables",
-    "text": "Submarine Cables\nBrief Description\nAccessed\nUnits\nCitation"
+    "text": "Submarine Cables\nBrief Description: These data show the general location of commercial and research submarine cables within U.S. waters. The majority of these cables are for telecommunications, and the remaining are for power transmission. The geographic footprint for each cable may vary and is dependent on the original source data. In the near shore, cables are routinely buried below the seabed. Offshore, they are placed directly on the seabed. A submarine cable area may contain one or more physical cables, and 30 CFR 585.301 defines a minimum 100-foot-wide right of way grant on each side of a cable.\nAccessed: Marine Cadastre, ArcGIS Rest Service\nUnits: EPSG:4269\nCitation: Office for Coastal Management, 2025: Submarine Cables, https://www.fisheries.noaa.gov/inport/item/66190."
   },
   {
     "objectID": "Access.html",
