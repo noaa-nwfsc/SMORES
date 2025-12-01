@@ -23,8 +23,8 @@ generate_full_model_sidebar <- function() {
           "Weight for Natural Resources:",
           min = 0,
           max = 1,
-          value = 0.33,
-          step = 0.01
+          value = 1,
+          step = 0.1
         )
       ),
       
@@ -40,8 +40,8 @@ generate_full_model_sidebar <- function() {
           "Weight for Fisheries:",
           min = 0,
           max = 1,
-          value = 0.33,
-          step = 0.01
+          value = 1,
+          step = 0.1
         )
       ),
       
@@ -57,17 +57,12 @@ generate_full_model_sidebar <- function() {
           "Weight for Industry & Operations:",
           min = 0,
           max = 1,
-          value = 0.33,
-          step = 0.01
+          value = 1,
+          step = 0.1
         )
       )
     ),
     
-    hr(),
-    
-    # Weight validation display
-    h5("Weight Summary"),
-    htmlOutput("fullWeightValidation"),
     hr(),
     
     # Generate final model button

@@ -59,8 +59,7 @@ function(input, output, session) {
     full_model = NULL,
     full_model_generated = FALSE,
     full_map = NULL,
-    full_map_cropped = NULL, 
-    full_map_cropped_normalized = NULL
+    full_map_cropped = NULL
   )
   
   #AOI selector options
@@ -1328,43 +1327,6 @@ function(input, output, session) {
     generate_full_model_sidebar()
   })
   
-  # Weight validation for full model
-  output$fullWeightValidation <- renderUI({
-    # Get the current weight values
-    natural_resources_weight <- input$weightNaturalResources %||% 0
-    fisheries_weight <- input$weightFisheries %||% 0
-    industry_weight <- input$weightIndustryOperations %||% 0
-    
-    # Get which submodels are enabled
-    nr_enabled <- input$enableNaturalResources %||% FALSE
-    fisheries_enabled <- input$enableFisheries %||% FALSE
-    industry_enabled <- input$enableIndustryOperations %||% FALSE
-    
-    # Calculate total weight for enabled submodels only
-    enabled_weights <- c()
-    if(nr_enabled) enabled_weights <- c(enabled_weights, natural_resources_weight)
-    if(fisheries_enabled) enabled_weights <- c(enabled_weights, fisheries_weight)
-    if(industry_enabled) enabled_weights <- c(enabled_weights, industry_weight)
-    
-    total_weight <- sum(enabled_weights)
-    num_enabled <- length(enabled_weights)
-    
-    # Validation messages
-    if(num_enabled == 0) {
-      div(class = "alert alert-warning", 
-          "No submodels selected. Please enable at least one submodel.")
-    } else if(total_weight == 0) {
-      div(class = "alert alert-warning", 
-          "Total weight is 0. Please set weights greater than 0.")
-    } else if(abs(total_weight - 1) > 0.01) {
-      div(class = "alert alert-info", 
-          paste("Total weight:", round(total_weight, 3), "- Weights will be normalized to sum to 1.0"))
-    } else {
-      div(class = "alert alert-success", 
-          paste("✓ Total weight:", round(total_weight, 3), "- Ready to generate combined model"))
-    }
-  })
-  
   # Enhanced submodel status using the new function
   submodel_status <- reactive({
     list(
@@ -2112,9 +2074,43 @@ function(input, output, session) {
     }
   )
   
+  # Weight validation for full model (no normalization requirement)
+  output$fullWeightValidation <- renderUI({
+    # Get the current weight values
+    natural_resources_weight <- input$weightNaturalResources %||% 0
+    fisheries_weight <- input$weightFisheries %||% 0
+    industry_weight <- input$weightIndustryOperations %||% 0
+    
+    # Get which submodels are enabled
+    nr_enabled <- input$enableNaturalResources %||% FALSE
+    fisheries_enabled <- input$enableFisheries %||% FALSE
+    industry_enabled <- input$enableIndustryOperations %||% FALSE
+    
+    # Calculate total weight for enabled submodels only
+    enabled_weights <- c()
+    if(nr_enabled) enabled_weights <- c(enabled_weights, natural_resources_weight)
+    if(fisheries_enabled) enabled_weights <- c(enabled_weights, fisheries_weight)
+    if(industry_enabled) enabled_weights <- c(enabled_weights, industry_weight)
+    
+    total_weight <- sum(enabled_weights)
+    num_enabled <- length(enabled_weights)
+    
+    # Validation messages (no normalization requirement)
+    if(num_enabled == 0) {
+      div(class = "alert alert-warning", 
+          "No submodels selected. Please enable at least one submodel.")
+    } else {
+      div(class = "alert alert-success", 
+          paste("✓ Total weight:", round(total_weight, 3), "- Ready to generate full model"))
+    }
+  })
+  
   # Generate full Model Button Logic
   observeEvent(input$generateFullModel, {
     tryCatch({
+      # DEBUGGING: Print current state
+      cat("=== FULL MODEL GENERATION DEBUG ===\n")
+      
       # Get weight values
       natural_resources_weight <- input$weightNaturalResources %||% 0
       fisheries_weight <- input$weightFisheries %||% 0
@@ -2125,32 +2121,67 @@ function(input, output, session) {
       fisheries_enabled <- input$enableFisheries %||% FALSE
       industry_enabled <- input$enableIndustryOperations %||% FALSE
       
-      # Validate that at least one submodel is enabled with weight > 0
+      cat("Enabled states:\n")
+      cat("- Natural Resources:", nr_enabled, "Weight:", natural_resources_weight, "\n")
+      cat("- Fisheries:", fisheries_enabled, "Weight:", fisheries_weight, "\n") 
+      cat("- Industry Operations:", industry_enabled, "Weight:", industry_weight, "\n")
+      
+      # Check data availability
+      cat("Data availability:\n")
+      cat("- Natural Resources data exists:", !is.null(combined_maps_data$natural_resources_combined_submodel), "\n")
+      if(!is.null(combined_maps_data$natural_resources_combined_submodel)) {
+        cat("- Natural Resources data rows:", nrow(combined_maps_data$natural_resources_combined_submodel), "\n")
+        cat("- Natural Resources Geo_mean column exists:", "Geo_mean" %in% names(combined_maps_data$natural_resources_combined_submodel), "\n")
+      }
+      
+      cat("- Fisheries data exists:", !is.null(combined_maps_data$fisheries_combined_submodel), "\n")
+      if(!is.null(combined_maps_data$fisheries_combined_submodel)) {
+        cat("- Fisheries data rows:", nrow(combined_maps_data$fisheries_combined_submodel), "\n")
+        cat("- Fisheries Geo_mean column exists:", "Geo_mean" %in% names(combined_maps_data$fisheries_combined_submodel), "\n")
+      }
+      
+      cat("- Industry Operations data exists:", !is.null(combined_maps_data$industry_operations_combined_submodel), "\n")
+      if(!is.null(combined_maps_data$industry_operations_combined_submodel)) {
+        cat("- Industry Operations data rows:", nrow(combined_maps_data$industry_operations_combined_submodel), "\n")
+        cat("- Industry Operations Geo_mean column exists:", "Geo_mean" %in% names(combined_maps_data$industry_operations_combined_submodel), "\n")
+      }
+      
+      # Validate that at least one submodel is enabled and has data
       enabled_submodels <- c()
       enabled_weights <- c()
       
-      if(nr_enabled && natural_resources_weight > 0 && 
-         !is.null(combined_maps_data$natural_resources_combined_submodel)) {
+      if(nr_enabled && !is.null(combined_maps_data$natural_resources_combined_submodel)) {
         enabled_submodels <- c(enabled_submodels, "natural_resources")
         enabled_weights <- c(enabled_weights, natural_resources_weight)
+        cat("✓ Natural Resources added to enabled submodels\n")
+      } else {
+        cat("✗ Natural Resources NOT added - enabled:", nr_enabled, "data exists:", !is.null(combined_maps_data$natural_resources_combined_submodel), "\n")
       }
       
-      if(fisheries_enabled && fisheries_weight > 0 && 
-        !is.null(combined_maps_data$fisheries_combined_submodel)) {
-      enabled_submodels <- c(enabled_submodels, "fisheries")
-      enabled_weights <- c(enabled_weights, fisheries_weight)
+      if(fisheries_enabled && !is.null(combined_maps_data$fisheries_combined_submodel)) {
+        enabled_submodels <- c(enabled_submodels, "fisheries")
+        enabled_weights <- c(enabled_weights, fisheries_weight)
+        cat("✓ Fisheries added to enabled submodels\n")
+      } else {
+        cat("✗ Fisheries NOT added - enabled:", fisheries_enabled, "data exists:", !is.null(combined_maps_data$fisheries_combined_submodel), "\n")
       }
       
-      if(industry_enabled && industry_weight > 0 && 
-         !is.null(combined_maps_data$industry_operations_combined_submodel)) {
+      if(industry_enabled && !is.null(combined_maps_data$industry_operations_combined_submodel)) {
         enabled_submodels <- c(enabled_submodels, "industry_operations")
         enabled_weights <- c(enabled_weights, industry_weight)
+        cat("✓ Industry Operations added to enabled submodels\n")
+      } else {
+        cat("✗ Industry Operations NOT added - enabled:", industry_enabled, "data exists:", !is.null(combined_maps_data$industry_operations_combined_submodel), "\n")
       }
+      
+      cat("Final enabled submodels count:", length(enabled_submodels), "\n")
+      cat("Enabled submodels:", paste(enabled_submodels, collapse = ", "), "\n")
       
       # Check if we have any valid submodels
       if(length(enabled_submodels) == 0) {
+        cat("ERROR: No valid submodels found\n")
         showNotification(
-          "No valid submodels selected. Please enable submodels with weights > 0 and ensure they have been generated.", 
+          "No valid submodels selected. Please enable submodels and ensure they have been generated.", 
           type = "warning"
         )
         return()
@@ -2180,50 +2211,74 @@ function(input, output, session) {
         }
       }
       
-      # Generate the full model
-      full_result <- create_full_model_map(
+      cat("Final submodels list length:", length(submodels), "\n")
+      cat("Final weights list length:", length(weights), "\n")
+      
+      # Use the separated calculation function (with weights)
+      cat("Calling calculate_geometric_mean_full...\n")
+      full_model_data <- calculate_geometric_mean_full(
         submodels = submodels,
         weights = weights,
-        base_grid = grid_test,
-        aoi_data_reactive = filtered_aoi_data
+        base_grid = grid_test
       )
       
+      # DEBUG: Check the calculation result
+      cat("Full model data created. Rows:", nrow(full_model_data), "\n")
+      cat("Columns:", paste(names(full_model_data), collapse = ", "), "\n")
+      cat("Overall_Geo_mean column exists:", "Overall_Geo_mean" %in% names(full_model_data), "\n")
+      
+      if("Overall_Geo_mean" %in% names(full_model_data)) {
+        non_na_count <- sum(!is.na(full_model_data$Overall_Geo_mean))
+        cat("Non-NA Overall_Geo_mean values:", non_na_count, "\n")
+        if(non_na_count > 0) {
+          cat("Overall_Geo_mean range:", min(full_model_data$Overall_Geo_mean, na.rm = TRUE), 
+              "to", max(full_model_data$Overall_Geo_mean, na.rm = TRUE), "\n")
+        }
+      }
+      
+      # Use the separated mapping function
+      cat("Calling create_full_model_map...\n")
+      full_model_map <- create_full_model_map(
+        combined_data = full_model_data,
+        aoi_data_reactive = filtered_aoi_data
+      )
+      cat("Full model map created successfully\n")
+      
       # Store the results
-      combined_maps_data$full_model <- full_result$combined_data
+      combined_maps_data$full_model <- full_model_data
       combined_maps_data$full_model_generated <- TRUE
-      combined_maps_data$full_map <- full_result$map
+      combined_maps_data$full_map <- full_model_map
       
       # Generate cropped maps if we have valid data
-      if(!is.null(full_result$combined_data) && 
-         "Overall_Geo_mean" %in% names(full_result$combined_data)) {
+      if(!is.null(full_model_data) && 
+         "Overall_Geo_mean" %in% names(full_model_data)) {
         
         # Create a modified version of the data with Geo_mean column for compatibility
-        cropped_data <- full_result$combined_data %>%
+        cropped_data <- full_model_data %>%
           mutate(Geo_mean = Overall_Geo_mean)
         
         # Get the data range for consistent coloring
         full_values <- cropped_data$Geo_mean[!is.na(cropped_data$Geo_mean)]
-        full_data_range <- list(
-          min = min(full_values, na.rm = TRUE),
-          max = max(full_values, na.rm = TRUE)
-        )
-        
-        # Generate AOI-cropped map
-        cropped_map <- create_aoi_cropped_map(
-          combined_data = cropped_data,
-          aoi_data_reactive = filtered_aoi_data,
-          map_title = "Full Model AOI-Cropped",
-          full_data_range = full_data_range
-        )
-        combined_maps_data$full_map_cropped <- cropped_map
-        
-        # Generate normalized cropped map
-        normalized_cropped_map <- create_aoi_cropped_normalized_map(
-          combined_data = cropped_data,
-          aoi_data_reactive = filtered_aoi_data,
-          map_title = "Full Model AOI-Cropped Normalized"
-        )
-        combined_maps_data$full_map_cropped_normalized <- normalized_cropped_map
+        if(length(full_values) > 0) {
+          full_data_range <- list(
+            min = min(full_values, na.rm = TRUE),
+            max = max(full_values, na.rm = TRUE)
+          )
+          
+          cat("Creating cropped map with", length(full_values), "valid values\n")
+          cat("Data range for cropped map:", full_data_range$min, "to", full_data_range$max, "\n")
+          
+          # Generate AOI-cropped map
+          cropped_map <- create_aoi_cropped_map(
+            combined_data = cropped_data,
+            aoi_data_reactive = filtered_aoi_data,
+            map_title = "Full Model AOI-Cropped",
+            full_data_range = full_data_range
+          )
+          combined_maps_data$full_map_cropped <- cropped_map
+        } else {
+          cat("WARNING: No valid values for cropped map generation\n")
+        }
       }
       
       # Show success notification
@@ -2246,6 +2301,10 @@ function(input, output, session) {
         type = "error", 
         duration = 10
       )
+      
+      # Print error to console for debugging
+      cat("ERROR:", e$message, "\n")
+      print(traceback())
     })
   })
   
@@ -2266,15 +2325,6 @@ function(input, output, session) {
           h4("AOI-Cropped Full Model Map"),
           p("This map shows the same full model data cropped to the selected Area of Interest (AOI)."),
           leafletOutput("fullMapCropped", height = "500px")
-        ),
-        
-        br(),
-        
-        # Normalized cropped map section
-        div(
-          h4("AOI-Cropped Normalized Full Model Map"),
-          p("This map shows the AOI-cropped data normalized to a 0-1 scale for easier comparison across different areas."),
-          leafletOutput("fullMapCroppedNormalized", height = "500px")
         )
       )
     } else {
@@ -2304,16 +2354,6 @@ function(input, output, session) {
       leaflet() %>%
         addProviderTiles("Esri.OceanBasemap") %>%
         addControl("Generate full model and select an AOI to see cropped map", position = "center")
-    }
-  })
-  
-  output$fullMapCroppedNormalized <- renderLeaflet({
-    if(!is.null(combined_maps_data$full_map_cropped_normalized)) {
-      combined_maps_data$full_map_cropped_normalized
-    } else {
-      leaflet() %>%
-        addProviderTiles("Esri.OceanBasemap") %>%
-        addControl("Generate full model and select an AOI to see normalized cropped map", position = "center")
     }
   })
   

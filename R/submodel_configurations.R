@@ -9,14 +9,12 @@ get_natural_resources_config <- function() {
         name = "Habitat",
         weight_id = "HabitatWeight",
         weight_label = "Habitat Weight",
-        default_weight = 0.5,
         data_key = "habitat"
       ),
       list(
         name = "Species",
         weight_id = "SpeciesWeight", 
         weight_label = "Species Weight",
-        default_weight = 0.5,
         data_key = "species"
       )
     ),
@@ -37,14 +35,12 @@ get_fisheries_config <- function() {
         name = "Fisheries",
         weight_id = "FisheriesWeight",
         weight_label = "Fisheries Weight",
-        default_weight = 0.5,
         data_key = "fisheries"
       ),
       list(
         name = "Trawl",
         weight_id = "TrawlWeight", 
         weight_label = "Trawl Weight",
-        default_weight = 0.5,
         data_key = "trawl"
       )
     ),
@@ -65,14 +61,12 @@ get_industry_operations_config <- function() {
         name = "Scientific Surveys",
         weight_id = "SurveysWeight",
         weight_label = "Scientific Surveys Weight",
-        default_weight = 0.5,
         data_key = "surveys"
       ),
       list(
         name = "Cables",
         weight_id = "cablesWeight",
         weight_label = "Cables Weight", 
-        default_weight = 0.5,
         data_key = "cables"
       )
     ),
