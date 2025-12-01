@@ -251,12 +251,12 @@ For the four trawl fisheries, NMFS and ODFW calculated the regions where the top
 
 ## Submarine Cables
 
-**Brief Description**
+**Brief Description**: These data show the general location of commercial and research submarine cables within U.S. waters. The majority of these cables are for telecommunications, and the remaining are for power transmission. The geographic footprint for each cable may vary and is dependent on the original source data. In the near shore, cables are routinely buried below the seabed. Offshore, they are placed directly on the seabed. A submarine cable area may contain one or more physical cables, and 30 CFR 585.301 defines a minimum 100-foot-wide right of way grant on each side of a cable.
 
-**Accessed**
+**Accessed**: [Marine Cadastre](https://hub.marinecadastre.gov/datasets/noaa::submarine-cables/about){target="_blank"}, [ArcGIS Rest Service](https://coast.noaa.gov/arcgis/rest/services/Hosted/SubmarineCables/FeatureServer){target="_blank"}
 
-**Units**
+**Units**: EPSG:4269
 
-**Citation**
+**Citation**: Office for Coastal Management, 2025: Submarine Cables, [https://www.fisheries.noaa.gov/inport/item/66190](https://www.fisheries.noaa.gov/inport/item/66190){target="_blank"}.
 
 
