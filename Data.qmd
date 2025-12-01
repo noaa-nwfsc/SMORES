@@ -89,9 +89,15 @@ Surficial Geologic Habitat v.4.0; https://www.boem.gov/sites/default/files/envir
 
 ## HAPC AOI
 
-**Brief Description**
+**Brief Description**: Habitat Areas of Particular Concern Areas of Interest. Areas of interest are discrete areas that are of special interest due to their unique geological and ecological characteristics. The following areas of interest are designated HAPCs:
 
-**Accessed**
+Off of Washington: All waters and sea bottom in state waters shoreward from the three nautical mile boundary of the territorial sea shoreward to MHHW.
+
+Off of Oregon: Daisy Bank/Nelson Island, Thompson Seamount, President Jackson Seamount.
+
+Off of California: all seamounts, including Gumdrop Seamount, Pioneer Seamount, Guide Seamount, Taney Seamount, Davidson Seamount, and San Juan Seamount; Mendocino Ridge; Cordell Bank; Monterey Canyon; specific areas in the Federal waters of the Channel Islands National Marine Sanctuary; specific areas of the Cowcod Conservation Area.
+
+**Accessed**: 
 
 **Units**
 
@@ -99,9 +105,9 @@ Surficial Geologic Habitat v.4.0; https://www.boem.gov/sites/default/files/envir
 
 ## HAPC Rocky Reef
 
-**Brief Description**
+**Brief Description**: Habitat Areas of Particular Concern Rocky Reefs. The rocky reefs HAPC includes those waters, substrates and other biogenic features associated with hard substrate (bedrock, boulders, cobble, gravel, etc.) to MHHW. A first approximation of its extent is provided by the substrate data in the groundfish EFH assessment GIS. 
 
-**Accessed**
+**Accessed**: 
 
 **Units**
 
