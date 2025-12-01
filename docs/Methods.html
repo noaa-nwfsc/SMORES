@@ -68,6 +68,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -144,6 +173,20 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#static-score" id="toc-static-score" class="nav-link" data-scroll-target="#static-score">Static Score</a></li>
   <li><a href="#z-membership" id="toc-z-membership" class="nav-link" data-scroll-target="#z-membership">Z-Membership</a></li>
   <li><a href="#ranked-importance" id="toc-ranked-importance" class="nav-link" data-scroll-target="#ranked-importance">Ranked Importance</a></li>
+  </ul></li>
+  <li><a href="#individual-layers-to-submodel-components" id="toc-individual-layers-to-submodel-components" class="nav-link" data-scroll-target="#individual-layers-to-submodel-components">Individual layers to submodel components</a>
+  <ul class="collapse">
+  <li><a href="#geometric-mean" id="toc-geometric-mean" class="nav-link" data-scroll-target="#geometric-mean">Geometric Mean</a></li>
+  <li><a href="#lowest-value" id="toc-lowest-value" class="nav-link" data-scroll-target="#lowest-value">Lowest Value</a></li>
+  <li><a href="#product" id="toc-product" class="nav-link" data-scroll-target="#product">Product</a></li>
+  </ul></li>
+  <li><a href="#components-to-combined-submodels" id="toc-components-to-combined-submodels" class="nav-link" data-scroll-target="#components-to-combined-submodels">Components to Combined Submodels</a>
+  <ul class="collapse">
+  <li><a href="#geometric-mean-1" id="toc-geometric-mean-1" class="nav-link" data-scroll-target="#geometric-mean-1">Geometric Mean</a></li>
+  </ul></li>
+  <li><a href="#combined-submodels-to-full-model" id="toc-combined-submodels-to-full-model" class="nav-link" data-scroll-target="#combined-submodels-to-full-model">Combined submodels to Full Model</a>
+  <ul class="collapse">
+  <li><a href="#weighted-geometric-mean" id="toc-weighted-geometric-mean" class="nav-link" data-scroll-target="#weighted-geometric-mean">Weighted Geometric Mean</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -227,6 +270,60 @@ ul.task-list li input[type="checkbox"] {
 <p>Ranked Importance data is used to represent fisheries data. Per the fisheries data and methods provided by NMFS in Appendix E of the <a href="https://www.boem.gov/sites/default/files/documents/renewable-energy/state-activities/Appendix%20B_NCCOS%20Final%20WEA%20Report_Oregon.pdf" target="_blank">Oregon Final Wind Energy Areas Report</a> ranked importance was calculated by:</p>
 <p>Fishing location information and duration fished were extracted or calculated from State and Federal logbook and Federal observer program datasets for each fishing event for each of the nine fisheries. Straight lines were drawn between the fishing start and end geocoordinates to create fishing event lines when both values were available; point locations were created when only a single fishing event geocoordinate was available. Each line or point location was matched to corresponding Pacific Fisheries Information Network (PacFIN) fish ticket information to retrieve inflation-adjusted ex-vessel (in 2020 USD) revenue derived from each fishing event. These lines and points of fishing effort and revenue were then overlaid and summarized on a 2x2-km grid.</p>
 <p>Exploratory analyses suggested that highly skewed distributions of fishing effort and revenue, in which a very small number of grid cells had exceptionally high values of effort and/or revenue, would grossly underestimate the amount of ocean space used by these nine fisheries. In order to account for these skewed distributions, we rank-transformed the fishing effort and revenue data. In order to combine and capture the most important characteristic (either ‘effort’ or ‘revenue’) of each fishery for each grid cell, we normalized (between 0 and 1) the rank-transformed effort and revenue data and then selected the highest normalized value for each grid cell. We term this final metric “Ranked Importance”.</p>
+</section>
+</section>
+<section id="individual-layers-to-submodel-components" class="level2">
+<h2 class="anchored" data-anchor-id="individual-layers-to-submodel-components">Individual layers to submodel components</h2>
+<section id="geometric-mean" class="level3">
+<h3 class="anchored" data-anchor-id="geometric-mean">Geometric Mean</h3>
+<p>The <a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_geometric_mean_combined.R" target="_blank">geometric mean</a> equation used was:</p>
+<p><span class="math display">\[\text{g} = \sqrt[n]{x_1 \times x_2 \times \ldots \times x_i}\]</span></p>
+<center>
+<p>n = number of variables<br> x₁ = variable 1<br> x₂ = variable 2<br> xᵢ = additional variables</p>
+*each variable represents individual layer scores for that 2km cell (an example of an individual layer score would be EFHCA, BIA blue whale, submarine cables, etc.)
+</center>
+</section>
+<section id="lowest-value" class="level3">
+<h3 class="anchored" data-anchor-id="lowest-value">Lowest Value</h3>
+<p>The <a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_lowest_combined.R" target="_blank">lowest</a> equation used was:</p>
+<p><span class="math display">\[\text{l} = \min(x_1, x_2, \ldots, x_i)\]</span></p>
+<center>
+<p>x₁ = variable 1<br> x₂ = variable 2<br> xᵢ = additional variables</p>
+*each variable represents individual layer scores for that 2km cell (an example of an individual layer score would be EFHCA, BIA blue whale, submarine cables, etc.)
+</center>
+</section>
+<section id="product" class="level3">
+<h3 class="anchored" data-anchor-id="product">Product</h3>
+<p>The <a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_product_combined.R" target="_blank">product</a> equation used was:</p>
+<p><span class="math display">\[\text{p} = x_1 \times x_2 \times \ldots \times x_i\]</span></p>
+<center>
+<p>x₁ = variable 1<br> x₂ = variable 2<br> xᵢ = additional variables</p>
+*each variable represents individual layer scores for that 2km cell (an example of an individual layer score would be EFHCA, BIA blue whale, submarine cables, etc.)
+</center>
+</section>
+</section>
+<section id="components-to-combined-submodels" class="level2">
+<h2 class="anchored" data-anchor-id="components-to-combined-submodels">Components to Combined Submodels</h2>
+<section id="geometric-mean-1" class="level3">
+<h3 class="anchored" data-anchor-id="geometric-mean-1">Geometric Mean</h3>
+<p>The <a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_geometric_mean_combined.R" target="_blank">geometric mean</a> equation used was:</p>
+<p><span class="math display">\[\text{g} = \sqrt[n]{x_1 \times x_2 \times \ldots \times x_i}\]</span></p>
+<center>
+<p>n = number of variables<br> x₁ = variable 1<br> x₂ = variable 2<br> xᵢ = additional variables</p>
+*each variable represents component scores for that 2km cell (an example of a component score would be habitat, species, surveys, etc.)
+</center>
+</section>
+</section>
+<section id="combined-submodels-to-full-model" class="level2">
+<h2 class="anchored" data-anchor-id="combined-submodels-to-full-model">Combined submodels to Full Model</h2>
+<section id="weighted-geometric-mean" class="level3">
+<h3 class="anchored" data-anchor-id="weighted-geometric-mean">Weighted Geometric Mean</h3>
+<p>To generate the full model map a <a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/create_full_model_map.R" target="_blank">weighted geometric mean</a> calculation was used:</p>
+<p><span class="math display">\[\text{wg} = {x_1^{w_1} \times x_2^{w_2} \times \ldots \times x_i^{w_i}}^ 1/{w_1}+{w_2}+{w_i}\]</span></p>
+<center>
+<p>x₁ = variable 1<br> x₂ = variable 2<br> xᵢ = additional variables<br> w₁ = weight for variable 1<br> w₂ = weight for variable 2<br> wᵢ = weights for additional variables</p>
+*each variable represents a submodel score for a 2km cell (an example of a submodel would be natural resource, fisheries, and industry and operations)
+</center>
 
 
 </section>
