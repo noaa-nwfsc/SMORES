@@ -68,3 +68,86 @@ Fishing location information and duration fished were extracted or calculated fr
 
 Exploratory analyses suggested that highly skewed distributions of fishing effort and revenue, in which a very small number of grid cells had exceptionally high values of effort and/or revenue, would grossly underestimate the amount of ocean space used by these nine fisheries. In order to account for these skewed distributions, we rank-transformed the fishing effort and revenue data. In order to combine and capture the most important characteristic (either ‘effort’ or ‘revenue’) of each fishery for each grid cell, we normalized (between 0 and 1) the rank-transformed effort and revenue data and then selected the highest normalized value for each grid cell. We term this final metric “Ranked Importance”. 
 
+## Individual layers to submodel components
+
+### Geometric Mean
+
+The [geometric
+mean](https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_geometric_mean_combined.R){target="_blank"}
+equation used was:
+
+$$\text{g} = \sqrt[n]{x_1 \times x_2 \times \ldots \times x_i}$$
+
+<center>
+n = number of variables<br> x₁ = variable 1<br> x₂ = variable
+2<br> xᵢ = additional variables
+
+*each variable represents individual layer scores for that 2km cell (an example of an individual layer score would be EFHCA, BIA blue whale, submarine cables, etc.)
+</center>
+
+### Lowest Value
+
+The
+[lowest](https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_lowest_combined.R){target="_blank"}
+equation used was:
+
+$$\text{l} = \min(x_1, x_2, \ldots, x_i)$$
+
+<center>
+x₁ = variable 1<br> x₂ = variable 2<br> xᵢ = additional
+variables
+
+*each variable represents individual layer scores for that 2km cell (an example of an individual layer score would be EFHCA, BIA blue whale, submarine cables, etc.)
+</center>
+
+### Product
+
+The
+[product](https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_product_combined.R){target="_blank"}
+equation used was:
+
+$$\text{p} = x_1 \times x_2 \times \ldots \times x_i$$
+
+<center>
+x₁ = variable 1<br> x₂ = variable 2<br> xᵢ = additional
+variables
+
+*each variable represents individual layer scores for that 2km cell (an example of an individual layer score would be EFHCA, BIA blue whale, submarine cables, etc.)
+</center>
+
+## Components to Combined Submodels
+
+### Geometric Mean
+
+The [geometric
+mean](https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_geometric_mean_combined.R){target="_blank"}
+equation used was:
+
+$$\text{g} = \sqrt[n]{x_1 \times x_2 \times \ldots \times x_i}$$
+
+<center>
+n = number of variables<br> x₁ = variable 1<br> x₂ = variable
+2<br> xᵢ = additional variables
+
+*each variable represents component scores for that 2km cell (an example of a component score would be habitat, species, surveys, etc.)
+</center>
+
+
+## Combined submodels to Full Model
+
+### Weighted Geometric Mean
+
+To generate the full model map a [weighted geometric
+mean](https://github.com/noaa-nwfsc/SMORES/blob/main/R/create_full_model_map.R){target="_blank"}
+calculation was used:
+
+$$\text{wg} = {x_1^{w_1} \times x_2^{w_2} \times \ldots \times x_i^{w_i}}^ 1/{w_1}+{w_2}+{w_i}$$
+
+<center>
+x₁ = variable 1<br> x₂ = variable
+2<br> xᵢ = additional variables<br> w₁ = weight for variable 1<br> w₂ =
+weight for variable 2<br> wᵢ = weights for additional variables
+
+*each variable represents a submodel score for a 2km cell (an example of a submodel would be natural resource, fisheries, and industry and operations)
+</center>
+
