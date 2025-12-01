@@ -26,17 +26,17 @@ create_combined_map <- function(combined_data, map_title, method, aoi_data = NUL
   # Determine score column and popup prefix based on method
   if(method == "geometric_mean") {
     score_column <- "Geo_mean"
-    popup_prefix <- "Geometric Mean Score:"
+    popup_prefix <- "Geometric Mean Offshore Wind Energy Suitability Score:"
   } else if(method == "lowest") {
     score_column <- "Lowest_value"
-    popup_prefix <- "Lowest Value Score:"
+    popup_prefix <- "Lowest Value Offshore Wind Energy Suitability Score:"
   } else if(method == "product") {
     score_column <- "Product_value"
-    popup_prefix <- "Product Score:"
+    popup_prefix <- "Product Offshore Wind Energy Suitability Score:"
   } else {
     # Default fallback
     score_column <- "Geo_mean"
-    popup_prefix <- "Geometric Mean Score:"
+    popup_prefix <- "Geometric Mean Offshore Wind Energy Suitability Score:"
   }
   
   # Initialize base map
@@ -94,7 +94,7 @@ create_combined_map <- function(combined_data, map_title, method, aoi_data = NUL
             addLegend(
               position = "bottomright",
               colors = single_color,
-              labels = paste("Score:", 
+              labels = paste("Offshore Wind Energy Suitability Score:", 
                              ifelse(min_val < 0.01,
                                     format(min_val, scientific = FALSE, digits = 3),
                                     round(min_val, 3))),

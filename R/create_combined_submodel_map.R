@@ -108,12 +108,14 @@ create_combined_submodel_map <- function(component_data_list, base_grid = grid_t
       # Handle color palette - check if we have variation in values
       if(abs(min_val - max_val) < 1e-10) {
         # All values are the same - use single color
+        single_color <- "#440154"
+        
         map <- map %>%
           addPolygons(
             data = map_data,
             weight = 1,
             color = "#333333",
-            fillColor = "#440154",  # Dark purple
+            fillColor = single_color,
             fillOpacity = 0.7,
             popup = ~popup_display,
             group = "Combined Submodel",

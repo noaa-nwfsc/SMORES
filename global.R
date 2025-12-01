@@ -47,6 +47,7 @@ source("R/submodel_configurations.R")
 source("R/create_combined_submodel_map.R")
 source("R/create_aoi_cropped_map.R")
 source("R/create_full_model_map.R")
+source("R/calculate_geometric_mean_full.R")
 source("R/submodel_status_display.R")
 source("R/apply_calculation_method.R")
 source("R/make_combined_map_dataset.R")
@@ -78,7 +79,7 @@ AOI <- readRDS_preprocessed("data/WEA.parquet", "AOI")
 ## Natural Resources Layers
 
 ### Habitat Layers
-canyon <- readRDS_preprocessed("data/canyon_scored_full.parquet", "Canyon")
+canyon <- readRDS_preprocessed("data/canyon_scored_long_full.parquet", "Canyon")
 DSC_RH <- readRDS_preprocessed("data/DSC_RH_scored_full.parquet", "DSC_RH")
 DSC_RH_z_membership <- readRDS_preprocessed("data/DSC_RH_z_membership_scored_full.parquet", "DSC_RH_z_membership")
 seeps <- readRDS_preprocessed("data/Seeps_scored_full.parquet", "Seeps")
