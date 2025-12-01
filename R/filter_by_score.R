@@ -19,11 +19,10 @@ filter_by_score <- function(df, selected_score) {
     return(df)
   }
   
-  # Create a filter condition for the selected score
+  # Create a filter condition
   rows_to_keep <- rep(FALSE, nrow(df))
   
   for(col in score_cols) {
-    # Convert both to character for comparison to handle numeric vs character issues
     rows_to_keep <- rows_to_keep | (as.character(df[[col]]) == as.character(selected_score))
   }
   

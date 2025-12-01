@@ -215,7 +215,7 @@ if (!is.null(params$component_layer_details) && length(params$component_layer_de
 
 ## Combined Submodel
 
-The combined submodel map represents the integration of all selected components using their specified calculation methods. The final combination is calculated using the geometric mean of the component scores to produce a unified assessment.
+The combined submodel map represents the integration of all selected components using their specified calculation methods. The final combination is calculated using the geometric mean of the component scores to produce a unified assessment. This dataset are the scores that will be passed to the full model calculation.
 
 ```{r}
 if (!is.null(params$combined_data)) {
@@ -247,7 +247,7 @@ if (!is.null(params$combined_map)) {
 
 ## Combined Submodel - Cropped to area of interest (AOI)
 
-The AOI-cropped map shows the same combined submodel data filtered to the selected Area of Interest (AOI), maintaining the original color scale for consistency with the full dataset.
+The AOI-cropped map shows the same combined submodel data filtered to the selected Area of Interest (AOI), maintaining the original color scale for consistency with the full dataset. 
 
 ```{r}
 if (!is.null(params$aoi_cropped_map)) {
@@ -259,7 +259,7 @@ if (!is.null(params$aoi_cropped_map)) {
 
 ## Normalized Combined Submodel - Cropped to area of interest (AOI)
 
-The normalized AOI-cropped map shows the AOI-filtered data rescaled to a 0-1 range using a min max normalization for only the values within the selected area, making it easier to compare relative differences within the AOI.
+The normalized AOI-cropped map shows the AOI-filtered data rescaled to a 0-1 range using a min max normalization for only the values within the selected area, making it easier to compare relative differences within the AOI. The data in this visualization is purely for highlighting the visual differences between cell scores. The values given are not used in any downstream calculations. 
 
 ```{r}
 if (!is.null(params$aoi_cropped_normalized_map)) {

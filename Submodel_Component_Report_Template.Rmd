@@ -192,44 +192,76 @@ if (!is.null(data_timestamps_table)) {
 
 The following maps are individual data layers that have been visualized for the study area. The maps are zoomed to the area of interest that was previously selected, and shown in a red outline. To view the wider study area select the zoom out button on the map. To more closely analyze a cell click on the cell of interest and a pop-up will generate with the assigned score. Above each of the maps is a block containing relevant information: layer name, score assigned, and the number of cells that are represented by this data layer.
 
-```{r individual-maps, results='asis', fig.align='center'}
+```{r individual-maps, results='asis'}
 
 if(!is.null(params$map_configs)) {
   
   for(i in seq_along(params$map_configs)) {
     config <- params$map_configs[[i]]
     
+    # Text/Markdown Output must use cat() with results='asis'
     cat("\n\n### Map", i, ":", config$layer, "\n\n")
     cat("**Score:** ", config$score, "  \n")
-    cat("**Data Points:** ", nrow(config$data), "  \n\n")
     
-    # Try to create the map with detailed error handling
+    # Check if data is present
+    data_points <- tryCatch(nrow(config$data), error = function(e) 0)
+    cat("**Data Points:** ", data_points, "  \n\n")
+    
+    if (data_points == 0) {
+      cat("--- **Map skipped: Input data has 0 rows.** ---\n\n")
+      # Print a simple placeholder map
+      placeholder <- leaflet() %>% 
+        addTiles() %>% 
+        addControl(paste("Map skipped: No data for", config$layer), position = "topleft")
+      print(htmltools::tagList(placeholder))
+      next # Skip map generation
+    }
+
     tryCatch({
       map_result <- create_individual_map(config, params$aoi_data)
       
-      # CRITICAL: Use htmltools to properly render the widget
       if (inherits(map_result, "leaflet")) {
-     
-        temp_file <- tempfile(fileext = ".html")
-        htmlwidgets::saveWidget(map_result, temp_file, selfcontained = TRUE)
-
-        # Include the saved widget
-        cat('<iframe src="', temp_file, '" width="100%" height="500px" frameborder="0"></iframe>\n')
+        
+        # --- CRITICAL FIX: Force map redraw/initialization using onRender ---
+        map_result <- map_result %>% 
+          htmlwidgets::onRender(
+            "function(el, x) { 
+               // Force Leaflet to check its container size after the HTML loads
+               setTimeout(function() { 
+                 var map = this; 
+                 map.invalidateSize(); 
+               }, 100); 
+             }"
+          )
+        
+        # FIX: Ensure the Leaflet widget is printed inside a fixed-size container.
+        print(
+          htmltools::tagList(
+            htmltools::div(
+              map_result, 
+              style = "height: 500px; width: 100%; border: 1px solid #ddd; margin-bottom: 20px;"
+            )
+          )
+        )
         
       } else {
-        cat("ERROR: Map result is not a leaflet object\n")
-        # Create a simple placeholder map
+        # Fallback to a clear error message in the report output
+        cat(paste0("--- **ERROR: Map generation failed for ", config$layer, ". Object is not a Leaflet object.** ---\n\n"))
+        
+        # Simple placeholder map
         placeholder <- leaflet() %>% 
           addTiles() %>% 
-          addControl("Map generation failed", position = "center")
+          addControl(paste("Map generation failed for", config$layer), position = "topleft")
         print(htmltools::tagList(placeholder))
       }
+      
     }, error = function(e) {
-      cat("ERROR creating map:", e$message, "\n")
+      cat(paste0("\n\n--- **FATAL R ERROR creating map for ", config$layer, ":** ", e$message, " ---\n\n"))
+      
       # Create error placeholder map
       error_map <- leaflet() %>% 
         addTiles() %>% 
-        addControl(paste("Map generation failed:", e$message), position = "center")
+        addControl(paste("Map generation failed (R Error):", e$message), position = "topleft")
       print(htmltools::tagList(error_map))
     })
     
@@ -244,37 +276,71 @@ if(!is.null(params$map_configs)) {
 
 The following maps are combined data layers that have been calculated and visualized for the study area. The maps are zoomed to the area of interest that was previously selected, and shown in a red outline. To view the wider study area select the zoom out button on the map. To more closely analyze a cell click on the cell of interest and a pop-up will generate with the assigned score. Above each of the maps is a block containing relevant information: the number of cells that are represented by this data layer, and the calculation method used (geometric mean, lowest value, or product method).
 
-```{r combined-maps, results='asis', fig.align='center'}
+```{r combined-maps, results='asis'}
+
 if(!is.null(params$combined_data_list) && length(params$combined_data_list) > 0) {
   for(method in names(params$combined_data_list)) {
     combined_data <- params$combined_data_list[[method]]
     
+    # Text/Markdown Output must use cat() with results='asis'
     cat("\n\n### Combined Map -", tools::toTitleCase(gsub("_", " ", method)), "\n\n")
+
+    # Check if data is present
+    data_points <- tryCatch(nrow(combined_data), error = function(e) 0)
+    cat("**Data Points:** ", data_points, "  \n\n")
+    
+    if (data_points == 0) {
+      cat(paste0("--- **Map skipped: Input data (", method, ") has 0 rows.** ---\n\n"))
+       # Print a simple placeholder map
+      placeholder <- leaflet() %>% 
+        addTiles() %>% 
+        addControl(paste("Map skipped: No data for", method), position = "topleft")
+      print(htmltools::tagList(placeholder))
+      next # Skip map generation
+    }
     
     # Create the combined map with error handling
     tryCatch({
       map_result <- create_combined_map(combined_data, 
-                                       paste(params$combined_map_title, "-", method), 
-                                       method, 
-                                       aoi_data = params$aoi_data)
+                                        paste(params$combined_map_title, "-", method), 
+                                        method, 
+                                        aoi_data = params$aoi_data)
       
-      # CRITICAL: Use htmltools to properly render the widget
       if (inherits(map_result, "leaflet")) {
-      
-        temp_file <- tempfile(fileext = ".html")
-        htmlwidgets::saveWidget(map_result, temp_file, selfcontained = TRUE)
-        
-        # Include the saved widget
-        cat('<iframe src="', temp_file, '" width="100%" height="500px" frameborder="0"></iframe>\n')
-        
+
+        # --- CRITICAL FIX: Force map redraw/initialization using onRender ---
+        map_result <- map_result %>% 
+          htmlwidgets::onRender(
+            "function(el, x) { 
+               // Force Leaflet to check its container size after the HTML loads
+               setTimeout(function() { 
+                 var map = this; 
+                 map.invalidateSize(); 
+               }, 100); 
+             }"
+          )
+          
+        # FIX: Ensure the Leaflet widget is printed inside a fixed-size container.
+        print(
+          htmltools::tagList(
+            htmltools::div(
+              map_result, 
+              style = "height: 500px; width: 100%; border: 1px solid #ddd; margin-bottom: 20px;"
+            )
+          )
+        )
+
       } else {
-        cat("ERROR: Map result is not a leaflet object\n")
+        # Fallback to a clear error message in the report output
+        cat(paste0("--- **ERROR: Combined Map generation failed for ", method, ". Object is not a Leaflet object.** ---\n\n"))
       }
+      
     }, error = function(e) {
-      cat("Error creating combined map:", e$message, "\n")
+      cat(paste0("\n\n--- **FATAL R ERROR creating combined map for ", method, ":** ", e$message, " ---\n\n"))
+      
       error_map <- leaflet() %>% 
         addTiles() %>% 
-        addControl("Combined map generation failed", position = "center")
+        addControl(paste("Combined map generation failed (R Error):", e$message), position = "topleft")
       print(htmltools::tagList(error_map))
     })
     
@@ -283,4 +349,5 @@ if(!is.null(params$combined_data_list) && length(params$combined_data_list) > 0)
 } else {
   cat("No combined map data available.\n")
 }
+
 ```

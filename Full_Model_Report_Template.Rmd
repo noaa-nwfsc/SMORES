@@ -322,14 +322,3 @@ if (!is.null(params$full_map_cropped)) {
 }
 ```
 
-## Full Combined Model - Cropped to Area of Interest and Normalized 
-
-The normalized AOI-cropped map shows the AOI-filtered data rescaled to a 0-1 range using min-max normalization for only the values within the selected area, making it easier to compare relative differences within the AOI.
-
-```{r}
-if (!is.null(params$full_map_cropped_normalized)) {
-  params$full_map_cropped_normalized
-} else {
-  cat("*AOI-cropped normalized map not available. Please select a specific AOI area.*\n")
-}
-```

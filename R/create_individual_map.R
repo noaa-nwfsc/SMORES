@@ -90,7 +90,7 @@ create_individual_map <- function(config, aoi_data = NULL) {
         weight = 1,            
         fillColor = ~config$color_palette(Score.Z_Membership),
         fillOpacity = 0.7,
-        popup = ~paste("Cell Score:", round(Score.Z_Membership, 3)),
+        popup = ~paste("Z-Membership Cell Score:", round(Score.Z_Membership, 3)),
         group = "Data Layer"
       ) %>%
       addLegend(
@@ -123,7 +123,7 @@ create_individual_map <- function(config, aoi_data = NULL) {
           weight = 1,            
           fillColor = config$color_palette(config$data[[score_column]]),
           fillOpacity = 0.7,
-          popup = ~paste("Cell Score:", round(get(score_column), 3)),
+          popup = ~paste("Ranked Importance Cell Score:", round(get(score_column), 3)),
           group = "Data Layer"
         ) %>%
         addLegend(
@@ -143,7 +143,7 @@ create_individual_map <- function(config, aoi_data = NULL) {
         weight = 1,            
         fillColor = config$color,
         fillOpacity = 0.7,
-        popup = ~paste("Cell Score:", config$score),
+        popup = ~paste("Offshore Wind Energy Suitability Cell Score:", config$score),
         group = "Data Layer"
       ) %>%
       addLegend(
