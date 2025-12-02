@@ -1,4 +1,4 @@
-get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colors, filter_by_score) {
+get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colors, filter_by_score, base_grid = NULL) {
   valid_configs <- list()
   index <- 1
   
@@ -26,18 +26,18 @@ get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colo
           if(layer_name == "Deep Sea Coral Robust High Suitability") {
             if(score_value == "Z Membership") {
               # Use the Z membership dataset and create continuous color palette
-              filtered_data <- filter_by_score(DSC_RH_z_membership, score_value)
+              filtered_data <- filter_by_score(DSC_RH_z_membership, score_value, grid_test, layer_name)
               score_color <- "continuous"  # Flag for continuous coloring
               color_palette <- create_continuous_palette(filtered_data, "z_membership")
             } else {
               # Use the regular scored dataset
-              filtered_data <- filter_by_score(layer_data[[layer_name]], score_value)
+              filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
               score_color <- score_colors[[score_value]]
               color_palette <- NULL
             }
           } else {
             # For all other layers, use regular processing
-            filtered_data <- filter_by_score(layer_data[[layer_name]], score_value)
+            filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
             score_color <- score_colors[[score_value]]
             color_palette <- NULL
           }
@@ -79,7 +79,7 @@ get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colo
           score_color <- score_colors[[score_value]]
           
           # Filter data by score
-          filtered_data <- filter_by_score(layer_data[[layer_name]], score_value)
+          filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
           
           # Add to valid configs
           valid_configs[[length(valid_configs) + 1]] <- list(
@@ -135,7 +135,7 @@ get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colo
             color_palette <- create_continuous_palette(filtered_data, score_type = "ranked_importance", layer_name = "ranked_importance")
           } else {
             # For discrete scores (0, 0.01, 0.001), use the regular dataset
-            filtered_data <- filter_by_score(layer_data[[layer_name]], score_value)
+            filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
             score_color <- score_colors[[score_value]]
             color_palette <- NULL
           }
@@ -176,7 +176,7 @@ get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colo
           score_color <- score_colors[[score_value]]
           
           # Filter data by score
-          filtered_data <- filter_by_score(layer_data[[layer_name]], score_value)
+          filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
           
           # Add to valid configs
           valid_configs[[length(valid_configs) + 1]] <- list(
@@ -214,7 +214,7 @@ get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colo
           score_color <- score_colors[[score_value]]
           
           # Filter data by score
-          filtered_data <- filter_by_score(layer_data[[layer_name]], score_value)
+          filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
           
           # Add to valid configs
           valid_configs[[length(valid_configs) + 1]] <- list(
@@ -253,7 +253,7 @@ get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colo
           
           # Filter data by score
           if(layer_name %in% names(layer_data)) {
-            filtered_data <- filter_by_score(layer_data[[layer_name]], score_value)
+            filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
             
             # Add to valid configs
             valid_configs[[length(valid_configs) + 1]] <- list(

@@ -129,6 +129,7 @@ submarine_cable <- readRDS_preprocessed("data/submarine_cable_scored_full.parque
 
 ## Grid
 grid_test <- readRDS_preprocessed("data/2km_grid_full.parquet", "Grid")
+base_grid_df <- read_parquet("data/base_grid_df.parquet")
 
 ## Natural Resources Submodel
 # Create a list of all datasets

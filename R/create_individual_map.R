@@ -141,15 +141,35 @@ create_individual_map <- function(config, aoi_data = NULL) {
         data = config$data, 
         color = "#33333300",
         weight = 1,            
-        fillColor = config$color,
+        fillColor = ~{
+          # Find the score column and color based on actual values
+          score_cols <- names(config$data)[grep("^Score\\.", names(config$data))]
+          if(length(score_cols) > 0) {
+            actual_score <- get(score_cols[1])
+            ifelse(as.character(actual_score) == as.character(config$score), 
+                   config$color,     # User-selected score gets the configured color
+                   "#CCCCCC")        # Unselected cells (value 1) get gray
+          } else {
+            config$color
+          }
+        },
         fillOpacity = 0.7,
-        popup = ~paste("Offshore Wind Energy Suitability Cell Score:", config$score),
+        popup = ~{
+          # Find the score column and get the actual value for each cell
+          score_cols <- names(config$data)[grep("^Score\\.", names(config$data))]
+          if(length(score_cols) > 0) {
+            actual_score <- get(score_cols[1])  # Get the first score column value
+            paste("Offshore Wind Energy Suitability Cell Score:", actual_score)
+          } else {
+            paste("Offshore Wind Energy Suitability Cell Score:", config$score)
+          }
+        },
         group = "Data Layer"
       ) %>%
       addLegend(
         position = "bottomright",
-        colors = config$color,
-        labels = paste("Score:", config$score),
+        colors = c(config$color, "#CCCCCC"),  # Add gray for the 1's
+        labels = c(paste("Selected Score:", config$score), "Unselected (1.0)"),
         opacity = 0.7,
         title = config$layer
       )

@@ -174,7 +174,7 @@ function(input, output, session) {
   # Reactive expression for Natural Resources tab valid configs
   natural_resources_valid_configs <- reactive({
     
-    # For Natural Resources, we check if we have dataTabs (which means we're on the Natural Resources section)
+    # For Natural Resources, we check if we have dataTabs 
     # OR if navbar is explicitly set to Natural Resources
     is_natural_resources <- (!is.null(input$dataTabs_natural_resources) && 
                                input$dataTabs_natural_resources %in% c("habitat", "species", "combined_model_natural_resources")) ||
@@ -194,7 +194,7 @@ function(input, output, session) {
                          NULL)
     
     # Use your existing function to get valid configurations
-    configs <- get_valid_configs_for_tab(input, current_tab_natural_resources, layer_data, score_colors, filter_by_score)
+    configs <- get_valid_configs_for_tab(input, current_tab_natural_resources, layer_data, score_colors, filter_by_score, grid_test)
     
     return(configs)
   })
@@ -220,7 +220,7 @@ function(input, output, session) {
                          NULL)
     
     # Use your existing function to get valid configurations
-    configs <- get_valid_configs_for_tab(input, current_tab_fisheries, layer_data, score_colors, filter_by_score)
+    configs <- get_valid_configs_for_tab(input, current_tab_fisheries, layer_data, score_colors, filter_by_score, grid_test)
     
     return(configs)
   })
@@ -248,7 +248,7 @@ function(input, output, session) {
                          NULL)
     
     # Use your existing function to get valid configurations
-    configs <- get_valid_configs_for_tab(input, current_tab_industry_operations, layer_data, score_colors, filter_by_score)
+    configs <- get_valid_configs_for_tab(input, current_tab_industry_operations, layer_data, score_colors, filter_by_score, grid_test)
     
     return(configs)
   })
