@@ -30,7 +30,8 @@ make_combined_map_dataset <- function(valid_configs, dataset_mapping, base_grid 
     
     # Handle different score types
     if(score_value == "Ranked Importance") {
-      # For ranked importance, use all data as-is (values are already 0-1)
+      # For ranked importance, use the complete dataset that includes 1's from filter_by_score
+      # This ensures we get both the ranked importance values AND 1's for unselected cells
       temp_data <- dataset %>%
         st_drop_geometry() %>%
         select(CellID_2km, !!score_column)
@@ -49,9 +50,9 @@ make_combined_map_dataset <- function(valid_configs, dataset_mapping, base_grid 
                                         as.numeric(score_value), 
                                         NA_real_))
     } else {
-      # Filter for the selected score value and prepare for joining
+      # For discrete scores, use the complete dataset that already includes 1's from filter_by_score
+      # Don't filter again - the dataset is already processed with selected scores + 1's for unselected cells
       temp_data <- dataset %>%
-        filter(as.character(.data[[score_column]]) == as.character(score_value)) %>%
         st_drop_geometry() %>%
         select(CellID_2km, !!score_column)
     }

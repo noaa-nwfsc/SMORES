@@ -12,10 +12,16 @@ library(arcgis)
 library(arrow)
 library(sfarrow)
 
-# set working directory
+# get base grid
 grid.2km <- sf::st_read(dsn = "Z:\\GIS_Base\\OSW\\Grid.gdb", layer = "grid2km")
 saveRDS(grid.2km, "C:\\GitHub\\SMORES\\data\\2km_grid_full.rds")
 st_write_parquet(grid.2km, "C:\\GitHub\\SMORES\\data\\2km_grid_full.parquet")
+
+# get base grid as a dataframe
+base_grid_df <- grid.2km %>% 
+  st_drop_geometry()
+
+write_parquet(base_grid_df, "C:\\GitHub\\SMORES\\data\\base_grid_df.parquet")
 
 # set standard coordinate reference system if using 2 km square grid
 crsOut <- st_crs(grid.2km)
@@ -115,97 +121,6 @@ canyons_scored_long <- pivot_longer(canyon_scored, cols = starts_with(c("0", "1"
   select(-Canyon)
 saveRDS(canyons_scored_long, "C:\\GitHub\\SMORES\\data\\canyon_scored_full.rds")
 st_write_parquet(canyons_scored_long, "C:\\GitHub\\SMORES\\data\\canyon_scored_full.parquet")
-
-# code thoughts to re-structure data so NA values are given a score of 1
-Canyons.grid <- sf::st_intersection(Canyons, grid_test) %>%
-  mutate(Score.Canyons = NMFSscore) %>%  # Use NMFSScore from the canyons data
-  mutate(area.part = st_area(.)) %>%
-  group_by(CellID_2km) %>% #use for 2km grid
-  #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
-  slice_max(area.part, n = 1) %>%
-  select(CellID_2km, Score.Canyons) #use for 2km grid
-
-canyon <- Canyons.grid %>%
-  st_drop_geometry()
-
-# NEW APPROACH: Start with complete grid and left join canyon intersection results
-# First drop geometry from grid_test to make it a regular dataframe for the join
-grid_test_df <- grid_test %>%
-  st_drop_geometry()
-
-canyon_scored <- grid_test_df %>%
-  left_join(canyon, by = "CellID_2km") %>%
-  mutate(
-    # Pre-store all possible user-selectable scores
-    # For intersecting cells: they get the specific score value
-    # For non-intersecting cells: they get score of 1 (no penalty)
-    "0.1" = case_when(
-      !is.na(Score.Canyons) ~ 0.1,     # Intersecting cells get the target score
-      TRUE ~ 1                         # Non-intersecting cells get score of 1
-    ),
-    "0" = case_when(
-      !is.na(Score.Canyons) ~ 0,       # User-selectable score for intersecting cells
-      TRUE ~ 1                         # Non-intersecting cells get score of 1
-    ),
-    "0.01" = case_when(
-      !is.na(Score.Canyons) ~ 0.01,
-      TRUE ~ 1
-    ),
-    "0.001" = case_when(
-      !is.na(Score.Canyons) ~ 0.001,
-      TRUE ~ 1
-    ),
-    "0.2" = case_when(
-      !is.na(Score.Canyons) ~ 0.2,
-      TRUE ~ 1
-    ),
-    "0.3" = case_when(
-      !is.na(Score.Canyons) ~ 0.3,
-      TRUE ~ 1
-    ),
-    "0.4" = case_when(
-      !is.na(Score.Canyons) ~ 0.4,
-      TRUE ~ 1
-    ),
-    "0.5" = case_when(
-      !is.na(Score.Canyons) ~ 0.5,
-      TRUE ~ 1
-    ),
-    "0.6" = case_when(
-      !is.na(Score.Canyons) ~ 0.6,
-      TRUE ~ 1
-    ),
-    "0.7" = case_when(
-      !is.na(Score.Canyons) ~ 0.7,
-      TRUE ~ 1
-    ),
-    "0.8" = case_when(
-      !is.na(Score.Canyons) ~ 0.8,
-      TRUE ~ 1
-    ),
-    "0.9" = case_when(
-      !is.na(Score.Canyons) ~ 0.9,
-      TRUE ~ 1
-    ),
-    "1" = case_when(
-      !is.na(Score.Canyons) ~ 1,
-      TRUE ~ 1
-    )
-  ) %>%
-  # Remove the Score.Canyons column as it's no longer needed
-  select(-Score.Canyons)
-
-# Now add the geometry back from the original grid_test
-canyon_scored <- grid_test %>%
-  select(CellID_2km) %>%
-  left_join(canyon_scored, by = "CellID_2km")
-
-#this approach would let us know which score is associated with which layer
-canyons_scored_long_full <- pivot_longer(canyon_scored, cols = starts_with(c("0", "1")), names_to = "Canyon", values_to = "Score.Canyon") %>%
-  sf::st_transform('+proj=longlat +datum=WGS84') %>%
-  select(-Canyon)
-saveRDS(canyons_scored_long_full, "C:\\GitHub\\SMORES\\data\\canyon_scored_full.rds")
-st_write_parquet(canyons_scored_long_full, "C:\\GitHub\\SMORES\\data\\canyon_scored_long_full.parquet")
 
 #Deep sea coral robust high - user selected score data set
 DSC.RobustHigh.grid <- sf::st_intersection(DSC.RobustHigh, grid_test) %>%
