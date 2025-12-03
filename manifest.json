@@ -5099,13 +5099,22 @@
   },
   "files": {
     ".RData": {
-      "checksum": "f7c0c368932b0801b0dbca424fd73f85"
+      "checksum": "a47d2bf92ca6e60ee8e6da7f13b72e80"
+    },
+    ".RDataTmp": {
+      "checksum": "0d85aa7653f1fe06f834fd0ccc79c3dd"
+    },
+    ".RDataTmp1": {
+      "checksum": "c4b4bb31530ffc17dd8a163f08c079d8"
     },
     "_brand.yml": {
       "checksum": "d2cdab908bb159c84e7c89635cd93a08"
     },
     "data/2km_grid_full.parquet": {
-      "checksum": "49f56798f28ffc19efc7932e06e39ffa"
+      "checksum": "8ff436130239fe534d8598bc6b94aa9a"
+    },
+    "data/2km_grid_full.rds": {
+      "checksum": "d44e54705da5d36c976620ef0c3f3976"
     },
     "data/2km_grid_norcal.rds": {
       "checksum": "13160464f0487034ae15ef4405f65c20"
@@ -5145,6 +5154,9 @@
     },
     "data/ASH_scored_full.parquet": {
       "checksum": "979c66107a78fc0dc9d28451d2e49152"
+    },
+    "data/base_grid_df.parquet": {
+      "checksum": "ab9b388f69c841fcfc64171875da7298"
     },
     "data/blue_whale_scored.rds": {
       "checksum": "62c2d76dde8b7d1c43b05a1107ac219f"
@@ -5333,13 +5345,13 @@
       "checksum": "49d0d124d8d194f5237c06d2604b5562"
     },
     "data_production.R": {
-      "checksum": "eb30930b00d7e7c2f555825eaf6036e6"
+      "checksum": "aa131d2624b5cb7bd81c9aba87f86767"
     },
     "Full_Model_Report_Template.Rmd": {
-      "checksum": "5f356e2c8743b8c38334b65047af0a75"
+      "checksum": "04418639895fdb13f9df0326eb3632ff"
     },
     "global.R": {
-      "checksum": "1207fd8dae5ff637e58c646d783b66f0"
+      "checksum": "b3d413bfae605d3c38853a71b382c114"
     },
     "LICENSE": {
       "checksum": "d229da563da18fe5d58cd95a6467d584"
@@ -5366,7 +5378,7 @@
       "checksum": "93ecbd829558a86ff494cdb003436c51"
     },
     "markdown/full_model.md": {
-      "checksum": "940f51ad0d1d7b770bfb860cc87ee6f4"
+      "checksum": "3dee082d6d3eb112313263781510386f"
     },
     "markdown/habitat.md": {
       "checksum": "a93c65af1cde3acd67aeb90e335555b7"
@@ -5536,6 +5548,9 @@
     "R/calculate_geometric_mean_combined.R": {
       "checksum": "747a601e43fde9062d13e9fddc3daadf"
     },
+    "R/calculate_geometric_mean_full.R": {
+      "checksum": "7596de32cfc0ca954e6118b155673bb4"
+    },
     "R/calculate_lowest_combined.R": {
       "checksum": "f952ffd812437289cf6e4dadff21a21e"
     },
@@ -5555,19 +5570,19 @@
       "checksum": "21c0b2ef10c1cf7bb1583d8a273b877e"
     },
     "R/create_combined_map.R": {
-      "checksum": "aecc9bb512e5f6abac0b331c76907cfd"
+      "checksum": "f3254d2414fe48abcbff9a35557cd42e"
     },
     "R/create_combined_submodel_map.R": {
-      "checksum": "d91982820fa7466789b4397d8754e1c9"
+      "checksum": "0deb01886a9878828718eed7f18041d8"
     },
     "R/create_continuous_palette.R": {
       "checksum": "3ea7c432b6c2985d0266f2a972c2e4af"
     },
     "R/create_full_model_map.R": {
-      "checksum": "53b0271dc349cbd59c2e83ab4ccdd857"
+      "checksum": "8bff6a97a69d825f182f644884459dcb"
     },
     "R/create_individual_map.R": {
-      "checksum": "464f90bfdb3bdb8a460f494a3a1e3828"
+      "checksum": "f6fdac8ab6aeddc11de64ae51779a26e"
     },
     "R/create_maps_container.R": {
       "checksum": "f5639c62afe4f4720288e93414514026"
@@ -5576,7 +5591,7 @@
       "checksum": "be14cdbe62d7c5e8f9d04519f07cf2e1"
     },
     "R/filter_by_score.R": {
-      "checksum": "3e70194951174d76728ccb7b1905770a"
+      "checksum": "979024b1ebfac78604f4a9398a37c940"
     },
     "R/filtered_data_timestamps.R": {
       "checksum": "855d7c5fdedadcc3de9bf2ffb0c48a58"
@@ -5600,7 +5615,7 @@
       "checksum": "d845f55052a5788a0f29dc6b925a126d"
     },
     "R/generate_full_model_sidebar.R": {
-      "checksum": "5aa8f90a1df5004d3da08590b79c6e2c"
+      "checksum": "4cbcde869f7cd3d3ed4b932cc1a5888f"
     },
     "R/generate_habitat_sidebar.R": {
       "checksum": "12b67ec2302b03f12f65fda4a4f91df0"
@@ -5627,10 +5642,10 @@
       "checksum": "a8496090575ba87f2fd36acf5f0a0c62"
     },
     "R/get_valid_configs_for_tab.R": {
-      "checksum": "3528f16fc6054087675107dca0ea74c9"
+      "checksum": "248a83e722281c77b8db5c9885466acf"
     },
     "R/make_combined_map_dataset.R": {
-      "checksum": "91e1b695368d33efafa903c589873194"
+      "checksum": "551faaa7cddc0257f622b7cb28305247"
     },
     "R/modal.R": {
       "checksum": "cb8bd4822fb8011ae303d8a1ef1aa601"
@@ -5642,7 +5657,7 @@
       "checksum": "39c9e5e1804623cc965928a4299ff46d"
     },
     "R/submodel_configurations.R": {
-      "checksum": "fb2debbe4aa185a1e62f37602cc2f200"
+      "checksum": "6b5d5102e54435f3e32936d6f1102096"
     },
     "R/submodel_status_display.R": {
       "checksum": "f4755128423445ec5e67a5f718a09bf9"
@@ -5651,13 +5666,13 @@
       "checksum": "3a8f7e57289642cb74b619a3f91befa6"
     },
     "server.R": {
-      "checksum": "b623cc40218db8a02f5389ee3fc81ef6"
+      "checksum": "685ad93f5a213bf66132d0f722c8d5ba"
     },
     "Submodel_Combined_Report_Template.Rmd": {
-      "checksum": "bd46621019e1041d7f7caffe357ce1a2"
+      "checksum": "836115ef2a43751d4a977fb99cb3b89b"
     },
     "Submodel_Component_Report_Template.Rmd": {
-      "checksum": "1c8b5343b97941ab0db87b6576ac131e"
+      "checksum": "d11b68e0c19cd2ac89d36c873a7fdbd7"
     },
     "ui.R": {
       "checksum": "329c3fddcb2619011ac4ae148b97daf9"
