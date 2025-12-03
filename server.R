@@ -297,7 +297,7 @@ function(input, output, session) {
     }
   }, ignoreNULL = FALSE, ignoreInit = FALSE)
   
-  # Fisheries maps - UPDATED to only regenerate when specific configs change
+  # Fisheries maps 
   observeEvent(fisheries_valid_configs(), {
     valid_configs <- fisheries_valid_configs()
     aoi_data <- filtered_aoi_data()
@@ -341,7 +341,7 @@ function(input, output, session) {
     }
   }, ignoreNULL = FALSE, ignoreInit = FALSE)
   
-  # Industry & Operations maps - UPDATED to only regenerate when specific configs change
+  # Industry & Operations maps
   observeEvent(industry_operations_valid_configs(), {
     valid_configs <- industry_operations_valid_configs()
     aoi_data <- filtered_aoi_data()

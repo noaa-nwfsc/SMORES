@@ -28,31 +28,31 @@ make_combined_map_dataset <- function(valid_configs, dataset_mapping, base_grid 
       score_column <- dataset_info$score_column
     }
     
+    # Apply filter_by_score with base_grid to get complete dataset including 1s for unselected cells
+    filtered_dataset <- filter_by_score(dataset, score_value, base_grid, layer_name)
+    
     # Handle different score types
     if(score_value == "Ranked Importance") {
-      # For ranked importance, use the complete dataset that includes 1's from filter_by_score
-      # This ensures we get both the ranked importance values AND 1's for unselected cells
-      temp_data <- dataset %>%
+      # Use the filtered dataset that now includes 1's for unselected cells
+      temp_data <- filtered_dataset %>%
         st_drop_geometry() %>%
         select(CellID_2km, !!score_column)
     } else if(score_value == "Z Membership") {
-      # Special handling for Z Membership - don't filter, use all data
-      temp_data <- dataset %>%
+      # Special handling for Z Membership - use filtered dataset
+      temp_data <- filtered_dataset %>%
         st_drop_geometry() %>%
         select(CellID_2km, !!score_column)
     } else if(layer_name == "Trawl Fisheries @ 75%" && score_value == "0.001") {
-      # Special handling for trawl fisheries - apply score to all non-NA spatial coverage
-      temp_data <- dataset %>%
+      # Special handling for trawl fisheries
+      temp_data <- filtered_dataset %>%
         st_drop_geometry() %>%
         select(CellID_2km, !!score_column) %>%
-        # For trawl fisheries, any non-NA value in the score column should be replaced with 0.001
         mutate(!!score_column := ifelse(!is.na(.data[[score_column]]) & .data[[score_column]] != 0, 
                                         as.numeric(score_value), 
                                         NA_real_))
     } else {
-      # For discrete scores, use the complete dataset that already includes 1's from filter_by_score
-      # Don't filter again - the dataset is already processed with selected scores + 1's for unselected cells
-      temp_data <- dataset %>%
+      # For discrete scores, use the filtered dataset that includes 1's for unselected cells
+      temp_data <- filtered_dataset %>%
         st_drop_geometry() %>%
         select(CellID_2km, !!score_column)
     }
