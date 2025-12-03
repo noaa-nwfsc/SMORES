@@ -138,10 +138,10 @@ n = number of variables<br> x₁ = variable 1<br> x₂ = variable
 ### Weighted Geometric Mean
 
 To generate the full model map a [weighted geometric
-mean](https://github.com/noaa-nwfsc/SMORES/blob/main/R/create_full_model_map.R){target="_blank"}
+mean](https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_geometric_mean_full.R){target="_blank"}
 calculation was used:
 
-$$\text{wg} = {x_1^{w_1} \times x_2^{w_2} \times \ldots \times x_i^{w_i}}^ 1/{w_1}+{w_2}+{w_i}$$
+$$\text{wg} = ({x_1^{w_1} \times x_2^{w_2} \times \ldots \times x_i^{w_i}})^{\frac{1}{\sum_{i=1}^{n} w_i}}$$
 
 <center>
 x₁ = variable 1<br> x₂ = variable
