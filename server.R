@@ -674,7 +674,7 @@ function(input, output, session) {
         # Create the map
         map_result <- create_combined_map(
           combined_data = combined_data,
-          map_title = paste("Offshore Wind Energy Suitability Score for Habitat Component -", 
+          map_title = paste("Offshore Wind Energy Suitability Score <br> for Habitat Component -", 
                             switch (method,
                                     "geometric_mean" = "Geometric Mean", 
                                     "lowest" = "Lowest Value",
@@ -824,7 +824,7 @@ function(input, output, session) {
         # Create the map
         map_result <- create_combined_map(
           combined_data = combined_data,
-          map_title = paste("Offshore Wind Energy Suitability Score for Species Component -", 
+          map_title = paste("Offshore Wind Energy Suitability Score <br> for Species Component -", 
                             switch (method,
                                     "geometric_mean" = "Geometric Mean", 
                                     "lowest" = "Lowest Value",
@@ -973,7 +973,7 @@ function(input, output, session) {
         # Create the map
         map_result <- create_combined_map(
           combined_data = combined_data,
-          map_title = paste("Offshore Wind Energy Suitability Score for Fisheries Component -", 
+          map_title = paste("Offshore Wind Energy Suitability Score <br> for Fisheries Component -", 
                             switch (method,
                                     "geometric_mean" = "Geometric Mean", 
                                     "lowest" = "Lowest Value",
@@ -1437,7 +1437,7 @@ function(input, output, session) {
         # Create the map
         map_result <- create_combined_map(
           combined_data = combined_data,
-          map_title = paste("Offshore Wind Energy Suitability Score for Cables Component -", 
+          map_title = paste("Offshore Wind Energy Suitability Score <br> for Cables Component -", 
                             switch (method,
                                     "geometric_mean" = "Geometric Mean", 
                                     "lowest" = "Lowest Value",
