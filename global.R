@@ -56,6 +56,8 @@ source("R/calculate_geometric_mean_combined.R")
 source("R/calculate_lowest_combined.R")
 source("R/calculate_product_combined.R")
 source("R/preprocess_spatial_data.R")
+source("R/crop_data_to_aoi.R")
+source("R/make_combined_map_from_cached_data.R")
 
 ## Reporting Functions
 source("R/generate_submodel_component_report.R")

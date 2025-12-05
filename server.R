@@ -62,6 +62,12 @@ function(input, output, session) {
     full_map_cropped = NULL
   )
   
+  individual_processed_data <- reactiveValues(
+    naturalresources = list(),
+    fisheries = list(),
+    industryoperations = list()
+  )
+  
   #AOI selector options
   observe({
     if(!is.null(AOI) && "Area_Name" %in% names(AOI)){
@@ -90,7 +96,7 @@ function(input, output, session) {
     return(filtered_data)
   })
   
-  # AOI Map Output - Modified to show all AOIs initially
+  # AOI Map Output showing all AOIs initially
   output$aoiMap <- renderLeaflet({
     
     tryCatch({
@@ -253,12 +259,12 @@ function(input, output, session) {
     return(configs)
   })
   
-  # Natural Resources maps
+  # Natural Resources maps 
   observeEvent(natural_resources_valid_configs(), {
     valid_configs <- natural_resources_valid_configs()
     aoi_data <- filtered_aoi_data()
     
-    # Check each config to see if it has changed
+    # Apply cropping to each config's data BEFORE map creation
     for(config in valid_configs) {
       local({
         local_config <- config
@@ -280,8 +286,42 @@ function(input, output, session) {
         if(is.null(last_config) || last_config != current_config_hash || 
            !map_id %in% individual_maps_created$naturalresources) {
           
-          # Update the map
+          # PROCESS AND CACHE THE DATA
+          processed_config_data <- local_config$data
+          if(!is.null(processed_config_data) && !is.null(aoi_data)) {
+            processed_config_data <- crop_data_to_aoi(processed_config_data, aoi_data)
+          }
+          
+          # Get the score column for this layer
+          score_col <- switch(local_config$layer,
+                              "Canyon" = "Score.Canyon",
+                              "Deep Sea Coral Robust High Suitability" = if(local_config$score == "Z Membership") "Score.Z_Membership" else "Score.DSC_RH",
+                              "Seeps" = "Score.Seeps",
+                              "Shelf Break" = "Score.ShlfBrk",
+                              "EFHCA" = "Score.EFHCA",
+                              "EFHCA 700 fathoms" = "Score.EFHCA.700",
+                              "HAPC AOI" = "Score.HAPC.AOI",
+                              "HAPC Rocky Reef" = "Score.HAPC.Reef",
+                              "ESA Critical Habitat for Southern Resident Killer Whales" = "Score.killer_whale",
+                              "ESA Critical Habitat for Leatherback Sea Turtles" = "Score.leatherback_turtle",
+                              "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS" = "Score.humpback_whale",
+                              "Biologically Important Area - Blue Whale" = "Score.blue_whale",
+                              NULL
+          )
+          
+          # Cache the processed data for reuse in combined maps
+          individual_processed_data$naturalresources[[config_key]] <- list(
+            data = processed_config_data,
+            layer = local_config$layer,
+            score = local_config$score,
+            score_column = score_col,
+            config = local_config
+          )
+          
+          # Update the map with processed data
           output[[map_id]] <- renderLeaflet({
+            # Update config with processed data for map creation
+            local_config$data <- processed_config_data
             create_individual_map(local_config, aoi_data)
           })
           
@@ -297,12 +337,12 @@ function(input, output, session) {
     }
   }, ignoreNULL = FALSE, ignoreInit = FALSE)
   
-  # Fisheries maps 
+  # Fisheries maps
   observeEvent(fisheries_valid_configs(), {
     valid_configs <- fisheries_valid_configs()
     aoi_data <- filtered_aoi_data()
     
-    # Check each config to see if it has changed
+    # Apply cropping to each config's data BEFORE map creation
     for(config in valid_configs) {
       local({
         local_config <- config
@@ -324,8 +364,42 @@ function(input, output, session) {
         if(is.null(last_config) || last_config != current_config_hash || 
            !map_id %in% individual_maps_created$fisheries) {
           
-          # Update the map
+          # PROCESS AND CACHE THE DATA
+          processed_config_data <- local_config$data
+          if(!is.null(processed_config_data) && !is.null(aoi_data)) {
+            processed_config_data <- crop_data_to_aoi(processed_config_data, aoi_data)
+          }
+          
+          # Get the score column for this layer
+          score_col <- switch(local_config$layer,
+                              # Fisheries layers with different score types
+                              "At-Sea Hake Mid-Water Trawl" = if(local_config$score == "Ranked Importance") "Score.ASH_Ranked_Importance" else "Score.ASH",
+                              "Shoreside Hake Mid-Water Trawl" = if(local_config$score == "Ranked Importance") "Score.SSH_Ranked_Importance" else "Score.SSH",
+                              "Groundfish Bottom Trawl" = if(local_config$score == "Ranked Importance") "Score.GFBT_Ranked_Importance" else "Score.GFBT",
+                              "Groundfish Pot Gear" = if(local_config$score == "Ranked Importance") "Score.GFP_Ranked_Importance" else "Score.GFP",
+                              "Groundfish Long Line Gear" = if(local_config$score == "Ranked Importance") "Score.GFLL_Ranked_Importance" else "Score.GFLL",
+                              "Pink Shrimp Trawl" = if(local_config$score == "Ranked Importance") "Score.PS_Ranked_Importance" else "Score.PS",
+                              "Dungeness Crab" = if(local_config$score == "Ranked Importance") "Score.CRAB_Ranked_Importance" else "Score.CRAB",
+                              "Commercial Troll/Hook and Line Albacore" = if(local_config$score == "Ranked Importance") "Score.ALCO_Ranked_Importance" else "Score.ALCO",
+                              "Charter Vessel Albacore Troll/Hook and Line" = if(local_config$score == "Ranked Importance") "Score.ALCH_Ranked_Importance" else "Score.ALCH",
+                              # Trawl fisheries layer
+                              "Trawl Fisheries @ 75%" = "Score.Trawl_Fisheries",
+                              NULL
+          )
+          
+          # Cache the processed data for reuse in combined maps
+          individual_processed_data$fisheries[[config_key]] <- list(
+            data = processed_config_data,
+            layer = local_config$layer,
+            score = local_config$score,
+            score_column = score_col,
+            config = local_config
+          )
+          
+          # Update the map with processed data
           output[[map_id]] <- renderLeaflet({
+            # Update config with processed data for map creation
+            local_config$data <- processed_config_data
             create_individual_map(local_config, aoi_data)
           })
           
@@ -346,7 +420,7 @@ function(input, output, session) {
     valid_configs <- industry_operations_valid_configs()
     aoi_data <- filtered_aoi_data()
     
-    # Check each config to see if it has changed
+    # Apply cropping to each config's data BEFORE map creation
     for(config in valid_configs) {
       local({
         local_config <- config
@@ -368,8 +442,35 @@ function(input, output, session) {
         if(is.null(last_config) || last_config != current_config_hash || 
            !map_id %in% individual_maps_created$industryoperations) {
           
-          # Update the map
+          # PROCESS AND CACHE THE DATA
+          processed_config_data <- local_config$data
+          if(!is.null(processed_config_data) && !is.null(aoi_data)) {
+            processed_config_data <- crop_data_to_aoi(processed_config_data, aoi_data)
+          }
+          
+          # Get the score column for this layer
+          score_col <- switch(local_config$layer,
+                              # Scientific Surveys layers
+                              "Fixed Surveys" = "Score.Surveys_fixed",
+                              "Periodic Surveys" = "Score.Surveys_periodic",
+                              # Submarine Cables layer
+                              "Submarine Cables" = "Score.submarine_cable",
+                              NULL
+          )
+          
+          # Cache the processed data for reuse in combined maps
+          individual_processed_data$industryoperations[[config_key]] <- list(
+            data = processed_config_data,
+            layer = local_config$layer,
+            score = local_config$score,
+            score_column = score_col,
+            config = local_config
+          )
+          
+          # Update the map with processed data
           output[[map_id]] <- renderLeaflet({
+            # Update config with processed data for map creation
+            local_config$data <- processed_config_data
             create_individual_map(local_config, aoi_data)
           })
           
@@ -511,8 +612,9 @@ function(input, output, session) {
     )
   })
   
-  # Combined map logic
+  # Combined map logic for habitat
   observeEvent(input$generateCombinedHabitatMap, {
+    
     # Get selected calculation methods
     selected_methods <- input$habitatCalculationMethods
     
@@ -520,7 +622,7 @@ function(input, output, session) {
       showNotification("Please select at least one calculation method.", type = "warning")
       return()
     }
-    
+ 
     # Show modal with spinner
     show_spinner_modal("Generating Combined Map(s)", 
                        paste("Please wait while", length(selected_methods), "combined map(s) are being generated..."))
@@ -528,50 +630,72 @@ function(input, output, session) {
     # Add a small delay to ensure the modal is visible
     Sys.sleep(0.5)
     
-    # Define dataset mapping for habitat tab
-    habitat_dataset_mapping <- list(
-      "Canyon" = list(data = canyon, score_column = "Score.Canyon"),
-      "Deep Sea Coral Robust High Suitability" = list(
-        data = function(score) {
-          if(score == "Z Membership") {
-            return(DSC_RH_z_membership)
-          } else {
-            return(DSC_RH)
-          }
-        }, 
-        score_column = function(score) {
-          if(score == "Z Membership") {
-            return("Score.Z_Membership")
-          } else {
-            return("Score.DSC_RH")
-          }
-        }
-      ),
-      "Seeps" = list(data = seeps, score_column = "Score.Seeps"),
-      "Shelf Break" = list(data = shlfbrk, score_column = "Score.ShlfBrk"),
-      "EFHCA" = list(data = efhca, score_column = "Score.EFHCA"), 
-      "EFHCA 700 fathoms" = list(data = efhca_700, score_column = "Score.EFHCA.700"), 
-      "HAPC AOI" = list(data = HAPCaoi, score_column = "Score.HAPC.AOI"), 
-      "HAPC Rocky Reef" = list(data = HAPCreef, score_column = "Score.HAPC.Reef")
-    )
-    
-    # Get valid configurations
+    # Get valid configurations and AOI data
     valid_configs <- natural_resources_valid_configs()
+    aoi_data <- filtered_aoi_data()
     
-    # Generate maps using the restructured approach
+    # Generate maps using cached individual data
     all_results <- list()
     for(method in selected_methods) {
-      all_results[[method]] <- generate_combined_map_for_method(
-        valid_configs = valid_configs,
-        dataset_mapping = habitat_dataset_mapping,
-        method = method,
-        map_type = "Habitat", 
-        aoi_data = filtered_aoi_data(),
-        base_grid = grid_test
-      )
-    }
+
+      tryCatch({
+        # Use cached individual data
+        combined_data <- make_combined_map_from_cached_data(
+          valid_configs = valid_configs,
+          cached_data = individual_processed_data$naturalresources,
+          method = method,
+          base_grid = grid_test,
+          aoi_data = aoi_data
+        )
+        
+        # Get score columns for verification
+        score_cols <- names(combined_data)[grep("^Score\\.", names(combined_data))]
+        
+        if(length(score_cols) == 0) {
+          cat("ERROR: No score columns found for calculation\n")
+          next
+        }
+        
+        # Calculate based on method
+        if(method == "geometric_mean") {
+          combined_data <- calculate_geometric_mean(combined_data)
+        } else if(method == "lowest") {
+          combined_data <- calculate_lowest_value(combined_data)
+        } else if(method == "product") {
+          combined_data <- calculate_product_value(combined_data)
+        }
+        
+        # Verify calculation result
+        expected_col <- switch(method,
+                               "geometric_mean" = "Geo_mean",
+                               "lowest" = "Lowest_value", 
+                               "product" = "Product_value")
+        
+        # Create the map
+        map_result <- create_combined_map(
+          combined_data = combined_data,
+          map_title = paste("Offshore Wind Energy Suitability Score for Habitat Component -", 
+                            switch (method,
+                                    "geometric_mean" = "Geometric Mean", 
+                                    "lowest" = "Lowest Value",
+                                    "product" = "Product")),
+          method = method,
+          aoi_data = aoi_data
+        )
+        
+        # Store the result
+        all_results[[method]] <- list(
+          combined_data = combined_data,
+          map = map_result
+        )
+        
+      }, error = function(e) {
+        cat("ERROR in method", method, ":", e$message, "\n")
+        showNotification(paste("Error generating", method, "map:", e$message), type = "error")
+      })
+    } 
     
-    # Store results for all methods
+    # Store results - but only for methods that were actually selected
     if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
       local({
         result <- all_results[["geometric_mean"]]
@@ -592,7 +716,7 @@ function(input, output, session) {
       local({
         result <- all_results[["product"]]
         output$combinedHabitatMap_product <- renderLeaflet({ result$map })
-        combined_maps_data$habitat_product <- result$combined_data  # This was already correct
+        combined_maps_data$habitat_product <- result$combined_data
       })
     }
     
@@ -601,26 +725,27 @@ function(input, output, session) {
     
     # Remove modal spinner
     removeModal()
-  })
+
+  }) # END of observeEvent
   
-  # Habitat/Natural Resources tab export
-  output$habitatExportRmd <- downloadHandler(
-    filename = function() {
-      paste("Habitat_Component_Natural_Resources_Submodel_Report_", 
-            format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
-    },
-    content = function(file) {
-      generate_submodel_component_report(
-        component_type = "habitat",
-        submodel_type = "natural_resources", 
-        valid_configs = natural_resources_valid_configs(),
-        combined_maps_data = combined_maps_data,
-        input = input,
-        filtered_aoi_data = filtered_aoi_data,
-        file = file
-      )
-    }
-  )
+  # # Habitat/Natural Resources tab export
+  # output$habitatExportRmd <- downloadHandler(
+  #   filename = function() {
+  #     paste("Habitat_Component_Natural_Resources_Submodel_Report_", 
+  #           format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+  #   },
+  #   content = function(file) {
+  #     generate_submodel_component_report(
+  #       component_type = "habitat",
+  #       submodel_type = "natural_resources", 
+  #       valid_configs = natural_resources_valid_configs(),
+  #       combined_maps_data = combined_maps_data,
+  #       input = input,
+  #       filtered_aoi_data = filtered_aoi_data,
+  #       file = file
+  #     )
+  #   }
+  # )
   
   # Multiple maps container for species
   output$multipleMapsContainer_species <- renderUI({
@@ -639,6 +764,7 @@ function(input, output, session) {
   
   # Combined map logic
   observeEvent(input$generateCombinedSpeciesMap, {
+    
     # Get selected calculation methods
     selected_methods <- input$speciesCalculationMethods
     
@@ -654,31 +780,71 @@ function(input, output, session) {
     # Add a small delay to ensure the modal is visible
     Sys.sleep(0.5)
     
-    # Define dataset mapping for species tab
-    species_dataset_mapping <- list(
-      "ESA Critical Habitat for Southern Resident Killer Whales" = list(data = killer_whale, score_column = "Score.killer_whale"),
-      "ESA Critical Habitat for Leatherback Sea Turtles"  = list(data = leatherback_turtle, score_column = "Score.leatherback_turtle"),
-      "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS" = list(data = humpback_whale, score_column = "Score.humpback_whale"),
-      "Biologically Important Area - Blue Whale" = list(data = blue_whale, score_column = "Score.blue_whale")
-    )
-    
     # Get valid configurations
     valid_configs <- natural_resources_valid_configs()
+    aoi_data <- filtered_aoi_data()
     
-    # Generate maps using the restructured approach
+    # Generate maps using cached individual data
     all_results <- list()
     for(method in selected_methods) {
-      all_results[[method]] <- generate_combined_map_for_method(
-        valid_configs = valid_configs,
-        dataset_mapping = species_dataset_mapping,
-        method = method,
-        map_type = "Species", 
-        aoi_data = filtered_aoi_data(),
-        base_grid = grid_test
-      )
-    }
-    
-    # Store results for all methods
+      
+      tryCatch({
+        # Use cached individual data
+        combined_data <- make_combined_map_from_cached_data(
+          valid_configs = valid_configs,
+          cached_data = individual_processed_data$naturalresources,
+          method = method,
+          base_grid = grid_test,
+          aoi_data = aoi_data
+        )
+        
+        # Get score columns for verification
+        score_cols <- names(combined_data)[grep("^Score\\.", names(combined_data))]
+        
+        if(length(score_cols) == 0) {
+          cat("ERROR: No score columns found for calculation\n")
+          next
+        }
+        
+        # Calculate based on method
+        if(method == "geometric_mean") {
+          combined_data <- calculate_geometric_mean(combined_data)
+        } else if(method == "lowest") {
+          combined_data <- calculate_lowest_value(combined_data)
+        } else if(method == "product") {
+          combined_data <- calculate_product_value(combined_data)
+        }
+        
+        # Verify calculation result
+        expected_col <- switch(method,
+                               "geometric_mean" = "Geo_mean",
+                               "lowest" = "Lowest_value", 
+                               "product" = "Product_value")
+        
+        # Create the map
+        map_result <- create_combined_map(
+          combined_data = combined_data,
+          map_title = paste("Offshore Wind Energy Suitability Score for Species Component -", 
+                            switch (method,
+                                    "geometric_mean" = "Geometric Mean", 
+                                    "lowest" = "Lowest Value",
+                                    "product" = "Product")),
+          method = method,
+          aoi_data = aoi_data
+        )
+        
+        # Store the result
+        all_results[[method]] <- list(
+          combined_data = combined_data,
+          map = map_result
+        )
+        
+      }, error = function(e) {
+        cat("ERROR in method", method, ":", e$message, "\n")
+        showNotification(paste("Error generating", method, "map:", e$message), type = "error")
+      })
+    } 
+    # Store results - but only for methods that were actually selected
     if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
       local({
         result <- all_results[["geometric_mean"]]
@@ -699,7 +865,7 @@ function(input, output, session) {
       local({
         result <- all_results[["product"]]
         output$combinedSpeciesMap_product <- renderLeaflet({ result$map })
-        combined_maps_data$species_product <- result$combined_data  # This was already correct
+        combined_maps_data$species_product <- result$combined_data
       })
     }
     
@@ -708,26 +874,27 @@ function(input, output, session) {
     
     # Remove modal spinner
     removeModal()
-  })
-  
-  # Species/Natural Resources tab export  
-  output$speciesExportRmd <- downloadHandler(
-    filename = function() {
-      paste("Species_Component_Natural_Resources_Submodel_Report_", 
-            format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
-    },
-    content = function(file) {
-      generate_submodel_component_report(
-        component_type = "species",
-        submodel_type = "natural_resources",
-        valid_configs = natural_resources_valid_configs(), 
-        combined_maps_data = combined_maps_data,
-        input = input,
-        filtered_aoi_data = filtered_aoi_data,
-        file = file
-      )
-    }
-  )
+    
+  }) # END of observeEvent
+
+  # # Species/Natural Resources tab export  
+  # output$speciesExportRmd <- downloadHandler(
+  #   filename = function() {
+  #     paste("Species_Component_Natural_Resources_Submodel_Report_", 
+  #           format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+  #   },
+  #   content = function(file) {
+  #     generate_submodel_component_report(
+  #       component_type = "species",
+  #       submodel_type = "natural_resources",
+  #       valid_configs = natural_resources_valid_configs(), 
+  #       combined_maps_data = combined_maps_data,
+  #       input = input,
+  #       filtered_aoi_data = filtered_aoi_data,
+  #       file = file
+  #     )
+  #   }
+  # )
   
   # Multiple maps container for fisheries
   output$multipleMapsContainer_fisheries <- renderUI({
@@ -746,6 +913,7 @@ function(input, output, session) {
   
   # Combined map logic
   observeEvent(input$generateCombinedFisheriesMap, {
+    
     # Get selected calculation methods
     selected_methods <- input$fisheriesCalculationMethods
     
@@ -761,171 +929,71 @@ function(input, output, session) {
     # Add a small delay to ensure the modal is visible
     Sys.sleep(0.5)
     
-    # Define dataset mapping for fisheries tab
-    fisheries_dataset_mapping <- list(
-      "At-Sea Hake Mid-Water Trawl" = list(
-        data = function(score) {
-          if(score == "Ranked Importance") {
-            return(ASH_ranked_importance)
-          } else {
-            return(ASH)
-          }
-        }, 
-        score_column = function(score) {
-          if(score == "Ranked Importance") {
-            return("Score.ASH_Ranked_Importance")
-          } else {
-            return("Score.ASH")
-          }
-        }
-      ),
-      "Shoreside Hake Mid-Water Trawl" = list(
-        data = function(score) {
-          if(score == "Ranked Importance") {
-            return(SSH_ranked_importance)
-          } else {
-            return(SSH)
-          }
-        }, 
-        score_column = function(score) {
-          if(score == "Ranked Importance") {
-            return("Score.SSH_Ranked_Importance")
-          } else {
-            return("Score.SSH")
-          }
-        }
-      ),
-      "Groundfish Bottom Trawl" = list(
-        data = function(score) {
-          if(score == "Ranked Importance") {
-            return(GFBT_ranked_importance)
-          } else {
-            return(GFBT)
-          }
-        }, 
-        score_column = function(score) {
-          if(score == "Ranked Importance") {
-            return("Score.GFBT_Ranked_Importance")
-          } else {
-            return("Score.GFBT")
-          }
-        }
-      ),
-      "Groundfish Pot Gear" = list(
-        data = function(score) {
-          if(score == "Ranked Importance") {
-            return(GFP_ranked_importance)
-          } else {
-            return(GFP)
-          }
-        }, 
-        score_column = function(score) {
-          if(score == "Ranked Importance") {
-            return("Score.GFP_Ranked_Importance")
-          } else {
-            return("Score.GFP")
-          }
-        }
-      ),
-      "Groundfish Long Line Gear" = list(
-        data = function(score) {
-          if(score == "Ranked Importance") {
-            return(GFLL_ranked_importance)
-          } else {
-            return(GFLL)
-          }
-        }, 
-        score_column = function(score) {
-          if(score == "Ranked Importance") {
-            return("Score.GFLL_Ranked_Importance")
-          } else {
-            return("Score.GFLL")
-          }
-        }
-      ),
-      "Pink Shrimp Trawl" = list(
-        data = function(score) {
-          if(score == "Ranked Importance") {
-            return(PS_ranked_importance)
-          } else {
-            return(PS)
-          }
-        }, 
-        score_column = function(score) {
-          if(score == "Ranked Importance") {
-            return("Score.PS_Ranked_Importance")
-          } else {
-            return("Score.PS")
-          }
-        }
-      ),
-      "Dungeness Crab" = list(
-        data = function(score) {
-          if(score == "Ranked Importance") {
-            return(CRAB_ranked_importance)
-          } else {
-            return(CRAB)
-          }
-        }, 
-        score_column = function(score) {
-          if(score == "Ranked Importance") {
-            return("Score.CRAB_Ranked_Importance")
-          } else {
-            return("Score.CRAB")
-          }
-        }
-      ),
-      "Commercial Troll/Hook and Line Albacore" = list(
-        data = function(score) {
-          if(score == "Ranked Importance") {
-            return(ALCO_ranked_importance)
-          } else {
-            return(ALCO)
-          }
-        }, 
-        score_column = function(score) {
-          if(score == "Ranked Importance") {
-            return("Score.ALCO_Ranked_Importance")
-          } else {
-            return("Score.ALCO")
-          }
-        }
-      ),
-      "Charter Vessel Albacore Troll/Hook and Line" = list(
-        data = function(score) {
-          if(score == "Ranked Importance") {
-            return(ALCH_ranked_importance)
-          } else {
-            return(ALCH)
-          }
-        }, 
-        score_column = function(score) {
-          if(score == "Ranked Importance") {
-            return("Score.ALCH_Ranked_Importance")
-          } else {
-            return("Score.ALCH")
-          }
-        }
-      )
-    )
-    
     # Get valid configurations
     valid_configs <- fisheries_valid_configs()
+    aoi_data <- filtered_aoi_data()
     
-    # Generate maps using the restructured approach
+    # Generate maps using cached individual data
     all_results <- list()
     for(method in selected_methods) {
-      all_results[[method]] <- generate_combined_map_for_method(
-        valid_configs = valid_configs,
-        dataset_mapping = fisheries_dataset_mapping,
-        method = method,
-        map_type = "Fisheries", 
-        aoi_data = filtered_aoi_data(),
-        base_grid = grid_test
-      )
-    }
-    
-    # Store results for all methods
+      
+      tryCatch({
+        # Use cached individual data
+        combined_data <- make_combined_map_from_cached_data(
+          valid_configs = valid_configs,
+          cached_data = individual_processed_data$fisheries,
+          method = method,
+          base_grid = grid_test,
+          aoi_data = aoi_data
+        )
+        
+        # Get score columns for verification
+        score_cols <- names(combined_data)[grep("^Score\\.", names(combined_data))]
+        
+        if(length(score_cols) == 0) {
+          cat("ERROR: No score columns found for calculation\n")
+          next
+        }
+        
+        # Calculate based on method
+        if(method == "geometric_mean") {
+          combined_data <- calculate_geometric_mean(combined_data)
+        } else if(method == "lowest") {
+          combined_data <- calculate_lowest_value(combined_data)
+        } else if(method == "product") {
+          combined_data <- calculate_product_value(combined_data)
+        }
+        
+        # Verify calculation result
+        expected_col <- switch(method,
+                               "geometric_mean" = "Geo_mean",
+                               "lowest" = "Lowest_value", 
+                               "product" = "Product_value")
+        
+        # Create the map
+        map_result <- create_combined_map(
+          combined_data = combined_data,
+          map_title = paste("Offshore Wind Energy Suitability Score for Fisheries Component -", 
+                            switch (method,
+                                    "geometric_mean" = "Geometric Mean", 
+                                    "lowest" = "Lowest Value",
+                                    "product" = "Product")),
+          method = method,
+          aoi_data = aoi_data
+        )
+        
+        # Store the result
+        all_results[[method]] <- list(
+          combined_data = combined_data,
+          map = map_result
+        )
+        
+      }, error = function(e) {
+        cat("ERROR in method", method, ":", e$message, "\n")
+        showNotification(paste("Error generating", method, "map:", e$message), type = "error")
+      })
+    } 
+    # Store results - but only for methods that were actually selected
     if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
       local({
         result <- all_results[["geometric_mean"]]
@@ -946,7 +1014,7 @@ function(input, output, session) {
       local({
         result <- all_results[["product"]]
         output$combinedFisheriesMap_product <- renderLeaflet({ result$map })
-        combined_maps_data$fisheries_product <- result$combined_data  # This was already correct
+        combined_maps_data$fisheries_product <- result$combined_data
       })
     }
     
@@ -955,42 +1023,43 @@ function(input, output, session) {
     
     # Remove modal spinner
     removeModal()
-  })
+    
+  }) # END of observeEvent
 
-  # Fisheries/Fisheries tab export  
-  output$fisheriesExportRmd <- downloadHandler(
-    filename = function() {
-      paste("Fisheries_Component_Fisheries_Submodel_Report_", 
-            format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
-    },
-    content = function(file) {
-      # Extract data from ReactiveValues BEFORE passing to report function
-      combined_data_extracted <- list()
-      
-      # Extract fisheries data if it exists
-      if(isTRUE(combined_maps_data$fisheries_combined_map_generated)) {
-        if(!is.null(combined_maps_data$fisheries_geo)) {
-          combined_data_extracted$fisheries_geo <- combined_maps_data$fisheries_geo
-        }
-        if(!is.null(combined_maps_data$fisheries_lowest)) {
-          combined_data_extracted$fisheries_lowest <- combined_maps_data$fisheries_lowest
-        }
-        if(!is.null(combined_maps_data$fisheries_product)) {
-          combined_data_extracted$fisheries_product <- combined_maps_data$fisheries_product
-        }
-      }
-      
-      generate_submodel_component_report(
-        component_type = "fisheries",
-        submodel_type = "fisheries",
-        valid_configs = fisheries_valid_configs(), 
-        combined_data_extracted = combined_data_extracted, # Pass extracted data instead of ReactiveValues
-        input = input,
-        filtered_aoi_data = filtered_aoi_data,
-        file = file
-      )
-    }
-  )
+  # # Fisheries/Fisheries tab export  
+  # output$fisheriesExportRmd <- downloadHandler(
+  #   filename = function() {
+  #     paste("Fisheries_Component_Fisheries_Submodel_Report_", 
+  #           format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+  #   },
+  #   content = function(file) {
+  #     # Extract data from ReactiveValues BEFORE passing to report function
+  #     combined_data_extracted <- list()
+  #     
+  #     # Extract fisheries data if it exists
+  #     if(isTRUE(combined_maps_data$fisheries_combined_map_generated)) {
+  #       if(!is.null(combined_maps_data$fisheries_geo)) {
+  #         combined_data_extracted$fisheries_geo <- combined_maps_data$fisheries_geo
+  #       }
+  #       if(!is.null(combined_maps_data$fisheries_lowest)) {
+  #         combined_data_extracted$fisheries_lowest <- combined_maps_data$fisheries_lowest
+  #       }
+  #       if(!is.null(combined_maps_data$fisheries_product)) {
+  #         combined_data_extracted$fisheries_product <- combined_maps_data$fisheries_product
+  #       }
+  #     }
+  #     
+  #     generate_submodel_component_report(
+  #       component_type = "fisheries",
+  #       submodel_type = "fisheries",
+  #       valid_configs = fisheries_valid_configs(), 
+  #       combined_data_extracted = combined_data_extracted, # Pass extracted data instead of ReactiveValues
+  #       input = input,
+  #       filtered_aoi_data = filtered_aoi_data,
+  #       file = file
+  #     )
+  #   }
+  # )
   
   # Multiple maps container for trawl fisheries
   output$multipleMapsContainer_trawl <- renderUI({
@@ -1007,8 +1076,9 @@ function(input, output, session) {
     )
   })
   
-  # Combined map logic
+  # Trawl fisheries maps
   observeEvent(input$generateCombinedTrawlMap, {
+    
     # Get selected calculation methods
     selected_methods <- input$trawlCalculationMethods
     
@@ -1024,28 +1094,71 @@ function(input, output, session) {
     # Add a small delay to ensure the modal is visible
     Sys.sleep(0.5)
     
-    # Define dataset mapping for species tab
-    trawl_dataset_mapping <- list(
-      "Trawl Fisheries @ 75%" = list(data = trawl_fisheries, score_column = "Score.Trawl_Fisheries")
-    )
-    
     # Get valid configurations
     valid_configs <- fisheries_valid_configs()
+    aoi_data <- filtered_aoi_data()
     
-    # Generate maps using the restructured approach
+    # Generate maps using cached individual data
     all_results <- list()
     for(method in selected_methods) {
-      all_results[[method]] <- generate_combined_map_for_method(
-        valid_configs = valid_configs,
-        dataset_mapping = trawl_dataset_mapping,
-        method = method,
-        map_type = "Trawl Fisheries",
-        aoi_data = filtered_aoi_data(),
-        base_grid = grid_test
-      )
-    }
-    
-    # Store results for all methods
+      
+      tryCatch({
+        # Use cached individual data
+        combined_data <- make_combined_map_from_cached_data(
+          valid_configs = valid_configs,
+          cached_data = individual_processed_data$fisheries,
+          method = method,
+          base_grid = grid_test,
+          aoi_data = aoi_data
+        )
+        
+        # Get score columns for verification
+        score_cols <- names(combined_data)[grep("^Score\\.", names(combined_data))]
+        
+        if(length(score_cols) == 0) {
+          cat("ERROR: No score columns found for calculation\n")
+          next
+        }
+        
+        # Calculate based on method
+        if(method == "geometric_mean") {
+          combined_data <- calculate_geometric_mean(combined_data)
+        } else if(method == "lowest") {
+          combined_data <- calculate_lowest_value(combined_data)
+        } else if(method == "product") {
+          combined_data <- calculate_product_value(combined_data)
+        }
+        
+        # Verify calculation result
+        expected_col <- switch(method,
+                               "geometric_mean" = "Geo_mean",
+                               "lowest" = "Lowest_value", 
+                               "product" = "Product_value")
+        
+        # Create the map
+        map_result <- create_combined_map(
+          combined_data = combined_data,
+          map_title = paste("Offshore Wind Energy Suitability Score <br> for Trawl Fisheries Component -", 
+                            switch (method,
+                                    "geometric_mean" = "Geometric Mean", 
+                                    "lowest" = "Lowest Value",
+                                    "product" = "Product")),
+          method = method,
+          aoi_data = aoi_data
+        )
+        
+        # Store the result
+        all_results[[method]] <- list(
+          combined_data = combined_data,
+          map = map_result
+        )
+        
+      }, error = function(e) {
+        cat("ERROR in method", method, ":", e$message, "\n")
+        showNotification(paste("Error generating", method, "map:", e$message), type = "error")
+      })
+    } 
+    # Store results - but only for methods that were actually selected
     if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
       local({
         result <- all_results[["geometric_mean"]]
@@ -1075,26 +1188,27 @@ function(input, output, session) {
     
     # Remove modal spinner
     removeModal()
-  })
+    
+  }) # END of observeEvent
   
-  # Trawl/Fisheries and Operations tab export
-  output$trawlExportRmd <- downloadHandler(
-    filename = function() {
-      paste("Trawl_Fisheries_Component_Industry_Operations_Submodel_Report_", 
-            format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
-    },
-    content = function(file) {
-      generate_submodel_component_report(
-        component_type = "trawl", 
-        submodel_type = "fisheries",
-        valid_configs = fisheries_valid_configs(),
-        combined_maps_data = combined_maps_data,
-        input = input,
-        filtered_aoi_data = filtered_aoi_data,
-        file = file
-      )
-    }
-  )
+  # # Trawl/Fisheries and Operations tab export
+  # output$trawlExportRmd <- downloadHandler(
+  #   filename = function() {
+  #     paste("Trawl_Fisheries_Component_Industry_Operations_Submodel_Report_", 
+  #           format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+  #   },
+  #   content = function(file) {
+  #     generate_submodel_component_report(
+  #       component_type = "trawl", 
+  #       submodel_type = "fisheries",
+  #       valid_configs = fisheries_valid_configs(),
+  #       combined_maps_data = combined_maps_data,
+  #       input = input,
+  #       filtered_aoi_data = filtered_aoi_data,
+  #       file = file
+  #     )
+  #   }
+  # )
   
   # Multiple maps container for surveys
   output$multipleMapsContainer_surveys <- renderUI({
@@ -1111,8 +1225,10 @@ function(input, output, session) {
     )
   })
   
-  # Combined map logic
+  
+  # Surveys maps
   observeEvent(input$generateCombinedSurveysMap, {
+    
     # Get selected calculation methods
     selected_methods <- input$surveysCalculationMethods
     
@@ -1128,79 +1244,121 @@ function(input, output, session) {
     # Add a small delay to ensure the modal is visible
     Sys.sleep(0.5)
     
-    # Define dataset mapping for industry tab
-    surveys_dataset_mapping <- list(
-      "Fixed Surveys" = list(data = surveys_fixed, score_column = "Score.Surveys_fixed"),
-      "Periodic Surveys" = list(data = surveys_periodic, score_column = "Score.Surveys_periodic")
-    )
-    
     # Get valid configurations
     valid_configs <- industry_operations_valid_configs()
+    aoi_data <- filtered_aoi_data()
     
-    # Generate maps using the restructured approach
+    # Generate maps using cached individual data
     all_results <- list()
     for(method in selected_methods) {
-      all_results[[method]] <- generate_combined_map_for_method(
-        valid_configs = valid_configs,
-        dataset_mapping = surveys_dataset_mapping,
-        method = method,
-        map_type = "Surveys",
-        aoi_data = filtered_aoi_data(),
-        base_grid = grid_test
-      )
+      
+      tryCatch({
+        # Use cached individual data
+        combined_data <- make_combined_map_from_cached_data(
+          valid_configs = valid_configs,
+          cached_data = individual_processed_data$industryoperations,
+          method = method,
+          base_grid = grid_test,
+          aoi_data = aoi_data
+        )
+        
+        # Get score columns for verification
+        score_cols <- names(combined_data)[grep("^Score\\.", names(combined_data))]
+        
+        if(length(score_cols) == 0) {
+          cat("ERROR: No score columns found for calculation\n")
+          next
+        }
+        
+        # Calculate based on method
+        if(method == "geometric_mean") {
+          combined_data <- calculate_geometric_mean(combined_data)
+        } else if(method == "lowest") {
+          combined_data <- calculate_lowest_value(combined_data)
+        } else if(method == "product") {
+          combined_data <- calculate_product_value(combined_data)
+        }
+        
+        # Verify calculation result
+        expected_col <- switch(method,
+                               "geometric_mean" = "Geo_mean",
+                               "lowest" = "Lowest_value", 
+                               "product" = "Product_value")
+        
+        # Create the map
+        map_result <- create_combined_map(
+          combined_data = combined_data,
+          map_title = paste("Offshore Wind Energy Suitability Score <br> for Surveys Component -", 
+                            switch (method,
+                                    "geometric_mean" = "Geometric Mean", 
+                                    "lowest" = "Lowest Value",
+                                    "product" = "Product")),
+          method = method,
+          aoi_data = aoi_data
+        )
+        
+        # Store the result
+        all_results[[method]] <- list(
+          combined_data = combined_data,
+          map = map_result
+        )
+        
+      }, error = function(e) {
+        cat("ERROR in method", method, ":", e$message, "\n")
+        showNotification(paste("Error generating", method, "map:", e$message), type = "error")
+      })
+    } 
+    # Store results - but only for methods that were actually selected
+    if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
+      local({
+        result <- all_results[["geometric_mean"]]
+        output$combinedSurveysMap_geo <- renderLeaflet({ result$map })
+        combined_maps_data$surveys_geo <- result$combined_data
+      })
     }
-      
-      # Store results for all methods
-      if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
-        local({
-          result <- all_results[["geometric_mean"]]
-          output$combinedSurveysMap_geo <- renderLeaflet({ result$map })
-          combined_maps_data$surveys_geo <- result$combined_data
-        })
-      }
-      
-      if("lowest" %in% selected_methods && "lowest" %in% names(all_results)) {
-        local({
-          result <- all_results[["lowest"]]
-          output$combinedSurveysMap_lowest <- renderLeaflet({ result$map })
-          combined_maps_data$surveys_lowest <- result$combined_data
-        })
-      }
-      
-      if("product" %in% selected_methods && "product" %in% names(all_results)) {  
-        local({
-          result <- all_results[["product"]]
-          output$combinedSurveysMap_product <- renderLeaflet({ result$map })
-          combined_maps_data$surveys_product <- result$combined_data  # This was already correct
-        })
-      }
-      
-      # Set flag to indicate combined map has been generated
-      combined_maps_data$surveys_combined_map_generated <- TRUE
-      
-      # Remove modal spinner
-      removeModal()
-    })
-  
-  
-  # Surveys/Industry and Operations tab export
-  output$surveysExportRmd <- downloadHandler(
-    filename = function() {
-      paste("Surveys_Component_Industry_Operations_Submodel_Report_", 
-            format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
-    },
-    content = function(file) {
-      generate_submodel_component_report(
-        component_type = "surveys",
-        submodel_type = "industry_operations",
-        valid_configs = industry_operations_valid_configs(),
-        combined_maps_data = combined_maps_data, 
-        input = input,
-        filtered_aoi_data = filtered_aoi_data,
-        file = file
-      )
+    
+    if("lowest" %in% selected_methods && "lowest" %in% names(all_results)) {
+      local({
+        result <- all_results[["lowest"]]
+        output$combinedSurveysMap_lowest <- renderLeaflet({ result$map })
+        combined_maps_data$surveys_lowest <- result$combined_data
+      })
     }
-  )
+    
+    if("product" %in% selected_methods && "product" %in% names(all_results)) {  
+      local({
+        result <- all_results[["product"]]
+        output$combinedSurveysMap_product <- renderLeaflet({ result$map })
+        combined_maps_data$surveys_product <- result$combined_data
+      })
+    }
+    
+    # Set flag to indicate combined map has been generated
+    combined_maps_data$surveys_combined_map_generated <- TRUE
+    
+    # Remove modal spinner
+    removeModal()
+    
+  }) # END of observeEvent
+  
+  # # Surveys/Industry and Operations tab export
+  # output$surveysExportRmd <- downloadHandler(
+  #   filename = function() {
+  #     paste("Surveys_Component_Industry_Operations_Submodel_Report_", 
+  #           format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+  #   },
+  #   content = function(file) {
+  #     generate_submodel_component_report(
+  #       component_type = "surveys",
+  #       submodel_type = "industry_operations",
+  #       valid_configs = industry_operations_valid_configs(),
+  #       combined_maps_data = combined_maps_data, 
+  #       input = input,
+  #       filtered_aoi_data = filtered_aoi_data,
+  #       file = file
+  #     )
+  #   }
+  # )
   
   # Multiple maps container for cables
   output$multipleMapsContainer_cables <- renderUI({
@@ -1217,8 +1375,9 @@ function(input, output, session) {
     )
   })
   
-  # Combined map logic
+  # Combined map logic for habitat
   observeEvent(input$generateCombinedCablesMap, {
+    
     # Get selected calculation methods
     selected_methods <- input$cablesCalculationMethods
     
@@ -1234,28 +1393,72 @@ function(input, output, session) {
     # Add a small delay to ensure the modal is visible
     Sys.sleep(0.5)
     
-    # Define dataset mapping for species tab
-    cables_dataset_mapping <- list(
-      "Submarine Cables" = list(data = submarine_cable, score_column = "Score.submarine_cable")
-    )
-    
-    # Get valid configurations
+    # Get valid configurations and AOI data
     valid_configs <- industry_operations_valid_configs()
+    aoi_data <- filtered_aoi_data()
     
-    # Generate maps using the restructured approach
+    # Generate maps using cached individual data
     all_results <- list()
     for(method in selected_methods) {
-      all_results[[method]] <- generate_combined_map_for_method(
-        valid_configs = valid_configs,
-        dataset_mapping = cables_dataset_mapping,
-        method = method,
-        map_type = "Cables",
-        aoi_data = filtered_aoi_data(),
-        base_grid = grid_test
-      )
-    }
+      
+      tryCatch({
+        # Use cached individual data
+        combined_data <- make_combined_map_from_cached_data(
+          valid_configs = valid_configs,
+          cached_data = individual_processed_data$industryoperations,
+          method = method,
+          base_grid = grid_test,
+          aoi_data = aoi_data
+        )
+        
+        # Get score columns for verification
+        score_cols <- names(combined_data)[grep("^Score\\.", names(combined_data))]
+        
+        if(length(score_cols) == 0) {
+          cat("ERROR: No score columns found for calculation\n")
+          next
+        }
+        
+        # Calculate based on method
+        if(method == "geometric_mean") {
+          combined_data <- calculate_geometric_mean(combined_data)
+        } else if(method == "lowest") {
+          combined_data <- calculate_lowest_value(combined_data)
+        } else if(method == "product") {
+          combined_data <- calculate_product_value(combined_data)
+        }
+        
+        # Verify calculation result
+        expected_col <- switch(method,
+                               "geometric_mean" = "Geo_mean",
+                               "lowest" = "Lowest_value", 
+                               "product" = "Product_value")
+        
+        # Create the map
+        map_result <- create_combined_map(
+          combined_data = combined_data,
+          map_title = paste("Offshore Wind Energy Suitability Score for Cables Component -", 
+                            switch (method,
+                                    "geometric_mean" = "Geometric Mean", 
+                                    "lowest" = "Lowest Value",
+                                    "product" = "Product")),
+          method = method,
+          aoi_data = aoi_data
+        )
+        
+        # Store the result
+        all_results[[method]] <- list(
+          combined_data = combined_data,
+          map = map_result
+        )
+        
+      }, error = function(e) {
+        cat("ERROR in method", method, ":", e$message, "\n")
+        showNotification(paste("Error generating", method, "map:", e$message), type = "error")
+      })
+    } 
     
-    # Store results for all methods
+    # Store results - but only for methods that were actually selected
     if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
       local({
         result <- all_results[["geometric_mean"]]
@@ -1276,7 +1479,7 @@ function(input, output, session) {
       local({
         result <- all_results[["product"]]
         output$combinedCablesMap_product <- renderLeaflet({ result$map })
-        combined_maps_data$cables_product <- result$combined_data  # This was already correct
+        combined_maps_data$cables_product <- result$combined_data
       })
     }
     
@@ -1285,26 +1488,27 @@ function(input, output, session) {
     
     # Remove modal spinner
     removeModal()
-  })
+    
+  }) # END of observeEvent
   
-  # Cables/Industry and Operations tab export
-  output$cablesExportRmd <- downloadHandler(
-    filename = function() {
-      paste("Submarine_Cables_Component_Industry_Operations_Submodel_Report_", 
-            format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
-    },
-    content = function(file) {
-      generate_submodel_component_report(
-        component_type = "cables", 
-        submodel_type = "industry_operations",
-        valid_configs = industry_operations_valid_configs(),
-        combined_maps_data = combined_maps_data,
-        input = input,
-        filtered_aoi_data = filtered_aoi_data,
-        file = file
-      )
-    }
-  )
+  # # Cables/Industry and Operations tab export
+  # output$cablesExportRmd <- downloadHandler(
+  #   filename = function() {
+  #     paste("Submarine_Cables_Component_Industry_Operations_Submodel_Report_", 
+  #           format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+  #   },
+  #   content = function(file) {
+  #     generate_submodel_component_report(
+  #       component_type = "cables", 
+  #       submodel_type = "industry_operations",
+  #       valid_configs = industry_operations_valid_configs(),
+  #       combined_maps_data = combined_maps_data,
+  #       input = input,
+  #       filtered_aoi_data = filtered_aoi_data,
+  #       file = file
+  #     )
+  #   }
+  # )
   
   # Natural Resources submodel status
   output$combinedModelStatus_natural_resources <- renderUI({
