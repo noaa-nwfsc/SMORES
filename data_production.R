@@ -18,7 +18,7 @@
 # st_write_parquet(grid.2km, "C:\\GitHub\\SMORES\\data\\2km_grid_full.parquet")
 # 
 # # get base grid as a dataframe
-# base_grid_df <- grid.2km %>% 
+# base_grid_df <- grid.2km %>%
 #   st_drop_geometry()
 # 
 # write_parquet(base_grid_df, "C:\\GitHub\\SMORES\\data\\base_grid_df.parquet")
@@ -1079,6 +1079,10 @@
 # point <- trawl_fisheries[485, ]
 # plot(trawl_fisheries, reset = FALSE)
 # plot(point, col = "red", add = TRUE)
+# 
+# trawl_fisheries <- trawl_fisheries[-485, ]
+# 
+# st_geometry_type(trawl_fisheries)
 # 
 # saveRDS(trawl_fisheries, "C:\\GitHub\\SMORES\\data\\trawl_fisheries_scored_full.rds")
 # st_write_parquet(trawl_fisheries, "C:\\GitHub\\SMORES\\data\\trawl_fisheries_scored_full.parquet")
