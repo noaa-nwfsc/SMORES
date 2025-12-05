@@ -1,17 +1,22 @@
 # Function to crop spatial data to Area of Interest
 crop_data_to_aoi <- function(dataset, aoi_data, buffer_distance = 1000) {
- 
+  
+  # Skip cropping for Trawl Fisheries data to avoid geometry issues
+  if("Score.Trawl_Fisheries" %in% names(dataset)) {
+    warning("Skipping cropping for Trawl Fisheries due to geometry issues")
+    return(dataset)
+  }
   
   # Return original data if no AOI selected or "all" areas
   if(is.null(aoi_data) || nrow(aoi_data) == 0) {
-
+    
     return(dataset)
   }
   
   # Handle "All Areas" selection - no cropping
   if("Area_Name" %in% names(aoi_data) && 
      length(unique(aoi_data$Area_Name)) > 1) {
-  
+    
     return(dataset)
   }
   

@@ -128,9 +128,8 @@ get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colo
                                      "Charter Vessel Albacore Troll/Hook and Line" = ALCH_ranked_importance,
                                      layer_data[[layer_name]]  # fallback to original if no match
             )
-            
-            # Use continuous coloring for ranked importance
-            filtered_data <- dataset_to_use
+            # Pass "Ranked Importance" as the selected_score parameter
+            filtered_data <- filter_by_score(dataset_to_use, score_value, grid_test, layer_name)
             score_color <- "continuous"  # Flag for continuous coloring
             color_palette <- create_continuous_palette(filtered_data, score_type = "ranked_importance", layer_name = "ranked_importance")
           } else {
