@@ -2278,7 +2278,7 @@ function(input, output, session) {
     }
   )
   
-  # Weight validation for full model (no normalization requirement)
+  # Weight validation for full model 
   output$fullWeightValidation <- renderUI({
     # Get the current weight values
     natural_resources_weight <- input$weightNaturalResources %||% 0
@@ -2299,7 +2299,7 @@ function(input, output, session) {
     total_weight <- sum(enabled_weights)
     num_enabled <- length(enabled_weights)
     
-    # Validation messages (no normalization requirement)
+    # Validation messages 
     if(num_enabled == 0) {
       div(class = "alert alert-warning", 
           "No submodels selected. Please enable at least one submodel.")
@@ -2312,9 +2312,7 @@ function(input, output, session) {
   # Generate full Model Button Logic
   observeEvent(input$generateFullModel, {
     tryCatch({
-      # DEBUGGING: Print current state
-      cat("=== FULL MODEL GENERATION DEBUG ===\n")
-      
+    
       # Get weight values
       natural_resources_weight <- input$weightNaturalResources %||% 0
       fisheries_weight <- input$weightFisheries %||% 0
@@ -2324,31 +2322,6 @@ function(input, output, session) {
       nr_enabled <- input$enableNaturalResources %||% FALSE
       fisheries_enabled <- input$enableFisheries %||% FALSE
       industry_enabled <- input$enableIndustryOperations %||% FALSE
-      
-      cat("Enabled states:\n")
-      cat("- Natural Resources:", nr_enabled, "Weight:", natural_resources_weight, "\n")
-      cat("- Fisheries:", fisheries_enabled, "Weight:", fisheries_weight, "\n") 
-      cat("- Industry Operations:", industry_enabled, "Weight:", industry_weight, "\n")
-      
-      # Check data availability
-      cat("Data availability:\n")
-      cat("- Natural Resources data exists:", !is.null(combined_maps_data$natural_resources_combined_submodel), "\n")
-      if(!is.null(combined_maps_data$natural_resources_combined_submodel)) {
-        cat("- Natural Resources data rows:", nrow(combined_maps_data$natural_resources_combined_submodel), "\n")
-        cat("- Natural Resources Geo_mean column exists:", "Geo_mean" %in% names(combined_maps_data$natural_resources_combined_submodel), "\n")
-      }
-      
-      cat("- Fisheries data exists:", !is.null(combined_maps_data$fisheries_combined_submodel), "\n")
-      if(!is.null(combined_maps_data$fisheries_combined_submodel)) {
-        cat("- Fisheries data rows:", nrow(combined_maps_data$fisheries_combined_submodel), "\n")
-        cat("- Fisheries Geo_mean column exists:", "Geo_mean" %in% names(combined_maps_data$fisheries_combined_submodel), "\n")
-      }
-      
-      cat("- Industry Operations data exists:", !is.null(combined_maps_data$industry_operations_combined_submodel), "\n")
-      if(!is.null(combined_maps_data$industry_operations_combined_submodel)) {
-        cat("- Industry Operations data rows:", nrow(combined_maps_data$industry_operations_combined_submodel), "\n")
-        cat("- Industry Operations Geo_mean column exists:", "Geo_mean" %in% names(combined_maps_data$industry_operations_combined_submodel), "\n")
-      }
       
       # Validate that at least one submodel is enabled and has data
       enabled_submodels <- c()
@@ -2377,9 +2350,6 @@ function(input, output, session) {
       } else {
         cat("✗ Industry Operations NOT added - enabled:", industry_enabled, "data exists:", !is.null(combined_maps_data$industry_operations_combined_submodel), "\n")
       }
-      
-      cat("Final enabled submodels count:", length(enabled_submodels), "\n")
-      cat("Enabled submodels:", paste(enabled_submodels, collapse = ", "), "\n")
       
       # Check if we have any valid submodels
       if(length(enabled_submodels) == 0) {
@@ -2415,39 +2385,19 @@ function(input, output, session) {
         }
       }
       
-      cat("Final submodels list length:", length(submodels), "\n")
-      cat("Final weights list length:", length(weights), "\n")
-      
-      # Use the separated calculation function (with weights)
-      cat("Calling calculate_geometric_mean_full...\n")
+      # Call the weighted geometric mean function
       full_model_data <- calculate_geometric_mean_full(
         submodels = submodels,
         weights = weights,
         base_grid = grid_test
       )
       
-      # DEBUG: Check the calculation result
-      cat("Full model data created. Rows:", nrow(full_model_data), "\n")
-      cat("Columns:", paste(names(full_model_data), collapse = ", "), "\n")
-      cat("Overall_Geo_mean column exists:", "Overall_Geo_mean" %in% names(full_model_data), "\n")
-      
-      if("Overall_Geo_mean" %in% names(full_model_data)) {
-        non_na_count <- sum(!is.na(full_model_data$Overall_Geo_mean))
-        cat("Non-NA Overall_Geo_mean values:", non_na_count, "\n")
-        if(non_na_count > 0) {
-          cat("Overall_Geo_mean range:", min(full_model_data$Overall_Geo_mean, na.rm = TRUE), 
-              "to", max(full_model_data$Overall_Geo_mean, na.rm = TRUE), "\n")
-        }
-      }
-      
-      # Use the separated mapping function
-      cat("Calling create_full_model_map...\n")
+      # Create the full model map
       full_model_map <- create_full_model_map(
         combined_data = full_model_data,
         aoi_data_reactive = filtered_aoi_data
       )
-      cat("Full model map created successfully\n")
-      
+
       # Store the results
       combined_maps_data$full_model <- full_model_data
       combined_maps_data$full_model_generated <- TRUE
@@ -2468,9 +2418,6 @@ function(input, output, session) {
             min = min(full_values, na.rm = TRUE),
             max = max(full_values, na.rm = TRUE)
           )
-          
-          cat("Creating cropped map with", length(full_values), "valid values\n")
-          cat("Data range for cropped map:", full_data_range$min, "to", full_data_range$max, "\n")
           
           # Generate AOI-cropped map
           cropped_map <- create_aoi_cropped_map(
@@ -2527,7 +2474,7 @@ function(input, output, session) {
         # Cropped map section
         div(
           h4("AOI-Cropped Full Model Map"),
-          p("This map shows the same full model data cropped to the selected Area of Interest (AOI)."),
+          p("This map shows the full model data cropped to the selected Area of Interest (AOI)."),
           leafletOutput("fullMapCropped", height = "500px")
         )
       )
