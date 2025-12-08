@@ -1803,7 +1803,7 @@ function(input, output, session) {
         # Normalized cropped map section
         div(
           h4("AOI-Cropped Normalized Natural Resources Submodel Map"),
-          p("This map shows the AOI-cropped data normalized to a 0-1 scale for easier comparison across different areas."),
+          p("This map shows the AOI-cropped data normalized to a 0-1 scale for easier comparison across different areas.This map is intended to provide additional visual clarity for separating score values that are close together by showing them with a different color palette and relative scale. The scores showed in this map are not used in any further calculations, and are purely for visual aid."),
           leafletOutput("naturalResourcesCombinedMapCroppedNormalized", height = "500px")
         )
       )
@@ -2026,7 +2026,7 @@ function(input, output, session) {
         # Normalized cropped map section
         div(
           h4("AOI-Cropped Normalized Fisheries Submodel Map"),
-          p("This map shows the AOI-cropped data normalized to a 0-1 scale for easier comparison across different areas."),
+          p("This map shows the AOI-cropped data normalized to a 0-1 scale for easier comparison across different areas.This map is intended to provide additional visual clarity for separating score values that are close together by showing them with a different color palette and relative scale. The scores showed in this map are not used in any further calculations, and are purely for visual aid."),
           leafletOutput("fisheriesCombinedMapCroppedNormalized", height = "500px")
         )
       )
@@ -2248,7 +2248,7 @@ function(input, output, session) {
         # Normalized cropped map section
         div(
           h4("AOI-Cropped Normalized Industry & Operations Submodel Map"),
-          p("This map shows the AOI-cropped data normalized to a 0-1 scale for easier comparison across different areas."),
+          p("This map shows the AOI-cropped data normalized to a 0-1 scale for easier comparison across different areas.This map is intended to provide additional visual clarity for separating score values that are close together by showing them with a different color palette and relative scale. The scores showed in this map are not used in any further calculations, and are purely for visual aid."),
           leafletOutput("industryOperationsCombinedMapCroppedNormalized", height = "500px")
         )
       )
