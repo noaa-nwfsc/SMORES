@@ -169,7 +169,7 @@ create_individual_map <- function(config, aoi_data = NULL) {
       addLegend(
         position = "bottomright",
         colors = c(config$color, "#CCCCCC"),  # Add gray for the 1's
-        labels = c(paste("Selected Score:", config$score), "Unselected (1.0)"),
+        labels = c(paste("Selected Score for Offshore Wind Energy Suitability:", config$score), "Unselected (1)"),
         opacity = 0.7,
         title = config$layer
       )
