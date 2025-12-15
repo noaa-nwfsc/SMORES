@@ -17,6 +17,7 @@ library(fontawesome)
 library(arrow)
 library(sfarrow)
 library(digest)
+library(widgetframe)
 
 # Code to add _brand.yml theming
 theme <- bslib::bs_theme()
@@ -68,6 +69,12 @@ source("R/generate_full_model_report.R")
 source("R/data_timestamps.R")
 source("R/filtered_data_timestamps.R")
 
+# Copy report templates to temporary files at app startup
+report_template_path <- tempfile(fileext = ".Rmd")
+file.copy("Submodel_Component_Report_Template.Rmd", report_template_path, overwrite = TRUE)
+
+# Store the path globally so all report functions can use it
+TEMP_REPORT_PATH <- report_template_path
 
 # Get data timestamps information
 timestamp_info <- get_data_timestamps()
