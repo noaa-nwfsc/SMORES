@@ -728,24 +728,39 @@ function(input, output, session) {
 
   }) # END of observeEvent
   
-  # # Habitat/Natural Resources tab export
-  # output$habitatExportRmd <- downloadHandler(
-  #   filename = function() {
-  #     paste("Habitat_Component_Natural_Resources_Submodel_Report_", 
-  #           format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
-  #   },
-  #   content = function(file) {
-  #     generate_submodel_component_report(
-  #       component_type = "habitat",
-  #       submodel_type = "natural_resources", 
-  #       valid_configs = natural_resources_valid_configs(),
-  #       combined_maps_data = combined_maps_data,
-  #       input = input,
-  #       filtered_aoi_data = filtered_aoi_data,
-  #       file = file
-  #     )
-  #   }
-  # )
+  # Habitat/Natural Resources tab export
+  output$habitatExportRmd <- downloadHandler(
+    filename = function() {
+      paste("Habitat_Component_Natural_Resources_Submodel_Report_", 
+            format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+    },
+    content = function(file) {
+      # Extract combined data
+      combined_data_extracted <- list()
+      if(combined_maps_data$habitat_combined_map_generated) {
+        if(!is.null(combined_maps_data$habitat_geo)) {
+          combined_data_extracted$habitat_geo <- combined_maps_data$habitat_geo
+        }
+        if(!is.null(combined_maps_data$habitat_lowest)) {
+          combined_data_extracted$habitat_lowest <- combined_maps_data$habitat_lowest
+        }
+        if(!is.null(combined_maps_data$habitat_product)) {
+          combined_data_extracted$habitat_product <- combined_maps_data$habitat_product
+        }
+      }
+      
+      generate_submodel_component_report(
+        component_type = "habitat",
+        submodel_type = "natural_resources", 
+        valid_configs = natural_resources_valid_configs(),
+        individual_processed_data = individual_processed_data$naturalresources, 
+        combined_data_extracted = combined_data_extracted,
+        input = input,
+        filtered_aoi_data = filtered_aoi_data,
+        file = file
+      )
+    }
+  )
   
   # Multiple maps container for species
   output$multipleMapsContainer_species <- renderUI({
@@ -877,24 +892,39 @@ function(input, output, session) {
     
   }) # END of observeEvent
 
-  # # Species/Natural Resources tab export  
-  # output$speciesExportRmd <- downloadHandler(
-  #   filename = function() {
-  #     paste("Species_Component_Natural_Resources_Submodel_Report_", 
-  #           format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
-  #   },
-  #   content = function(file) {
-  #     generate_submodel_component_report(
-  #       component_type = "species",
-  #       submodel_type = "natural_resources",
-  #       valid_configs = natural_resources_valid_configs(), 
-  #       combined_maps_data = combined_maps_data,
-  #       input = input,
-  #       filtered_aoi_data = filtered_aoi_data,
-  #       file = file
-  #     )
-  #   }
-  # )
+  # Species/Natural Resources tab export
+  output$speciesExportRmd <- downloadHandler(
+    filename = function() {
+      paste("Species_Component_Natural_Resources_Submodel_Report_", 
+            format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+    },
+    content = function(file) {
+      # Extract combined data
+      combined_data_extracted <- list()
+      if(combined_maps_data$species_combined_map_generated) {
+        if(!is.null(combined_maps_data$species_geo)) {
+          combined_data_extracted$species_geo <- combined_maps_data$species_geo
+        }
+        if(!is.null(combined_maps_data$species_lowest)) {
+          combined_data_extracted$species_lowest <- combined_maps_data$species_lowest
+        }
+        if(!is.null(combined_maps_data$habitat_product)) {
+          combined_data_extracted$species_product <- combined_maps_data$species_product
+        }
+      }
+      
+      generate_submodel_component_report(
+        component_type = "species",
+        submodel_type = "natural_resources", 
+        valid_configs = natural_resources_valid_configs(),
+        individual_processed_data = individual_processed_data$naturalresources, 
+        combined_data_extracted = combined_data_extracted,
+        input = input,
+        filtered_aoi_data = filtered_aoi_data,
+        file = file
+      )
+    }
+  )
   
   # Multiple maps container for fisheries
   output$multipleMapsContainer_fisheries <- renderUI({
