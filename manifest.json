@@ -4898,6 +4898,40 @@
         "RemoteSha": "1.6.6"
       }
     },
+    "widgetframe": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "description": {
+        "Package": "widgetframe",
+        "Type": "Package",
+        "Title": "'Htmlwidgets' in Responsive 'iframes'",
+        "Version": "0.3.1",
+        "Authors@R": "c(\n    person(\"Bhaskar\", \"Karambelkar\", email = \"bhaskarvk@gmail.com\", role = c(\"aut\", \"cre\")),\n    person(\"Yihui\", \"Xie\", role = c(\"ctb\")),\n    person(\"NPR Visual Team\", role = c(\"ctb\", \"cph\"), comment = \"pym.js JavaScript library\"),\n    person(\"Bjørn Klinggaard\", role = c(\"ctb\", \"cph\"), comment = \"bLazy.js JavaScript library\")\n    )",
+        "Description": "Provides two functions 'frameableWidget()', and 'frameWidget()'.\n  The 'frameableWidget()' is used to add extra code to a 'htmlwidget' which\n  allows is to be rendered correctly inside a responsive 'iframe'.\n  The 'frameWidget()' is a 'htmlwidget' which displays content of another 'htmlwidget'\n  inside a responsive 'iframe'.\n  These functions allow for easier embedding of 'htmlwidgets' in content management systems\n  such as 'wordpress', 'blogger' etc.\n  They also allow for separation of widget content from main HTML content where\n  CSS of the main HTML could interfere with the widget.",
+        "License": "MIT + file LICENSE",
+        "Encoding": "UTF-8",
+        "LazyData": "true",
+        "Depends": "R (>= 3.1.0), htmlwidgets,",
+        "Imports": "htmltools, purrr, magrittr, utils, tools",
+        "RoxygenNote": "6.0.1",
+        "URL": "https://github.com/bhaskarvk/widgetframe,\nhttps://bhaskarvk.github.io/widgetframe/",
+        "BugReports": "https://github.com/bhaskarvk/widgetframe/issues",
+        "Suggests": "knitr, rmarkdown",
+        "VignetteBuilder": "knitr",
+        "NeedsCompilation": "no",
+        "Packaged": "2017-12-20 02:35:32 UTC; bhaskar",
+        "Author": "Bhaskar Karambelkar [aut, cre],\n  Yihui Xie [ctb],\n  NPR Visual Team [ctb, cph] (pym.js JavaScript library),\n  Bjørn Klinggaard [ctb, cph] (bLazy.js JavaScript library)",
+        "Maintainer": "Bhaskar Karambelkar <bhaskarvk@gmail.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2017-12-20 04:28:55 UTC",
+        "Built": "R 4.5.2; ; 2025-12-03 05:23:58 UTC; windows",
+        "RemoteType": "standard",
+        "RemotePkgRef": "widgetframe",
+        "RemoteRef": "widgetframe",
+        "RemoteRepos": "https://cran.rstudio.com",
+        "RemoteSha": "0.3.1"
+      }
+    },
     "withr": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
@@ -5099,7 +5133,7 @@
   },
   "files": {
     ".RData": {
-      "checksum": "20fa9cb17a42085ce0aa32de4b1f5b8e"
+      "checksum": "3842ab68d9107d1986d3dad3cf219b8a"
     },
     ".RDataTmp": {
       "checksum": "0d85aa7653f1fe06f834fd0ccc79c3dd"
@@ -5351,7 +5385,7 @@
       "checksum": "04418639895fdb13f9df0326eb3632ff"
     },
     "global.R": {
-      "checksum": "a530becd082efad95615fa7bba9b6aef"
+      "checksum": "21ddc015b122fa859a590757f60ef1d9"
     },
     "LICENSE": {
       "checksum": "d229da563da18fe5d58cd95a6467d584"
@@ -5369,7 +5403,7 @@
       "checksum": "034febee1ce8dcc4ad38c0fba5ea7bf9"
     },
     "markdown/combined_natural_resources_submodel.md": {
-      "checksum": "5410f4a2b38112fb254a197b13e903fa"
+      "checksum": "51210e035a02cf6c1fe3bce5b61477fd"
     },
     "markdown/data.md": {
       "checksum": "17643c6a91e624cc42dbfd3defae7284"
@@ -5378,7 +5412,7 @@
       "checksum": "93ecbd829558a86ff494cdb003436c51"
     },
     "markdown/full_model.md": {
-      "checksum": "3dee082d6d3eb112313263781510386f"
+      "checksum": "431ffbed3dbe365d60bb907993839371"
     },
     "markdown/habitat.md": {
       "checksum": "a93c65af1cde3acd67aeb90e335555b7"
@@ -5582,7 +5616,7 @@
       "checksum": "8bff6a97a69d825f182f644884459dcb"
     },
     "R/create_individual_map.R": {
-      "checksum": "f6fdac8ab6aeddc11de64ae51779a26e"
+      "checksum": "97c1ec4fce785a0788bddbebe2a3a4e3"
     },
     "R/create_maps_container.R": {
       "checksum": "f5639c62afe4f4720288e93414514026"
@@ -5636,7 +5670,7 @@
       "checksum": "ef275de6813f1f2b29f3401fa717d728"
     },
     "R/generate_submodel_component_report.R": {
-      "checksum": "07b4b189c24208cd63738143cce66a8c"
+      "checksum": "0f3c70216fb80c14870dfcb2488c3ddb"
     },
     "R/generate_surveys_sidebar.R": {
       "checksum": "fa50a7dda1b9ada546bcc2b2269fe66e"
@@ -5672,13 +5706,13 @@
       "checksum": "3a8f7e57289642cb74b619a3f91befa6"
     },
     "server.R": {
-      "checksum": "328ec59459695c02c7ee107eb9ce1314"
+      "checksum": "b144292fc661b24d2f64519d79eec5bd"
     },
     "Submodel_Combined_Report_Template.Rmd": {
       "checksum": "836115ef2a43751d4a977fb99cb3b89b"
     },
     "Submodel_Component_Report_Template.Rmd": {
-      "checksum": "d11b68e0c19cd2ac89d36c873a7fdbd7"
+      "checksum": "cb3a2cb83a0264f3760be60039940db4"
     },
     "ui.R": {
       "checksum": "329c3fddcb2619011ac4ae148b97daf9"
