@@ -21,98 +21,6 @@ params:
   aoi_data: NULL
 ---
 
-<!-- ```{css, include = FALSE} -->
-<!-- <style> -->
-<!-- body { -->
-<!-- max-width: 1200px; -->
-<!-- margin: 0 auto; -->
-<!-- padding: 20px; -->
-<!-- font-family: 'Arial', sans-serif; -->
-<!-- } -->
-
-<!-- .main-container { -->
-<!-- max-width: 1200px; -->
-<!-- margin: 0 auto; -->
-<!-- } -->
-
-<!-- h1, h2, h3, h4, h5, h6 { -->
-<!-- text-align: center; -->
-<!-- margin: 20px 0; -->
-<!-- } -->
-
-<!-- .leaflet-container { -->
-<!-- margin: 20px auto; -->
-<!-- display: block; -->
-<!-- } -->
-
-<!-- table { -->
-<!-- margin: 20px auto; -->
-<!-- max-width: 800px; -->
-<!-- } -->
-
-<!-- .table { -->
-<!-- margin: 20px auto; -->
-<!-- } -->
-
-<!-- p { -->
-<!-- text-align: justify; -->
-<!-- margin: 15px 0; -->
-<!-- } -->
-
-<!-- .tocify-wrapper { -->
-<!-- position: fixed; -->
-<!-- top: 0; -->
-<!-- left: 0; -->
-<!-- width: 260px; -->
-<!-- height: 100%; -->
-<!-- overflow: auto; -->
-<!-- z-index: 1000; -->
-<!-- } -->
-
-<!-- .col-md-9 { -->
-<!-- margin-left: 280px; -->
-<!-- max-width: calc(100% - 300px); -->
-<!-- } -->
-
-<!-- /* Center specific elements */ -->
-<!-- .centered-content { -->
-<!-- text-align: center; -->
-<!-- margin: 20px auto; -->
-<!-- } -->
-
-<!-- /* Map container centering */ -->
-<!-- .map-container { -->
-<!-- display: flex; -->
-<!-- justify-content: center; -->
-<!-- margin: 20px 0; -->
-<!-- } -->
-
-<!-- /* Ensure leaflet maps are responsive and centered */ -->
-<!-- .leaflet { -->
-<!-- max-width: 100%; -->
-<!-- height: 400px; -->
-<!-- margin: 0 auto; -->
-<!-- } -->
-
-<!-- /* Style for configuration table */ -->
-<!-- .config-table { -->
-<!-- margin: 20px auto; -->
-<!-- max-width: 600px; -->
-<!-- } -->
-
-<!-- /* Center all chunk outputs */ -->
-<!-- .chunk-output { -->
-<!-- text-align: center; -->
-<!-- } -->
-
-<!-- /* Center kable tables */ -->
-<!-- .kable-table { -->
-<!-- margin-left: auto; -->
-<!-- margin-right: auto; -->
-<!-- } -->
-<!-- </style> -->
-<!-- ``` -->
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
@@ -124,7 +32,6 @@ library(knitr)
 library(htmltools)
 library(htmlwidgets)
 
-# NO SOURCING OF GLOBAL.R - USE DATA ALREADY LOADED IN APP
 # Source only essential functions directly - use the correct environment
 if (file.exists("R/create_individual_map.R")) {
   source("R/create_individual_map.R", local = environment())
@@ -147,13 +54,6 @@ if (file.exists("R/create_continuous_palette.R")) {
   cat("✗ create_continuous_palette.R not found\n")
 }
 
-if (file.exists("R/filter_by_score.R")) {
-  source("R/filter_by_score.R", local = environment())
-  cat("✓ filter_by_score.R sourced successfully\n")
-} else {
-  cat("✗ filter_by_score.R not found\n")
-}
-
 # Get essential data objects directly from global environment
 score_colors <- list(
   "0" = "#000000",     # black
@@ -170,78 +70,6 @@ score_colors <- list(
   "0.9" = "#791E94",  # bright purple 
   "1" = "#BE3E82" # berry
 )
-
-# Access the data objects that are already loaded in the app environment
-# Use get() with proper error handling
-safe_get <- function(obj_name, env = .GlobalEnv) {
-  if (exists(obj_name, envir = env)) {
-    cat("✓ Found", obj_name, "in global environment\n")
-    return(get(obj_name, envir = env))
-  } else {
-    cat("✗ Missing", obj_name, "in global environment\n")
-    return(NULL)
-  }
-}
-
-# Debug: Check what's available in global environment
-cat("\n=== DEBUGGING GLOBAL ENVIRONMENT ===\n")
-cat("Objects in .GlobalEnv:\n")
-global_objects <- ls(envir = .GlobalEnv)
-cat(paste(global_objects, collapse = ", "), "\n")
-
-# Get all the datasets using the safe_get function
-canyon <- safe_get("canyon")
-ASH <- safe_get("ASH")
-ASH_ranked_importance <- safe_get("ASH_ranked_importance")
-SSH <- safe_get("SSH")
-SSH_ranked_importance <- safe_get("SSH_ranked_importance")
-GFBT <- safe_get("GFBT")
-GFBT_ranked_importance <- safe_get("GFBT_ranked_importance")
-GFP <- safe_get("GFP")
-GFP_ranked_importance <- safe_get("GFP_ranked_importance")
-GFLL <- safe_get("GFLL")
-GFLL_ranked_importance <- safe_get("GFLL_ranked_importance")
-grid_test <- safe_get("grid_test")
-
-# Test if the functions are available
-cat("\n=== FUNCTION AVAILABILITY CHECKS ===\n")
-if (exists("create_individual_map", envir = environment())) {
-  cat("✓ create_individual_map function is available\n")
-} else {
-  cat("✗ create_individual_map function is NOT available\n")
-}
-
-if (exists("create_combined_map", envir = environment())) {
-  cat("✓ create_combined_map function is available\n")
-} else {
-  cat("✗ create_combined_map function is NOT available\n")
-}
-
-# Debug: Check parameters passed to the report
-cat("\n=== PARAMETER DEBUGGING ===\n")
-cat("map_configs is null:", is.null(params$map_configs), "\n")
-if (!is.null(params$map_configs)) {
-  cat("Number of map configs:", length(params$map_configs), "\n")
-  for(i in 1:min(3, length(params$map_configs))) {
-    config <- params$map_configs[[i]]
-    cat("Config", i, "- Layer:", config$layer, "Score:", config$score, "\n")
-    cat("Config", i, "- Data is null:", is.null(config$data), "\n")
-    if (!is.null(config$data)) {
-      cat("Config", i, "- Data rows:", nrow(config$data), "\n")
-    }
-  }
-}
-
-cat("combined_data_list is null:", is.null(params$combined_data_list), "\n")
-if (!is.null(params$combined_data_list)) {
-  cat("Combined data list length:", length(params$combined_data_list), "\n")
-  cat("Combined data list names:", names(params$combined_data_list), "\n")
-}
-
-cat("aoi_data is null:", is.null(params$aoi_data), "\n")
-if (!is.null(params$aoi_data)) {
-  cat("AOI data rows:", nrow(params$aoi_data), "\n")
-}
 ```
 
 ## Selected Layers Data Information
