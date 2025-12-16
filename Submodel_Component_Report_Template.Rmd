@@ -24,52 +24,7 @@ params:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
-# Load only essential libraries for report generation
-library(leaflet)
-library(sf)
-library(dplyr)
-library(knitr)
-library(htmltools)
-library(htmlwidgets)
-
-# Source only essential functions directly - use the correct environment
-if (file.exists("R/create_individual_map.R")) {
-  source("R/create_individual_map.R", local = environment())
-  cat("✓ create_individual_map.R sourced successfully\n")
-} else {
-  cat("✗ create_individual_map.R not found\n")
-}
-
-if (file.exists("R/create_combined_map.R")) {
-  source("R/create_combined_map.R", local = environment()) 
-  cat("✓ create_combined_map.R sourced successfully\n")
-} else {
-  cat("✗ create_combined_map.R not found\n")
-}
-
-if (file.exists("R/create_continuous_palette.R")) {
-  source("R/create_continuous_palette.R", local = environment())
-  cat("✓ create_continuous_palette.R sourced successfully\n")
-} else {
-  cat("✗ create_continuous_palette.R not found\n")
-}
-
-# Get essential data objects directly from global environment
-score_colors <- list(
-  "0" = "#000000",     # black
-  "0.01" =  "#0D5359", #turquoise   
-  "0.001" = "#91CB3E", # lime
-  "0.1" = "#E41A1C",  # red
-  "0.2" = "#03045E",  # blue
-  "0.3" = "#08A045",  # green
-  "0.4" = "#805D93",  # purple
-  "0.5" = "#EC4E20",  # orange
-  "0.6" = "#FEEA00",  # yellow
-  "0.7" = "#540b0E",  # brown
-  "0.8" = "#F49FBC",  # pink
-  "0.9" = "#791E94",  # bright purple 
-  "1" = "#BE3E82" # berry
-)
+source("global_report_generation.R")
 ```
 
 ## Selected Layers Data Information

@@ -1056,40 +1056,39 @@ function(input, output, session) {
     
   }) # END of observeEvent
 
-  # # Fisheries/Fisheries tab export  
-  # output$fisheriesExportRmd <- downloadHandler(
-  #   filename = function() {
-  #     paste("Fisheries_Component_Fisheries_Submodel_Report_", 
-  #           format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
-  #   },
-  #   content = function(file) {
-  #     # Extract data from ReactiveValues BEFORE passing to report function
-  #     combined_data_extracted <- list()
-  #     
-  #     # Extract fisheries data if it exists
-  #     if(isTRUE(combined_maps_data$fisheries_combined_map_generated)) {
-  #       if(!is.null(combined_maps_data$fisheries_geo)) {
-  #         combined_data_extracted$fisheries_geo <- combined_maps_data$fisheries_geo
-  #       }
-  #       if(!is.null(combined_maps_data$fisheries_lowest)) {
-  #         combined_data_extracted$fisheries_lowest <- combined_maps_data$fisheries_lowest
-  #       }
-  #       if(!is.null(combined_maps_data$fisheries_product)) {
-  #         combined_data_extracted$fisheries_product <- combined_maps_data$fisheries_product
-  #       }
-  #     }
-  #     
-  #     generate_submodel_component_report(
-  #       component_type = "fisheries",
-  #       submodel_type = "fisheries",
-  #       valid_configs = fisheries_valid_configs(), 
-  #       combined_data_extracted = combined_data_extracted, # Pass extracted data instead of ReactiveValues
-  #       input = input,
-  #       filtered_aoi_data = filtered_aoi_data,
-  #       file = file
-  #     )
-  #   }
-  # )
+  # Fisheries/Fisheries tab export
+  output$fisheriesExportRmd <- downloadHandler(
+    filename = function() {
+      paste("Fisheries_Component_Fisheries_Submodel_Report_", 
+            format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+    },
+    content = function(file) {
+      # Extract combined data
+      combined_data_extracted <- list()
+      if(combined_maps_data$fisheries_combined_map_generated) {
+        if(!is.null(combined_maps_data$fisheries_geo)) {
+          combined_data_extracted$fisheries_geo <- combined_maps_data$fisheries_geo
+        }
+        if(!is.null(combined_maps_data$fisheries_lowest)) {
+          combined_data_extracted$fisheries_lowest <- combined_maps_data$fisheries_lowest
+        }
+        if(!is.null(combined_maps_data$fisheries_product)) {
+          combined_data_extracted$fisheries_product <- combined_maps_data$fisheries_product
+        }
+      }
+      
+      generate_submodel_component_report(
+        component_type = "fisheries",
+        submodel_type = "fisheries", 
+        valid_configs = fisheries_valid_configs(),
+        individual_processed_data = individual_processed_data$fisheries, 
+        combined_data_extracted = combined_data_extracted,
+        input = input,
+        filtered_aoi_data = filtered_aoi_data,
+        file = file
+      )
+    }
+  )
   
   # Multiple maps container for trawl fisheries
   output$multipleMapsContainer_trawl <- renderUI({
@@ -1221,24 +1220,39 @@ function(input, output, session) {
     
   }) # END of observeEvent
   
-  # # Trawl/Fisheries and Operations tab export
-  # output$trawlExportRmd <- downloadHandler(
-  #   filename = function() {
-  #     paste("Trawl_Fisheries_Component_Industry_Operations_Submodel_Report_", 
-  #           format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
-  #   },
-  #   content = function(file) {
-  #     generate_submodel_component_report(
-  #       component_type = "trawl", 
-  #       submodel_type = "fisheries",
-  #       valid_configs = fisheries_valid_configs(),
-  #       combined_maps_data = combined_maps_data,
-  #       input = input,
-  #       filtered_aoi_data = filtered_aoi_data,
-  #       file = file
-  #     )
-  #   }
-  # )
+  # Trawl/Fisheries tab export
+  output$trawlExportRmd <- downloadHandler(
+    filename = function() {
+      paste("Trawl_Component_Fisheries_Submodel_Report_", 
+            format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+    },
+    content = function(file) {
+      # Extract combined data
+      combined_data_extracted <- list()
+      if(combined_maps_data$trawl_combined_map_generated) {
+        if(!is.null(combined_maps_data$trawl_geo)) {
+          combined_data_extracted$trawl_geo <- combined_maps_data$trawl_geo
+        }
+        if(!is.null(combined_maps_data$trawl_lowest)) {
+          combined_data_extracted$trawl_lowest <- combined_maps_data$trawl_lowest
+        }
+        if(!is.null(combined_maps_data$trawl_product)) {
+          combined_data_extracted$trawl_product <- combined_maps_data$trawl_product
+        }
+      }
+      
+      generate_submodel_component_report(
+        component_type = "trawl",
+        submodel_type = "fisheries", 
+        valid_configs = fisheries_valid_configs(),
+        individual_processed_data = individual_processed_data$fisheries, 
+        combined_data_extracted = combined_data_extracted,
+        input = input,
+        filtered_aoi_data = filtered_aoi_data,
+        file = file
+      )
+    }
+  )
   
   # Multiple maps container for surveys
   output$multipleMapsContainer_surveys <- renderUI({
@@ -1371,24 +1385,39 @@ function(input, output, session) {
     
   }) # END of observeEvent
   
-  # # Surveys/Industry and Operations tab export
-  # output$surveysExportRmd <- downloadHandler(
-  #   filename = function() {
-  #     paste("Surveys_Component_Industry_Operations_Submodel_Report_", 
-  #           format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
-  #   },
-  #   content = function(file) {
-  #     generate_submodel_component_report(
-  #       component_type = "surveys",
-  #       submodel_type = "industry_operations",
-  #       valid_configs = industry_operations_valid_configs(),
-  #       combined_maps_data = combined_maps_data, 
-  #       input = input,
-  #       filtered_aoi_data = filtered_aoi_data,
-  #       file = file
-  #     )
-  #   }
-  # )
+  # Surveys/Industry operations tab export
+  output$surveysExportRmd <- downloadHandler(
+    filename = function() {
+      paste("Surveys_Component_Industry_Operations_Submodel_Report_", 
+            format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+    },
+    content = function(file) {
+      # Extract combined data
+      combined_data_extracted <- list()
+      if(combined_maps_data$surveys_combined_map_generated) {
+        if(!is.null(combined_maps_data$surveys_geo)) {
+          combined_data_extracted$surveys_geo <- combined_maps_data$surveys_geo
+        }
+        if(!is.null(combined_maps_data$surveys_lowest)) {
+          combined_data_extracted$surveys_lowest <- combined_maps_data$surveys_lowest
+        }
+        if(!is.null(combined_maps_data$surveys_product)) {
+          combined_data_extracted$surveys_product <- combined_maps_data$surveys_product
+        }
+      }
+      
+      generate_submodel_component_report(
+        component_type = "surveys",
+        submodel_type = "industry_operations", 
+        valid_configs = industry_operations_valid_configs(),
+        individual_processed_data = individual_processed_data$industryoperations, 
+        combined_data_extracted = combined_data_extracted,
+        input = input,
+        filtered_aoi_data = filtered_aoi_data,
+        file = file
+      )
+    }
+  )
   
   # Multiple maps container for cables
   output$multipleMapsContainer_cables <- renderUI({
@@ -1521,24 +1550,39 @@ function(input, output, session) {
     
   }) # END of observeEvent
   
-  # # Cables/Industry and Operations tab export
-  # output$cablesExportRmd <- downloadHandler(
-  #   filename = function() {
-  #     paste("Submarine_Cables_Component_Industry_Operations_Submodel_Report_", 
-  #           format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
-  #   },
-  #   content = function(file) {
-  #     generate_submodel_component_report(
-  #       component_type = "cables", 
-  #       submodel_type = "industry_operations",
-  #       valid_configs = industry_operations_valid_configs(),
-  #       combined_maps_data = combined_maps_data,
-  #       input = input,
-  #       filtered_aoi_data = filtered_aoi_data,
-  #       file = file
-  #     )
-  #   }
-  # )
+  # Cables/Industry Operations tab export
+  output$cablesExportRmd <- downloadHandler(
+    filename = function() {
+      paste("Cables_Component_Industry_Operations_Submodel_Report_", 
+            format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
+    },
+    content = function(file) {
+      # Extract combined data
+      combined_data_extracted <- list()
+      if(combined_maps_data$cables_combined_map_generated) {
+        if(!is.null(combined_maps_data$cables_geo)) {
+          combined_data_extracted$cables_geo <- combined_maps_data$cables_geo
+        }
+        if(!is.null(combined_maps_data$cables_lowest)) {
+          combined_data_extracted$cables_lowest <- combined_maps_data$cables_lowest
+        }
+        if(!is.null(combined_maps_data$cables_product)) {
+          combined_data_extracted$cables_product <- combined_maps_data$cables_product
+        }
+      }
+      
+      generate_submodel_component_report(
+        component_type = "cables",
+        submodel_type = "industry_operations", 
+        valid_configs = industry_operations_valid_configs(),
+        individual_processed_data = individual_processed_data$industryoperations, 
+        combined_data_extracted = combined_data_extracted,
+        input = input,
+        filtered_aoi_data = filtered_aoi_data,
+        file = file
+      )
+    }
+  )
   
   # Natural Resources submodel status
   output$combinedModelStatus_natural_resources <- renderUI({
