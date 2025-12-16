@@ -1605,7 +1605,7 @@ function(input, output, session) {
     generate_full_model_sidebar()
   })
   
-  # Enhanced submodel status using the new function
+  # submodel status
   submodel_status <- reactive({
     list(
       natural_resources = list(
@@ -1714,7 +1714,7 @@ function(input, output, session) {
     }
   })
   
-  # Add this observeEvent for the generate button
+  # Natural Resources Combined Submodel Export 
   observeEvent(input$generateNaturalResourcesCombinedSubmodel, {
     # Add error handling wrapper
     tryCatch({
@@ -2161,7 +2161,7 @@ function(input, output, session) {
     }
   })
   
-  # Add this observeEvent for the generate button
+  # Add this observeEvent for the generate button for Industry Operations
   observeEvent(input$generateIndustryOperationsCombinedSubmodel, {
     # Add error handling wrapper
     tryCatch({

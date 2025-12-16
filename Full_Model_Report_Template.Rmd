@@ -12,7 +12,6 @@ output:
 params:
   submodels_used: NULL
   submodel_weights_original: NULL
-  submodel_weights_normalized: NULL
   natural_resources_components: NULL
   industry_operations_components: NULL
   fisheries_components: NULL
@@ -20,7 +19,6 @@ params:
   combined_maps_data: NULL
   full_map: NULL
   full_map_cropped: NULL
-  full_map_cropped_normalized: NULL
   data_timestamps: NULL
   aoi_data: NULL
   weight_natural_resources: NULL
@@ -147,12 +145,9 @@ margin: 10px 0;
 ```
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.width = 12, fig.height = 8)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
-source("global.R")
-
-# Null coalescing operator
-`%||%` <- function(x, y) if(is.null(x)) y else x
+source("global_report_generation.R")
 ```
 
 ## Model Configuration
@@ -164,10 +159,6 @@ source("global.R")
     Status = "Included",
     Original_Weight = sapply(names(params$submodels_used), function(x) {
       weight <- params$submodel_weights_original[[x]] %||% 0
-      paste0(round(weight * 100, 1), "%")
-    }),
-    Normalized_Weight = sapply(names(params$submodels_used), function(x) {
-      weight <- params$submodel_weights_normalized[[x]] %||% 0
       paste0(round(weight * 100, 1), "%")
     }),
     stringsAsFactors = FALSE
@@ -183,7 +174,7 @@ source("global.R")
   
   # Display the table
   kable(submodel_config,
-        col.names = c("Submodel", "Status", "Original Weight", "Normalized Weight"),
+        col.names = c("Submodel", "Status", "Applied Weight"),
         format = "html",
         table.attr = "class='table table-striped config-table'")
 ```
@@ -312,7 +303,7 @@ if (!is.null(params$full_map)) {
 
 ## Full Combined Model - Cropped to Area of Interest (AOI)
 
-The AOI-cropped map shows the same full combined model data filtered to the selected aoi, maintaing the original full model color scale for consistency with the complete dataset 
+The AOI-cropped map shows the same full combined model data filtered to the selected aoi, maintaing the original full model color scale for consistency with the complete dataset.
 
 ```{r}
 if (!is.null(params$full_map_cropped)) {

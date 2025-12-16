@@ -53,15 +53,14 @@ generate_full_model_report <- function(
   fisheries_enabled <- input$enableFisheries %||% FALSE
   industry_enabled <- input$enableIndustryOperations %||% FALSE
   
-  # Get weights (store original values before normalization)
+  # Get weights
   natural_resources_weight <- input$weightNaturalResources %||% 0
   fisheries_weight <- input$weightFisheries %||% 0
   industry_weight <- input$weightIndustryOperations %||% 0
   
   # Build submodels_used list and original weights
   submodels_used <- list()
-  submodel_weights_original <- list()  # Store original weights
-  submodel_weights_normalized <- list()  # Store normalized weights
+  submodel_weights_original <- list() 
   
   if(nr_enabled && natural_resources_weight > 0 && 
      !is.null(combined_maps_data$natural_resources_combined_submodel)) {
@@ -79,14 +78,6 @@ generate_full_model_report <- function(
      !is.null(combined_maps_data$industry_operations_combined_submodel)) {
     submodels_used[["industry_operations"]] <- TRUE
     submodel_weights_original[["industry_operations"]] <- industry_weight
-  }
-  
-  # Normalize weights to sum to 1
-  total_weight <- sum(unlist(submodel_weights_original))
-  if(total_weight > 0) {
-    submodel_weights_normalized <- lapply(submodel_weights_original, function(w) w / total_weight)
-  } else {
-    submodel_weights_normalized <- submodel_weights_original
   }
   
   # Get Natural Resources components if enabled
@@ -311,7 +302,6 @@ generate_full_model_report <- function(
     params = list(
       submodels_used = submodels_used,
       submodel_weights_original = submodel_weights_original,
-      submodel_weights_normalized = submodel_weights_normalized, 
       weight_natural_resources = natural_resources_weight,
       weight_fisheries = fisheries_weight,
       weight_industry_operations = industry_weight,
@@ -322,7 +312,6 @@ generate_full_model_report <- function(
       combined_maps_data = full_data,
       full_map = full_map,
       full_map_cropped = full_map_cropped,
-      full_map_cropped_normalized = full_map_cropped_normalized,
       data_timestamps = data_timestamps,
       aoi_data = aoi_data
     ),
