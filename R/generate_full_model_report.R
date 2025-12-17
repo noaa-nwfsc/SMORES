@@ -293,7 +293,6 @@ generate_full_model_report <- function(
   full_data <- combined_maps_data$full_model
   full_map <- combined_maps_data$full_map
   full_map_cropped <- combined_maps_data$full_map_cropped
-  full_map_cropped_normalized <- combined_maps_data$full_map_cropped_normalized
   
   # Render the full model report
   rmarkdown::render(

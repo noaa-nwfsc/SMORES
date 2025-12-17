@@ -11,11 +11,11 @@ output:
     self_contained: true
 params:
   map_configs: NULL
-  individual_map_objects: NULL
   combined_data_list: NULL    
   selected_methods: NULL    
   tab_name: NULL
   combined_map_title: "Combined Map"
+  combined_map_objects: NULL
   data_timestamps: NULL
   component_name: NULL
   aoi_data: NULL
@@ -25,6 +25,16 @@ params:
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
 source("global_report_generation.R")
+
+# Function to render individual maps using function directly
+render_individual_map_from_config <- function(config) {
+  # Get AOI data same way as the server
+  aoi_data <- params$aoi_data
+  
+  # Call the pure function directly - this generates the exact same map as the app
+  return(create_individual_map(config, aoi_data))
+}
+    
 ```
 
 ## Selected Layers Data Information
@@ -67,74 +77,153 @@ if (!is.null(data_timestamps_table)) {
 
 The following maps are individual data layers that have been visualized for the study area. The maps are zoomed to the area of interest that was previously selected, and shown in a red outline. To view the wider study area select the zoom out button on the map. To more closely analyze a cell click on the cell of interest and a pop-up will generate with the assigned score. Above each of the maps is a block containing relevant information: layer name, score assigned, and the number of cells that are represented by this data layer.
 
-```{r individual-maps, results='asis', fig.align='center'}
-if(!is.null(params$individual_map_objects)) {
-  
-  for(i in seq_along(params$individual_map_objects)) {
-    map_obj <- params$individual_map_objects[[i]]
+```{r individual-map1, results='asis'}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 1) {
+    config <- params$map_configs[[1]]
     
-    cat("\n\n### Map", i, ":", map_obj$layer, "\n\n")
-    cat("**Score:** ", map_obj$score, "  \n")
-    cat("**Data Points:** ", nrow(map_obj$config$data), "  \n\n")
-    
-    # Use only the working temporary file approach
-    tryCatch({
-      map_result <- create_individual_map(map_obj$config, params$aoi_data)
-      
-      if (inherits(map_result, "leaflet")) {
-        temp_file <- tempfile(fileext = ".html")
-        htmlwidgets::saveWidget(map_result, temp_file, selfcontained = TRUE)
-        cat('<iframe src="', temp_file, '" width="100%" height="500px" frameborder="0"></iframe>\n')
-      }
-    }, error = function(e) {
-      cat("ERROR creating map:", e$message, "\n")
-    })
-    
-    cat("\n\n")
+    cat("\n\n### Map", 1, ":", config$layer, "(Score:", config$score, ")\n\n")
+
+    render_individual_map_from_config(config)
   }
-}
+```
+
+```{r individual-map2, results='asis'}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 2) {
+    config <- params$map_configs[[2]]
+    
+    cat("\n\n### Map", 2, ":", config$layer, "(Score:", config$score, ")\n\n")
+
+    render_individual_map_from_config(config)
+  }
+```
+
+```{r individual-map3, results='asis'}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 3) {
+    config <- params$map_configs[[3]]
+    
+    cat("\n\n### Map", 3, ":", config$layer, "(Score:", config$score, ")\n\n")
+
+    render_individual_map_from_config(config)
+  }
+```
+
+```{r individual-map4, results='asis'}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 4) {
+    config <- params$map_configs[[4]]
+    
+    cat("\n\n### Map", 4, ":", config$layer, "(Score:", config$score, ")\n\n")
+
+    render_individual_map_from_config(config)
+  }
+```
+
+```{r individual-map5, results='asis'}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 5) {
+    config <- params$map_configs[[5]]
+    
+    cat("\n\n### Map", 5, ":", config$layer, "(Score:", config$score, ")\n\n")
+
+    render_individual_map_from_config(config)
+  }
+```
+
+```{r individual-map6, results='asis'}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 6) {
+    config <- params$map_configs[[6]]
+    
+    cat("\n\n### Map", 6, ":", config$layer, "(Score:", config$score, ")\n\n")
+
+    render_individual_map_from_config(config)
+  }
+```
+
+```{r individual-map7, results='asis'}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 7) {
+    config <- params$map_configs[[7]]
+    
+    cat("\n\n### Map", 7, ":", config$layer, "(Score:", config$score, ")\n\n")
+
+    render_individual_map_from_config(config)
+  }
+```
+
+```{r individual-map8, results='asis'}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 8) {
+    config <- params$map_configs[[8]]
+    
+    cat("\n\n### Map", 8, ":", config$layer, "(Score:", config$score, ")\n\n")
+
+    render_individual_map_from_config(config)
+  }
+```
+
+```{r individual-map9, results='asis'}
+if(!is.null(params$map_configs) && length(params$map_configs) >= 9) {
+    config <- params$map_configs[[9]]
+    
+    cat("\n\n### Map", 9, ":", config$layer, "(Score:", config$score, ")\n\n")
+
+    render_individual_map_from_config(config)
+  }
 ```
 
 ## Combined Maps
 
 The following maps are combined data layers that have been calculated and visualized for the study area. The maps are zoomed to the area of interest that was previously selected, and shown in a red outline. To view the wider study area select the zoom out button on the map. To more closely analyze a cell click on the cell of interest and a pop-up will generate with the assigned score. Above each of the maps is a block containing relevant information: the number of cells that are represented by this data layer, and the calculation method used (geometric mean, lowest value, or product method).
 
-```{r combined-maps, results='asis', fig.align='center'}
-if(!is.null(params$combined_data_list) && length(params$combined_data_list) > 0) {
-  for(method in names(params$combined_data_list)) {
+```{r component-combined-maps, results='asis'}
+if (!is.null(params$combined_map_objects) && length(params$combined_map_objects) > 0) {
+  
+  # Display each combined map based on selected methods
+  method_display_names <- list(
+    geometric_mean = "Geometric Mean",
+    lowest = "Lowest Value", 
+    product = "Product"
+  )
+  
+  for (method in names(params$combined_map_objects)) {
     combined_data <- params$combined_data_list[[method]]
+    combined_map <- params$combined_map_objects[[method]]
     
-    cat("\n\n### Combined Map -", tools::toTitleCase(gsub("_", " ", method)), "\n\n")
+    # Display method name and description
+    method_name <- method_display_names[[method]] %||% method
+    cat("\n\n### Combined Map -", method_name, "\n\n")
     
-    # Create the combined map with error handling
-    tryCatch({
-      map_result <- create_combined_map(combined_data, 
-                                       paste(params$combined_map_title, "-", method), 
-                                       method, 
-                                       aoi_data = params$aoi_data)
-      
-      if (inherits(map_result, "leaflet")) {
-      
-        temp_file <- tempfile(fileext = ".html")
-        htmlwidgets::saveWidget(map_result, temp_file, selfcontained = TRUE)
+    # Add data summary information
+    if (!is.null(combined_data)) {
+      if (inherits(combined_data, 'sf')) {
+        cat("**Data Points:** ", nrow(combined_data), "  \n")
         
-      
-        cat('<iframe src="', temp_file, '" width="100%" height="500px" frameborder="0"></iframe>\n')
+        # Show value range for the specific method
+        value_column <- switch(method,
+                               "geometric_mean" = "Geo_mean",
+                               "lowest" = "Lowest_value", 
+                               "product" = "Product_value")
         
-      } else {
-        cat("ERROR: Map result is not a leaflet object\n")
+        if (!is.null(value_column) && value_column %in% names(combined_data)) {
+          valid_values <- combined_data[[value_column]][!is.na(combined_data[[value_column]])]
+          if(length(valid_values) > 0) {
+            cat("**Value Range:** ", round(min(valid_values), 3), " to ", round(max(valid_values), 3), "  \n")
+          }
+        }
+        cat("**Calculation Method:** ", method_name, "  \n")
+        cat("\n")
       }
-    }, error = function(e) {
-      cat("Error creating combined map:", e$message, "\n")
-      error_map <- leaflet() %>% 
-        addTiles() %>% 
-        addControl("Combined map generation failed", position = "center")
-      print(htmltools::tagList(error_map))
-    })
+    }
     
-    cat("\n\n")
+    # Render the map using the same pattern as individual maps
+    if (!is.null(combined_map)) {
+      # Create a rendering function just like individual maps do
+      render_combined_map_from_param <- function(map_obj) {
+        return(map_obj)
+      }
+      
+      render_combined_map_from_param(combined_map)
+    } else {
+      cat("*Combined map not available for this method.*\n\n")
+    }
   }
 } else {
-  cat("No combined map data available.\n")
+  cat("*No combined maps have been generated for this component. Generate combined maps in the application first.*\n\n")
 }
 ```

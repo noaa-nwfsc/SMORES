@@ -69,24 +69,19 @@ generate_submodel_component_report <- function(
   # Get AOI data
   aoi_data <- filtered_aoi_data()
   
-  # Pre-generate individual map widgets
-  individual_map_objects <- list()
- 
+  # Instead of creating individual_map_objects, prepare map_configs with cropped data
+  map_configs_with_cropped_data <- list()
+  
   if(!is.null(individual_processed_data)) {
     for(config_key in names(individual_processed_data)) {
       processed_item <- individual_processed_data[[config_key]]
       if(!is.null(processed_item$data)) {
-        # Create the map and save as widget
+        # Use the already-cropped data from the server
         processed_config <- processed_item$config
-        processed_config$data <- processed_item$data
+        processed_config$data <- processed_item$data  # This is already AOI-cropped
         processed_config$color <- score_colors[[processed_item$score]] %||% "#E41A1C"
         
-        individual_map_objects[[config_key]] <- list(
-          layer = processed_item$layer,
-          score = processed_item$score,
-          score_column = processed_item$score_column,
-          config = processed_config
-        )
+        map_configs_with_cropped_data[[config_key]] <- processed_config
       }
     }
   }
@@ -94,75 +89,142 @@ generate_submodel_component_report <- function(
   # Pre-generate combined map widgets
   selected_methods <- input[[config$methods_input]] %||% character(0)
   combined_data_list <- list()
+  combined_map_objects <- list()
   
-  #Set method key naming convention
+  # Set method key naming convention
   method_keys <- c(geometric_mean = "geo", lowest = "lowest", product = "product")
   
-  
-  # Process combined data and create widget files
+  # Process combined data and create map objects
   if(component_type == "habitat") {
     for(method in names(method_keys)) {
       method_key <- paste0("habitat_", method_keys[method])
       if(method %in% selected_methods && !is.null(combined_data_extracted[[method_key]])) {
         combined_data_list[[method]] <- combined_data_extracted[[method_key]]
+        
+        # Create combined map object
+        combined_map <- create_combined_map(
+          combined_data = combined_data_extracted[[method_key]], 
+          map_title = paste("Offshore Wind Energy Suitability Score for Habitat Component -", 
+                            switch(method,
+                                   "geometric_mean" = "Geometric Mean",
+                                   "lowest" = "Lowest Value", 
+                                   "product" = "Product")),
+          method = method, 
+          aoi_data = aoi_data
+        )
+        combined_map_objects[[method]] <- combined_map
       }
     }
   }
-  # species component
   else if(component_type == "species") {
     for(method in names(method_keys)) {
       method_key <- paste0("species_", method_keys[method])
       if(method %in% selected_methods && !is.null(combined_data_extracted[[method_key]])) {
         combined_data_list[[method]] <- combined_data_extracted[[method_key]]
+        
+        combined_map <- create_combined_map(
+          combined_data = combined_data_extracted[[method_key]],
+          map_title = paste("Offshore Wind Energy Suitability Score for Species Component -",
+                            switch(method,
+                                   "geometric_mean" = "Geometric Mean",
+                                   "lowest" = "Lowest Value",
+                                   "product" = "Product")),
+          method = method,
+          aoi_data = aoi_data
+        )
+        combined_map_objects[[method]] <- combined_map
       }
     }
   }
-  
-  # fisheries component
   else if(component_type == "fisheries") {
     for(method in names(method_keys)) {
       method_key <- paste0("fisheries_", method_keys[method])
       if(method %in% selected_methods && !is.null(combined_data_extracted[[method_key]])) {
         combined_data_list[[method]] <- combined_data_extracted[[method_key]]
+        
+        combined_map <- create_combined_map(
+          combined_data = combined_data_extracted[[method_key]],
+          map_title = paste("Offshore Wind Energy Suitability Score for Fisheries Component -",
+                            switch(method,
+                                   "geometric_mean" = "Geometric Mean",
+                                   "lowest" = "Lowest Value",
+                                   "product" = "Product")),
+          method = method,
+          aoi_data = aoi_data
+        )
+        combined_map_objects[[method]] <- combined_map
       }
     }
   }
-  # trawl component
   else if(component_type == "trawl") {
     for(method in names(method_keys)) {
       method_key <- paste0("trawl_", method_keys[method])
       if(method %in% selected_methods && !is.null(combined_data_extracted[[method_key]])) {
         combined_data_list[[method]] <- combined_data_extracted[[method_key]]
+        
+        combined_map <- create_combined_map(
+          combined_data = combined_data_extracted[[method_key]],
+          map_title = paste("Offshore Wind Energy Suitability Score for Trawl Fisheries Component -",
+                            switch(method,
+                                   "geometric_mean" = "Geometric Mean",
+                                   "lowest" = "Lowest Value",
+                                   "product" = "Product")),
+          method = method,
+          aoi_data = aoi_data
+        )
+        combined_map_objects[[method]] <- combined_map
       }
     }
   }
-  # surveys component
   else if(component_type == "surveys") {
     for(method in names(method_keys)) {
       method_key <- paste0("surveys_", method_keys[method])
       if(method %in% selected_methods && !is.null(combined_data_extracted[[method_key]])) {
         combined_data_list[[method]] <- combined_data_extracted[[method_key]]
+        
+        combined_map <- create_combined_map(
+          combined_data = combined_data_extracted[[method_key]],
+          map_title = paste("Offshore Wind Energy Suitability Score for Surveys Component -",
+                            switch(method,
+                                   "geometric_mean" = "Geometric Mean",
+                                   "lowest" = "Lowest Value",
+                                   "product" = "Product")),
+          method = method,
+          aoi_data = aoi_data
+        )
+        combined_map_objects[[method]] <- combined_map
       }
     }
   }
-  # cables component
   else if(component_type == "cables") {
     for(method in names(method_keys)) {
       method_key <- paste0("cables_", method_keys[method])
       if(method %in% selected_methods && !is.null(combined_data_extracted[[method_key]])) {
         combined_data_list[[method]] <- combined_data_extracted[[method_key]]
+        
+        combined_map <- create_combined_map(
+          combined_data = combined_data_extracted[[method_key]],
+          map_title = paste("Offshore Wind Energy Suitability Score for Cables Component -",
+                            switch(method,
+                                   "geometric_mean" = "Geometric Mean",
+                                   "lowest" = "Lowest Value",
+                                   "product" = "Product")),
+          method = method,
+          aoi_data = aoi_data
+        )
+        combined_map_objects[[method]] <- combined_map
       }
     }
   }
   
   # Render call for report
   rmarkdown::render(
-      input = TEMP_REPORT_PATH,  # Use the global temporary path
-      output_file = file,
+    input = "Submodel_Component_Report_Template.Rmd",
+    output_file = file,
     params = list(
-      map_configs = valid_configs,
-      individual_map_objects = individual_map_objects,
+      map_configs = map_configs_with_cropped_data,
       combined_data_list = combined_data_list,
+      combined_map_objects = combined_map_objects,
       selected_methods = selected_methods,
       tab_name = config$tab_name,
       combined_map_title = config$combined_title,
