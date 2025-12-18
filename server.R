@@ -20,6 +20,13 @@ function(input, output, session) {
     habitat_lowest = NULL,
     habitat_product = NULL,
     habitat_combined_map_generated = FALSE,
+    habitat_geo = NULL,
+    habitat_geo_map = NULL,  # ADD THIS
+    habitat_lowest = NULL,
+    habitat_lowest_map = NULL,  # ADD THIS
+    habitat_product = NULL,
+    habitat_product_map = NULL,  # ADD THIS
+    
     species_geo = NULL,
     species_lowest = NULL,
     species_product = NULL,
@@ -695,12 +702,12 @@ function(input, output, session) {
       })
     } 
     
-    # Store results - but only for methods that were actually selected
     if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
       local({
         result <- all_results[["geometric_mean"]]
         output$combinedHabitatMap_geo <- renderLeaflet({ result$map })
         combined_maps_data$habitat_geo <- result$combined_data
+        combined_maps_data$habitat_geo_map <- result$map  # ADD THIS LINE
       })
     }
     
@@ -709,6 +716,7 @@ function(input, output, session) {
         result <- all_results[["lowest"]]
         output$combinedHabitatMap_lowest <- renderLeaflet({ result$map })
         combined_maps_data$habitat_lowest <- result$combined_data
+        combined_maps_data$habitat_lowest_map <- result$map  # ADD THIS LINE
       })
     }
     
@@ -717,6 +725,7 @@ function(input, output, session) {
         result <- all_results[["product"]]
         output$combinedHabitatMap_product <- renderLeaflet({ result$map })
         combined_maps_data$habitat_product <- result$combined_data
+        combined_maps_data$habitat_product_map <- result$map  # ADD THIS LINE
       })
     }
     
@@ -755,6 +764,7 @@ function(input, output, session) {
         valid_configs = natural_resources_valid_configs(),
         individual_processed_data = individual_processed_data$naturalresources, 
         combined_data_extracted = combined_data_extracted,
+        combined_maps_data = combined_maps_data,
         input = input,
         filtered_aoi_data = filtered_aoi_data,
         file = file

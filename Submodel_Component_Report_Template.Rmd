@@ -5,7 +5,7 @@ output:
   html_document:
     theme:
       version: 5
-      # brand: _brand.yml #removed to test compatibility in future can copy over in global.R
+      brand: _brand.yml #removed to test compatibility in future can copy over in global.R
     toc: true
     toc_float: true
     self_contained: true
@@ -171,59 +171,79 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 9) {
 
 The following maps are combined data layers that have been calculated and visualized for the study area. The maps are zoomed to the area of interest that was previously selected, and shown in a red outline. To view the wider study area select the zoom out button on the map. To more closely analyze a cell click on the cell of interest and a pop-up will generate with the assigned score. Above each of the maps is a block containing relevant information: the number of cells that are represented by this data layer, and the calculation method used (geometric mean, lowest value, or product method).
 
-```{r component-combined-maps, results='asis'}
-if (!is.null(params$combined_map_objects) && length(params$combined_map_objects) > 0) {
+```{r geometric-mean-map, results='asis'}
+if ("geometric_mean" %in% params$selected_methods && !is.null(params$combined_map_objects[["geometric_mean"]])) {
+  cat("\n\n### Combined Map - Geometric Mean\n\n")
   
-  # Display each combined map based on selected methods
-  method_display_names <- list(
-    geometric_mean = "Geometric Mean",
-    lowest = "Lowest Value", 
-    product = "Product"
-  )
-  
-  for (method in names(params$combined_map_objects)) {
-    combined_data <- params$combined_data_list[[method]]
-    combined_map <- params$combined_map_objects[[method]]
-    
-    # Display method name and description
-    method_name <- method_display_names[[method]] %||% method
-    cat("\n\n### Combined Map -", method_name, "\n\n")
-    
-    # Add data summary information
-    if (!is.null(combined_data)) {
-      if (inherits(combined_data, 'sf')) {
-        cat("**Data Points:** ", nrow(combined_data), "  \n")
-        
-        # Show value range for the specific method
-        value_column <- switch(method,
-                               "geometric_mean" = "Geo_mean",
-                               "lowest" = "Lowest_value", 
-                               "product" = "Product_value")
-        
-        if (!is.null(value_column) && value_column %in% names(combined_data)) {
-          valid_values <- combined_data[[value_column]][!is.na(combined_data[[value_column]])]
-          if(length(valid_values) > 0) {
-            cat("**Value Range:** ", round(min(valid_values), 3), " to ", round(max(valid_values), 3), "  \n")
-          }
-        }
-        cat("**Calculation Method:** ", method_name, "  \n")
-        cat("\n")
-      }
-    }
-    
-    # Render the map using the same pattern as individual maps
-    if (!is.null(combined_map)) {
-      # Create a rendering function just like individual maps do
-      render_combined_map_from_param <- function(map_obj) {
-        return(map_obj)
-      }
+  # Add data summary information
+  if (!is.null(params$combined_data_list[["geometric_mean"]])) {
+    combined_data <- params$combined_data_list[["geometric_mean"]]
+    if (inherits(combined_data, 'sf')) {
+      cat("**Data Points:** ", nrow(combined_data), "  \n")
       
-      render_combined_map_from_param(combined_map)
-    } else {
-      cat("*Combined map not available for this method.*\n\n")
+      if ("Geo_mean" %in% names(combined_data)) {
+        valid_values <- combined_data[["Geo_mean"]][!is.na(combined_data[["Geo_mean"]])]
+        if(length(valid_values) > 0) {
+          cat("**Value Range:** ", round(min(valid_values), 3), " to ", round(max(valid_values), 3), "  \n")
+        }
+      }
+      cat("**Calculation Method:** Geometric Mean  \n")
+      cat("\n")
     }
   }
-} else {
-  cat("*No combined maps have been generated for this component. Generate combined maps in the application first.*\n\n")
+  
+  # Display the map
+  params$combined_map_objects[["geometric_mean"]]
 }
 ```
+
+```{r lowest-map, results='asis'}
+if ("lowest" %in% params$selected_methods && !is.null(params$combined_map_objects[["lowest"]])) {
+  cat("\n\n### Combined Map - Lowest Value\n\n")
+  
+  # Add data summary information
+  if (!is.null(params$combined_data_list[["lowest"]])) {
+    combined_data <- params$combined_data_list[["lowest"]]
+    if (inherits(combined_data, 'sf')) {
+      cat("**Data Points:** ", nrow(combined_data), "  \n")
+      
+      if ("Lowest_value" %in% names(combined_data)) {
+        valid_values <- combined_data[["Lowest_value"]][!is.na(combined_data[["Lowest_value"]])]
+        if(length(valid_values) > 0) {
+          cat("**Value Range:** ", round(min(valid_values), 3), " to ", round(max(valid_values), 3), "  \n")
+        }
+      }
+      cat("**Calculation Method:** Lowest Value  \n")
+      cat("\n")
+    }
+  }
+  
+  # Display the map
+  params$combined_map_objects[["lowest"]]
+}
+```
+
+```{r product-map, results='asis'}
+if ("product" %in% params$selected_methods && !is.null(params$combined_map_objects[["product"]])) {
+  cat("\n\n### Combined Map - Product\n\n")
+  
+  # Add data summary information
+  if (!is.null(params$combined_data_list[["product"]])) {
+    combined_data <- params$combined_data_list[["product"]]
+    if (inherits(combined_data, 'sf')) {
+      cat("**Data Points:** ", nrow(combined_data), "  \n")
+      
+      if ("Product_value" %in% names(combined_data)) {
+        valid_values <- combined_data[["Product_value"]][!is.na(combined_data[["Product_value"]])]
+        if(length(valid_values) > 0) {
+          cat("**Value Range:** ", round(min(valid_values), 3), " to ", round(max(valid_values), 3), "  \n")
+        }
+      }
+      cat("**Calculation Method:** Product  \n")
+      cat("\n")
+    }
+  }
+  
+  # Display the map
+  params$combined_map_objects[["product"]]
+}
