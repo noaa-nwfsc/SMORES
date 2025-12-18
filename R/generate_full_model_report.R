@@ -14,7 +14,7 @@ generate_full_model_report <- function(
   component_layer_details <- list()
   
   # Define filter_by_score function locally since it's not available in global environment
-  filter_by_score <- function(df, selected_score) {
+  filter_by_score <- function(df, selected_score, base_grid = NULL, layer_name = NULL) {
     if(is.null(df) || is.null(selected_score) || selected_score == "None") {
       return(df)
     }
