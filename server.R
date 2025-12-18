@@ -14,55 +14,77 @@ function(input, output, session) {
     industryoperations = list()
   )
   
-   # Create a reactive values object to store data so it can be used throughout the app
+   # reactive values object for submodel component combined data, and submodel combined data so it can be used throughout the app and for report generation
   combined_maps_data <- reactiveValues(
+  
     habitat_geo = NULL,
+    habitat_geo_map = NULL,  
     habitat_lowest = NULL,
+    habitat_lowest_map = NULL,  
     habitat_product = NULL,
+    habitat_product_map = NULL,  
     habitat_combined_map_generated = FALSE,
-    habitat_geo = NULL,
-    habitat_geo_map = NULL,  # ADD THIS
-    habitat_lowest = NULL,
-    habitat_lowest_map = NULL,  # ADD THIS
-    habitat_product = NULL,
-    habitat_product_map = NULL,  # ADD THIS
     
     species_geo = NULL,
+    species_geo_map = NULL,
     species_lowest = NULL,
+    species_lowest_map = NULL,
     species_product = NULL,
+    species_product_map = NULL,
     species_combined_map_generated = FALSE,
+    
     natural_resources_combined_submodel = NULL,
     natural_resources_combined_submodel_generated = FALSE,
     natural_resources_combined_map = NULL,
     natural_resources_combined_map_cropped = NULL,
     natural_resources_combined_map_cropped_normalized = NULL,
+    
     fisheries_geo = NULL,
+    fisheries_geo_map = NULL,
     fisheries_lowest = NULL,
+    fisheries_lowest_map = NULL,
     fisheries_product = NULL,
+    fisheries_product_map = NULL,
     fisheries_combined_map_generated = FALSE,
+    
     trawl_geo = NULL,
+    trawl_geo_map = NULL, 
     trawl_lowest = NULL,
+    trawl_lowest_map = NULL,
     trawl_product = NULL,
+    trawl_product_map = NULL,
     trawl_combined_map_generated = FALSE,
+    
     fisheries_combined_submodel = NULL,
     fisheries_combined_submodel_generated = FALSE,
     fisheries_combined_map = NULL,
     fisheries_combined_map_cropped = NULL,
     fisheries_combined_map_cropped_normalized = NULL,
-    industry = NULL, 
+    
+    industry = NULL, #? where did i use this?
+    
     surveys_geo = NULL,
+    surveys_geo_map = NULL, 
     surveys_lowest = NULL, 
+    surveys_lowest_map = NULL,
     surveys_product = NULL,
+    surveys_product_map = NULL,
     surveys_combined_map_generated = FALSE, 
+    
     cables_geo = NULL,
+    cables_geo_map = NULL,
     cables_lowest = NULL,
+    cables_lowest_map = NULL,
     cables_product = NULL, 
+    cables_product_map = NULL,
     cables_combined_map_generated = FALSE,
+    
     industry_operations_combined_submodel = NULL,
     industry_operations_combined_submodel_generated = FALSE, 
     industry_operations_combined_map = NULL,
     industry_operations_combined_map_cropped = NULL, 
     industry_operations_combined_map_cropped_normalized = NULL,
+    
     full_model = NULL,
     full_model_generated = FALSE,
     full_map = NULL,
@@ -707,7 +729,7 @@ function(input, output, session) {
         result <- all_results[["geometric_mean"]]
         output$combinedHabitatMap_geo <- renderLeaflet({ result$map })
         combined_maps_data$habitat_geo <- result$combined_data
-        combined_maps_data$habitat_geo_map <- result$map  # ADD THIS LINE
+        combined_maps_data$habitat_geo_map <- result$map  
       })
     }
     
@@ -716,7 +738,7 @@ function(input, output, session) {
         result <- all_results[["lowest"]]
         output$combinedHabitatMap_lowest <- renderLeaflet({ result$map })
         combined_maps_data$habitat_lowest <- result$combined_data
-        combined_maps_data$habitat_lowest_map <- result$map  # ADD THIS LINE
+        combined_maps_data$habitat_lowest_map <- result$map  
       })
     }
     
@@ -725,7 +747,7 @@ function(input, output, session) {
         result <- all_results[["product"]]
         output$combinedHabitatMap_product <- renderLeaflet({ result$map })
         combined_maps_data$habitat_product <- result$combined_data
-        combined_maps_data$habitat_product_map <- result$map  # ADD THIS LINE
+        combined_maps_data$habitat_product_map <- result$map  
       })
     }
     
@@ -744,6 +766,7 @@ function(input, output, session) {
             format(Sys.time(), "%Y-%m-%d_%H-%M-%S"), ".html", sep = "")
     },
     content = function(file) {
+      
       # Extract combined data
       combined_data_extracted <- list()
       if(combined_maps_data$habitat_combined_map_generated) {
@@ -869,12 +892,13 @@ function(input, output, session) {
         showNotification(paste("Error generating", method, "map:", e$message), type = "error")
       })
     } 
-    # Store results - but only for methods that were actually selected
+    
     if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
       local({
         result <- all_results[["geometric_mean"]]
         output$combinedSpeciesMap_geo <- renderLeaflet({ result$map })
         combined_maps_data$species_geo <- result$combined_data
+        combined_maps_data$species_geo_map <- result$map 
       })
     }
     
@@ -883,6 +907,7 @@ function(input, output, session) {
         result <- all_results[["lowest"]]
         output$combinedSpeciesMap_lowest <- renderLeaflet({ result$map })
         combined_maps_data$species_lowest <- result$combined_data
+        combined_maps_data$species_lowest_map <- result$map 
       })
     }
     
@@ -891,6 +916,7 @@ function(input, output, session) {
         result <- all_results[["product"]]
         output$combinedSpeciesMap_product <- renderLeaflet({ result$map })
         combined_maps_data$species_product <- result$combined_data
+        combined_maps_data$species_product_map <- result$map
       })
     }
     
@@ -929,6 +955,7 @@ function(input, output, session) {
         valid_configs = natural_resources_valid_configs(),
         individual_processed_data = individual_processed_data$naturalresources, 
         combined_data_extracted = combined_data_extracted,
+        combined_maps_data = combined_maps_data,
         input = input,
         filtered_aoi_data = filtered_aoi_data,
         file = file
@@ -1039,6 +1066,7 @@ function(input, output, session) {
         result <- all_results[["geometric_mean"]]
         output$combinedFisheriesMap_geo <- renderLeaflet({ result$map })
         combined_maps_data$fisheries_geo <- result$combined_data
+        combined_maps_data$fisheries_geo_map <- result$map
       })
     }
     
@@ -1047,6 +1075,7 @@ function(input, output, session) {
         result <- all_results[["lowest"]]
         output$combinedFisheriesMap_lowest <- renderLeaflet({ result$map })
         combined_maps_data$fisheries_lowest <- result$combined_data
+        combined_maps_data$fisheries_lowest_map <- result$map
       })
     }
     
@@ -1055,6 +1084,7 @@ function(input, output, session) {
         result <- all_results[["product"]]
         output$combinedFisheriesMap_product <- renderLeaflet({ result$map })
         combined_maps_data$fisheries_product <- result$combined_data
+        combined_maps_data$fisheries_product_map <- result$map
       })
     }
     
@@ -1093,6 +1123,7 @@ function(input, output, session) {
         valid_configs = fisheries_valid_configs(),
         individual_processed_data = individual_processed_data$fisheries, 
         combined_data_extracted = combined_data_extracted,
+        combined_maps_data = combined_maps_data,
         input = input,
         filtered_aoi_data = filtered_aoi_data,
         file = file
@@ -1203,6 +1234,7 @@ function(input, output, session) {
         result <- all_results[["geometric_mean"]]
         output$combinedTrawlMap_geo <- renderLeaflet({ result$map })
         combined_maps_data$trawl_geo <- result$combined_data
+        combined_maps_data$trawl_geo_map <- result$map  
       })
     }
     
@@ -1211,6 +1243,7 @@ function(input, output, session) {
         result <- all_results[["lowest"]]
         output$combinedTrawlMap_lowest <- renderLeaflet({ result$map })
         combined_maps_data$trawl_lowest <- result$combined_data
+        combined_maps_data$trawl_lowest_map <- result$map 
       })
     }
     
@@ -1219,6 +1252,7 @@ function(input, output, session) {
         result <- all_results[["product"]]
         output$combinedTrawlMap_product <- renderLeaflet({ result$map })
         combined_maps_data$trawl_product <- result$combined_data
+        combined_maps_data$trawl_product_map <- result$map
       })
     }
     
@@ -1257,6 +1291,7 @@ function(input, output, session) {
         valid_configs = fisheries_valid_configs(),
         individual_processed_data = individual_processed_data$fisheries, 
         combined_data_extracted = combined_data_extracted,
+        combined_maps_data = combined_maps_data,
         input = input,
         filtered_aoi_data = filtered_aoi_data,
         file = file
@@ -1368,6 +1403,7 @@ function(input, output, session) {
         result <- all_results[["geometric_mean"]]
         output$combinedSurveysMap_geo <- renderLeaflet({ result$map })
         combined_maps_data$surveys_geo <- result$combined_data
+        combined_maps_data$surveys_geo_map <- result$map
       })
     }
     
@@ -1376,6 +1412,7 @@ function(input, output, session) {
         result <- all_results[["lowest"]]
         output$combinedSurveysMap_lowest <- renderLeaflet({ result$map })
         combined_maps_data$surveys_lowest <- result$combined_data
+        combined_maps_data$surveys_lowest_map <- result$map 
       })
     }
     
@@ -1384,6 +1421,7 @@ function(input, output, session) {
         result <- all_results[["product"]]
         output$combinedSurveysMap_product <- renderLeaflet({ result$map })
         combined_maps_data$surveys_product <- result$combined_data
+        combined_maps_data$surveys_product_map <- result$map 
       })
     }
     
@@ -1422,6 +1460,7 @@ function(input, output, session) {
         valid_configs = industry_operations_valid_configs(),
         individual_processed_data = individual_processed_data$industryoperations, 
         combined_data_extracted = combined_data_extracted,
+        combined_maps_data = combined_maps_data,
         input = input,
         filtered_aoi_data = filtered_aoi_data,
         file = file
@@ -1533,6 +1572,7 @@ function(input, output, session) {
         result <- all_results[["geometric_mean"]]
         output$combinedCablesMap_geo <- renderLeaflet({ result$map })
         combined_maps_data$cables_geo <- result$combined_data
+        combined_maps_data$cables_geo_map <- result$map  
       })
     }
     
@@ -1541,6 +1581,7 @@ function(input, output, session) {
         result <- all_results[["lowest"]]
         output$combinedCablesMap_lowest <- renderLeaflet({ result$map })
         combined_maps_data$cables_lowest <- result$combined_data
+        combined_maps_data$cables_lowest_map <- result$map 
       })
     }
     
@@ -1549,6 +1590,7 @@ function(input, output, session) {
         result <- all_results[["product"]]
         output$combinedCablesMap_product <- renderLeaflet({ result$map })
         combined_maps_data$cables_product <- result$combined_data
+        combined_maps_data$cables_product_map <- result$map  
       })
     }
     
@@ -1587,6 +1629,7 @@ function(input, output, session) {
         valid_configs = industry_operations_valid_configs(),
         individual_processed_data = individual_processed_data$industryoperations, 
         combined_data_extracted = combined_data_extracted,
+        combined_maps_data = combined_maps_data,
         input = input,
         filtered_aoi_data = filtered_aoi_data,
         file = file
