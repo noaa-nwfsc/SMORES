@@ -344,7 +344,8 @@ function(input, output, session) {
             layer = local_config$layer,
             score = local_config$score,
             score_column = score_col,
-            config = local_config
+            config = local_config, 
+            component_type = determine_component_type(local_config$layer)
           )
           
           # Update the map with processed data
@@ -422,7 +423,8 @@ function(input, output, session) {
             layer = local_config$layer,
             score = local_config$score,
             score_column = score_col,
-            config = local_config
+            config = local_config,
+            component_type = determine_component_type(local_config$layer)
           )
           
           # Update the map with processed data
@@ -493,7 +495,8 @@ function(input, output, session) {
             layer = local_config$layer,
             score = local_config$score,
             score_column = score_col,
-            config = local_config
+            config = local_config,
+            component_type = determine_component_type(local_config$layer)
           )
           
           # Update the map with processed data

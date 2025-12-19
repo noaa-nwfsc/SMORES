@@ -9,7 +9,7 @@ generate_submodel_component_report <- function(
     filtered_aoi_data,
     file
 ) {
-  # Component configuration - COMPLETE VERSION
+  # Component configuration
   component_config <- list(
     habitat = list(
       display_name = "Habitat",
@@ -93,12 +93,27 @@ generate_submodel_component_report <- function(
   # Get AOI data
   aoi_data <- filtered_aoi_data()
   
-  # Instead of creating individual_map_objects, prepare map_configs with cropped data
-  map_configs_with_cropped_data <- list()
+  # Filter individual processed data by component type before creating map configs
+  component_specific_data <- list()
   
   if(!is.null(individual_processed_data)) {
     for(config_key in names(individual_processed_data)) {
       processed_item <- individual_processed_data[[config_key]]
+      
+      # Only include if this item belongs to the current component type
+      if(!is.null(processed_item$component_type) && 
+         processed_item$component_type == component_type) {
+        component_specific_data[[config_key]] <- processed_item
+      }
+    }
+  }
+  
+  # Use component_specific_data instead of individual_processed_data
+  map_configs_with_cropped_data <- list()
+  
+  if(!is.null(component_specific_data)) {
+    for(config_key in names(component_specific_data)) {
+      processed_item <- component_specific_data[[config_key]]
       if(!is.null(processed_item$data)) {
         # Use the already-cropped data from the server
         processed_config <- processed_item$config

@@ -64,6 +64,7 @@ source("R/make_combined_map_from_cached_data.R")
 source("R/generate_submodel_component_report.R")
 source("R/generate_submodel_combined_report.R")
 source("R/generate_full_model_report.R")
+source("R/determine_component_type.R")
 
 ## Data Functions
 source("R/data_timestamps.R")
