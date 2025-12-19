@@ -76,7 +76,7 @@ create_full_model_map <- function(combined_data, aoi_data_reactive = NULL) {
         position = "bottomright",
         colors = single_color,
         labels = paste("Score:", round(min_val, 2)),
-        title = "Offshore WInd Energy Suitability Score",
+        title = "Full Model Offshore Wind Energy Suitability Score",
         opacity = 1
       )
   } else {
@@ -99,7 +99,7 @@ create_full_model_map <- function(combined_data, aoi_data_reactive = NULL) {
         position = "bottomright",
         pal = pal,
         values = combined_data$Overall_Geo_mean,
-        title = "Full Model Score",
+        title = "Full Model Offshore Wind Energy Suitability Score:",
         opacity = 1
       )
   }

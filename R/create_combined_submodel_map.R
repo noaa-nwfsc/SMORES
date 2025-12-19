@@ -100,7 +100,7 @@ create_combined_submodel_map <- function(component_data_list, base_grid = grid_t
       full_data_range <- list(min = min_val, max = max_val)
       
       # Create popup text with proper formatting for small values
-      map_data$popup_display <- paste0("Combined Submodel Score:", 
+      map_data$popup_display <- paste0("Combined Submodel Offshore Wind Energy Suitability Score:", 
                                        ifelse(map_data$Geo_mean < 0.01,
                                               format(map_data$Geo_mean, scientific = FALSE, digits = 3),
                                               round(map_data$Geo_mean, 3)))
@@ -133,7 +133,7 @@ create_combined_submodel_map <- function(component_data_list, base_grid = grid_t
                            ifelse(min_val < 0.01,
                                   format(min_val, scientific = FALSE, digits = 3),
                                   round(min_val, 3))),
-            title = "Combined Submodel",
+            title = "Combined Submodel Offshore Wind Energy Suitability Score:",
             opacity = 1
           )
       } else {
@@ -175,7 +175,7 @@ create_combined_submodel_map <- function(component_data_list, base_grid = grid_t
               position = "bottomright",
               pal = pal,
               values = geo_mean_values,
-              title = "Combined Submodel",
+              title = "Combined Submodel Offshore Wind Energy Suitability Score:",
               opacity = 1
             )
         }, error = function(e) {

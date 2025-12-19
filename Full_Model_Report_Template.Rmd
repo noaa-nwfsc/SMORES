@@ -159,7 +159,7 @@ source("global_report_generation.R")
     Status = "Included",
     Original_Weight = sapply(names(params$submodels_used), function(x) {
       weight <- params$submodel_weights_original[[x]] %||% 0
-      paste0(round(weight * 100, 1), "%")
+      round(weight, 2)
     }),
     stringsAsFactors = FALSE
   )
@@ -176,6 +176,7 @@ source("global_report_generation.R")
   kable(submodel_config,
         col.names = c("Submodel", "Status", "Applied Weight"),
         format = "html",
+        row.names = FALSE,
         table.attr = "class='table table-striped config-table'")
 ```
 
@@ -212,16 +213,16 @@ if (!is.null(params$component_layer_details) && length(params$component_layer_de
             score_used <- component_layers[[i]]$score_used %||% "Unknown"
             
             layer_details_list[[length(layer_details_list) + 1]] <- data.frame(
-              Layer_Name = layer_name,
-              Score_Used = score_used,
-              Component = component,
-              Method = component_method,
               Submodel = case_when(
                 submodel == "natural_resources" ~ "Natural Resources",
                 submodel == "industry_operations" ~ "Industry & Operations",
                 submodel == "fisheries" ~ "Fisheries",
                 TRUE ~ submodel
               ),
+              Layer_Name = layer_name,
+              Score_Used = score_used,
+              Component = component,
+              Method = component_method,
               stringsAsFactors = FALSE
             )
           }
@@ -234,6 +235,10 @@ if (!is.null(params$component_layer_details) && length(params$component_layer_de
     # Combine all layer details into one data frame
     all_layer_details <- do.call(rbind, layer_details_list)
     
+    # Sort by Submodel first, then by component, then by layer name
+    all_layer_details <- all_layer_details %>% 
+      arrange(Submodel, Component, Layer_Name)
+    
      # Join with timestamps if available
     if (!is.null(data_timestamps_df)) {
       all_layer_details <- all_layer_details %>%
@@ -244,7 +249,7 @@ if (!is.null(params$component_layer_details) && length(params$component_layer_de
       
       # display table with timestamps
       kable(all_layer_details,
-            col.names = c("Layer Name", "Selected Score", "Component", "Component Calculation Method", "Submodel", "Data Type", "Last Updated"),
+            col.names = c("Submodel", "Layer Name", "Selected Score", "Component", "Component Calculation Method", "Data Type", "Last Updated"),
             format = "html",
             table.attr = "class='table table-striped config-table'")
     } else {
