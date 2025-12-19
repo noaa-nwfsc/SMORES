@@ -247,3 +247,4 @@ if ("product" %in% params$selected_methods && !is.null(params$combined_map_objec
   # Display the map
   params$combined_map_objects[["product"]]
 }
+```

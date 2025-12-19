@@ -5202,7 +5202,7 @@
   },
   "files": {
     ".RData": {
-      "checksum": "c230062320c05bc9de8ea4b6c1844f19"
+      "checksum": "62e508dea80d39287ac1bf2cc25b4172"
     },
     ".RDataTmp": {
       "checksum": "0d85aa7653f1fe06f834fd0ccc79c3dd"
@@ -5454,10 +5454,10 @@
       "checksum": "211164de613f3856ea84d8aec048fe3e"
     },
     "Full_Model_Report_Template.Rmd": {
-      "checksum": "04418639895fdb13f9df0326eb3632ff"
+      "checksum": "b1e5a8a51c55780721102f0df092335b"
     },
     "global.R": {
-      "checksum": "21ddc015b122fa859a590757f60ef1d9"
+      "checksum": "047ff79a77fa77d2771a0b2e92415b63"
     },
     "global_report_generation.R": {
       "checksum": "cc83fcf3da34a6b940d58e5f3c7d305c"
@@ -5682,13 +5682,13 @@
       "checksum": "4325129d06092170029f085c2536ea2c"
     },
     "R/create_combined_submodel_map.R": {
-      "checksum": "0deb01886a9878828718eed7f18041d8"
+      "checksum": "c299bdf2825959e212348db991bcdca3"
     },
     "R/create_continuous_palette.R": {
       "checksum": "3ea7c432b6c2985d0266f2a972c2e4af"
     },
     "R/create_full_model_map.R": {
-      "checksum": "8bff6a97a69d825f182f644884459dcb"
+      "checksum": "9358d40bf69b7fb7ffef8146e3f8209b"
     },
     "R/create_individual_map.R": {
       "checksum": "97c1ec4fce785a0788bddbebe2a3a4e3"
@@ -5701,6 +5701,9 @@
     },
     "R/data_timestamps.R": {
       "checksum": "be14cdbe62d7c5e8f9d04519f07cf2e1"
+    },
+    "R/determine_component_type.R": {
+      "checksum": "07a26970a1341d219a3d6fdea207bb36"
     },
     "R/filter_by_score.R": {
       "checksum": "b25fb4429b13d1eb92efe3702c8603fa"
@@ -5724,7 +5727,7 @@
       "checksum": "2d17353249cb72ab7978b2d4b2fcf290"
     },
     "R/generate_full_model_report.R": {
-      "checksum": "d845f55052a5788a0f29dc6b925a126d"
+      "checksum": "d6f64d667a0f556160fdacbe50809ef8"
     },
     "R/generate_full_model_sidebar.R": {
       "checksum": "4cbcde869f7cd3d3ed4b932cc1a5888f"
@@ -5745,7 +5748,7 @@
       "checksum": "ef275de6813f1f2b29f3401fa717d728"
     },
     "R/generate_submodel_component_report.R": {
-      "checksum": "0f3c70216fb80c14870dfcb2488c3ddb"
+      "checksum": "85eb9a3d0daff46808f8c9ade1d83aaa"
     },
     "R/generate_surveys_sidebar.R": {
       "checksum": "fa50a7dda1b9ada546bcc2b2269fe66e"
@@ -5781,13 +5784,13 @@
       "checksum": "3a8f7e57289642cb74b619a3f91befa6"
     },
     "server.R": {
-      "checksum": "fd15e9eac875c9419a5ae02db2482479"
+      "checksum": "5c2ba8c91b73446a3a04c1977735d188"
     },
     "Submodel_Combined_Report_Template.Rmd": {
       "checksum": "5d35849b6ffa91a273d9a59648766d82"
     },
     "Submodel_Component_Report_Template.Rmd": {
-      "checksum": "d529fee6b7d053b5ecc4ec6ded4ae6bb"
+      "checksum": "68a1a31c31d130c7c302e7c42bce76aa"
     },
     "ui.R": {
       "checksum": "329c3fddcb2619011ac4ae148b97daf9"
