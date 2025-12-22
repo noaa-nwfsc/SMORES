@@ -76,8 +76,8 @@ data_timestamps <- timestamp_info$data_timestamps
 most_recent_update <- timestamp_info$most_recent_update
 
 # Load datasets with automatic preprocessing
-#WEA
-AOI <- readRDS_preprocessed("data/WEA.parquet", "AOI")
+# WEA's and OCS Planning Areas as of 12/22
+AOI <- readRDS_preprocessed("data/WEA_OCS.parquet", "AOI")
 
 ## Natural Resources Layers
 
