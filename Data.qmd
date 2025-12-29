@@ -3,6 +3,30 @@ title: "Data Sources"
 format: html
 ---
 
+# Area of Interest Layers 
+
+## Wind Energy Areas 
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## OCS Planning Area 
+
+**Brief Description**: Planning areas are used to support mostly the National Oil and Gas Program but also other BOEM Programs consisting of a schedule of lease sales indicating the size, timing and location of proposed leasing activity the Secretary of Interior determines will best meet national energy needs. For oil and gas lease sales the Program covers a five year period following its approval, and an area must be included in the current 5-Year Program in order to be offered for leasing. Section 18 of the OCS Lands Act prescribes the major steps involved in developing a 5-Year Program including extensive public comment steps. These polygons are clipped to the Submerged Land Act Boundary and Continental Shelf Boundaries. These data were subset to only include planning areas that occurred in California, Oregon, and Washington. 
+
+**Accessed**: [Marine Cadastre](https://hub.marinecadastre.gov/datasets/BOEM::ocs-planning-area-polygons/about){target="_blank"}
+
+**Units**: These data were created in the applicable NAD83 UTM Projection and re-projected to WGS84 Geographic. 
+
+**Citation**: Bureau of Ocean Energy Management (BOEM), Office of Strategic Resources (OSR), Geospatial Services Division (GSD)
+
+# Habitat Layers
+
 ## Canyons
 
 **Brief Description**: This dataset was created utilizing an objective system to inventory locations and names of large submarine canyons on the United States OCS in the Atlantic, Pacific, and Arctic Oceans and the Gulf of Mexico. The objective system utilized bathymetric data for average and maximum width, length and average and maximum depth of canyons to select ‘large’ submarine canyons for inclusion in this study. For the purposes of this study, submarine canyons were defined as “steep-walled, sinuous valleys with V-shaped cross sections, axes sloping outwards as continuously as river-cut land canyons and relief comparable to even the largest of land canyons”. One of the challenging portions of the selection process was the identification of individual canyons. While some canyons are spatially isolated from others and visually distinctive using various bathymetric data sources, others are more difficult to distinguish individually because of their proximity and overlapping or nearly overlapping dendritic patterning, especially in their shallower extents. Fortunately, a recent paper (Harris et al. 2014[1]) provided an authoritative description of many of these major canyons and was the starting point for development of the methods used in this study to determine the canyon boundaries. However, to develop a more objective methodology for this study, the basis for choosing the boundaries was based on defensible, accepted methods. In summary, the methods included: 1) examination of bathymetric datasets across all regions; 2) utilization of a series of tools within the Esri hydrology analysis Basin toolkit to extract the approximate Harris thalweg to define stream orders from the resulting flow accumulation output; 3) association of seafloor slope with canyons by examining the bathymetric raster for its cumulative frequency distribution of the slope values in SAS (2016) using PROC UNIVARIATE to sequentially eliminate the flatter slopes; 4) establishment of buffer spatial extents utilizing the 4.6th(2 Standard Deviations [SD]) percentile to determine the steepest slopes.
@@ -25,26 +49,6 @@ membership function from 0.0–1
 **Units**
 
 **Citation**: Poti et al. 2020. https://espis.boem.gov/final%20reports/BOEM_2020-021.pdf
-
-## Fixed Surveys
-
-**Brief Description**
-
-**Accessed**
-
-**Units**
-
-**Citation**
-
-## Periodic Surveys
-
-**Brief Description**
-
-**Accessed**
-
-**Units**
-
-**Citation**
 
 ## Seeps
 
@@ -113,6 +117,8 @@ Off of California: all seamounts, including Gumdrop Seamount, Pioneer Seamount, 
 
 **Citation**
 
+# Species Layers
+
 ## ESA Critical Habitat for Southern Resident Killer Whales
 
 **Brief Description**
@@ -152,6 +158,8 @@ Off of California: all seamounts, including Gumdrop Seamount, Pioneer Seamount, 
 **Units**
 
 **Citation**: NOAA NMFS
+
+# Fisheries Layers
 
 ## At-Sea Hake Mid-Water Trawl
 
@@ -254,6 +262,30 @@ For the four trawl fisheries, NMFS and ODFW calculated the regions where the top
 **Units**
 
 **Citation**: If you have additional questions please refer to the Fisheries Considerations provided by NOAA's National Marine Fisheries Service (NMFS) and Oregon Department of Fish and Wildlife (ODFW) included in the NCCOS Spatial Modeling of Oregon Call Areas as [Appendix E](https://www.boem.gov/sites/default/files/documents/renewable-energy/state-activities/Appendix%20B_NCCOS%20Final%20WEA%20Report_Oregon.pdf){target="_blank"}. 
+
+# Scientific Surveys Layers
+
+## Fixed Surveys
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+## Periodic Surveys
+
+**Brief Description**
+
+**Accessed**
+
+**Units**
+
+**Citation**
+
+# Submarine Cable Layers
 
 ## Submarine Cables
 
