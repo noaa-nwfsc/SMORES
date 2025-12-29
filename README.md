@@ -51,45 +51,22 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
 <summary>To view the repository structure view the collapsed section</summary>
 
 ```{r}
-├── _brand.yml                        # Theming for the app
-├── .gitignore 
-├── data_production.R
-├── Full_Model_Report_template.Rmd
-├── global.R
-├── LICENSE                           # Apache 2.0
-├── markdown                          # Folder containing all markdown files used and where text is stored
-│   ├── area_of_interest.md
-│   ├── cables.md
-│   ├── combined_fisheries_submodel.md
-│   ├── combined_industry_operations_submodel.md
-│   ├── combined_natural_resources_submodel.md
-│   ├── data.md
-│   ├── fisheries.md
-│   ├── habitat.md
-│   ├── methods.html
-│   ├── methods.md
-│   ├── overall_model.md
-│   ├── overview.md
-│   ├── species.md
-│   ├── surveys.md
-│   └── trawl_fisheries.md
-├── R                                # Folder containing all functions used in Shiny App
+├── R                                                # Folder containing custom functions used in Shiny App
 │   ├── apply_calculation_method.R
 │   ├── calculate_geometric_mean_combined.R
+│   ├── calculate_geometric_mean_full.R
 │   ├── calculate_lowest_combined.R
 │   ├── calculate_product_combined.R
 │   ├── calculate_submodel_geometric_mean.R
 │   ├── check_submodel_status.R
 │   ├── create_aoi_cropped_map.R
-│   ├── create_aoi_cropped_map_normalized.R
+│   ├── create_aoi_cropped_normalized_map.R
 │   ├── create_continuous_palette.R
 │   ├── create_full_model_map.R
 │   ├── create_individual_map.R
 │   ├── create_maps_container.R
 │   ├── data_timestamps.R
-│   ├── filter_by_score.R
-│   ├── surveys.md
-│   ├── data_timestamps.R
+│   ├── determine_component_type.R
 │   ├── filter_by_score.R
 │   ├── filtered_data_timestamps.R
 │   ├── generate_area_of_interest_sidebar.R
@@ -99,7 +76,7 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
 │   ├── generate_fisheries_sidebar.R
 │   ├── generate_full_model_report.R
 │   ├── generate_full_model_sidebar.R
-│   ├── generate_habitat_sidebar.R
+│   ├── generate_habitat_sidebar.R        
 │   ├── generate_industry_operations_combined_sidebar.R
 │   ├── generate_natural_resources_combined_sidebar.R
 │   ├── generate_species_sidebar.R
@@ -110,19 +87,83 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
 │   ├── get_valid_configs_for_tab.R
 │   ├── make_combined_map_dataset.R
 │   ├── modal.R
+│   ├── preprocess_spatial_data.R
 │   ├── sidebar_helpers.R
 │   ├── submodel_configurations.R
 │   └── submodel_status_display.R
-├── README.md
-├── server.R
-├── SMORES.Rproj
-├── Submodel_Combined_Report_Template.Rmd
-├── Submodel_Component_Report_Template.Rmd
-├── ui.R
-└── www                                 # graphics folder
+├── data                                              # Folder containing all data files used throughout the app. All files are in GeoParquet format
+│   ├── 2km_grid_full.parquet
+│   ├── ALCH_Ranked_Importance_scored_full.parquet
+│   ├── ALCH_scored_full.parquet
+│   ├── ALCO_Ranked_Importance_scored_full.parquet
+│   ├── ALCO_scored_full.parquet
+│   ├── ASH_Ranked_Importance_scored_full.parquet
+│   ├── ASH_scored_full.parquet
+│   ├── CRAB_Ranked_Importance_scored_full.parquet
+│   ├── CRAB_scored_full.parquet
+│   ├── DSC_RH_scored_full.parquet
+│   ├── DSC_RH_z_membership_scored_full.parquet
+│   ├── EFHCA_700_scored_full.parquet
+│   ├── EFHCA_scored_full.parquet
+│   ├── GFBT_Ranked_Importance_scored_full.parquet
+│   ├── GFBT_scored_full.parquet
+│   ├── GFLL_Ranked_Importance_scored_full.parquet
+│   ├── GFLL_scored_full.parquet
+│   ├── GFP_Ranked_Importance_scored_full.parquet
+│   ├── GFP_scored_full.parquet
+│   ├── HAPCaoi_scored_full.parquet
+│   ├── HAPCreef_scored_full
+│   ├── PS_Ranked_Importance_scored_full.parquet
+│   ├── PS_scored_full.parquet
+│   ├── SSH_Ranked_Importance_scored_full.parquet
+│   ├── SSH_scored_full.parquet
+│   ├── Seeps_scored_full.parquet
+│   ├── ShlfBrk_scored_full.parquet
+│   ├── Surveys_fixed_score_full.parquet
+│   ├── Surveys_periodic_scored_full.parquet
+│   ├── WEA.parquet
+│   ├── WEA_OCS.parquet
+│   ├── base_grid_df.parquet
+│   ├── blue_whale_scored_full.parquet
+│   ├── canyon_scored_full.parquet
+│   ├── humpback_whale_scored_full.parquet
+│   ├── killer_whale_scored_full.parquet
+│   ├── leatherback_turtle_scored_full.parquet
+│   ├── submarine_cable_scored_full.parquet
+│   └── trawl_fisheries_scored_full.parquet
+├── markdown                                          # Folder containing all markdown files used for text storage throughout the app
+│   ├── area_of_interest.md
+│   ├── cables.md
+│   ├── combined_fisheries_submodel.md
+│   ├── combined_industry_operations_submodel.md
+│   ├── combined_natural_resources_submodel.md
+│   ├── data.md
+│   ├── fisheries.md
+|   ├── full_model.md
+│   ├── habitat.md
+│   ├── methods.md
+│   ├── overview.md
+│   ├── species.md
+│   ├── surveys.md
+│   └── trawl_fisheries.md
+└── www                                               # graphics folder
     ├── logos
     |  ├── NOAA_FISHERIES_logoH.png
     └── styles.css.png
+├── .gitignore
+├── Full_Model_Report_template.Rmd
+├── LICENSE                                           # Apache 2.0
+├── README.md
+├── SMORES.Rproj
+├── Submodel_Combined_Report_Template.Rmd
+├── Submodel_Component_Report_Template.Rmd
+├── _brand.yml                                        # Theming for the app
+├── data_production.R
+├── global.R                                          # global file for app generation where packages and data are loaded through
+├── global_report_generation.R                        # global file for report generation where packages and functions are loaded
+├── manifest.json                                     # JSON file for Posit Connect deployment
+├── server.R
+├── ui.R
 ```
 </details>
 
