@@ -164,7 +164,7 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>The SMORES app uses a variety of custom functions to create a model run. Some of these functions are for the structure of the Shiny App while others focus on the methods to combine layers, calculate combined scores, or generate maps. The purpose of this page is to provide an overview of the different functions should you have questions regarding the underlying processes used to create a visualization or a model run. If you would like to access the functions and see the underlying code please visit the <a href="https://github.com/noaa-nwfsc/SMORES/tree/main/R">R</a>{target = “_blank”} folder in the data <a href="https://github.com/noaa-nwfsc/SMORES" target="_blank">repository</a> on the Github enterprise.</p>
+<p>The SMORES app uses a variety of custom functions to create a model run. Some of these functions are for the structure of the Shiny App while others focus on the methods to combine layers, calculate combined scores, or generate maps. The purpose of this page is to provide an overview of the different functions should you have questions regarding the underlying processes used to create a visualization or a model run. If you would like to access the functions and see the underlying code please visit the <a href="https://github.com/noaa-nwfsc/SMORES/tree/main/R" target="_blank">R folder</a> in the data <a href="https://github.com/noaa-nwfsc/SMORES" target="_blank">repository</a> on the Github enterprise.</p>
 <section id="functions-used-for-mapping-and-aesthetics" class="level2">
 <h2 class="anchored" data-anchor-id="functions-used-for-mapping-and-aesthetics">Functions used for Mapping and Aesthetics:</h2>
 <section id="filter_by_score" class="level4">
@@ -218,6 +218,10 @@ ul.task-list li input[type="checkbox"] {
 <section id="create_full_model_map" class="level4">
 <h4 class="anchored" data-anchor-id="create_full_model_map">create_full_model_map()</h4>
 <p>Function to create the full model run map. This function applies the user-selected weight to each submodel by taking each submodel columns and raising it to the weight. These weighted submodel data are then combined using a geometric mean. The full model can be calculated with however many submodels are selected by the user. All weights will need to sum to 1.</p>
+</section>
+<section id="crop_data_to_aoi" class="level4">
+<h4 class="anchored" data-anchor-id="crop_data_to_aoi">crop_data_to_aoi()</h4>
+<p>Function to crop data from the full grid to the user-selected area of interest with a 1 kilometer buffer before data is passed to mapping functions.</p>
 </section>
 </section>
 <section id="functions-used-for-data" class="level2">

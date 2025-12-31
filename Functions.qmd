@@ -61,7 +61,7 @@ Function to create the full model run map. This function applies the user-select
 
 #### crop_data_to_aoi()
 
-Function to crop data from the full grid to the user-selected area of interest before data is passed to mapping functions. 
+Function to crop data from the full grid to the user-selected area of interest with a 1 kilometer buffer before data is passed to mapping functions. 
 
 ## Functions used for data:
 
