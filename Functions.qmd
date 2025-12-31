@@ -3,7 +3,7 @@ title: "SMORES Functions"
 format: html
 ---
 
-The SMORES app uses a variety of custom functions to create a model run. Some of these functions are for the structure of the Shiny App while others focus on the methods to combine layers, calculate combined scores, or generate maps. The purpose of this page is to provide an overview of the different functions should you have questions regarding the underlying processes used to create a visualization or a model run. If you would like to access the functions and see the underlying code please visit the [R](https://github.com/noaa-nwfsc/SMORES/tree/main/R){target = "_blank"} folder in the data [repository](https://github.com/noaa-nwfsc/SMORES){target="_blank"} on the Github enterprise. 
+The SMORES app uses a variety of custom functions to create a model run. Some of these functions are for the structure of the Shiny App while others focus on the methods to combine layers, calculate combined scores, or generate maps. The purpose of this page is to provide an overview of the different functions should you have questions regarding the underlying processes used to create a visualization or a model run. If you would like to access the functions and see the underlying code please visit the [R folder](https://github.com/noaa-nwfsc/SMORES/tree/main/R){target="_blank"} in the data [repository](https://github.com/noaa-nwfsc/SMORES){target="_blank"} on the Github enterprise. 
 
 ## Functions used for Mapping and Aesthetics:
 
@@ -58,6 +58,10 @@ Function to generate the combined submodel map restricted to a user selected are
 #### create_full_model_map()
 
 Function to create the full model run map. This function applies the user-selected weight to each submodel by taking each submodel columns and raising it to the weight. These weighted submodel data are then combined using a geometric mean. The full model can be calculated with however many submodels are selected by the user. All weights will need to sum to 1. 
+
+#### crop_data_to_aoi()
+
+Function to crop data from the full grid to the user-selected area of interest before data is passed to mapping functions. 
 
 ## Functions used for data:
 
