@@ -13,10 +13,8 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
 
 Step 1: Navigate to the Area of Interest tab and select a region you would like your analyses to focus on.
 
-![](www/Images/SMORES_AOI_opener.png)
+![](www/Images/aoi.png)
 To select a different area of interest you will click on the desired area's button. 
-
-![](www/Images/aoi_selected.png)
 
 By selecting an area of interest the maps will be set to crop the data to this area. 
 
@@ -88,4 +86,8 @@ The sidebar on the left-hand side includes messaging indicating which submodels 
 
 Once you have selected the submodels you would like included, by selecting the check-box next to the submodel, you have the option to select a submodel weight to be applied to that submodel.
 
-Once you have configured your submodels you will click on the generate Full Model button which will produce 2 maps.The first map will represent the full model scores for the selected area of interest with a 1 kilometer buffer. The second map will show the full model scores cropped to the exact boundary of the area of interest. You can opt to export a copy of your results by selecting the Export button at the bottom of the page.
+Once you have configured your submodels you will click on the `generate Full Model` button which will produce 2 maps. The first map will represent the full model scores for the selected area of interest with a 1 kilometer buffer. The second map will show the full model scores cropped to the exact boundary of the area of interest. 
+
+![](www/Images/full_combined_map.png)
+
+You can opt to export a copy of your results by selecting the Export button at the bottom of the page.
