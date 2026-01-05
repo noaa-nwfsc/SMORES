@@ -36,4 +36,4 @@ Planning areas are used to support mostly the National Oil and Gas Program but a
 
 **Central California**
 
-**Southern California OCS Planning Area**
+**Southern California**
