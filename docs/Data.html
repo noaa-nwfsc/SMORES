@@ -210,10 +210,11 @@ ul.task-list li input[type="checkbox"] {
 <h1>Area of Interest Layers</h1>
 <section id="wind-energy-areas" class="level2">
 <h2 class="anchored" data-anchor-id="wind-energy-areas">Wind Energy Areas</h2>
-<p><strong>Brief Description</strong></p>
-<p><strong>Accessed</strong></p>
-<p><strong>Units</strong></p>
-<p><strong>Citation</strong></p>
+<p><strong>Brief Description</strong>: Wind Energy Areas were derived from wind energy area boundaries off the coasts of California and Oregon from Bureau of Ocean Energy Management (BOEM). These data sources were filtered and merged to include the following wind energy areas: Morro Bay, Humboldt, Coos Bay, and Brookings.</p>
+<p><strong>Accessed</strong>:</p>
+<p>California Wind Energy Area Boundaries: <a href="https://services7.arcgis.com/G5Ma95RzqJRPKsWL/ArcGIS/rest/services/Wind_Lease_Boundaries__BOEM_/FeatureServer" target="_blank">ArcGIS Rest Service</a></p>
+<p>Draft Oregon Wind Energy Area Boundaries: <a href="https://www.boem.gov/renewable-energy/state-activities/oregon-activities" target="_blank">Link</a></p>
+<p><strong>Units</strong>: EPSG:3857</p>
 </section>
 <section id="ocs-planning-area" class="level2">
 <h2 class="anchored" data-anchor-id="ocs-planning-area">OCS Planning Area</h2>
@@ -229,14 +230,12 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="canyons">Canyons</h2>
 <p><strong>Brief Description</strong>: This dataset was created utilizing an objective system to inventory locations and names of large submarine canyons on the United States OCS in the Atlantic, Pacific, and Arctic Oceans and the Gulf of Mexico. The objective system utilized bathymetric data for average and maximum width, length and average and maximum depth of canyons to select ‘large’ submarine canyons for inclusion in this study. For the purposes of this study, submarine canyons were defined as “steep-walled, sinuous valleys with V-shaped cross sections, axes sloping outwards as continuously as river-cut land canyons and relief comparable to even the largest of land canyons”. One of the challenging portions of the selection process was the identification of individual canyons. While some canyons are spatially isolated from others and visually distinctive using various bathymetric data sources, others are more difficult to distinguish individually because of their proximity and overlapping or nearly overlapping dendritic patterning, especially in their shallower extents. Fortunately, a recent paper (Harris et al.&nbsp;2014[1]) provided an authoritative description of many of these major canyons and was the starting point for development of the methods used in this study to determine the canyon boundaries. However, to develop a more objective methodology for this study, the basis for choosing the boundaries was based on defensible, accepted methods. In summary, the methods included: 1) examination of bathymetric datasets across all regions; 2) utilization of a series of tools within the Esri hydrology analysis Basin toolkit to extract the approximate Harris thalweg to define stream orders from the resulting flow accumulation output; 3) association of seafloor slope with canyons by examining the bathymetric raster for its cumulative frequency distribution of the slope values in SAS (2016) using PROC UNIVARIATE to sequentially eliminate the flatter slopes; 4) establishment of buffer spatial extents utilizing the 4.6th(2 Standard Deviations [SD]) percentile to determine the steepest slopes.</p>
 <p><strong>Accessed</strong>: <a href="https://services.arcgis.com/bDAhvQYMG4WL8O5o/arcgis/rest/services/US_Submarine_Canyons/FeatureServer" target="_blank">ArcGIS Rest Service</a></p>
-<p><strong>Spatial Reference</strong>: 4326 (4326)</p>
+<p><strong>Spatial Reference</strong>: EPSG:4326</p>
 <p><strong>Citation</strong>: CSA Ocean Sciences Inc.&nbsp;(CSA), De Leo, F.C., and Ross, S.W. 2019. Large Submarine Canyons of the United States Outer Continental Shelf Atlas dataset. U.S. Dept. of the Interior, Bureau of Ocean Energy Management, Environmental Studies Program, Washington, DC, under Contract Number 140M0119F0009.</p>
 </section>
 <section id="deep-sea-coral-robust-high-suitability" class="level2">
 <h2 class="anchored" data-anchor-id="deep-sea-coral-robust-high-suitability">Deep Sea Coral Robust High Suitability</h2>
 <p><strong>Brief Description</strong>: Two data products on deep-sea coral and sponges were considered: 1) NOAA National Database for Deep-Sea Corals and Sponges focuses on occurrences within the United States Exclusive Economic Zone (McGuinn et al.&nbsp;2020), and 2) BOEM-funded Cross-Shelf Habitat Suitability Modeling of Coral and Sponge Habitat Suitability provides spatial predictions of relative habitat suitability for a number of coral and sponge taxa (Poti et al.&nbsp;2020). Since the national database only represents where surveys have occurred and does not include absence records, we felt the predicted habitat suitability products better represent the potential distributions of these important biogenic habitat-forming organisms. In order to examine patterns of habitat suitability across multiple taxa, the Poti et al.&nbsp;(2020) study developed two aggregate products, both of which we felt would be most useful to the NCCOS model: 1) Number of deep-sea coral taxa associated with hard substrate that were predicted to have high habitat suitability, and 2) Number of deep-sea coral taxa associated with hard substrate that were predicted to have robust-high habitat suitability. Instead of integrating habitat suitability models for individual taxa, these two aggregate products show the number of taxa predicted to have high or robust-high habitat suitability, respectively, for each grid cell. We specified the robust-high product to be a constraint in the model, with the more inclusive high habitat suitability product to be considered as an alternative. The aggregate products exclude sea pens because most sea pen species do not associate with hard substrate, and exclude sponges due to the low taxonomic specificity, and consequent broad substrate affinities, of input records. Like many deep-sea corals, some sponges, especially glass sponges (e.g., Heterochone calyx) provide structural habitat for other organisms including some groundfishes. These structure-forming sponges are also vulnerable to mechanical damage. We advise that 158 NCCOS consider including individual structure-forming sponge habitat suitability products from Poti et al.&nbsp;in future model runs. Rescaling was conducted sing the fuzzy logic Z-shaped membership function from 0.0–1</p>
-<p><strong>Accessed</strong></p>
-<p><strong>Units</strong></p>
 <p><strong>Citation</strong>: Poti et al.&nbsp;2020. https://espis.boem.gov/final%20reports/BOEM_2020-021.pdf</p>
 </section>
 <section id="seeps" class="level2">
@@ -305,7 +304,6 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="esa-critical-habitat-for-humpback-whales---mexico-and-central-dps">ESA Critical Habitat for Humpback Whales - Mexico and Central DPS</h2>
 <p><strong>Brief Description</strong></p>
 <p><strong>Accessed</strong>: Unpublished</p>
-<p><strong>Units</strong></p>
 <p><strong>Citation</strong>: NOAA NMFS</p>
 </section>
 <section id="biologically-important-area---blue-whale" class="level2">
