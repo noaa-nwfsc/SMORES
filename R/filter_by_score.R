@@ -6,7 +6,7 @@ filter_by_score <- function(df, selected_score, base_grid = NULL, layer_name = N
   }
   
   # Define layers not included - CHECK THIS FIRST before any processing
-  excluded_layers <- c("Deep Sea Coral Robust High Suitability", "Trawl Fisheries @ 75%")
+  excluded_layers <- c("Trawl Fisheries @ 75%")
   
   # Return unchanged data immediately for excluded layers
   if(!is.null(layer_name) && layer_name %in% excluded_layers) {
