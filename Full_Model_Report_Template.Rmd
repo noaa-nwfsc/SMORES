@@ -269,7 +269,7 @@ if (!is.null(params$component_layer_details) && length(params$component_layer_de
 
 ## Full Combined Model Map
 
-The full combined model represents the integration of all selected submodels using their specified weights. The final combination is calculated using the weighted geometric mean of the submodel scores to produce a unified assessment across all selected domains.
+The full combined model represents the integration of all selected submodels using their specified weights. The final combination is calculated using the weighted geometric mean of the submodel scores to produce a unified assessment across all selected domains. Scores are distributed along a 0 to 1 scale. Values closer to 0 indicate a less suitable grid cell for offshore wind energy and values closer to 1 indicate a cell that is more suitable for offshore wind energy. 
 
 ```{r}
 if (!is.null(params$combined_maps_data)) {
@@ -308,7 +308,7 @@ if (!is.null(params$full_map)) {
 
 ## Full Combined Model - Cropped to Area of Interest (AOI)
 
-The AOI-cropped map shows the same full combined model data filtered to the selected aoi, maintaing the original full model color scale for consistency with the complete dataset.
+This map shows the same full combined model data cropped to the boundaries of the selected area of interest. This map is on the same color scale as the full model maintaing the original full model color scale for consistency with the complete dataset. Scores are distributed along a 0 to 1 scale. Values closer to 0 indicate a less suitable grid cell for offshore wind energy and values closer to 1 indicate a cell that is more suitable for offshore wind energy. 
 
 ```{r}
 if (!is.null(params$full_map_cropped)) {
