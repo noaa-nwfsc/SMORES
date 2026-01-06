@@ -1,4 +1,4 @@
-# Define score_colors (moved from global to avoid loading heavy data)
+# Define score_colors
 score_colors <- list(
   "0" = "#000000", "0.01" = "#0D5359", "0.001" = "#91CB3E",
   "0.1" = "#E41A1C", "0.2" = "#03045E", "0.3" = "#08A045",
@@ -17,8 +17,6 @@ library(here)
 library(sf)
 library(dplyr)
 library(knitr)
-library(htmltools)
-library(htmlwidgets)
 
 # Null coalescing operator
 `%||%` <- function(x, y) if(is.null(x)) y else x
