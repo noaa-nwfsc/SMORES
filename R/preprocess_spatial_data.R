@@ -30,7 +30,6 @@ preprocess_spatial_data <- function(data, dataset_name = NULL) {
     
     # Mark as preprocessed
     attr(data, "preprocessed") <- TRUE
-    attr(data, "preprocessed_timestamp") <- Sys.time()
     
     return(data)
     
@@ -52,26 +51,11 @@ readRDS_preprocessed <- function(file, dataset_name = NULL) {
   }
   
   tryCatch({
-    # Read parquet file - try sfarrow first for spatial parquet
-    if(requireNamespace("sfarrow", quietly = TRUE)) {
-      data <- sfarrow::st_read_parquet(file)
-    } else {
-      # Fallback to arrow if sfarrow is not available
-      if(requireNamespace("arrow", quietly = TRUE)) {
-        data <- arrow::read_parquet(file)
-        # Convert to sf if it has geometry column
-        if("geometry" %in% names(data) || any(grepl("geom", names(data), ignore.case = TRUE))) {
-          data <- sf::st_as_sf(data)
-        }
-      } else {
-        stop("Neither sfarrow nor arrow package is available for reading parquet files")
-      }
-    }
+    # Read spatial parquet file using sfarrow
+    data <- sfarrow::st_read_parquet(file)
     
-    # Check if it's spatial data and preprocess
-    if(inherits(data, "sf")) {
-      data <- preprocess_spatial_data(data, dataset_name)
-    }
+    # Preprocess the spatial data
+    data <- preprocess_spatial_data(data, dataset_name)
     
     return(data)
     
@@ -89,21 +73,4 @@ is_preprocessed <- function(data) {
   
   preprocessed <- attr(data, "preprocessed")
   return(!is.null(preprocessed) && preprocessed == TRUE)
-}
-
-#' Get preprocessed bounding box
-#' 
-#' @param data An sf object that should have preprocessed bbox
-#' @return The cached bounding box or calculated bbox if not cached
-get_bbox_fast <- function(data) {
-  if(is.null(data) || nrow(data) == 0) return(NULL)
-  
-  # Try to get cached bbox first
-  cached_bbox <- attr(data, "bbox_precalc")
-  if(!is.null(cached_bbox)) {
-    return(cached_bbox)
-  }
-  
-  # Fallback to calculation
-  return(st_bbox(data))
 }

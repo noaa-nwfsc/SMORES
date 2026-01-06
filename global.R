@@ -16,8 +16,8 @@ library(knitr)
 library(fontawesome)
 library(arrow)
 library(sfarrow)
-library(digest)
-library(widgetframe)
+# library(digest)
+
 
 # Code to add _brand.yml theming
 theme <- bslib::bs_theme()
