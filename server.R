@@ -97,6 +97,47 @@ function(input, output, session) {
     industryoperations = list()
   )
   
+  # Global AOI bounds cache with invalidation
+  aoi_bounds_cache <- reactiveValues(
+    current_bounds = NULL,
+    current_area = NULL,
+    last_update = NULL
+  )
+  
+  # Observer to update AOI bounds cache when selection changes
+  observe({
+    current_area <- input$aoiAreaSelector %||% "all"
+    
+    # Only recalculate if area selection changed
+    if(is.null(aoi_bounds_cache$current_area) || 
+       aoi_bounds_cache$current_area != current_area) {
+      
+      aoi_data <- filtered_aoi_data()
+      
+      if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
+        tryCatch({
+          # Use st_bbox directly on filtered data
+          bbox <- st_bbox(aoi_data)
+          
+          aoi_bounds_cache$current_bounds <- list(
+            lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
+            lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]],
+            bbox = bbox
+          )
+          aoi_bounds_cache$current_area <- current_area
+          aoi_bounds_cache$last_update <- Sys.time()
+          
+        }, error = function(e) {
+          aoi_bounds_cache$current_bounds <- NULL
+          aoi_bounds_cache$current_area <- current_area
+        })
+      } else {
+        aoi_bounds_cache$current_bounds <- NULL
+        aoi_bounds_cache$current_area <- current_area
+      }
+    }
+  })
+  
   #AOI selector options
   observe({
     if(!is.null(AOI) && "Area_Name" %in% names(AOI)){
@@ -352,7 +393,7 @@ function(input, output, session) {
           output[[map_id]] <- renderLeaflet({
             # Update config with processed data for map creation
             local_config$data <- processed_config_data
-            create_individual_map(local_config, aoi_data)
+            create_individual_map(local_config, aoi_data, aoi_bounds = aoi_bounds_cache$current_bounds)
           })
           
           # Store the current configuration hash
@@ -431,7 +472,7 @@ function(input, output, session) {
           output[[map_id]] <- renderLeaflet({
             # Update config with processed data for map creation
             local_config$data <- processed_config_data
-            create_individual_map(local_config, aoi_data)
+            create_individual_map(local_config, aoi_data, aoi_bounds = aoi_bounds_cache$current_bounds)
           })
           
           # Store the current configuration hash
@@ -503,7 +544,7 @@ function(input, output, session) {
           output[[map_id]] <- renderLeaflet({
             # Update config with processed data for map creation
             local_config$data <- processed_config_data
-            create_individual_map(local_config, aoi_data)
+            create_individual_map(local_config, aoi_data, aoi_bounds = aoi_bounds_cache$current_bounds)
           })
           
           # Store the current configuration hash

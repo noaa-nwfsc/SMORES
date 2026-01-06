@@ -1,4 +1,4 @@
-create_individual_map <- function(config, aoi_data = NULL) {
+create_individual_map <- function(config, aoi_data = NULL, aoi_bounds = NULL) {
   
   # Get AOI data - handle both direct data and global AOI fallback
   if(is.null(aoi_data) && exists("AOI")) {
@@ -6,27 +6,7 @@ create_individual_map <- function(config, aoi_data = NULL) {
   }
   
   # Calculate map bounds based on AOI if available
-  map_bounds <- NULL
-  if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-    tryCatch({
-      bbox <- st_bbox(aoi_data)
-      map_bounds <- list(
-        lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
-        lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
-      )
-    }, error = function(e) {
-      # Error calculating AOI bounds - fall back to data bounds
-      if(!is.null(config$data) && nrow(config$data) > 0) {
-        bbox <- get_bbox_fast(config$data)
-        if(!is.null(bbox)) {
-          map_bounds <<- list(
-            lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
-            lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
-          )
-        }
-      }
-    })
-  }
+  map_bounds <- aoi_bounds
   
   # Ensure we have data to display
   if(is.null(config$data) || nrow(config$data) == 0) {
@@ -175,21 +155,6 @@ create_individual_map <- function(config, aoi_data = NULL) {
       )
   }
   
-  # If no AOI bounds available, calculate from data (fallback - using preprocessed data)
-  if(is.null(map_bounds) && !is.null(config$data) && nrow(config$data) > 0) {
-    tryCatch({
-      bbox <- get_bbox_fast(config$data)
-      if(!is.null(bbox)) {
-        map_bounds <- list(
-          lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
-          lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
-        )
-      }
-    }, error = function(e) {
-      # Error calculating data bounds
-    })
-  }
-  
   # Add AOI polygon AFTER data layer
   if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
     tryCatch({
@@ -215,18 +180,18 @@ create_individual_map <- function(config, aoi_data = NULL) {
     })
   }
   
-  # Set map view bounds (same approach as combined map)
   if(!is.null(map_bounds)) {
     tryCatch({
       map <- map %>%
         fitBounds(
           lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
           lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
-          options = list(padding = c(20, 20))
+          options = list(padding = c(10, 10))
         )
     }, error = function(e) {
-      # Error setting bounds
     })
+  } else {
+    cat("DEBUG: No map bounds available\n")
   }
   
   return(map)
