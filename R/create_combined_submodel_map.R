@@ -1,7 +1,7 @@
-create_combined_submodel_map <- function(component_data_list, base_grid = grid_test, aoi_data_reactive = NULL, submodel_type = NULL) {
+create_combined_submodel_map <- function(component_data_list, base_grid = grid_test, aoi_data_reactive = NULL, submodel_type = NULL, aoi_bounds = NULL) {
   tryCatch({
     
-    # Get AOI data - handle both reactive and direct data
+    # Get AOI data 
     aoi_data <- NULL
     if(!is.null(aoi_data_reactive)) {
       if(is.function(aoi_data_reactive)) {
@@ -13,23 +13,8 @@ create_combined_submodel_map <- function(component_data_list, base_grid = grid_t
       aoi_data <- AOI
     }
     
-    # Transform AOI data to WGS84 if available and needed
-    if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-      if(!st_is_longlat(aoi_data)) {
-        aoi_data <- st_transform(aoi_data, 4326)
-      }
-      aoi_data <- st_zm(aoi_data)
-    }
-    
-    # Calculate map bounds based on AOI if available
-    map_bounds <- NULL
-    if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-      bbox <- st_bbox(aoi_data)
-      map_bounds <- list(
-        lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
-        lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
-      )
-    }
+    # map bounds based on AOI if available
+    map_bounds <- aoi_bounds
     
     # Start with base grid
     combined_data <- base_grid
@@ -236,7 +221,7 @@ create_combined_submodel_map <- function(component_data_list, base_grid = grid_t
         fitBounds(
           lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
           lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
-          options = list(padding = c(20, 20))
+          options = list(padding = c(10, 10))
         )
     }
     

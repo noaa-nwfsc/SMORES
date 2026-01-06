@@ -24,14 +24,6 @@ create_aoi_cropped_map <- function(combined_data, aoi_data_reactive = NULL, map_
                addControl("Select a specific WEA area to view cropped data", position = "topright"))
     }
     
-    # Ensure both datasets are in the same CRS
-    if(!st_is_longlat(combined_data)) {
-      combined_data <- st_transform(combined_data, 4326)
-    }
-    if(!st_is_longlat(aoi_data)) {
-      aoi_data <- st_transform(aoi_data, 4326)
-    }
-    
     # Remove Z & M dimensions
     combined_data <- st_zm(combined_data)
     aoi_data <- st_zm(aoi_data)

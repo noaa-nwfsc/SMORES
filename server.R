@@ -753,7 +753,8 @@ function(input, output, session) {
                                     "lowest" = "Lowest Value",
                                     "product" = "Product")),
           method = method,
-          aoi_data = aoi_data
+          aoi_data = aoi_data, 
+          aoi_bounds = aoi_bounds_cache$current_bounds
         )
         
         # Store the result
@@ -922,7 +923,8 @@ function(input, output, session) {
                                     "lowest" = "Lowest Value",
                                     "product" = "Product")),
           method = method,
-          aoi_data = aoi_data
+          aoi_data = aoi_data,
+          aoi_bounds = aoi_bounds_cache$current_bounds
         )
         
         # Store the result
@@ -1090,7 +1092,8 @@ function(input, output, session) {
                                     "lowest" = "Lowest Value",
                                     "product" = "Product")),
           method = method,
-          aoi_data = aoi_data
+          aoi_data = aoi_data, 
+          aoi_bounds = aoi_bounds_cache$current_bounds
         )
         
         # Store the result
@@ -1258,7 +1261,8 @@ function(input, output, session) {
                                     "lowest" = "Lowest Value",
                                     "product" = "Product")),
           method = method,
-          aoi_data = aoi_data
+          aoi_data = aoi_data, 
+          aoi_bounds = aoi_bounds_cache$current_bounds
         )
         
         # Store the result
@@ -1427,7 +1431,8 @@ function(input, output, session) {
                                     "lowest" = "Lowest Value",
                                     "product" = "Product")),
           method = method,
-          aoi_data = aoi_data
+          aoi_data = aoi_data, 
+          aoi_bounds = aoi_bounds_cache$current_bounds
         )
         
         # Store the result
@@ -1595,7 +1600,8 @@ function(input, output, session) {
                                     "lowest" = "Lowest Value",
                                     "product" = "Product")),
           method = method,
-          aoi_data = aoi_data
+          aoi_data = aoi_data,
+          aoi_bounds = aoi_bounds_cache$current_bounds
         )
         
         # Store the result
@@ -1866,7 +1872,8 @@ function(input, output, session) {
         
         combined_submodel_result <- create_combined_submodel_map(component_data_list,
                                                              base_grid = grid_test,
-                                                             aoi_data_reactive = filtered_aoi_data)
+                                                             aoi_data_reactive = filtered_aoi_data, 
+                                                             aoi_bounds = aoi_bounds_cache$current_bounds)
         
         # Store the result
         combined_maps_data$natural_resources_combined_submodel <- combined_submodel_result$combined_data
@@ -2090,7 +2097,8 @@ function(input, output, session) {
         combined_submodel_result <- create_combined_submodel_map(component_data_list, 
                                                                  base_grid = grid_test, 
                                                                  aoi_data_reactive = filtered_aoi_data,
-                                                                 submodel_type = "fisheries")
+                                                                 submodel_type = "fisheries", 
+                                                                 aoi_bounds = aoi_bounds_cache$current_bounds)
         
         # Store the result
         combined_maps_data$fisheries_combined_submodel <- combined_submodel_result$combined_data
@@ -2312,7 +2320,8 @@ function(input, output, session) {
       
         combined_submodel_result <- create_combined_submodel_map(component_data_list, 
                                                              base_grid = grid_test, 
-                                                             aoi_data_reactive = filtered_aoi_data)
+                                                             aoi_data_reactive = filtered_aoi_data, 
+                                                             aoi_bounds = aoi_bounds_cache$current_bounds)
         
         # Store the result
         combined_maps_data$industry_operations_combined_submodel <- combined_submodel_result$combined_data
@@ -2566,7 +2575,8 @@ function(input, output, session) {
       # Create the full model map
       full_model_map <- create_full_model_map(
         combined_data = full_model_data,
-        aoi_data_reactive = filtered_aoi_data
+        aoi_data_reactive = filtered_aoi_data,
+        aoi_bounds = aoi_bounds_cache$current_bounds
       )
 
       # Store the results
@@ -2594,7 +2604,7 @@ function(input, output, session) {
           cropped_map <- create_aoi_cropped_map(
             combined_data = cropped_data,
             aoi_data_reactive = filtered_aoi_data,
-            map_title = "Full Model AOI-Cropped",
+            map_title = "Full Model Offshore Wind Energy Suitability Score",
             full_data_range = full_data_range
           )
           combined_maps_data$full_map_cropped <- cropped_map

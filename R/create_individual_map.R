@@ -1,56 +1,12 @@
 create_individual_map <- function(config, aoi_data = NULL, aoi_bounds = NULL) {
   
-  # Get AOI data - handle both direct data and global AOI fallback
+  # Get AOI data
   if(is.null(aoi_data) && exists("AOI")) {
     aoi_data <- AOI
   }
   
   # Calculate map bounds based on AOI if available
   map_bounds <- aoi_bounds
-  
-  # Ensure we have data to display
-  if(is.null(config$data) || nrow(config$data) == 0) {
-    base_map <- leaflet() %>%
-      addProviderTiles("Esri.OceanBasemap",
-                       options = providerTileOptions(variant = "Ocean/World_Ocean_Base")) %>%
-      addProviderTiles("Esri.OceanBasemap",
-                       options = providerTileOptions(variant = "Ocean/World_Ocean_Reference")) %>%
-      addControl("No data matching selected score", position = "topright")
-    
-    # Set map view based on bounds
-    if(!is.null(map_bounds)) {
-      tryCatch({
-        base_map <- base_map %>%
-          fitBounds(
-            lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
-            lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
-            options = list(padding = c(20, 20))
-          )
-      }, error = function(e) {
-        # Error setting bounds
-      })
-    }
-    
-    # Add AOI polygon
-    if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-      tryCatch({
-        base_map <- base_map %>%
-          addPolygons(
-            data = aoi_data,
-            fillColor = "transparent",
-            color = "red",
-            weight = 3,
-            fillOpacity = 0,
-            popup = ~paste("AOI Area:", if("Area_Name" %in% names(aoi_data)) Area_Name else "Selected Area"),
-            group = "AOI Area"
-          )
-      }, error = function(e) {
-        # Error adding AOI polygon
-      })
-    }
-    
-    return(base_map)
-  }
   
   # Create the map with legend 
   map <- leaflet() %>%

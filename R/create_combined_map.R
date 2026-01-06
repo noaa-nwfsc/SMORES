@@ -1,4 +1,4 @@
-create_combined_map <- function(combined_data, map_title, method, aoi_data = NULL) {
+create_combined_map <- function(combined_data, map_title, method, aoi_data = NULL, aoi_bounds = NULL) {
   
   # Get AOI data - handle both direct data and global AOI fallback
   if(is.null(aoi_data) && exists("AOI")) {
@@ -10,18 +10,7 @@ create_combined_map <- function(combined_data, map_title, method, aoi_data = NUL
   }
   
   # Calculate map bounds based on AOI if available
-  map_bounds <- NULL
-  if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-    tryCatch({
-      bbox <- st_bbox(aoi_data)
-      map_bounds <- list(
-        lng1 = bbox[["xmin"]], lat1 = bbox[["ymin"]],
-        lng2 = bbox[["xmax"]], lat2 = bbox[["ymax"]]
-      )
-    }, error = function(e) {
-      cat("Error calculating AOI bounds:", e$message, "\n")
-    })
-  }
+  map_bounds <- aoi_bounds
   
   # Determine score column and popup prefix based on method
   if(method == "geometric_mean") {
@@ -235,7 +224,7 @@ create_combined_map <- function(combined_data, map_title, method, aoi_data = NUL
         fitBounds(
           lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
           lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
-          options = list(padding = c(20, 20))
+          options = list(padding = c(10, 10))
         )
     }, error = function(e) {
       # Error setting bounds

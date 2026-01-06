@@ -1,10 +1,10 @@
-create_full_model_map <- function(combined_data, aoi_data_reactive = NULL) {
+create_full_model_map <- function(combined_data, aoi_data_reactive = NULL, aoi_bounds = NULL) {
   
   # Initialize result structure
   result <- list(map = NULL)
   aoi_data <- NULL
   
-  # Attempt to resolve AOI data (handles both reactive and non-reactive inputs)
+  # Attempt to resolve AOI data 
   if(!is.null(aoi_data_reactive)) {
     aoi_data <- tryCatch(aoi_data_reactive(), error = function(e) {
       if(exists("AOI")) get("AOI") else NULL
@@ -27,20 +27,8 @@ create_full_model_map <- function(combined_data, aoi_data_reactive = NULL) {
   combined_data <- combined_data %>%
     sf::st_transform('+proj=longlat +datum=WGS84')
   
-  # Calculate bounds
-  map_bounds <- NULL
-  if(!is.null(aoi_data) && nrow(aoi_data) > 0) {
-    bbox <- sf::st_bbox(aoi_data)
-  } else if(nrow(combined_data) > 0) {
-    bbox <- sf::st_bbox(combined_data)
-  }
-  
-  if(exists("bbox")) {
-    map_bounds <- list(
-      lng1 = as.numeric(bbox["xmin"]), lat1 = as.numeric(bbox["ymin"]),
-      lng2 = as.numeric(bbox["xmax"]), lat2 = as.numeric(bbox["ymax"])
-    )
-  }
+  # Calculate map bounds based on AOI if available
+  map_bounds <- aoi_bounds
   
   # Get range of values for palette
   full_values <- combined_data$Overall_Geo_mean[!is.na(combined_data$Overall_Geo_mean)]
@@ -107,10 +95,10 @@ create_full_model_map <- function(combined_data, aoi_data_reactive = NULL) {
   # Set map view based on bounds
   if(!is.null(map_bounds)) {
     m <- m %>%
-      leaflet::fitBounds(
+      fitBounds(
         lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
         lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
-        options = list(padding = c(20, 20))
+        options = list(padding = c(10, 10))
       )
   }
   
