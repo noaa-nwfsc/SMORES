@@ -4967,40 +4967,6 @@
         "RemoteSha": "1.6.6"
       }
     },
-    "widgetframe": {
-      "Source": "CRAN",
-      "Repository": "https://cran.rstudio.com",
-      "description": {
-        "Package": "widgetframe",
-        "Type": "Package",
-        "Title": "'Htmlwidgets' in Responsive 'iframes'",
-        "Version": "0.3.1",
-        "Authors@R": "c(\n    person(\"Bhaskar\", \"Karambelkar\", email = \"bhaskarvk@gmail.com\", role = c(\"aut\", \"cre\")),\n    person(\"Yihui\", \"Xie\", role = c(\"ctb\")),\n    person(\"NPR Visual Team\", role = c(\"ctb\", \"cph\"), comment = \"pym.js JavaScript library\"),\n    person(\"Bjørn Klinggaard\", role = c(\"ctb\", \"cph\"), comment = \"bLazy.js JavaScript library\")\n    )",
-        "Description": "Provides two functions 'frameableWidget()', and 'frameWidget()'.\n  The 'frameableWidget()' is used to add extra code to a 'htmlwidget' which\n  allows is to be rendered correctly inside a responsive 'iframe'.\n  The 'frameWidget()' is a 'htmlwidget' which displays content of another 'htmlwidget'\n  inside a responsive 'iframe'.\n  These functions allow for easier embedding of 'htmlwidgets' in content management systems\n  such as 'wordpress', 'blogger' etc.\n  They also allow for separation of widget content from main HTML content where\n  CSS of the main HTML could interfere with the widget.",
-        "License": "MIT + file LICENSE",
-        "Encoding": "UTF-8",
-        "LazyData": "true",
-        "Depends": "R (>= 3.1.0), htmlwidgets,",
-        "Imports": "htmltools, purrr, magrittr, utils, tools",
-        "RoxygenNote": "6.0.1",
-        "URL": "https://github.com/bhaskarvk/widgetframe,\nhttps://bhaskarvk.github.io/widgetframe/",
-        "BugReports": "https://github.com/bhaskarvk/widgetframe/issues",
-        "Suggests": "knitr, rmarkdown",
-        "VignetteBuilder": "knitr",
-        "NeedsCompilation": "no",
-        "Packaged": "2017-12-20 02:35:32 UTC; bhaskar",
-        "Author": "Bhaskar Karambelkar [aut, cre],\n  Yihui Xie [ctb],\n  NPR Visual Team [ctb, cph] (pym.js JavaScript library),\n  Bjørn Klinggaard [ctb, cph] (bLazy.js JavaScript library)",
-        "Maintainer": "Bhaskar Karambelkar <bhaskarvk@gmail.com>",
-        "Repository": "CRAN",
-        "Date/Publication": "2017-12-20 04:28:55 UTC",
-        "Built": "R 4.5.2; ; 2025-12-03 05:23:58 UTC; windows",
-        "RemoteType": "standard",
-        "RemotePkgRef": "widgetframe",
-        "RemoteRef": "widgetframe",
-        "RemoteRepos": "https://cran.rstudio.com",
-        "RemoteSha": "0.3.1"
-      }
-    },
     "withr": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
@@ -5202,7 +5168,7 @@
   },
   "files": {
     ".RData": {
-      "checksum": "3de3179a4f7db39b94eae993a100e605"
+      "checksum": "e2bf6f9e70081d02a63c8dcb5d780142"
     },
     ".RDataTmp": {
       "checksum": "0d85aa7653f1fe06f834fd0ccc79c3dd"
@@ -5346,10 +5312,10 @@
       "checksum": "5fadfbb697ac3cd0adf4f3afd6899852"
     },
     "global.R": {
-      "checksum": "f0ce0180e6792eb3ce4ac28a8c20341b"
+      "checksum": "2f9574ce1934775bb501bd9e7798e853"
     },
     "global_report_generation.R": {
-      "checksum": "cc83fcf3da34a6b940d58e5f3c7d305c"
+      "checksum": "3e661de0f2e851e1d4da17f3469ee0ba"
     },
     "LICENSE": {
       "checksum": "d229da563da18fe5d58cd95a6467d584"
@@ -5547,7 +5513,7 @@
       "checksum": "b9c0219571bc77b2975a6497d8bd5751"
     },
     "R/calculate_geometric_mean_full.R": {
-      "checksum": "7596de32cfc0ca954e6118b155673bb4"
+      "checksum": "fa6014b510689944817ada46e6869b63"
     },
     "R/calculate_lowest_combined.R": {
       "checksum": "beb616e831436373a68b5594336be83a"
@@ -5562,25 +5528,25 @@
       "checksum": "4122cec809221442958cc3a0a5d1cbd7"
     },
     "R/create_aoi_cropped_map.R": {
-      "checksum": "6ff6930dcd418cbf415f0f10a556d86d"
+      "checksum": "51bd46a934b5a004aca89972e4a0dfd5"
     },
     "R/create_aoi_cropped_normalized_map.R": {
       "checksum": "21c0b2ef10c1cf7bb1583d8a273b877e"
     },
     "R/create_combined_map.R": {
-      "checksum": "4325129d06092170029f085c2536ea2c"
+      "checksum": "1a72a5f5d8c2903dc0c01284650b7ab8"
     },
     "R/create_combined_submodel_map.R": {
-      "checksum": "c299bdf2825959e212348db991bcdca3"
+      "checksum": "ab2be2e689d8bb6eb3d74a0582818685"
     },
     "R/create_continuous_palette.R": {
       "checksum": "3ea7c432b6c2985d0266f2a972c2e4af"
     },
     "R/create_full_model_map.R": {
-      "checksum": "9358d40bf69b7fb7ffef8146e3f8209b"
+      "checksum": "9cfd48c3cb61356f6c409db0565c1aad"
     },
     "R/create_individual_map.R": {
-      "checksum": "97c1ec4fce785a0788bddbebe2a3a4e3"
+      "checksum": "e7ed5c00dcc383ad2b2516160c5e0b01"
     },
     "R/create_maps_container.R": {
       "checksum": "f5639c62afe4f4720288e93414514026"
@@ -5648,9 +5614,6 @@
     "R/get_valid_configs_for_tab.R": {
       "checksum": "4692a1fcd8e8c049f9b949f444cb1aa3"
     },
-    "R/make_combined_map_dataset.R": {
-      "checksum": "5f82db6efe87391d0ad1e19941ab2385"
-    },
     "R/make_combined_map_from_cached_data.R": {
       "checksum": "d424cdf5a238091f4e680e24b7d202da"
     },
@@ -5658,7 +5621,7 @@
       "checksum": "cb8bd4822fb8011ae303d8a1ef1aa601"
     },
     "R/preprocess_spatial_data.R": {
-      "checksum": "8cdea749002897bd480ee56b86a06238"
+      "checksum": "037a8ad3cb17c4ecfe62d5930f87bed9"
     },
     "R/sidebar_helpers.R": {
       "checksum": "39c9e5e1804623cc965928a4299ff46d"
@@ -5673,7 +5636,7 @@
       "checksum": "e1c96e3d326e51e8ad247a8926f2a4c3"
     },
     "server.R": {
-      "checksum": "5c2ba8c91b73446a3a04c1977735d188"
+      "checksum": "f928935060ff694761a6b6e3fda69459"
     },
     "Submodel_Combined_Report_Template.Rmd": {
       "checksum": "cf45a7afe18f7f6836dd2a0af6879a42"
