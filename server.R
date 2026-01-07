@@ -36,7 +36,6 @@ function(input, output, session) {
     natural_resources_combined_submodel = NULL,
     natural_resources_combined_submodel_generated = FALSE,
     natural_resources_combined_map = NULL,
-    natural_resources_combined_map_cropped = NULL,
     natural_resources_combined_map_cropped_normalized = NULL,
     
     fisheries_geo = NULL,
@@ -58,7 +57,6 @@ function(input, output, session) {
     fisheries_combined_submodel = NULL,
     fisheries_combined_submodel_generated = FALSE,
     fisheries_combined_map = NULL,
-    fisheries_combined_map_cropped = NULL,
     fisheries_combined_map_cropped_normalized = NULL,
     
     industry = NULL, #? where did i use this?
@@ -82,13 +80,12 @@ function(input, output, session) {
     industry_operations_combined_submodel = NULL,
     industry_operations_combined_submodel_generated = FALSE, 
     industry_operations_combined_map = NULL,
-    industry_operations_combined_map_cropped = NULL, 
     industry_operations_combined_map_cropped_normalized = NULL,
     
     full_model = NULL,
     full_model_generated = FALSE,
     full_map = NULL,
-    full_map_cropped = NULL
+  #  full_map_cropped = NULL
   )
   
   individual_processed_data <- reactiveValues(
@@ -1884,20 +1881,13 @@ function(input, output, session) {
         
         # Generate and store the cropped map
         if(!is.null(combined_submodel_result$combined_data)) {
-          cropped_map <- create_aoi_cropped_map(
-            combined_data = combined_submodel_result$combined_data,
-            aoi_data_reactive = filtered_aoi_data,
-            map_title = "Natural Resources AOI-Cropped",
-            full_data_range = combined_submodel_result$full_data_range
-          )
-          combined_maps_data$natural_resources_combined_map_cropped <- cropped_map
-        
-        
+
         # Generate and store the normalized cropped map
         normalized_cropped_map <- create_aoi_cropped_normalized_map(
           combined_data = combined_submodel_result$combined_data,
           aoi_data_reactive = filtered_aoi_data,
-          map_title = "Natural Resources AOI-Cropped Normalized"
+          map_title = "Natural Resources AOI-Cropped Normalized", 
+          aoi_bounds = aoi_bounds_cache$current_bounds
         )
         combined_maps_data$natural_resources_combined_map_cropped_normalized <- normalized_cropped_map
       }
@@ -1933,16 +1923,16 @@ function(input, output, session) {
     }
   })
   
-  # Natural Resources cropped map output
-  output$naturalResourcesCombinedMapCropped <- renderLeaflet({
-    if(!is.null(combined_maps_data$natural_resources_combined_map_cropped)) {
-      combined_maps_data$natural_resources_combined_map_cropped
-    } else {
-      leaflet() %>%
-        addProviderTiles("Esri.OceanBasemap") %>%
-        addControl("Generate combined submodel and select a AOI to see cropped map", position = "center")
-    }
-  })
+  # # Natural Resources cropped map output
+  # output$naturalResourcesCombinedMapCropped <- renderLeaflet({
+  #   if(!is.null(combined_maps_data$natural_resources_combined_map_cropped)) {
+  #     combined_maps_data$natural_resources_combined_map_cropped
+  #   } else {
+  #     leaflet() %>%
+  #       addProviderTiles("Esri.OceanBasemap") %>%
+  #       addControl("Generate combined submodel and select a AOI to see cropped map", position = "center")
+  #   }
+  # })
   
   # Natural Resources normalized cropped map output
   output$naturalResourcesCombinedMapCroppedNormalized <- renderLeaflet({
@@ -2109,19 +2099,13 @@ function(input, output, session) {
         
         # Generate and store the cropped map
         if(!is.null(combined_submodel_result$combined_data)) {
-          cropped_map <- create_aoi_cropped_map(
-            combined_data = combined_submodel_result$combined_data,
-            aoi_data_reactive = filtered_aoi_data,
-            map_title = "Fisheries AOI-Cropped",
-            full_data_range = combined_submodel_result$full_data_range
-          )
-          combined_maps_data$fisheries_combined_map_cropped <- cropped_map
-          
+        
           # Generate and store the normalized cropped map
           normalized_cropped_map <- create_aoi_cropped_normalized_map(
             combined_data = combined_submodel_result$combined_data,
             aoi_data_reactive = filtered_aoi_data,
-            map_title = "Fisheries AOI-Cropped Normalized"
+            map_title = "Fisheries AOI-Cropped Normalized", 
+            aoi_bounds = aoi_bounds_cache$current_bounds
           )
           combined_maps_data$fisheries_combined_map_cropped_normalized <- normalized_cropped_map
         }
@@ -2157,16 +2141,16 @@ function(input, output, session) {
     }
   })
   
-  # Fisheries cropped map output
-  output$fisheriesCombinedMapCropped <- renderLeaflet({
-    if(!is.null(combined_maps_data$fisheries_combined_map_cropped)) {
-      combined_maps_data$fisheries_combined_map_cropped
-    } else {
-      leaflet() %>%
-        addProviderTiles("Esri.OceanBasemap") %>%
-        addControl("Generate combined submodel and select a AOI to see cropped map", position = "center")
-    }
-  })
+  # # Fisheries cropped map output
+  # output$fisheriesCombinedMapCropped <- renderLeaflet({
+  #   if(!is.null(combined_maps_data$fisheries_combined_map_cropped)) {
+  #     combined_maps_data$fisheries_combined_map_cropped
+  #   } else {
+  #     leaflet() %>%
+  #       addProviderTiles("Esri.OceanBasemap") %>%
+  #       addControl("Generate combined submodel and select a AOI to see cropped map", position = "center")
+  #   }
+  # })
   
   # Fisheries normalized cropped map output
   output$fisheriesCombinedMapCroppedNormalized <- renderLeaflet({
@@ -2332,19 +2316,13 @@ function(input, output, session) {
         
         # Generate and store the cropped map
         if(!is.null(combined_submodel_result$combined_data)) {
-          cropped_map <- create_aoi_cropped_map(
-            combined_data = combined_submodel_result$combined_data,
-            aoi_data_reactive = filtered_aoi_data,
-            map_title = "Industry Operations AOI-Cropped",
-            full_data_range = combined_submodel_result$full_data_range
-          )
-          combined_maps_data$industry_operations_combined_map_cropped <- cropped_map
-          
+       
           # Generate and store the normalized cropped map
           normalized_cropped_map <- create_aoi_cropped_normalized_map(
             combined_data = combined_submodel_result$combined_data,
             aoi_data_reactive = filtered_aoi_data,
-            map_title = "Industry Operations AOI-Cropped Normalized"
+            map_title = "Industry Operations AOI-Cropped Normalized",
+            aoi_bounds = aoi_bounds_cache$current_bounds
           )
           combined_maps_data$industry_operations_combined_map_cropped_normalized <- normalized_cropped_map
         }
@@ -2380,16 +2358,16 @@ function(input, output, session) {
     }
   })
   
-  # Industry Operations cropped map output
-  output$industryOperationsCombinedMapCropped <- renderLeaflet({
-    if(!is.null(combined_maps_data$industry_operations_combined_map_cropped)) {
-      combined_maps_data$industry_operations_combined_map_cropped
-    } else {
-      leaflet() %>%
-        addProviderTiles("Esri.OceanBasemap") %>%
-        addControl("Generate combined submodel and select a AOI to see cropped map", position = "center")
-    }
-  })
+  # # Industry Operations cropped map output
+  # output$industryOperationsCombinedMapCropped <- renderLeaflet({
+  #   if(!is.null(combined_maps_data$industry_operations_combined_map_cropped)) {
+  #     combined_maps_data$industry_operations_combined_map_cropped
+  #   } else {
+  #     leaflet() %>%
+  #       addProviderTiles("Esri.OceanBasemap") %>%
+  #       addControl("Generate combined submodel and select a AOI to see cropped map", position = "center")
+  #   }
+  # })
   
   # Industry Operations normalized cropped map output
   output$industryOperationsCombinedMapCroppedNormalized <- renderLeaflet({
@@ -2584,34 +2562,34 @@ function(input, output, session) {
       combined_maps_data$full_model_generated <- TRUE
       combined_maps_data$full_map <- full_model_map
       
-      # Generate cropped maps if we have valid data
-      if(!is.null(full_model_data) && 
-         "Overall_Geo_mean" %in% names(full_model_data)) {
-        
-        # Create a modified version of the data with Geo_mean column for compatibility
-        cropped_data <- full_model_data %>%
-          mutate(Geo_mean = Overall_Geo_mean)
-        
-        # Get the data range for consistent coloring
-        full_values <- cropped_data$Geo_mean[!is.na(cropped_data$Geo_mean)]
-        if(length(full_values) > 0) {
-          full_data_range <- list(
-            min = min(full_values, na.rm = TRUE),
-            max = max(full_values, na.rm = TRUE)
-          )
-          
-          # Generate AOI-cropped map
-          cropped_map <- create_aoi_cropped_map(
-            combined_data = cropped_data,
-            aoi_data_reactive = filtered_aoi_data,
-            map_title = "Full Model Offshore Wind Energy Suitability Score",
-            full_data_range = full_data_range
-          )
-          combined_maps_data$full_map_cropped <- cropped_map
-        } else {
-          cat("WARNING: No valid values for cropped map generation\n")
-        }
-      }
+      # # Generate cropped maps if we have valid data
+      # if(!is.null(full_model_data) && 
+      #    "Overall_Geo_mean" %in% names(full_model_data)) {
+      #   
+      #   # Create a modified version of the data with Geo_mean column for compatibility
+      #   cropped_data <- full_model_data %>%
+      #     mutate(Geo_mean = Overall_Geo_mean)
+      #   
+      #   # Get the data range for consistent coloring
+      #   full_values <- cropped_data$Geo_mean[!is.na(cropped_data$Geo_mean)]
+      #   if(length(full_values) > 0) {
+      #     full_data_range <- list(
+      #       min = min(full_values, na.rm = TRUE),
+      #       max = max(full_values, na.rm = TRUE)
+      #     )
+      #     
+      #     # Generate AOI-cropped map
+      #     cropped_map <- create_aoi_cropped_map(
+      #       combined_data = cropped_data,
+      #       aoi_data_reactive = filtered_aoi_data,
+      #       map_title = "Full Model Offshore Wind Energy Suitability Score",
+      #       full_data_range = full_data_range
+      #     )
+      #     combined_maps_data$full_map_cropped <- cropped_map
+      #   } else {
+      #     cat("WARNING: No valid values for cropped map generation\n")
+      #   }
+      # }
       
       # Show success notification
       showNotification(
@@ -2652,12 +2630,12 @@ function(input, output, session) {
         
         br(),
         
-        # Cropped map section
-        div(
-          h4("AOI-Cropped Full Model Map"),
-          p("This map shows the full model data cropped to the selected Area of Interest (AOI)."),
-          leafletOutput("fullMapCropped", height = "500px")
-        )
+        # # Cropped map section
+        # div(
+        #   h4("AOI-Cropped Full Model Map"),
+        #   p("This map shows the full model data cropped to the selected Area of Interest (AOI)."),
+        #   leafletOutput("fullMapCropped", height = "500px")
+        # )
       )
     } else {
       div(
@@ -2679,15 +2657,15 @@ function(input, output, session) {
     }
   })
   
-  output$fullMapCropped <- renderLeaflet({
-    if(!is.null(combined_maps_data$full_map_cropped)) {
-      combined_maps_data$full_map_cropped
-    } else {
-      leaflet() %>%
-        addProviderTiles("Esri.OceanBasemap") %>%
-        addControl("Generate full model and select an AOI to see cropped map", position = "center")
-    }
-  })
+  # output$fullMapCropped <- renderLeaflet({
+  #   if(!is.null(combined_maps_data$full_map_cropped)) {
+  #     combined_maps_data$full_map_cropped
+  #   } else {
+  #     leaflet() %>%
+  #       addProviderTiles("Esri.OceanBasemap") %>%
+  #       addControl("Generate full model and select an AOI to see cropped map", position = "center")
+  #   }
+  # })
   
   # Full Model Report Export Handler
   output$fullModelExportRmd <- downloadHandler(

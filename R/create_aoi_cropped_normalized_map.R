@@ -1,5 +1,5 @@
 # Function to create normalized (0-1 scale) cropped map with its own color scheme
-create_aoi_cropped_normalized_map <- function(combined_data, aoi_data_reactive = NULL, map_title = "AOI-Cropped Normalized Map") {
+create_aoi_cropped_normalized_map <- function(combined_data, aoi_data_reactive = NULL, map_title = "AOI-Cropped Normalized Map", aoi_bounds = NULL) {
   tryCatch({
     
     # Get AOI data
@@ -8,29 +8,8 @@ create_aoi_cropped_normalized_map <- function(combined_data, aoi_data_reactive =
       aoi_data <- aoi_data_reactive()
     }
     
-    # If no specific AOI selected or aoi_data is empty, return message map
-    if(is.null(aoi_data) || nrow(aoi_data) == 0) {
-      return(leaflet() %>%
-               addProviderTiles("Esri.OceanBasemap") %>%
-               setView(lng = -124, lat = 38, zoom = 7) %>%
-               addControl("Select a WEA area to view normalized cropped data", position = "center"))
-    }
-    
-    # Check if "All Areas" is selected (assuming this means no cropping needed)
-    if(nrow(aoi_data) > 1) {
-      return(leaflet() %>%
-               addProviderTiles("Esri.OceanBasemap") %>%
-               setView(lng = -124, lat = 38, zoom = 7) %>%
-               addControl("Select a specific WEA area to view normalized cropped data", position = "topright"))
-    }
-    
-    # Ensure both datasets are in the same CRS
-    if(!st_is_longlat(combined_data)) {
-      combined_data <- st_transform(combined_data, 4326)
-    }
-    if(!st_is_longlat(aoi_data)) {
-      aoi_data <- st_transform(aoi_data, 4326)
-    }
+    # Calculate map bounds based on AOI if available
+    map_bounds <- aoi_bounds
     
     # Remove Z & M dimensions
     combined_data <- st_zm(combined_data)
@@ -169,16 +148,22 @@ create_aoi_cropped_normalized_map <- function(combined_data, aoi_data_reactive =
         overlayGroups = c("Normalized Data", "AOI Boundary"),
         options = layersControlOptions(collapsed = FALSE)
       )
-    
-    return(map)
-    
-  }, error = function(e) {
-    cat("ERROR in create_aoi_cropped_normalized_map:", e$message, "\n")
-    
-    # Return error map
-    return(leaflet() %>%
-             addProviderTiles("Esri.OceanBasemap") %>%
-             setView(lng = -124, lat = 38, zoom = 7) %>%
-             addControl(paste("Error creating normalized cropped map:", e$message), position = "topright"))
   })
+    
+  # Set map view bounds
+  if(!is.null(map_bounds)) {
+    tryCatch({
+      map <- map %>%
+        fitBounds(
+          lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
+          lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
+          options = list(padding = c(10, 10))
+        )
+    }, error = function(e) {
+      # Error setting bounds
+    })
+  }
+  
+  return(map)
+  
 }

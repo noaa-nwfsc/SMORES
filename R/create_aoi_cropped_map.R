@@ -1,5 +1,5 @@
 # create cropped map with consistent color scale
-create_aoi_cropped_map <- function(combined_data, aoi_data_reactive = NULL, map_title = "AOI-Cropped Combined Map", full_data_range = NULL) {
+create_aoi_cropped_map <- function(combined_data, aoi_data_reactive = NULL, map_title = "AOI-Cropped Combined Map", full_data_range = NULL, aoi_bounds = NULL) {
   tryCatch({
     
     # Get AOI data
@@ -8,13 +8,8 @@ create_aoi_cropped_map <- function(combined_data, aoi_data_reactive = NULL, map_
       aoi_data <- aoi_data_reactive()
     }
     
-    # If no specific AOI selected or aoi_data is empty, return message map
-    if(is.null(aoi_data) || nrow(aoi_data) == 0) {
-      return(leaflet() %>%
-               addProviderTiles("Esri.OceanBasemap") %>%
-               setView(lng = -124, lat = 38, zoom = 7) %>%
-               addControl("Select a WEA area to view cropped data", position = "topright"))
-    }
+    # Calculate map bounds based on AOI if available
+    map_bounds <- aoi_bounds
     
     # Check if "All Areas" is selected (assuming this means no cropping needed)
     if(nrow(aoi_data) > 1) {
@@ -70,15 +65,11 @@ create_aoi_cropped_map <- function(combined_data, aoi_data_reactive = NULL, map_
     # Create popup text
     map_data$popup_display <- paste("Combined Score:", round(map_data$Geo_mean, 2))
     
-    # Get bounds for the cropped area to set appropriate view
-    bbox <- st_bbox(map_data)
-    center_lng <- mean(c(bbox[1], bbox[3]))
-    center_lat <- mean(c(bbox[2], bbox[4]))
+ 
     
     # Initialize the map with view centered on cropped area
     map <- leaflet(map_data) %>%
-      addProviderTiles("Esri.OceanBasemap") %>%
-      setView(lng = center_lng, lat = center_lat, zoom = 10)
+      addProviderTiles("Esri.OceanBasemap") 
     
     # Get the actual cropped data values to check for uniformity
     cropped_score_values <- map_data$Geo_mean
@@ -184,16 +175,22 @@ create_aoi_cropped_map <- function(combined_data, aoi_data_reactive = NULL, map_
         overlayGroups = c("Combined Data", "AOI Boundary"),
         options = layersControlOptions(collapsed = FALSE)
       )
+  })
+
+# Set map view bounds
+if(!is.null(map_bounds)) {
+  tryCatch({
+    map <- map %>%
+      fitBounds(
+        lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
+        lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
+        options = list(padding = c(10, 10))
+      )
+  }, error = function(e) {
+    # Error setting bounds
+  })
+}
     
     return(map)
     
-  }, error = function(e) {
-    cat("ERROR in create_aoi_cropped_map:", e$message, "\n")
-    
-    # Return error map
-    return(leaflet() %>%
-             addProviderTiles("Esri.OceanBasemap") %>%
-             setView(lng = -124, lat = 38, zoom = 7) %>%
-             addControl(paste("Error creating cropped map:", e$message), position = "topright"))
-  })
 }
