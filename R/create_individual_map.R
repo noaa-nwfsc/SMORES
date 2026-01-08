@@ -136,18 +136,14 @@ create_individual_map <- function(config, aoi_data = NULL, aoi_bounds = NULL) {
     })
   }
   
+  # Set map view based on bounds
   if(!is.null(map_bounds)) {
-    tryCatch({
-      map <- map %>%
-        fitBounds(
-          lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
-          lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
-          options = list(padding = c(10, 10))
-        )
-    }, error = function(e) {
-    })
-  } else {
-    cat("DEBUG: No map bounds available\n")
+    map <- map %>%
+      fitBounds(
+        lng1 = map_bounds$lng1, lat1 = map_bounds$lat1,
+        lng2 = map_bounds$lng2, lat2 = map_bounds$lat2,
+        options = list(padding = c(10, 10))
+      )
   }
   
   return(map)
