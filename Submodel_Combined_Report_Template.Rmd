@@ -20,7 +20,6 @@ params:
   component_layer_details: NULL
   component_data_summary: NULL
   combined_map: NULL,
-  aoi_cropped_map: NULL,
   aoi_cropped_normalized_map: NULL
 ---
 
@@ -211,7 +210,7 @@ if (!is.null(params$component_layer_details) && length(params$component_layer_de
 
 ## Combined Submodel
 
-The combined submodel map represents the integration of all selected components using their specified calculation methods. The final combination is calculated using the geometric mean of the component scores to produce a unified assessment. This dataset are the scores that will be passed to the full model calculation.
+The combined submodel map represents the integration of all selected components using their specified calculation methods for the selected area of interest. The final combination is calculated using the geometric mean of the component scores to produce a unified assessment. This dataset are the scores that will be passed to the full model calculation.
 
 ```{r}
 if (!is.null(params$combined_data)) {
@@ -241,21 +240,9 @@ if (!is.null(params$combined_map)) {
 }
 ```
 
-## Combined Submodel - Cropped to area of interest (AOI)
+## Normalized Combined Submodel
 
-This map shows the combined submodel data filtered to the selected area of interest. Scores are distributed along a 0 to 1 scale. Values closer to 0 indicate a less suitable grid cell for offshore wind energy and values closer to 1 indicate a cell that is more suitable for offshore wind energy. 
-
-```{r}
-if (!is.null(params$aoi_cropped_map)) {
-  params$aoi_cropped_map
-} else {
-  cat("*AOI-cropped map not available. Please select a specific AOI area.*")
-}
-```
-
-## Normalized Combined Submodel - Cropped to area of interest (AOI)
-
-This map shows the AOI-filtered data rescaled to a 0 to 1 range using a min-max normalization for only the values within the selected area. The goal of this map is to visually highlight differences between cells that are closer in score to make it easier to compare relative differences within the area of interest. The values given are **not** used in any downstream calculations. 
+This map shows the data rescaled to a 0 to 1 range using a min-max normalization for the cells within the selected area of interest. The goal of this map is to visually highlight differences between cells that are closer in score to make it easier to compare relative differences within the area of interest. The values given are **not** used in any downstream calculations, and this map is purely for visual . 
 
 ```{r}
 if (!is.null(params$aoi_cropped_normalized_map)) {

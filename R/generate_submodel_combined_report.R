@@ -23,7 +23,6 @@ generate_submodel_combined_report <- function(
     
     combined_data <- combined_maps_data$natural_resources_combined_submodel
     combined_map <- combined_maps_data$natural_resources_combined_map
-    aoi_cropped_map <- combined_maps_data$natural_resources_combined_map_cropped
     aoi_cropped_normalized_map <- combined_maps_data$natural_resources_combined_map_cropped_normalized
     
   } else if(submodel_type == "fisheries") {
@@ -36,7 +35,6 @@ generate_submodel_combined_report <- function(
     
     combined_data <- combined_maps_data$fisheries_combined_submodel
     combined_map <- combined_maps_data$fisheries_combined_map
-    aoi_cropped_map <- combined_maps_data$fisheries_combined_map_cropped
     aoi_cropped_normalized_map <- combined_maps_data$fisheries_combined_map_cropped_normalized
     
   } else if(submodel_type == "industry_operations") {
@@ -49,7 +47,6 @@ generate_submodel_combined_report <- function(
     
     combined_data <- combined_maps_data$industry_operations_combined_submodel
     combined_map <- combined_maps_data$industry_operations_combined_map
-    aoi_cropped_map <- combined_maps_data$industry_operations_combined_map_cropped
     aoi_cropped_normalized_map <- combined_maps_data$industry_operations_combined_map_cropped_normalized
     
   } else {
@@ -290,7 +287,6 @@ generate_submodel_combined_report <- function(
       aoi_data = aoi_data,
       component_layer_details = component_layer_details,
       combined_map = combined_map,
-      aoi_cropped_map = aoi_cropped_map,
       aoi_cropped_normalized_map = aoi_cropped_normalized_map
     ),
     envir = new.env(parent = globalenv())

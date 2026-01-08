@@ -85,7 +85,7 @@ function(input, output, session) {
     full_model = NULL,
     full_model_generated = FALSE,
     full_map = NULL,
-  #  full_map_cropped = NULL
+    full_map_cropped = NULL
   )
   
   individual_processed_data <- reactiveValues(
@@ -1923,17 +1923,6 @@ function(input, output, session) {
     }
   })
   
-  # # Natural Resources cropped map output
-  # output$naturalResourcesCombinedMapCropped <- renderLeaflet({
-  #   if(!is.null(combined_maps_data$natural_resources_combined_map_cropped)) {
-  #     combined_maps_data$natural_resources_combined_map_cropped
-  #   } else {
-  #     leaflet() %>%
-  #       addProviderTiles("Esri.OceanBasemap") %>%
-  #       addControl("Generate combined submodel and select a AOI to see cropped map", position = "center")
-  #   }
-  # })
-  
   # Natural Resources normalized cropped map output
   output$naturalResourcesCombinedMapCroppedNormalized <- renderLeaflet({
     if(!is.null(combined_maps_data$natural_resources_combined_map_cropped_normalized)) {
@@ -1959,19 +1948,10 @@ function(input, output, session) {
         
         br(),
         
-        # Cropped map section
-        div(
-          h4("AOI-Cropped Natural Resources Submodel Map"),
-          p("This map shows the same combined submodel data cropped to the selected Area of Interest (AOI)."),
-          leafletOutput("naturalResourcesCombinedMapCropped", height = "500px")
-        ),
-        
-        br(),
-        
         # Normalized cropped map section
         div(
-          h4("AOI-Cropped Normalized Natural Resources Submodel Map"),
-          p("This map shows the AOI-cropped data normalized to a 0-1 scale for easier comparison across different areas.This map is intended to provide additional visual clarity for separating score values that are close together by showing them with a different color palette and relative scale. The scores showed in this map are not used in any further calculations, and are purely for visual aid."),
+          h4("Normalized Natural Resources Submodel Map"),
+          p("This map shows the data normalized to a 0-1 scale for easier comparison across different areas. This map is intended to provide additional visual clarity for separating score values that are close together by showing them with a different color palette and relative scale. The scores showed in this map are **not** used in any further calculations, and are purely for visual aid."),
           leafletOutput("naturalResourcesCombinedMapCroppedNormalized", height = "500px")
         )
       )
@@ -2141,17 +2121,6 @@ function(input, output, session) {
     }
   })
   
-  # # Fisheries cropped map output
-  # output$fisheriesCombinedMapCropped <- renderLeaflet({
-  #   if(!is.null(combined_maps_data$fisheries_combined_map_cropped)) {
-  #     combined_maps_data$fisheries_combined_map_cropped
-  #   } else {
-  #     leaflet() %>%
-  #       addProviderTiles("Esri.OceanBasemap") %>%
-  #       addControl("Generate combined submodel and select a AOI to see cropped map", position = "center")
-  #   }
-  # })
-  
   # Fisheries normalized cropped map output
   output$fisheriesCombinedMapCroppedNormalized <- renderLeaflet({
     if(!is.null(combined_maps_data$fisheries_combined_map_cropped_normalized)) {
@@ -2177,19 +2146,10 @@ function(input, output, session) {
         
         br(),
         
-        # Cropped map section
-        div(
-          h4("AOI-Cropped Fisheries Submodel Map"),
-          p("This map shows the same combined submodel data cropped to the selected Area of Interest (AOI)."),
-          leafletOutput("fisheriesCombinedMapCropped", height = "500px")
-        ),
-        
-        br(),
-        
         # Normalized cropped map section
         div(
-          h4("AOI-Cropped Normalized Fisheries Submodel Map"),
-          p("This map shows the AOI-cropped data normalized to a 0-1 scale for easier comparison across different areas.This map is intended to provide additional visual clarity for separating score values that are close together by showing them with a different color palette and relative scale. The scores showed in this map are not used in any further calculations, and are purely for visual aid."),
+          h4("Normalized Fisheries Submodel Map"),
+          p("This map shows the data normalized to a 0-1 scale for easier comparison across different areas. This map is intended to provide additional visual clarity for separating score values that are close together by showing them with a different color palette and relative scale. The scores showed in this map are **not** used in any further calculations, and are purely for visual aid."),
           leafletOutput("fisheriesCombinedMapCroppedNormalized", height = "500px")
         )
       )
@@ -2358,17 +2318,6 @@ function(input, output, session) {
     }
   })
   
-  # # Industry Operations cropped map output
-  # output$industryOperationsCombinedMapCropped <- renderLeaflet({
-  #   if(!is.null(combined_maps_data$industry_operations_combined_map_cropped)) {
-  #     combined_maps_data$industry_operations_combined_map_cropped
-  #   } else {
-  #     leaflet() %>%
-  #       addProviderTiles("Esri.OceanBasemap") %>%
-  #       addControl("Generate combined submodel and select a AOI to see cropped map", position = "center")
-  #   }
-  # })
-  
   # Industry Operations normalized cropped map output
   output$industryOperationsCombinedMapCroppedNormalized <- renderLeaflet({
     if(!is.null(combined_maps_data$industry_operations_combined_map_cropped_normalized)) {
@@ -2394,19 +2343,10 @@ function(input, output, session) {
         
         br(),
         
-        # Cropped map section
-        div(
-          h4("AOI-Cropped Industry & Operations Submodel Map"),
-          p("This map shows the same combined submodel data cropped to the selected Area of Interest (AOI)."),
-          leafletOutput("industryOperationsCombinedMapCropped", height = "500px")
-        ),
-        
-        br(),
-        
         # Normalized cropped map section
         div(
-          h4("AOI-Cropped Normalized Industry & Operations Submodel Map"),
-          p("This map shows the AOI-cropped data normalized to a 0-1 scale for easier comparison across different areas.This map is intended to provide additional visual clarity for separating score values that are close together by showing them with a different color palette and relative scale. The scores showed in this map are not used in any further calculations, and are purely for visual aid."),
+          h4("Normalized Industry & Operations Submodel Map"),
+          p("This map shows the data normalized to a 0-1 scale for easier comparison across different areas. This map is intended to provide additional visual clarity for separating score values that are close together by showing them with a different color palette and relative scale. The scores showed in this map are **not** used in any further calculations, and are purely for visual aid."),
           leafletOutput("industryOperationsCombinedMapCroppedNormalized", height = "500px")
         )
       )
@@ -2562,34 +2502,34 @@ function(input, output, session) {
       combined_maps_data$full_model_generated <- TRUE
       combined_maps_data$full_map <- full_model_map
       
-      # # Generate cropped maps if we have valid data
-      # if(!is.null(full_model_data) && 
-      #    "Overall_Geo_mean" %in% names(full_model_data)) {
-      #   
-      #   # Create a modified version of the data with Geo_mean column for compatibility
-      #   cropped_data <- full_model_data %>%
-      #     mutate(Geo_mean = Overall_Geo_mean)
-      #   
-      #   # Get the data range for consistent coloring
-      #   full_values <- cropped_data$Geo_mean[!is.na(cropped_data$Geo_mean)]
-      #   if(length(full_values) > 0) {
-      #     full_data_range <- list(
-      #       min = min(full_values, na.rm = TRUE),
-      #       max = max(full_values, na.rm = TRUE)
-      #     )
-      #     
-      #     # Generate AOI-cropped map
-      #     cropped_map <- create_aoi_cropped_map(
-      #       combined_data = cropped_data,
-      #       aoi_data_reactive = filtered_aoi_data,
-      #       map_title = "Full Model Offshore Wind Energy Suitability Score",
-      #       full_data_range = full_data_range
-      #     )
-      #     combined_maps_data$full_map_cropped <- cropped_map
-      #   } else {
-      #     cat("WARNING: No valid values for cropped map generation\n")
-      #   }
-      # }
+      # Generate cropped maps if we have valid data
+      if(!is.null(full_model_data) &&
+         "Overall_Geo_mean" %in% names(full_model_data)) {
+
+        # Create a modified version of the data with Geo_mean column for compatibility
+        cropped_data <- full_model_data %>%
+          mutate(Geo_mean = Overall_Geo_mean)
+
+        # Get the data range for consistent coloring
+        full_values <- cropped_data$Geo_mean[!is.na(cropped_data$Geo_mean)]
+        if(length(full_values) > 0) {
+          full_data_range <- list(
+            min = min(full_values, na.rm = TRUE),
+            max = max(full_values, na.rm = TRUE)
+          )
+
+          # Generate AOI-cropped map
+          cropped_map <- create_aoi_cropped_map(
+            combined_data = cropped_data,
+            aoi_data_reactive = filtered_aoi_data,
+            map_title = "Full Model Offshore Wind Energy Suitability Score",
+            full_data_range = full_data_range
+          )
+          combined_maps_data$full_map_cropped <- cropped_map
+        } else {
+          cat("WARNING: No valid values for cropped map generation\n")
+        }
+      }
       
       # Show success notification
       showNotification(
@@ -2625,17 +2565,8 @@ function(input, output, session) {
         div(
           h4("Full Model Map"),
           p("This map shows the full model calculated using the weighted geometric mean of selected submodels."),
-          leafletOutput("fullMap", height = "500px")
-        ),
-        
-        br(),
-        
-        # # Cropped map section
-        # div(
-        #   h4("AOI-Cropped Full Model Map"),
-        #   p("This map shows the full model data cropped to the selected Area of Interest (AOI)."),
-        #   leafletOutput("fullMapCropped", height = "500px")
-        # )
+          leafletOutput("fullMapCropped", height = "500px")
+        )
       )
     } else {
       div(
@@ -2646,26 +2577,15 @@ function(input, output, session) {
     }
   })
   
-  # Full Model map outputs
-  output$fullMap <- renderLeaflet({
-    if(!is.null(combined_maps_data$full_map)) {
-      combined_maps_data$full_map
+  output$fullMapCropped <- renderLeaflet({
+    if(!is.null(combined_maps_data$full_map_cropped)) {
+      combined_maps_data$full_map_cropped
     } else {
       leaflet() %>%
         addProviderTiles("Esri.OceanBasemap") %>%
-        addControl("Generate full model to see map", position = "center")
+        addControl("Generate full model and select an AOI to see cropped map", position = "center")
     }
   })
-  
-  # output$fullMapCropped <- renderLeaflet({
-  #   if(!is.null(combined_maps_data$full_map_cropped)) {
-  #     combined_maps_data$full_map_cropped
-  #   } else {
-  #     leaflet() %>%
-  #       addProviderTiles("Esri.OceanBasemap") %>%
-  #       addControl("Generate full model and select an AOI to see cropped map", position = "center")
-  #   }
-  # })
   
   # Full Model Report Export Handler
   output$fullModelExportRmd <- downloadHandler(
