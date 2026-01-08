@@ -238,10 +238,7 @@ typography:
     # - family: Cambria # Serif
     #   source: google
 
-  base:
-    color:
-  headings:
-    color:
+ 
   link:
     color: noaa-sea
     decoration: "underline" 

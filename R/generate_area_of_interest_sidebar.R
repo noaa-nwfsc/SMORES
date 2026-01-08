@@ -1,7 +1,7 @@
 generate_area_of_interest_sidebar <- function() {
   nav_panel(
     title = "Area of Interest",
-    icon = icon("map-location-dot"),
+    icon = icon("map-pin"),
     # Top row: Two vertical rectangles side by side
     layout_columns(
       col_widths = c(6, 6),
