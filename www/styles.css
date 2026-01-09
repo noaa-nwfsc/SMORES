@@ -33,36 +33,30 @@
   color: #0085CA !important;
 }
 
-/* Target the link specifically using the data-value */
-.navbar-nav a.nav-link[data-value="Area of Interest"] {
-  background-color: #76BC21 !important;
-  color: white !important;
-}
-
-/* Ensure the icon inside also stays white */
-.navbar-nav a.nav-link[data-value="Area of Interest"] i {
-  color: white !important;
-}
-
-/* Hover state */
-.navbar-nav a.nav-link[data-value="Area of Interest"]:hover {
-  background-color: #5a9119 !important; /* A slightly darker green */
-  color: white !important;
-}
-
-/* Active state (when selected) */
-.navbar-nav a.nav-link.active[data-value="Area of Interest"] {
-  background-color: white !important;
-  color: #76BC21 !important;
-  border-bottom: 2px solid #76BC21 !important;
-}
-
 /* Hover for model tabs */
 .navbar-nav .nav-link:hover[data-value='Natural Resources Submodel'],
 .navbar-nav .nav-link:hover[data-value='Fisheries Submodel'],
 .navbar-nav .nav-link:hover[data-value='Industry & Operations Submodel'],
 .navbar-nav .nav-link:hover[data-value='Full Model'] {
   background-color: #0066B3 !important;
+}
+
+/* Override for Area of Interest tab - use light green */
+.navbar-nav .nav-link[data-value='Area of Interest'] {
+  background-color: #76BC21 !important;
+  color: white !important;
+}
+
+/* Active state for Area of Interest tab */
+.navbar-nav .nav-link.active[data-value='Area of Interest'] {
+  background-color: white !important;
+  color: #76BC21 !important;
+}
+
+/* Hover for Area of Interest tab */
+.navbar-nav .nav-link:hover[data-value='Area of Interest'] {
+  background-color: #65a11c !important;
+  color: white !important;
 }
 
 /* Background for the nav-tabs container but NOT for the main navbar - light gray*/
