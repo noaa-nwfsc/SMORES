@@ -34,6 +34,41 @@ render_individual_map_from_config <- function(config) {
   # Call the pure function directly - this generates the exact same map as the app
   return(create_individual_map(config, aoi_data))
 }
+
+library(bench)
+library(lobstr)
+
+# Initialize memory tracking
+chunk_memory_results <- list()
+report_start_memory <- lobstr::mem_used()
+
+# Set up memory profiling hook
+knitr::knit_hooks$set(
+  memory_profile = function(before, options, envir) {
+    if (before) {
+      # Capture state before chunk runs
+      assign("chunk_start_memory", lobstr::mem_used(), envir = .GlobalEnv)
+    } else {
+      # Capture state after chunk runs
+      current_total_mem <- lobstr::mem_used()
+      chunk_start_mem <- get("chunk_start_memory", envir = .GlobalEnv)
+      
+      chunk_name <- options$label %||% "unnamed_chunk"
+      memory_increase <- current_total_mem - chunk_start_mem
+      
+      # Print formatted output
+      cat(sprintf(
+        "\n--- Memory Profile: %s ---\nIncrease: %s\nTotal Used: %s\n",
+        chunk_name, 
+        format(memory_increase), 
+        format(current_total_mem)
+      ))
+    }
+  }
+)
+
+# Set default hook for all chunks
+knitr::opts_chunk$set(memory_profile = TRUE)
     
 ```
 
@@ -41,7 +76,7 @@ render_individual_map_from_config <- function(config) {
 
 This report includes data from the following selected layers:
 
-```{r}
+```{r data-time, memory_profile=TRUE}
 if (is.null(params$data_timestamps)) {
   # Call the same function used in app
   timestamp_info <- get_data_timestamps()
@@ -77,7 +112,7 @@ if (!is.null(data_timestamps_table)) {
 
 The following maps are individual data layers that have been visualized for the study area. The maps are zoomed to the area of interest that was previously selected, and shown in a red outline. To view the wider study area select the zoom out button on the map. To more closely analyze a cell click on the cell of interest and a pop-up will generate with the assigned score. Above each of the maps is a block containing relevant information: layer name, score assigned, and the number of cells that are represented by this data layer.
 
-```{r individual-map1, results='asis'}
+```{r individual-map1, results='asis', memory_profile=TRUE}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 1) {
     config <- params$map_configs[[1]]
     
@@ -87,7 +122,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 1) {
   }
 ```
 
-```{r individual-map2, results='asis'}
+```{r individual-map2, results='asis', memory_profile=TRUE}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 2) {
     config <- params$map_configs[[2]]
     
@@ -97,7 +132,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 2) {
   }
 ```
 
-```{r individual-map3, results='asis'}
+```{r individual-map3, results='asis', memory_profile=TRUE}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 3) {
     config <- params$map_configs[[3]]
     
@@ -107,7 +142,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 3) {
   }
 ```
 
-```{r individual-map4, results='asis'}
+```{r individual-map4, results='asis', memory_profile=TRUE}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 4) {
     config <- params$map_configs[[4]]
     
@@ -117,7 +152,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 4) {
   }
 ```
 
-```{r individual-map5, results='asis'}
+```{r individual-map5, results='asis', memory_profile=TRUE}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 5) {
     config <- params$map_configs[[5]]
     
@@ -127,7 +162,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 5) {
   }
 ```
 
-```{r individual-map6, results='asis'}
+```{r individual-map6, results='asis', memory_profile=TRUE}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 6) {
     config <- params$map_configs[[6]]
     
@@ -137,7 +172,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 6) {
   }
 ```
 
-```{r individual-map7, results='asis'}
+```{r individual-map7, results='asis', memory_profile=TRUE}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 7) {
     config <- params$map_configs[[7]]
     
@@ -147,7 +182,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 7) {
   }
 ```
 
-```{r individual-map8, results='asis'}
+```{r individual-map8, results='asis', memory_profile=TRUE}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 8) {
     config <- params$map_configs[[8]]
     
@@ -157,7 +192,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 8) {
   }
 ```
 
-```{r individual-map9, results='asis'}
+```{r individual-map9, results='asis', memory_profile=TRUE}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 9) {
     config <- params$map_configs[[9]]
     
@@ -171,7 +206,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 9) {
 
 The following maps are combined data layers that have been calculated and visualized for the study area. The maps are zoomed to the area of interest that was previously selected, and shown in a red outline. To view the wider study area select the zoom out button on the map. To more closely analyze a cell click on the cell of interest and a pop-up will generate with the assigned score. Above each of the maps is a block containing relevant information: the number of cells that are represented by this data layer, and the calculation method used (geometric mean, lowest value, or product method).
 
-```{r geometric-mean-map, results='asis'}
+```{r geometric-mean-map, results='asis', memory_profile=TRUE}
 if ("geometric_mean" %in% params$selected_methods && !is.null(params$combined_map_objects[["geometric_mean"]])) {
   cat("\n\n### Combined Map - Geometric Mean\n\n")
   
@@ -197,7 +232,7 @@ if ("geometric_mean" %in% params$selected_methods && !is.null(params$combined_ma
 }
 ```
 
-```{r lowest-map, results='asis'}
+```{r lowest-map, results='asis', memory_profile=TRUE}
 if ("lowest" %in% params$selected_methods && !is.null(params$combined_map_objects[["lowest"]])) {
   cat("\n\n### Combined Map - Lowest Value\n\n")
   
@@ -223,7 +258,7 @@ if ("lowest" %in% params$selected_methods && !is.null(params$combined_map_object
 }
 ```
 
-```{r product-map, results='asis'}
+```{r product-map, results='asis', memory_profile=TRUE}
 if ("product" %in% params$selected_methods && !is.null(params$combined_map_objects[["product"]])) {
   cat("\n\n### Combined Map - Product\n\n")
   

@@ -391,6 +391,41 @@
         "RemoteSha": "0.1-3"
       }
     },
+    "bench": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "description": {
+        "Package": "bench",
+        "Title": "High Precision Timing of R Expressions",
+        "Version": "1.1.4",
+        "Authors@R": "c(\n    person(\"Jim\", \"Hester\", role = \"aut\"),\n    person(\"Davis\", \"Vaughan\", , \"davis@posit.co\", role = c(\"aut\", \"cre\")),\n    person(\"Drew\", \"Schmidt\", role = \"ctb\",\n           comment = \"read_proc_file implementation\"),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"))\n  )",
+        "Description": "Tools to accurately benchmark and analyze execution times for\n    R expressions.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://bench.r-lib.org/, https://github.com/r-lib/bench",
+        "BugReports": "https://github.com/r-lib/bench/issues",
+        "Depends": "R (>= 4.0.0)",
+        "Imports": "glue (>= 1.8.0), methods, pillar (>= 1.10.1), profmem (>=\n0.6.0), rlang (>= 1.1.4), stats, tibble (>= 3.2.1), utils",
+        "Suggests": "covr, dplyr, forcats, ggbeeswarm, ggplot2 (>= 3.5.1),\nggridges, parallel, scales, testthat (>= 3.2.3), tidyr (>=\n1.3.1), vctrs (>= 0.6.5), withr",
+        "Config/Needs/website": "tidyverse/tidytemplate",
+        "Config/testthat/edition": "3",
+        "Config/usethis/last-upkeep": "2025-01-16",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.3.2",
+        "NeedsCompilation": "yes",
+        "Packaged": "2025-01-16 22:07:42 UTC; davis",
+        "Author": "Jim Hester [aut],\n  Davis Vaughan [aut, cre],\n  Drew Schmidt [ctb] (read_proc_file implementation),\n  Posit Software, PBC [cph, fnd]",
+        "Maintainer": "Davis Vaughan <davis@posit.co>",
+        "Repository": "CRAN",
+        "Date/Publication": "2025-01-16 22:40:07 UTC",
+        "Built": "R 4.5.2; x86_64-w64-mingw32; 2025-12-30 03:16:52 UTC; windows",
+        "Archs": "x64",
+        "RemoteType": "standard",
+        "RemotePkgRef": "bench",
+        "RemoteRef": "bench",
+        "RemoteRepos": "https://cran.rstudio.com",
+        "RemoteSha": "1.1.4"
+      }
+    },
     "bit": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
@@ -2576,6 +2611,42 @@
         "RemoteSha": "0.8"
       }
     },
+    "lobstr": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "description": {
+        "Package": "lobstr",
+        "Title": "Visualize R Data Structures with Trees",
+        "Version": "1.1.3",
+        "Authors@R": "c(\n    person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = c(\"aut\", \"cre\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"))\n  )",
+        "Description": "A set of tools for inspecting and understanding R data\n    structures inspired by str(). Includes ast() for visualizing abstract\n    syntax trees, ref() for showing shared references, cst() for showing\n    call stack trees, and obj_size() for computing object sizes.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://lobstr.r-lib.org/, https://github.com/r-lib/lobstr",
+        "BugReports": "https://github.com/r-lib/lobstr/issues",
+        "Depends": "R (>= 3.6.0)",
+        "Imports": "crayon, methods, prettyunits, rlang (>= 1.0.0)",
+        "Suggests": "covr, pillar, pkgdown, testthat (>= 3.0.0)",
+        "LinkingTo": "cpp11 (>= 0.4.2)",
+        "Config/Needs/website": "tidyverse/tidytemplate",
+        "Config/testthat/edition": "3",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.3.3",
+        "Config/build/compilation-database": "true",
+        "NeedsCompilation": "yes",
+        "Packaged": "2025-11-13 22:26:21 UTC; hadleywickham",
+        "Author": "Hadley Wickham [aut, cre],\n  Posit Software, PBC [cph, fnd]",
+        "Maintainer": "Hadley Wickham <hadley@posit.co>",
+        "Repository": "CRAN",
+        "Date/Publication": "2025-11-14 13:00:07 UTC",
+        "Built": "R 4.5.2; x86_64-w64-mingw32; 2025-12-30 01:30:34 UTC; windows",
+        "Archs": "x64",
+        "RemoteType": "standard",
+        "RemotePkgRef": "lobstr",
+        "RemoteRef": "lobstr",
+        "RemoteRepos": "https://cran.rstudio.com",
+        "RemoteSha": "1.1.3"
+      }
+    },
     "lubridate": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
@@ -3069,6 +3140,38 @@
         "RemoteRef": "processx",
         "RemoteRepos": "https://cran.rstudio.com",
         "RemoteSha": "3.8.6"
+      }
+    },
+    "profmem": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "description": {
+        "Package": "profmem",
+        "Version": "0.7.0",
+        "Title": "Simple Memory Profiling for R",
+        "Imports": "utils",
+        "Suggests": "R.rsp, markdown, microbenchmark",
+        "VignetteBuilder": "R.rsp",
+        "Authors@R": "c(person(\"Henrik\", \"Bengtsson\", role=c(\"aut\", \"cre\", \"cph\"),\n                                          email = \"henrikb@braju.com\"))",
+        "Description": "A simple and light-weight API for memory profiling of R expressions.  The profiling is built on top of R's built-in memory profiler ('utils::Rprofmem()'), which records every memory allocation done by R (also native code).",
+        "License": "LGPL (>= 2.1)",
+        "LazyLoad": "TRUE",
+        "URL": "https://henrikbengtsson.github.io/profmem/,\nhttps://github.com/HenrikBengtsson/profmem",
+        "BugReports": "https://github.com/HenrikBengtsson/profmem/issues",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.3.2",
+        "NeedsCompilation": "no",
+        "Packaged": "2025-05-02 20:14:48 UTC; henrik",
+        "Author": "Henrik Bengtsson [aut, cre, cph]",
+        "Maintainer": "Henrik Bengtsson <henrikb@braju.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2025-05-02 21:00:02 UTC",
+        "Built": "R 4.5.2; ; 2025-12-30 01:58:08 UTC; windows",
+        "RemoteType": "standard",
+        "RemotePkgRef": "profmem",
+        "RemoteRef": "profmem",
+        "RemoteRepos": "https://cran.rstudio.com",
+        "RemoteSha": "0.7.0"
       }
     },
     "progress": {
@@ -5642,7 +5745,7 @@
       "checksum": "4275f203f7270c96c5f0918ec7bdde4e"
     },
     "Submodel_Component_Report_Template.Rmd": {
-      "checksum": "68a1a31c31d130c7c302e7c42bce76aa"
+      "checksum": "23ce27b39cd729021c41c69a993d3558"
     },
     "ui.R": {
       "checksum": "329c3fddcb2619011ac4ae148b97daf9"
