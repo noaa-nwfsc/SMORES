@@ -7,15 +7,15 @@ Here are a few tips for accessing the SMORES app and where to look if you have q
 
 # Where can I go to access the SMORES app?
 
-The SMORES app is currently accessible on the NOAA NMFS Posit Connect Test Instance. The App is hosted at this [link](Melissa insert link here). 
+The SMORES app is currently accessible on the NOAA NMFS Posit Connect Test Instance. The App is hosted at this [link](https://test-connect.fisheries.noaa.gov/connect/#/apps/3e44db0d-bd12-49b2-bb7e-ace703306b12). 
 
 # What is the NOAA NMFS Posit Connect Test Instance?
 
-Posit connect is a publishing platform for R and Python-associated products. Products can be hosted publicly or internally, accessibile to NOAA only.
+Posit connect is a publishing platform for R and Python-associated products. Products can be hosted publicly or internally, accessible to NOAA only.
 
 # How do I get onto the Posit Connect Test Instance to use the app?
 
-The Post Connect Test Instance is able to be accessed if you have a NOAA email (affiliates, and federal). Is it important to note that in order to log in you must be on a NOAA connection. This means you will either need to be on site and connected to Wifi/ethernet or connected to the NOAA VPN. If you are not connected to these, the app will not load and you will get a message that states the request timed out. 
+The Post Connect Test Instance is able to be accessed if you have a NOAA email (affiliates, and federal). It is important to note that in order to log in you must be on a NOAA connection. This means you will either need to be on site and connected to Wifi/ethernet or connected to the NOAA VPN. If you are not connected to these, the app will not load and you will get a message that states the request timed out. 
 
 # Where can I see the back-end code of this app?
 
