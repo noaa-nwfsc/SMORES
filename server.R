@@ -142,8 +142,8 @@ function(input, output, session) {
       updateRadioButtons(
         session = session,
         inputId = "aoiAreaSelector",
-        choices = c("Brookings", "Coos Bay", "Morro Bay", "Humboldt", "Southern California", "Central California", "Northern California", "Washington/Oregon"),  # Add "All Areas" option
-        selected = "Coos Bay"  # Select "Coos Bay" by default
+        choices = c("All Areas" = "all", "Brookings", "Coos Bay", "Morro Bay", "Humboldt", "Southern California", "Central California", "Northern California", "Washington/Oregon"),  # Add "All Areas" option
+        selected = "all"  # Select "All" by default
       )
     }
   })
