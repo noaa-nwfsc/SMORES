@@ -30,7 +30,7 @@ generate_area_of_interest_sidebar <- function() {
               selected = "loading",
               inline = TRUE
             ),
-            p("Select one Area of Interest to filter the dataset. The map will update to highlight the selected area.")
+            p("Select one Area of Interest to filter the dataset. The map will update to highlight the selected area. *Please note the `All Areas` option is for visual purposes **only**. To generate a model run please select any other area of interest ")
           ),
           
           leafletOutput("aoiMap", height = "250px")

@@ -21,7 +21,10 @@ from left to right.**
 generate the layers of your choice.*
 
 Step 1: Navigate to the Area of Interest tab and select a region you
-would like your analyses to focus on.
+would like your analyses to focus on. The Area of Interest opens with a map
+showcasing all of the possible options, with the default being to show you all of the areas at once.
+In order to generate a model run you will select an area of choice that is not the `All Areas` option.
+If you select the `All Areas` option the analyses will not be able to run due to processing constraints.
 
 Step 2: Navigate to the Natural Resources Submodel Tab. You will start
 at the Habitat sub-tab and select the scores you would like in this

@@ -4,8 +4,7 @@ editor_options:
     wrap: 72
 ---
 
-The data that was used to create these modeling outputs 
+This application uses multiple datasets that are updated periodically. If you would like additional information about the data sources selected
+please visit the [Data Sources](https://noaa-nwfsc.github.io/SMORES/Data.html){target="_blank"} page of the SMORES Documentation site.
 
-- Data Source 1
-- Data Source 2
-- Data Source 3
+

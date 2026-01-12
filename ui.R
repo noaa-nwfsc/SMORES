@@ -36,7 +36,7 @@ tagList(
         card(
           card_header("Overview"),
           card_body(
-           includeMarkdown("markdown/overview.md")
+            includeMarkdown("markdown/overview.md")
           )
         )
       )
@@ -306,16 +306,22 @@ tagList(
     nav_panel(
       title = "Data",
       icon = icon("database"),
+      
+      # Info card
       card(
         card_header("Dataset Information"),
         card_body(
-          p("This application uses multiple datasets that are updated periodically."),
           p(strong("Most recent data update: "), most_recent_update),
-          br(),
           # data table that shows when data has been edited 
           tableOutput("data_timestamps_table")
         )
-      )
+      ),
+      card(
+        card_header("Data Sources Information"),
+        card_body(
+          includeMarkdown("markdown/data.md")
+        )
+      ),
     )
   )
 )
