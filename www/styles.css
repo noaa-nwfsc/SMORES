@@ -41,23 +41,25 @@
   background-color: #0066B3 !important;
 }
 
-/* Override for Area of Interest tab - use light green */
-.navbar-nav .nav-link[data-value='Area of Interest'] {
-  background-color: ##4B8320 !important;
+/* Target the link specifically using the data-value */
+.navbar-nav a.nav-link[data-value="Area of Interest"] {
+  background-color: #4B8320 !important;
   color: white !important;
 }
 
-/* Active state for Area of Interest tab */
-.navbar-nav .nav-link.active[data-value='Area of Interest'] {
+/* Hover state */
+.navbar-nav a.nav-link[data-value="Area of Interest"]:hover {
+  background-color: #365E17 !important; /* A slightly darker green */
+  color: white !important;
+}
+
+/* Active state (when selected) */
+.navbar-nav a.nav-link.active[data-value="Area of Interest"] {
   background-color: white !important;
-  color: ##4B8320 !important;
+  color: #4B8320  !important;
+  border-bottom: 2px solid #4B8320  !important;
 }
 
-/* Hover for Area of Interest tab */
-.navbar-nav .nav-link:hover[data-value='Area of Interest'] {
-  background-color: #365E17 !important;
-  color: white !important;
-}
 
 /* Background for the nav-tabs container but NOT for the main navbar - light gray*/
 .navset-tab > .nav-tabs,
