@@ -14,22 +14,10 @@ preprocess_spatial_data <- function(data, dataset_name = NULL) {
   }
   
   tryCatch({
-    # Transform to WGS84 if needed
+   # Transform to WGS84 if needed
     if(!st_is_longlat(data)) {
       data <- st_transform(data, 4326)
     }
-    
-    # Remove Z & M dimensions
-    data <- st_zm(data)
-    
-    # Pre-calculate and store bounding box as attribute
-    attr(data, "bbox_precalc") <- st_bbox(data)
-    
-    # Store CRS information for quick reference
-    attr(data, "crs_checked") <- TRUE
-    
-    # Mark as preprocessed
-    attr(data, "preprocessed") <- TRUE
     
     return(data)
     
@@ -65,12 +53,12 @@ readRDS_preprocessed <- function(file, dataset_name = NULL) {
 }
 
 #' Check if data has been preprocessed
-#' 
+#'
 #' @param data An sf object to check
 #' @return Logical indicating if data has been preprocessed
 is_preprocessed <- function(data) {
   if(is.null(data)) return(FALSE)
-  
+
   preprocessed <- attr(data, "preprocessed")
   return(!is.null(preprocessed) && preprocessed == TRUE)
 }
