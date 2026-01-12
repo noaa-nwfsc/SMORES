@@ -5,6 +5,10 @@ format: html
 
 Here are some reminders and asked questions we have received about using the SMORES app. 
 
+## Q: I opened SMORES on the Posit Connect Server and the screen is just white, what do I do?
+
+A: SMORES takes a few minutes to load in the browser before the app main interface will appear. Loading of the application is usually between 1-3 minutes. If loading takes more than 10 minutes please leave a Github issue. 
+
 ## Q: What happens if I select `All Area` as the area of interest for the map to show data for?
 
 A: The app will crash the server environment it is in due to memory usage constraints. If you are looking for a smaller scale map (ie. a section of the West Coast) we recommend utilizing the included OCS planning areas to accomplish this. 
