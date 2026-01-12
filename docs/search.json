@@ -7,6 +7,13 @@
     "text": "Here are some reminders and asked questions we have received about using the SMORES app."
   },
   {
+    "objectID": "Questions.html#q-i-opened-smores-on-the-posit-connect-server-and-the-screen-is-just-white-what-do-i-do",
+    "href": "Questions.html#q-i-opened-smores-on-the-posit-connect-server-and-the-screen-is-just-white-what-do-i-do",
+    "title": "SMORES Frequently Asked Questions",
+    "section": "Q: I opened SMORES on the Posit Connect Server and the screen is just white, what do I do?",
+    "text": "Q: I opened SMORES on the Posit Connect Server and the screen is just white, what do I do?\nA: SMORES takes a few minutes to load in the browser before the app main interface will appear. Loading of the application is usually between 1-3 minutes. If loading takes more than 10 minutes please leave a Github issue."
+  },
+  {
     "objectID": "Questions.html#q-what-happens-if-i-select-all-area-as-the-area-of-interest-for-the-map-to-show-data-for",
     "href": "Questions.html#q-what-happens-if-i-select-all-area-as-the-area-of-interest-for-the-map-to-show-data-for",
     "title": "SMORES Frequently Asked Questions",
