@@ -16,6 +16,7 @@ website:
           - Methods.qmd
           - Functions.qmd
       - Data.qmd
+      - Questions.qmd 
   page-footer: 
     right: Made with [Quarto](https://quarto.org/)
 
