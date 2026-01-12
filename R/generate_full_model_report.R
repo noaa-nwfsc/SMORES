@@ -292,7 +292,6 @@ generate_full_model_report <- function(
   # Get the full model data and maps
   full_data <- combined_maps_data$full_model
   full_map <- combined_maps_data$full_map
-  full_map_cropped <- combined_maps_data$full_map_cropped
   
   # Render the full model report
   rmarkdown::render(
@@ -310,7 +309,6 @@ generate_full_model_report <- function(
       component_layer_details = component_layer_details,
       combined_maps_data = full_data,
       full_map = full_map,
-      full_map_cropped = full_map_cropped,
       data_timestamps = data_timestamps,
       aoi_data = aoi_data
     ),
