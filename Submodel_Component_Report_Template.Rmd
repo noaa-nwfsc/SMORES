@@ -5,7 +5,7 @@ output:
   html_document:
     theme:
       version: 5
-      brand: _brand.yml #removed to test compatibility in future can copy over in global.R
+      brand: _brand.yml
     toc: true
     toc_float: true
     self_contained: true
