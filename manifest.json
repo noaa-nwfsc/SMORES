@@ -5271,7 +5271,7 @@
   },
   "files": {
     ".RData": {
-      "checksum": "014c12d2c6d34fdead84fd8971a99c45"
+      "checksum": "c36247dc612490ff8b2721f36ae9fc1b"
     },
     ".RDataTmp": {
       "checksum": "0d85aa7653f1fe06f834fd0ccc79c3dd"
@@ -5319,7 +5319,7 @@
       "checksum": "de40fd02eae8979dc86b2f6dca204a34"
     },
     "data/canyon_scored_full.parquet": {
-      "checksum": "26f96836980268fa3dfafb81a849007a"
+      "checksum": "813fd6ad2f696620a2ab5d4a0bf0f4e9"
     },
     "data/CRAB_Ranked_Importance_scored_full.parquet": {
       "checksum": "d19eead873eb0d36ba375628b3d3ca68"
@@ -5406,13 +5406,13 @@
       "checksum": "44235dcd2d15b9a6532e57edc7ff04d6"
     },
     "data/WEA_OCS.parquet": {
-      "checksum": "1cb36be00d01471233b83bac5d95d16f"
+      "checksum": "63ddb5535034d268685b4917a5376288"
     },
     "data_production.R": {
-      "checksum": "1093bea8d27a03170c4307502065123b"
+      "checksum": "5cc8e6c449b7e481116305c8e9ed4dbb"
     },
     "Full_Model_Report_Template.Rmd": {
-      "checksum": "5fadfbb697ac3cd0adf4f3afd6899852"
+      "checksum": "4e6e80be9136505288681f6a1c03aeda"
     },
     "global.R": {
       "checksum": "2f9574ce1934775bb501bd9e7798e853"
@@ -5439,7 +5439,7 @@
       "checksum": "51210e035a02cf6c1fe3bce5b61477fd"
     },
     "markdown/data.md": {
-      "checksum": "17643c6a91e624cc42dbfd3defae7284"
+      "checksum": "fa5c1ed42f15eb78e4d4944be99f9295"
     },
     "markdown/fisheries.md": {
       "checksum": "93ecbd829558a86ff494cdb003436c51"
@@ -5451,10 +5451,10 @@
       "checksum": "a93c65af1cde3acd67aeb90e335555b7"
     },
     "markdown/methods.md": {
-      "checksum": "f86a262e4ffe8f5930854901cd671031"
+      "checksum": "4c6a48fbe7228ae812c5622a4a6985d6"
     },
     "markdown/overview.md": {
-      "checksum": "7dcded48f21d1ea07c1271e70099d806"
+      "checksum": "d5297824e5dd5e6e1395c3a8de507cc9"
     },
     "markdown/species.md": {
       "checksum": "0936dbabf615c15318307fb8f2d398f5"
@@ -5670,7 +5670,7 @@
       "checksum": "855d7c5fdedadcc3de9bf2ffb0c48a58"
     },
     "R/generate_area_of_interest_sidebar.R": {
-      "checksum": "50a9b2f0965314a45dffdc74aae05094"
+      "checksum": "8776f97340d5b3710f56fad269fabc65"
     },
     "R/generate_cables_sidebar.R": {
       "checksum": "a87d50b27855ddc52a5eac41e4be53f2"
@@ -5685,7 +5685,7 @@
       "checksum": "2d17353249cb72ab7978b2d4b2fcf290"
     },
     "R/generate_full_model_report.R": {
-      "checksum": "d6f64d667a0f556160fdacbe50809ef8"
+      "checksum": "c924ad5343327196c72ee0eed94df9ce"
     },
     "R/generate_full_model_sidebar.R": {
       "checksum": "4cbcde869f7cd3d3ed4b932cc1a5888f"
@@ -5724,7 +5724,7 @@
       "checksum": "cb8bd4822fb8011ae303d8a1ef1aa601"
     },
     "R/preprocess_spatial_data.R": {
-      "checksum": "037a8ad3cb17c4ecfe62d5930f87bed9"
+      "checksum": "e29d64d17f6c4127e11365a7c7a780df"
     },
     "R/sidebar_helpers.R": {
       "checksum": "39c9e5e1804623cc965928a4299ff46d"
@@ -5739,22 +5739,22 @@
       "checksum": "e1c96e3d326e51e8ad247a8926f2a4c3"
     },
     "server.R": {
-      "checksum": "b9bc978604b5a07615892d96bafd367b"
+      "checksum": "68ab41e545a311360a1e3072e308b118"
     },
     "Submodel_Combined_Report_Template.Rmd": {
       "checksum": "4275f203f7270c96c5f0918ec7bdde4e"
     },
     "Submodel_Component_Report_Template.Rmd": {
-      "checksum": "23ce27b39cd729021c41c69a993d3558"
+      "checksum": "4df5ec45fa79f592d1e3895307efe69d"
     },
     "ui.R": {
-      "checksum": "329c3fddcb2619011ac4ae148b97daf9"
+      "checksum": "6368e19d75e500d7c9b71bde10c2ae0a"
     },
     "www/logos/NOAA_FISHERIES_logoH.png": {
       "checksum": "958d958c7d7108909f27fa0e08e70007"
     },
     "www/styles.css": {
-      "checksum": "409345434bb94a8f68c25d420a376e0c"
+      "checksum": "bfacbb716b93f7e52944d8b065fcbfbc"
     }
   },
   "users": null
