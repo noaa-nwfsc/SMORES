@@ -27,7 +27,7 @@ A: The SMORES application [Github repository](https://github.com/noaa-nwfsc/SMOR
 
 ## Q: A new ocean use case has come to the attention of my team and we would like to use the SMORES app to help us investigate planning areas, how can we add our areas to the SMORES app?
 
-A: Please leave a Github issue?
+A: Please leave a Github issue.
 
 
 
