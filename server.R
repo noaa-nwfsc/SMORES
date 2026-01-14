@@ -987,7 +987,7 @@ function(input, output, session) {
         if(!is.null(combined_maps_data$species_lowest)) {
           combined_data_extracted$species_lowest <- combined_maps_data$species_lowest
         }
-        if(!is.null(combined_maps_data$habitat_product)) {
+        if(!is.null(combined_maps_data$species_product)) {
           combined_data_extracted$species_product <- combined_maps_data$species_product
         }
       }

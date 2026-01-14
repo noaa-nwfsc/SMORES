@@ -15,7 +15,7 @@ preprocess_spatial_data <- function(data, dataset_name = NULL) {
   
   tryCatch({
    # Transform to WGS84 if needed
-    if(!st_is_longlat(data)) {
+    if(!st_is_longlat(data) && st_crs(data) != st_crs(4326)) {
       data <- st_transform(data, 4326)
     }
     
