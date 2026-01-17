@@ -8,11 +8,11 @@ Welcome to the documentation guide for the SMORES Shiny App.
 
 # What does SMORES stand for?
 
-SMORES is an acronym for the Suitability Modeling for Offshore Resources and Energy Siting Shiny Application.
+SMORES is an acronym for the Suitability Modeling for Offshore Resources and Energy Siting.
 
 # Who is SMORES built for?
 
-SMORES was built for NOAA NMFS teams to be able to use as a fast and interactive tester for scenarios provided to BOEM during the energy use area siting process. The most recent example of this was when the West Coast NOAA offices were working together on the Oregon wind energy areas.
+SMORES was built in R Shiny for NOAA NMFS teams to be able to use as a fast and interactive tester for scenarios provided to BOEM during the energy use area siting process. The most recent example of this was when the West Coast NOAA offices were working together on the Oregon wind energy areas.
 
 Previously, teams worked relatively separately and would have a hard time quickly seeing how their scores would be impacted when combined with other teams (ie. protected habitat and industry). SMORES allows teams to enter their scores and see how the model would run when combined with other sets of scores.
 
