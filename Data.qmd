@@ -7,7 +7,7 @@ format: html
 
 ## Wind Energy Areas 
 
-**Brief Description**: Wind Energy Areas were derived from wind energy area boundaries off the coasts of California and Oregon from Bureau of Ocean Energy Management (BOEM). These data sources were filtered and merged to include the following wind energy areas: Morro Bay, Humboldt, Coos Bay, and Brookings. 
+**Brief Description**: Wind Energy Areas were derived from wind energy area boundaries off the coasts of California and Oregon obtained from the Bureau of Ocean Energy Management (BOEM). These data sources were filtered and merged to include the following wind energy areas: Morro Bay, Humboldt, Coos Bay, and Brookings. 
 
 **Accessed**:
 
@@ -19,7 +19,7 @@ Draft Oregon Wind Energy Area Boundaries: [Link](https://www.boem.gov/renewable-
 
 ## OCS Planning Area 
 
-**Brief Description**: Planning areas are used to support mostly the National Oil and Gas Program but also other BOEM Programs consisting of a schedule of lease sales indicating the size, timing and location of proposed leasing activity the Secretary of Interior determines will best meet national energy needs. For oil and gas lease sales the Program covers a five year period following its approval, and an area must be included in the current 5-Year Program in order to be offered for leasing. Section 18 of the OCS Lands Act prescribes the major steps involved in developing a 5-Year Program including extensive public comment steps. These polygons are clipped to the Submerged Land Act Boundary and Continental Shelf Boundaries. These data were subset to only include planning areas that occurred in California, Oregon, and Washington. 
+**Brief Description**: Planning areas are used to support mostly the National Oil and Gas Program but also other BOEM Programs consisting of a schedule of lease sales indicating the size, timing, and location of proposed leasing activity the Secretary of Interior determines will best meet national energy needs. For oil and gas lease sales, the Program covers a five year period following its approval, and an area must be included in the current 5-Year Program in order to be offered for leasing. Section 18 of the OCS Lands Act prescribes the major steps involved in developing a 5-Year Program, including extensive public comment periods. These polygons are clipped to the Submerged Land Act Boundary and Continental Shelf Boundaries. These data were subsetted to only include planning areas that occurred in California, Oregon, and Washington. 
 
 **Accessed**: [Marine Cadastre](https://hub.marinecadastre.gov/datasets/BOEM::ocs-planning-area-polygons/about){target="_blank"}
 
@@ -43,14 +43,14 @@ Draft Oregon Wind Energy Area Boundaries: [Link](https://www.boem.gov/renewable-
 ## Deep Sea Coral Robust High Suitability
 
 **Brief Description**: Two data products on deep-sea coral and sponges
-were considered: 1) NOAA National Database for Deep-Sea Corals and Sponges focuses on occurrences within the United States Exclusive Economic Zone (McGuinn et al. 2020), and 2) BOEM-funded Cross-Shelf Habitat Suitability Modeling of Coral and Sponge Habitat Suitability provides spatial predictions of relative habitat suitability for a number of coral and sponge taxa (Poti et al. 2020). Since the national database only represents where surveys have occurred and does not include absence records, we felt the predicted habitat suitability products better represent the potential distributions of these important biogenic habitat-forming organisms. In order to examine patterns of habitat suitability across multiple taxa, the Poti et al. (2020) study developed two aggregate products, both of which we felt would be most useful to the NCCOS model: 1) Number of deep-sea coral taxa associated with hard substrate that were predicted to have high habitat suitability, and 2) Number of deep-sea coral taxa associated with hard substrate that were predicted to have robust-high habitat suitability. Instead of integrating habitat suitability models for individual taxa, these two aggregate products show the number of taxa predicted to have high or robust-high habitat suitability, respectively, for each grid cell. We specified the robust-high product to be a constraint in the model, with the more inclusive high habitat suitability product to be considered as an alternative. The aggregate products exclude sea pens because most sea pen species do not associate with hard substrate, and exclude sponges due to the low taxonomic specificity, and consequent broad substrate affinities, of input records. Like many deep-sea corals, some sponges, especially glass sponges (e.g., Heterochone calyx) provide structural habitat for other organisms including some groundfishes. These structure-forming sponges are also vulnerable to mechanical damage. We advise that 158 NCCOS consider including individual structure-forming sponge habitat suitability products from Poti et al. in future model runs. Rescaling was conducted sing the fuzzy logic Z-shaped
+were considered: 1) NOAA National Database for Deep-Sea Corals and Sponges focuses on occurrences within the United States Exclusive Economic Zone (McGuinn et al. 2020), and 2) BOEM-funded Cross-Shelf Habitat Suitability Modeling of Coral and Sponge Habitat provides spatial predictions of relative habitat suitability for a number of coral and sponge taxa (Poti et al. 2020). Since the national database only represents where surveys have occurred and does not include absence records, we felt the predicted habitat suitability products better represent the potential distributions of these important biogenic habitat-forming organisms. In order to examine patterns of habitat suitability across multiple taxa, the Poti et al. (2020) study developed two aggregate products, both of which we felt would be most useful to the NCCOS model: 1) Number of deep-sea coral taxa associated with hard substrate that were predicted to have high habitat suitability, and 2) Number of deep-sea coral taxa associated with hard substrate that were predicted to have robust-high habitat suitability. Instead of integrating habitat suitability models for individual taxa, these two aggregate products show the number of taxa predicted to have high or robust-high habitat suitability, respectively, for each grid cell. We specified the robust-high product to be a constraint in the model, with the more inclusive high habitat suitability product to be considered as an alternative. The aggregate products exclude sea pens because most sea pen species do not associate with hard substrate, and exclude sponges due to the low taxonomic specificity, and consequent broad substrate affinities, of input records. Like many deep-sea corals, some sponges, especially glass sponges (e.g., Heterochone calyx) provide structural habitat for other organisms including some groundfishes. These structure-forming sponges are also vulnerable to mechanical damage. We advise that NCCOS consider including individual structure-forming sponge habitat suitability products from Poti et al. in future model runs. Rescaling was conducted using the fuzzy logic Z-shaped
 membership function from 0.0–1
 
 **Citation**: Poti et al. 2020. https://espis.boem.gov/final%20reports/BOEM_2020-021.pdf
 
 ## Seeps
 
-**Brief Description**: Methane bubble streams identified during multibeam sonar surveys often indicate the location of methane seeps and associated seep communities on the seafloor. We curated data layers from recent publications that summarize the point locations of these bubble streams. Recent remotely operated vehicle (ROV) surveys have confirmed active gas venting on the seafloor for some of these locations, as well as the presence of methane seep communities. 
+**Brief Description**: Methane bubble streams identified during multibeam sonar surveys often indicate the location of active methane seeps and associated seep communities on the seafloor. We curated data layers from recent publications that summarize the point locations of these bubble streams. Recent remotely operated vehicle (ROV) surveys have confirmed active gas venting on the seafloor for some of these locations, as well as the presence of methane seep communities. 
 
 **Accessed**: Unpublished
 
@@ -60,7 +60,7 @@ membership function from 0.0–1
 
 ## Shelf Break
 
-**Brief Description**: The continental shelf break is a physiographic feature tht is sometimes represented as a particular isobath but is more appropriately delineated from geophysical data. The Goldfinger et al. 2014 Surficial Geologic Habitat v.4.0 layer to be the boundary between continental "shelf" and "slope" physiographic habitat types. The line between these polygons was extracted and buffered by 10-km on either side. 
+**Brief Description**: The continental shelf break is a physiographic feature that is sometimes represented as a particular isobath but is more appropriately delineated from geophysical data. We extracted the line feature representing the boundary between the "shelf" and "slope" physiographic classes from the Goldfinger et al. 2014 Surficial Geologic Habitat v.4.0 layer. The line between these polygons was extracted and buffered by 10-km on either side. 
 
 **Accessed**: 
 
@@ -71,7 +71,7 @@ Surficial Geologic Habitat v.4.0; https://www.boem.gov/sites/default/files/envir
 
 ## EFHCA
 
-**Brief Description**: Shapefiles depicting boundaries  of EFH conservation areas. These shapefiles are not legal boundaries but are rather geospatial representations of what is published in the Code of Federal Regulations (50 CFR 660)
+**Brief Description**: Shapefile depicting boundaries of EFH conservation areas. This shapefile is not a legal boundary but is rather a geospatial representation of what is published in the Code of Federal Regulations (50 CFR 660).
 
 **Accessed**: The can be accessed via the NMFS EFH resource [site](https://www.fisheries.noaa.gov/resource/map/essential-fish-habitat-groundfish-and-salmon){target="_blank"}. 
 
@@ -81,7 +81,7 @@ Surficial Geologic Habitat v.4.0; https://www.boem.gov/sites/default/files/envir
 
 ## EFHCA 700 fathoms
 
-**Brief Description**
+**Brief Description**: Shapefile depicting boundary of the "Seaward of the 700-fm bottom trawl closure" EFH conservation area. This shapefile is not a legal boundary but is rather a geospatial representation of what is published in the Code of Federal Regulations (50 CFR 660).
 
 **Accessed**
 
@@ -107,7 +107,7 @@ Off of California: all seamounts, including Gumdrop Seamount, Pioneer Seamount, 
 
 ## HAPC Rocky Reef
 
-**Brief Description**: Habitat Areas of Particular Concern Rocky Reefs. The rocky reefs HAPC includes those waters, substrates and other biogenic features associated with hard substrate (bedrock, boulders, cobble, gravel, etc.) to MHHW. A first approximation of its extent is provided by the substrate data in the groundfish EFH assessment GIS. 
+**Brief Description**: Habitat Areas of Particular Concern Rocky Reefs. The rocky reefs HAPC includes those waters, substrates and other biogenic features associated with hard substrate (bedrock, boulders, cobble, gravel, etc.) to MHHW. 
 
 **Accessed**: 
 
@@ -263,7 +263,9 @@ For the four trawl fisheries, NMFS and ODFW calculated the regions where the top
 
 ## Fixed Surveys
 
-**Brief Description**
+**Brief Description**: This data product is intended to help communicate the geographic extent and operations of NOAA Fisheries offshore ship-based scientific surveys along the U.S. west coast (California, Oregon, Washington). NOAA Fisheries conducts numerous scientific surveys to inform the status of fish stocks and protected resources. For the West Coast Region, more than a dozen surveys are conducted routinely across the continental margin, focusing either on pelagic or demersal species or the ecosystem as a whole. These surveys collect a variety of biological and environmental data to provide a synoptic view of the habitats and ecosystems for which the target species inhabit. The surveys utilize varying designs including fixed stations where a number of operations are centered, transect lines where fishery acoustic data are continually collected, and stratified random sampling, to name a few.
+
+Fixed surveys are defined by NOAA Fisheries as those with fixed station designs, where sampling occurs at the same locations across the time frame of the survey. Survey locations (points) and transects (lines) were bufferred to represent the effective sampling area for these stations and transects.
 
 **Accessed**
 
@@ -273,7 +275,9 @@ For the four trawl fisheries, NMFS and ODFW calculated the regions where the top
 
 ## Periodic Surveys
 
-**Brief Description**
+**Brief Description**: This data product is intended to help communicate the geographic extent and operations of NOAA Fisheries offshore ship-based scientific surveys along the U.S. west coast (California, Oregon, Washington). NOAA Fisheries conducts numerous scientific surveys to inform the status of fish stocks and protected resources. For the West Coast Region, more than a dozen surveys are conducted routinely across the continental margin, focusing either on pelagic or demersal species or the ecosystem as a whole. These surveys collect a variety of biological and environmental data to provide a synoptic view of the habitats and ecosystems for which the target species inhabit. The surveys utilize varying designs including fixed stations where a number of operations are centered, transect lines where fishery acoustic data are continually collected, and stratified random sampling, to name a few.
+
+Periodic surveys are defined by NOAA Fisheries as those with random station designs, where sampling occurs periodically or at randomly-selected locations across the survey domain.
 
 **Accessed**
 
@@ -285,7 +289,7 @@ For the four trawl fisheries, NMFS and ODFW calculated the regions where the top
 
 ## Submarine Cables
 
-**Brief Description**: These data show the general location of commercial and research submarine cables within U.S. waters. The majority of these cables are for telecommunications, and the remaining are for power transmission. The geographic footprint for each cable may vary and is dependent on the original source data. In the near shore, cables are routinely buried below the seabed. Offshore, they are placed directly on the seabed. A submarine cable area may contain one or more physical cables, and 30 CFR 585.301 defines a minimum 100-foot-wide right of way grant on each side of a cable.
+**Brief Description**: These data show the general location of commercial and research submarine cables within U.S. waters. The majority of these cables are for telecommunications, and the remaining are for power transmission. The geographic footprint for each cable may vary and is dependent on the original source data. In the near shore, cables are routinely buried below the seabed. Offshore, below a certain water depth, they are placed directly on the seabed. A submarine cable area may contain one or more physical cables, and 30 CFR 585.301 defines a minimum 100-foot-wide right of way grant on each side of a cable.
 
 **Accessed**: [Marine Cadastre](https://hub.marinecadastre.gov/datasets/noaa::submarine-cables/about){target="_blank"}, [ArcGIS Rest Service](https://coast.noaa.gov/arcgis/rest/services/Hosted/SubmarineCables/FeatureServer){target="_blank"}
 
