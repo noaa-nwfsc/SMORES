@@ -22,15 +22,15 @@ Submodel components are the subgroups of each submodel. These are the result of 
 
 - **Submodels**
 
-Submodels are the result from combining submodel components. An example of a submodel for the application would be the natural resources submodel which is made up of two submodel components: habitat, and species. 
+Submodels are the result from combining submodel components. An example of a submodel for the application would be the natural resources submodel, which is made up of two submodel components: habitat and species. 
 
 - **Full Model**
 
-The full model is the result of combining submodels. In the application you can choose which submodels you would like to have included in the full model. 
+The full model is the result of combining submodels. In the application you can choose which submodels you would like to include in the full model. 
 
 ## Pre-processing 
 
-To generate an individual data layer data sources are processed before they are loaded into the app. This pre-processing step ensures that data layers are in the correct coordinate reference system, overlaid with the grid, and ready to be digested by the application. Pre-processing is done with two main files. [Data_productions.R](https://github.com/noaa-nwfsc/SMORES/blob/main/data_production.R){target="_blank"} prepares the raw data files while [preprocess_spatial_data()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/preprocess_spatial_data.R){target="_blank"} prepares the files for application compatibility. The key steps that are taken by these functions are the following:
+To generate an individual data layer, data sources are processed before they are loaded into the app. This pre-processing step ensures that data layers are in the correct coordinate reference system, overlaid with the grid, and ready to be digested by the application. Pre-processing is done with two main files. [Data_productions.R](https://github.com/noaa-nwfsc/SMORES/blob/main/data_production.R){target="_blank"} prepares the raw data files while [preprocess_spatial_data()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/preprocess_spatial_data.R){target="_blank"} prepares the files for application compatibility. The key steps that are taken by these functions are the following:
 
 - 2 km grid for the west coast of the United States is accessed
 
@@ -40,7 +40,7 @@ To generate an individual data layer data sources are processed before they are 
 
 - New columns are made for each value a user might select and grid cells are populated with these values
 
-- Data frame is pivoted to the long format so that each grid cell has a list of values available to it if the grid cell had a presence of data
+- Data frame is pivoted to the long format so that each grid cell has a list of values available to it if the grid cell intersected any individual layers
 
 - Data is transformed to be in the WGS 84 coordinate system for compatibility with [leaflet()](https://leafletjs.com/){target="_blank"} mapping
 
@@ -50,11 +50,11 @@ Data is now prepared to be loaded into the application.
 
 ## Score Options
 
-One of the main goals of the SMORES application was to allow for NMFS to model the impacts of different scoring scenarios before recommending scoring scenarios to BOEM. In order to achieve this different individual layers within the app have score drop down menus to allow for different score selection options. Based on how data were created and the best practices for that data type individual layers have three options for the scores presented: static, z-membership, and ranked importance. 
+One of the main goals of the SMORES application was to allow for NMFS to model the impacts of different scoring scenarios before recommending scoring scenarios to BOEM. In order to achieve this, different individual layers within the app have score drop down menus to allow for different score selection options. Based on how data were created and the best practices for that data type, individual layers have three options for the scores presented: static, z-membership, and ranked importance. 
 
 ### Static Score
 
-Static scored data is selected when data are represented with a single value (ie. 0, 0.9, etc.). These data represent the presence of a feature for each individual layer for a given 2x2-km cell. Cells are assigned values between 0 to 1 with a step of 0.1, or values to represent constraints such as 0.01, or 0.001. Values are determined by the individual who is running model scenarios. Cells that do not have a feature present for that individual layer are assigned a score of 1, based off of the methods used in the [Aquaculture Opportunity Area Atlas for the Southern California Bight](https://coastalscience.noaa.gov/data_reports/an-aquaculture-opportunity-area-atlas-for-the-southern-california-bight/){target="_blank"}. To determine the value used as a layers score there are scoring recommendations and guidelines from the Oregon siting exercise presented on the application for the component that is being viewed (ie. recommended species scores are shown on the species sub-tab of the natural resource submodel).
+Static scored data is selected when data are represented with a single value (i.e. 0, 0.9, etc.). These data represent the presence of a feature for each individual layer for a given 2x2-km cell. Cells are assigned values between 0 to 1 with a step of 0.1, or values to represent constraints such as 0.01 or 0.001. Values are determined by the individual who is running model scenarios. Cells that do not have a feature present for that individual layer are assigned a score of 1, based off of the methods used in the [Aquaculture Opportunity Area Atlas for the Southern California Bight](https://coastalscience.noaa.gov/data_reports/an-aquaculture-opportunity-area-atlas-for-the-southern-california-bight/){target="_blank"}. To determine which value to use as a score, there are scoring recommendations and guidelines from the Oregon Wind Energy siting exercise presented on the application for the component that is being viewed (i.e. recommended species scores are shown on the species sub-tab of the natural resource submodel).
 
 ### Z-Membership
 
