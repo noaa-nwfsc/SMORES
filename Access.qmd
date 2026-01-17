@@ -11,7 +11,7 @@ The SMORES app is currently accessible on the NOAA NMFS Posit Connect Test Insta
 
 # What is the NOAA NMFS Posit Connect Test Instance?
 
-Posit Connect is a publishing platform for R and Python-associated products. Products can be hosted publicly or internally, accessible to NOAA only.
+Posit Connect is a publishing platform for R and Python-associated products. Products can be hosted publicly or internally, accessible to NOAA staff only.
 
 # How do I get onto the Posit Connect Test Instance to use the app?
 
