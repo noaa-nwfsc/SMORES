@@ -42,11 +42,12 @@ Draft Oregon Wind Energy Area Boundaries: [Link](https://www.boem.gov/renewable-
 
 ## Deep Sea Coral Robust High Suitability
 
-**Brief Description**: Two data products on deep-sea coral and sponges
-were considered: 1) NOAA National Database for Deep-Sea Corals and Sponges focuses on occurrences within the United States Exclusive Economic Zone (McGuinn et al. 2020), and 2) BOEM-funded Cross-Shelf Habitat Suitability Modeling of Coral and Sponge Habitat provides spatial predictions of relative habitat suitability for a number of coral and sponge taxa (Poti et al. 2020). Since the national database only represents where surveys have occurred and does not include absence records, we felt the predicted habitat suitability products better represent the potential distributions of these important biogenic habitat-forming organisms. In order to examine patterns of habitat suitability across multiple taxa, the Poti et al. (2020) study developed two aggregate products, both of which we felt would be most useful to the NCCOS model: 1) Number of deep-sea coral taxa associated with hard substrate that were predicted to have high habitat suitability, and 2) Number of deep-sea coral taxa associated with hard substrate that were predicted to have robust-high habitat suitability. Instead of integrating habitat suitability models for individual taxa, these two aggregate products show the number of taxa predicted to have high or robust-high habitat suitability, respectively, for each grid cell. We specified the robust-high product to be a constraint in the model, with the more inclusive high habitat suitability product to be considered as an alternative. The aggregate products exclude sea pens because most sea pen species do not associate with hard substrate, and exclude sponges due to the low taxonomic specificity, and consequent broad substrate affinities, of input records. Like many deep-sea corals, some sponges, especially glass sponges (e.g., Heterochone calyx) provide structural habitat for other organisms including some groundfishes. These structure-forming sponges are also vulnerable to mechanical damage. We advise that NCCOS consider including individual structure-forming sponge habitat suitability products from Poti et al. in future model runs. Rescaling was conducted using the fuzzy logic Z-shaped
-membership function from 0.0–1
+**Brief Description**: BOEM-funded Cross-Shelf Habitat Suitability Modeling of Coral and Sponge Habitat provides spatial predictions of relative habitat suitability for a number of coral and sponge taxa (Poti et al. 2020). In order to examine patterns of habitat suitability across multiple taxa, the Poti et al. (2020) study developed two aggregate products, both of which we felt would be most useful to the NCCOS model: 1) Number of deep-sea coral taxa associated with hard substrate that were predicted to have high habitat suitability, and 2) Number of deep-sea coral taxa associated with hard substrate that were predicted to have robust-high habitat suitability. Instead of integrating habitat suitability models for individual taxa, these two aggregate products show the number of taxa predicted to have high or robust-high habitat suitability, respectively, for each grid cell. The Robust High data product is available within this application. The aggregate products exclude sea pens because most sea pen species do not associate with hard substrate, and exclude sponges due to the low taxonomic specificity, and consequent broad substrate affinities, of input records. Like many deep-sea corals, some sponges, especially glass sponges (e.g., Heterochone calyx) provide structural habitat for other organisms including some groundfishes. Rescaling was conducted using the fuzzy logic Z-shaped
+membership function from 0.0–1.
 
-**Citation**: Poti et al. 2020. https://espis.boem.gov/final%20reports/BOEM_2020-021.pdf
+**Accessed**: [ArcGIS Rest Service](https://gis.ngdc.noaa.gov/arcgis/rest/services/nccos/USWestCoast_DeepSeaCoralsSponges/MapServer/256){target="_blank"}
+
+**Citation**: National Oceanic and Atmospheric Adminstration (NOAA) National Centers for Coastal Ocean Science (NCCOS)
 
 ## Seeps
 
@@ -73,7 +74,7 @@ Surficial Geologic Habitat v.4.0; https://www.boem.gov/sites/default/files/envir
 
 **Brief Description**: Shapefile depicting boundaries of EFH conservation areas. This shapefile is not a legal boundary but is rather a geospatial representation of what is published in the Code of Federal Regulations (50 CFR 660).
 
-**Accessed**: The can be accessed via the NMFS EFH resource [site](https://www.fisheries.noaa.gov/resource/map/essential-fish-habitat-groundfish-and-salmon){target="_blank"}. 
+**Accessed**: NMFS EFH resource [site](https://www.fisheries.noaa.gov/resource/map/essential-fish-habitat-groundfish-and-salmon){target="_blank"}. 
 
 **Units**
 
