@@ -1,4 +1,4 @@
-get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colors, filter_by_score, base_grid = NULL) {
+get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colors, filter_by_score, base_grid = NULL, include_data = TRUE) {
   valid_configs <- list()
   index <- 1
   
@@ -22,25 +22,36 @@ get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colo
         
         if(!is.null(score_value) && score_value != "None") {
           
-          # Special handling for DSC layer with Z Membership
-          if(layer_name == "Deep Sea Coral Robust High Suitability") {
-            if(score_value == "Z Membership") {
-              # Use the Z membership dataset and create continuous color palette
-              filtered_data <- filter_by_score(DSC_RH_z_membership, score_value, grid_test, layer_name)
-              score_color <- "continuous"  # Flag for continuous coloring
-              color_palette <- create_continuous_palette(filtered_data, "z_membership")
-            } else {
-              # Use the regular scored dataset
-              filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
-              score_color <- score_colors[[score_value]]
-              color_palette <- NULL
-            }
-          } else {
-            # For all other layers, use regular processing
-            filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
+          # Initialize placeholders
+          filtered_data <- NULL
+          color_palette <- NULL
+          score_color <- NULL
+          
+          # Determine score color (lightweight operation)
+          if(layer_name != "Deep Sea Coral Robust High Suitability" || score_value != "Z Membership") {
             score_color <- score_colors[[score_value]]
-            color_palette <- NULL
+          } else {
+            score_color <- "continuous"
           }
+          
+          # --- ONLY LOAD DATA IF REQUESTED ---
+          if(include_data) {
+            # Special handling for DSC layer with Z Membership
+            if(layer_name == "Deep Sea Coral Robust High Suitability") {
+              if(score_value == "Z Membership") {
+                # Use the Z membership dataset and create continuous color palette
+                filtered_data <- filter_by_score(DSC_RH_z_membership, score_value, grid_test, layer_name)
+                color_palette <- create_continuous_palette(filtered_data, "z_membership")
+              } else {
+                # Use the regular scored dataset
+                filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
+              }
+            } else {
+              # For all other layers, use regular processing
+              filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
+            }
+          }
+          # -----------------------------------
           
           # Add to valid configs
           valid_configs[[length(valid_configs) + 1]] <- list(
@@ -48,7 +59,7 @@ get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colo
             layer = layer_name,
             score = score_value,
             color = score_color,
-            color_palette = color_palette,  # Add this for continuous coloring
+            color_palette = color_palette,
             data = filtered_data
           )
           
@@ -78,8 +89,15 @@ get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colo
           # Get score color
           score_color <- score_colors[[score_value]]
           
-          # Filter data by score
-          filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
+          # Initialize placeholders
+          filtered_data <- NULL
+          
+          # --- ONLY LOAD DATA IF REQUESTED ---
+          if(include_data) {
+            # Filter data by score
+            filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
+          }
+          # -----------------------------------
           
           # Add to valid configs
           valid_configs[[length(valid_configs) + 1]] <- list(
@@ -113,31 +131,44 @@ get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colo
         
         if(!is.null(score_value) && score_value != "None") {
           
-          # Handle conditional dataset selection for fisheries layers
+          # Initialize placeholders
+          filtered_data <- NULL
+          color_palette <- NULL
+          score_color <- NULL
+          
+          # Determine score color (lightweight)
           if(score_value == "Ranked Importance") {
-            # Use the ranked importance dataset
-            dataset_to_use <- switch(layer_name,
-                                     "At-Sea Hake Mid-Water Trawl" = ASH_ranked_importance,
-                                     "Shoreside Hake Mid-Water Trawl" = SSH_ranked_importance,
-                                     "Groundfish Bottom Trawl" = GFBT_ranked_importance,
-                                     "Groundfish Pot Gear" = GFP_ranked_importance,
-                                     "Groundfish Long Line Gear" = GFLL_ranked_importance,
-                                     "Pink Shrimp Trawl" = PS_ranked_importance,
-                                     "Dungeness Crab" = CRAB_ranked_importance,
-                                     "Commercial Troll/Hook and Line Albacore" = ALCO_ranked_importance,
-                                     "Charter Vessel Albacore Troll/Hook and Line" = ALCH_ranked_importance,
-                                     layer_data[[layer_name]]  # fallback to original if no match
-            )
-            # Pass "Ranked Importance" as the selected_score parameter
-            filtered_data <- filter_by_score(dataset_to_use, score_value, grid_test, layer_name)
-            score_color <- "continuous"  # Flag for continuous coloring
-            color_palette <- create_continuous_palette(filtered_data, score_type = "ranked_importance", layer_name = "ranked_importance")
+            score_color <- "continuous"
           } else {
-            # For discrete scores (0, 0.01, 0.001), use the regular dataset
-            filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
             score_color <- score_colors[[score_value]]
-            color_palette <- NULL
           }
+          
+          # --- ONLY LOAD DATA IF REQUESTED ---
+          if(include_data) {
+            # Handle conditional dataset selection for fisheries layers
+            if(score_value == "Ranked Importance") {
+              # Use the ranked importance dataset
+              dataset_to_use <- switch(layer_name,
+                                       "At-Sea Hake Mid-Water Trawl" = ASH_ranked_importance,
+                                       "Shoreside Hake Mid-Water Trawl" = SSH_ranked_importance,
+                                       "Groundfish Bottom Trawl" = GFBT_ranked_importance,
+                                       "Groundfish Pot Gear" = GFP_ranked_importance,
+                                       "Groundfish Long Line Gear" = GFLL_ranked_importance,
+                                       "Pink Shrimp Trawl" = PS_ranked_importance,
+                                       "Dungeness Crab" = CRAB_ranked_importance,
+                                       "Commercial Troll/Hook and Line Albacore" = ALCO_ranked_importance,
+                                       "Charter Vessel Albacore Troll/Hook and Line" = ALCH_ranked_importance,
+                                       layer_data[[layer_name]]  # fallback to original if no match
+              )
+              # Pass "Ranked Importance" as the selected_score parameter
+              filtered_data <- filter_by_score(dataset_to_use, score_value, grid_test, layer_name)
+              color_palette <- create_continuous_palette(filtered_data, score_type = "ranked_importance", layer_name = "ranked_importance")
+            } else {
+              # For discrete scores (0, 0.01, 0.001), use the regular dataset
+              filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
+            }
+          }
+          # -----------------------------------
           
           # Add to valid configs
           valid_configs[[length(valid_configs) + 1]] <- list(
@@ -174,8 +205,15 @@ get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colo
           # Get score color
           score_color <- score_colors[[score_value]]
           
-          # Filter data by score
-          filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
+          # Initialize placeholders
+          filtered_data <- NULL
+          
+          # --- ONLY LOAD DATA IF REQUESTED ---
+          if(include_data) {
+            # Filter data by score
+            filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
+          }
+          # -----------------------------------
           
           # Add to valid configs
           valid_configs[[length(valid_configs) + 1]] <- list(
@@ -212,8 +250,15 @@ get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colo
           # Get score color
           score_color <- score_colors[[score_value]]
           
-          # Filter data by score
-          filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
+          # Initialize placeholders
+          filtered_data <- NULL
+          
+          # --- ONLY LOAD DATA IF REQUESTED ---
+          if(include_data) {
+            # Filter data by score
+            filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
+          }
+          # -----------------------------------
           
           # Add to valid configs
           valid_configs[[length(valid_configs) + 1]] <- list(
@@ -250,11 +295,21 @@ get_valid_configs_for_tab <- function(input, current_tab, layer_data, score_colo
           # Get score color
           score_color <- score_colors[[score_value]]
           
-          # Filter data by score
+          # Initialize placeholders
+          filtered_data <- NULL
+          
+          # --- ONLY LOAD DATA IF REQUESTED ---
+          if(include_data) {
+            # Filter data by score
+            if(layer_name %in% names(layer_data)) {
+              filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
+            }
+          }
+          # -----------------------------------
+          
+          # Add to valid configs
+          # Ensure layer exists before adding
           if(layer_name %in% names(layer_data)) {
-            filtered_data <- filter_by_score(layer_data[[layer_name]], score_value, grid_test, layer_name)
-            
-            # Add to valid configs
             valid_configs[[length(valid_configs) + 1]] <- list(
               index = index,
               layer = layer_name,

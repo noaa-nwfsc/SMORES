@@ -272,6 +272,21 @@ function(input, output, session) {
     return(configs)
   })
   
+  # Metadata-Only Reactive for Natural Resources UI
+  natural_resources_valid_configs_metadata <- reactive({
+    is_natural_resources <- (!is.null(input$dataTabs_natural_resources) && 
+                               input$dataTabs_natural_resources %in% c("habitat", "species", "combined_model_natural_resources")) ||
+      (!is.null(input$navbar) && input$navbar == "Natural Resources Submodel")
+    
+    if(!is_natural_resources) return(list())
+    
+    current_tab <- input$dataTabs_natural_resources %||% "habitat"
+    layer_data <- switch(current_tab, "habitat" = habitat_layer, "species" = species_layer, NULL)
+    
+    # Call with include_data = FALSE to skip heavy spatial processing
+    get_valid_configs_for_tab(input, current_tab, layer_data, score_colors, filter_by_score, grid_test, include_data = FALSE)
+  })
+  
   # Reactive expression for Fisheries tab valid configs
   fisheries_valid_configs <- reactive({
     
@@ -296,6 +311,21 @@ function(input, output, session) {
     configs <- get_valid_configs_for_tab(input, current_tab_fisheries, layer_data, score_colors, filter_by_score, grid_test)
     
     return(configs)
+  })
+  
+  # Metadata-Only Reactive for Fisheries UI
+  fisheries_valid_configs_metadata <- reactive({
+    is_fisheries <- (!is.null(input$dataTabs_fisheries) && 
+                       input$dataTabs_fisheries %in% c("fisheries", "trawl", "combined_model_fisheries")) ||
+      (!is.null(input$navbar) && input$navbar == "Fisheries Submodel")
+    
+    if(!is_fisheries) return(list())
+    
+    current_tab <- input$dataTabs_fisheries %||% "fisheries"
+    layer_data <- switch(current_tab, "fisheries" = fisheries_layer, "trawl" = trawl_fisheries_layer, NULL)
+    
+    # Call with include_data = FALSE to skip heavy spatial processing
+    get_valid_configs_for_tab(input, current_tab, layer_data, score_colors, filter_by_score, grid_test, include_data = FALSE)
   })
   
   # Reactive expression for Industry & Operations tab valid configs
@@ -324,6 +354,21 @@ function(input, output, session) {
     configs <- get_valid_configs_for_tab(input, current_tab_industry_operations, layer_data, score_colors, filter_by_score, grid_test)
     
     return(configs)
+  })
+  
+  # 3. Metadata-Only Reactive for Industry & Operations UI
+  industry_operations_valid_configs_metadata <- reactive({
+    is_industry_operations <- (!is.null(input$dataTabs_industry_operations) && 
+                                 input$dataTabs_industry_operations %in% c("surveys", "cables", "combined_model_industry_operations")) ||
+      (!is.null(input$navbar) && input$navbar == "Industry & Operations Submodel")
+    
+    if(!is_industry_operations) return(list())
+    
+    current_tab <- input$dataTabs_industry_operations %||% "surveys"
+    layer_data <- switch(current_tab, "surveys" = surveys_layer, "cables" = submarine_cables_layer, NULL)
+    
+    # Call with include_data = FALSE to skip heavy spatial processing
+    get_valid_configs_for_tab(input, current_tab, layer_data, score_colors, filter_by_score, grid_test, include_data = FALSE)
   })
   
   # Natural Resources maps 
@@ -669,7 +714,7 @@ function(input, output, session) {
   
   # Multiple maps container for habitat
   output$multipleMapsContainer_habitat <- renderUI({
-    valid_configs <- natural_resources_valid_configs()
+    valid_configs <- natural_resources_valid_configs_metadata()
     selected_methods <- input$habitatCalculationMethods %||% character(0)
     
     create_maps_container(
@@ -839,9 +884,9 @@ function(input, output, session) {
   
   # Multiple maps container for species
   output$multipleMapsContainer_species <- renderUI({
-    valid_configs <- natural_resources_valid_configs()
+    valid_configs <- natural_resources_valid_configs_metadata()
     selected_methods <- input$speciesCalculationMethods %||% character(0)
-    
+
     create_maps_container(
       configs = valid_configs,
       namespace = "naturalresources",
@@ -1008,11 +1053,14 @@ function(input, output, session) {
   
   # Multiple maps container for fisheries
   output$multipleMapsContainer_fisheries <- renderUI({
-    valid_configs <- fisheries_valid_configs()
+    
+    # Get the full configuration (list with data for individual maps) which holds the large spatial objects in memory because they are needed for the maps
+    valid_configs <- fisheries_valid_configs_metadata()
     selected_methods <- input$fisheriesCalculationMethods %||% character(0)
     
+    # Pass the LIGHTWEIGHT list to the container generator 
     create_maps_container(
-      configs = valid_configs,
+      configs = valid_configs, 
       namespace = "fisheries",
       combined_map_output_id = "combinedFisheriesMap",
       combined_map_generated = combined_maps_data$fisheries_combined_map_generated,
@@ -1177,7 +1225,7 @@ function(input, output, session) {
   
   # Multiple maps container for trawl fisheries
   output$multipleMapsContainer_trawl <- renderUI({
-    valid_configs <- fisheries_valid_configs()
+    valid_configs <- fisheries_valid_configs_metadata()
     selected_methods <- input$trawlCalculationMethods %||% character(0)
     
     create_maps_container(
@@ -1346,7 +1394,7 @@ function(input, output, session) {
   
   # Multiple maps container for surveys
   output$multipleMapsContainer_surveys <- renderUI({
-    valid_configs <- industry_operations_valid_configs()
+    valid_configs <- industry_operations_valid_configs_metadata()
     selected_methods <- input$surveysCalculationMethods %||% character(0)
     
     create_maps_container(
@@ -1516,7 +1564,7 @@ function(input, output, session) {
   
   # Multiple maps container for cables
   output$multipleMapsContainer_cables <- renderUI({
-    valid_configs <- industry_operations_valid_configs()
+    valid_configs <- industry_operations_valid_configs_metadata()
     selected_methods <- input$cablesCalculationMethods %||% character(0)
     
     create_maps_container(
