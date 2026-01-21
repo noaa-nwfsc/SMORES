@@ -34,8 +34,15 @@ generate_cables_sidebar <- function(submarine_cables_layer, score_values, curren
   tagList(
     h4("Cables Map Settings"),
     p("Select which cable layers to include and their scores:"),
+    
     layer_inputs,
+    
     hr(),
+    
+    actionButton("update_industry_map_btn", "Generate Submarine Cables Maps", 
+                 class = "btn-primary btn-block"),
+    hr(),
+    
     h4("Calculation Methods"),
     checkboxGroupInput("cablesCalculationMethods",
                        "Select calculation methods to generate:",
@@ -49,8 +56,10 @@ generate_cables_sidebar <- function(submarine_cables_layer, score_values, curren
     h4("Combined Map Settings"),
     actionButton("generateCombinedCablesMap", "Generate Combined Map(s)", 
                  class = "btn-primary btn-block"),
-    # Export button
+ 
     hr(),
+    
+    # Export button
     h4("Export"),
     downloadButton("cablesExportRmd", "Export Submarine Cables Component Report",
                    icon = icon("file-export"),

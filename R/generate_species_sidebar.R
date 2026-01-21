@@ -35,7 +35,13 @@ generate_species_sidebar <- function(species_layers, score_values, current_tab =
     h4("Species Map Settings"),
     p("Select which species layers to include and their scores:"),
     layer_inputs,
+    
     hr(),
+    
+    actionButton("update_natres_map_btn", "Generate Species Maps", 
+                 class = "btn-primary btn-block"),
+    hr(),
+    
     h4("Calculation Methods"),
     checkboxGroupInput("speciesCalculationMethods",
                        "Select calculation methods to generate:",
@@ -45,7 +51,9 @@ generate_species_sidebar <- function(species_layers, score_values, current_tab =
                          "Product" = "product"
                        ),
                        selected = "geometric_mean"),
+    
     hr(),
+    
     h4("Combined Map Settings"),
     actionButton("generateCombinedSpeciesMap", "Generate Combined Map(s)", 
                  class = "btn-primary btn-block"),

@@ -34,8 +34,15 @@ generate_surveys_sidebar <- function(surveys_layers, score_values, current_tab =
   tagList(
     h4("Surveys Map Settings"),
     p("Select which survey layers to include and their scores:"),
+    
     layer_inputs,
+    
     hr(),
+    
+    actionButton("update_industry_map_btn", "Generate Scientific Survey Maps", 
+                 class = "btn-primary btn-block"),
+    hr(),
+    
     h4("Calculation Methods"),
     checkboxGroupInput("surveysCalculationMethods",
                        "Select calculation methods to generate:",
@@ -45,12 +52,15 @@ generate_surveys_sidebar <- function(surveys_layers, score_values, current_tab =
                          "Product" = "product"
                        ),
                        selected = "geometric_mean"),
+    
     hr(),
+    
     h4("Combined Map Settings"),
     actionButton("generateCombinedSurveysMap", "Generate Combined Map(s)", 
                  class = "btn-primary btn-block"),
-    # Export button
+   
     hr(),
+    # Export button
     h4("Export"),
     downloadButton("surveysExportRmd", "Export Scientific Surveys Component Report",
                    icon = icon("file-export"),

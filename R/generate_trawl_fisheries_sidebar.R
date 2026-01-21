@@ -34,8 +34,15 @@ generate_trawl_fisheries_sidebar <- function(trawl_fisheries_layer, score_values
   tagList(
     h4("Trawl Fisheries Map Settings"),
     p("Select if you would like to include the trawl fisheries layer and its scores:"),
+    
     layer_inputs,
+    
     hr(),
+    
+    actionButton("update_fisheries_map_btn", "Generate Trawl Fisheries Maps", 
+                 class = "btn-primary btn-block"),
+    hr(),
+    
     h4("Calculation Methods"),
     checkboxGroupInput("trawlCalculationMethods",
                        "Select calculation methods to generate:",
@@ -49,8 +56,8 @@ generate_trawl_fisheries_sidebar <- function(trawl_fisheries_layer, score_values
     h4("Combined Map Settings"),
     actionButton("generateCombinedTrawlMap", "Generate Combined Map(s)", 
                  class = "btn-primary btn-block"),
-    # Export button
     hr(),
+    # Export button
     h4("Export"),
     downloadButton("trawlExportRmd", "Export Trawl Fisheries Component Report",
                    icon = icon("file-export"),

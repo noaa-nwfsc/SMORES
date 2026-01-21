@@ -38,8 +38,15 @@ generate_habitat_sidebar <- function(habitat_layers, score_values, current_tab =
   tagList(
     h4("Habitat Map Settings"),
     p("Select which habitat layers to include and their scores:"),
+    
     layer_inputs,
+    
     hr(),
+    
+    actionButton("update_natres_map_btn", "Generate Habitat Maps", 
+                 class = "btn-primary btn-block"),
+    hr(),
+    
     h4("Calculation Methods"),
     checkboxGroupInput("habitatCalculationMethods",
                        "Select calculation methods to generate:",
@@ -53,8 +60,8 @@ generate_habitat_sidebar <- function(habitat_layers, score_values, current_tab =
     h4("Combined Map Settings"),
     actionButton("generateCombinedHabitatMap", "Generate Combined Map(s)", 
                  class = "btn-primary btn-block"),
+     hr(),
     # Export button
-    hr(),
     h4("Export"),
     downloadButton("habitatExportRmd", "Export Habitat Component Report",
                    icon = icon("file-export"),

@@ -29,8 +29,15 @@ generate_fisheries_sidebar <- function(fisheries_layer, score_values_ranked_impo
   tagList(
     h4("Fisheries Map Settings"), 
     p("Select which fisheries layers to include and their scores:"),
+    
     layer_inputs,
+    
     hr(),
+    
+    actionButton("update_fisheries_map_btn", "Generate Fisheries Maps", 
+                 class = "btn-primary btn-block"),
+    hr(),
+    
     h4("Calculation Methods"),
     checkboxGroupInput("fisheriesCalculationMethods",
                        "Select calculation methods to generate:",
@@ -40,7 +47,9 @@ generate_fisheries_sidebar <- function(fisheries_layer, score_values_ranked_impo
                          "Product" = "product"
                        ),
                        selected = "geometric_mean"),
+    
     hr(),
+    
     h4("Combined Map Settings"),
     actionButton("generateCombinedFisheriesMap", "Generate Combined Map(s)", 
                  class = "btn-primary btn-block"),

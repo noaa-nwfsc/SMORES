@@ -245,7 +245,13 @@ function(input, output, session) {
   }
   
   # Reactive expression for Natural Resources tab valid configs
-  natural_resources_valid_configs <- reactive({
+  natural_resources_valid_configs <- eventReactive(input$update_natres_map_btn, {
+    
+    # Add modal for individual maps generating
+    if (input$update_natres_map_btn > 0) {
+      show_spinner_modal("Generating Natural Resources Maps", 
+                         "Please wait while data is loaded and maps are created...")
+    }
     
     # For Natural Resources, we check if we have dataTabs 
     # OR if navbar is explicitly set to Natural Resources
@@ -267,7 +273,7 @@ function(input, output, session) {
                          NULL)
     
     # Use your existing function to get valid configurations
-    configs <- get_valid_configs_for_tab(input, current_tab_natural_resources, layer_data, score_colors, filter_by_score, grid_test)
+    configs <- get_valid_configs_for_tab(input, current_tab_natural_resources, layer_data, score_colors, filter_by_score, grid_test, include_data = TRUE)
     
     return(configs)
   })
@@ -288,7 +294,13 @@ function(input, output, session) {
   })
   
   # Reactive expression for Fisheries tab valid configs
-  fisheries_valid_configs <- reactive({
+  fisheries_valid_configs <- eventReactive(input$update_fisheries_map_btn, {
+    
+    # Add modal for individual maps generating
+    if (input$update_fisheries_map_btn > 0) {
+      show_spinner_modal("Generating Fisheries Maps", 
+                         "Please wait while data is loaded and maps are created...")
+    }
     
     is_fisheries <- (!is.null(input$dataTabs_fisheries) && 
                                input$dataTabs_fisheries %in% c("fisheries", "trawl", "combined_model_fisheries")) ||
@@ -329,7 +341,13 @@ function(input, output, session) {
   })
   
   # Reactive expression for Industry & Operations tab valid configs
-  industry_operations_valid_configs <- reactive({
+  industry_operations_valid_configs <- eventReactive(input$update_industry_map_btn, {
+    
+    # Add modal for individual maps generating
+    if (input$update_industry_map_btn > 0) {
+      show_spinner_modal("Generating Industry & Operations Maps", 
+                         "Please wait while data is loaded and maps are created...")
+    }
     
     # For Industry & Operations, we check if we have dataTabs (which means we're on the Natural Resources section)
     # OR if navbar is explicitly set to Industry & Operations
@@ -356,7 +374,7 @@ function(input, output, session) {
     return(configs)
   })
   
-  # 3. Metadata-Only Reactive for Industry & Operations UI
+  # Metadata-Only Reactive for Industry & Operations UI
   industry_operations_valid_configs_metadata <- reactive({
     is_industry_operations <- (!is.null(input$dataTabs_industry_operations) && 
                                  input$dataTabs_industry_operations %in% c("surveys", "cables", "combined_model_industry_operations")) ||
@@ -376,11 +394,14 @@ function(input, output, session) {
     valid_configs <- natural_resources_valid_configs()
     aoi_data <- filtered_aoi_data()
     
+    current_tab <- input$dataTabs_natural_resources %||% "habitat"
+    ns_prefix <- if(current_tab == "species") "species" else "habitat"
+    
     # Apply cropping to each config's data BEFORE map creation
     for(config in valid_configs) {
       local({
         local_config <- config
-        map_id <- paste0("naturalresources_map_", local_config$index)
+        map_id <- paste0(ns_prefix, "_map_", local_config$index)
         
         # Create a unique identifier for this configuration
         config_key <- paste(local_config$layer, local_config$score, local_config$index, sep = "_")
@@ -448,6 +469,12 @@ function(input, output, session) {
         }
       })
     }
+    
+    # remove modal after individual maps have generated
+    if (input$update_natres_map_btn > 0) {
+      removeModal()
+    }
+ 
   }, ignoreNULL = FALSE, ignoreInit = FALSE)
   
   # Fisheries maps
@@ -455,11 +482,14 @@ function(input, output, session) {
     valid_configs <- fisheries_valid_configs()
     aoi_data <- filtered_aoi_data()
     
+    current_tab <- input$dataTabs_fisheries %||% "fisheries"
+    ns_prefix <- if(current_tab == "trawl") "trawl" else "fisheries"
+    
     # Apply cropping to each config's data BEFORE map creation
     for(config in valid_configs) {
       local({
         local_config <- config
-        map_id <- paste0("fisheries_map_", local_config$index)
+        map_id <- paste0(ns_prefix, "_map_", local_config$index)
         
         # Create a unique identifier for this configuration
         config_key <- paste(local_config$layer, local_config$score, local_config$index, sep = "_")
@@ -527,6 +557,12 @@ function(input, output, session) {
         }
       })
     }
+    
+    # remove modal after individual maps have generated
+    if (input$update_fisheries_map_btn > 0) {
+      removeModal()
+    }
+    
   }, ignoreNULL = FALSE, ignoreInit = FALSE)
   
   # Industry & Operations maps
@@ -534,11 +570,14 @@ function(input, output, session) {
     valid_configs <- industry_operations_valid_configs()
     aoi_data <- filtered_aoi_data()
     
+    current_tab <- input$dataTabs_industry_operations %||% "surveys"
+    ns_prefix <- if(current_tab == "cables") "cables" else "surveys"
+    
     # Apply cropping to each config's data BEFORE map creation
     for(config in valid_configs) {
       local({
         local_config <- config
-        map_id <- paste0("industryoperations_map_", local_config$index)
+        map_id <- paste0(ns_prefix, "_map_", local_config$index)
         
         # Create a unique identifier for this configuration
         config_key <- paste(local_config$layer, local_config$score, local_config$index, sep = "_")
@@ -599,6 +638,12 @@ function(input, output, session) {
         }
       })
     }
+    
+    # remove modal after individual maps have generated
+    if (input$update_industry_map_btn > 0) {
+      removeModal()
+    }
+    
   }, ignoreNULL = FALSE, ignoreInit = FALSE)
   
   # Dynamic sidebar content
@@ -719,7 +764,7 @@ function(input, output, session) {
     
     create_maps_container(
       configs = valid_configs,
-      namespace = "naturalresources",
+      namespace = "habitat",
       combined_map_output_id = "combinedHabitatMap",
       combined_map_generated = combined_maps_data$habitat_combined_map_generated,
       combined_map_title = "Combined Map Result",
@@ -889,7 +934,7 @@ function(input, output, session) {
 
     create_maps_container(
       configs = valid_configs,
-      namespace = "naturalresources",
+      namespace = "species",
       combined_map_output_id = "combinedSpeciesMap",
       combined_map_generated = combined_maps_data$species_combined_map_generated,
       combined_map_title = "Combined Map Result",
@@ -1230,7 +1275,7 @@ function(input, output, session) {
     
     create_maps_container(
       configs = valid_configs,
-      namespace = "fisheries",
+      namespace = "trawl",
       combined_map_output_id = "combinedTrawlMap",
       combined_map_generated = combined_maps_data$trawl_combined_map_generated,
       combined_map_title = "Combined Map Result",
@@ -1399,7 +1444,7 @@ function(input, output, session) {
     
     create_maps_container(
       configs = valid_configs,
-      namespace = "industryoperations",
+      namespace = "surveys",
       combined_map_output_id = "combinedSurveysMap",
       combined_map_generated = combined_maps_data$surveys_combined_map_generated,
       combined_map_title = "Combined Map Result",
@@ -1569,7 +1614,7 @@ function(input, output, session) {
     
     create_maps_container(
       configs = valid_configs,
-      namespace = "industryoperations",
+      namespace = "cables",
       combined_map_output_id = "combinedCablesMap",
       combined_map_generated = combined_maps_data$cables_combined_map_generated,
       combined_map_title = "Combined Map Result",
