@@ -34,42 +34,6 @@ render_individual_map_from_config <- function(config) {
   # Call the pure function directly - this generates the exact same map as the app
   return(create_individual_map(config, aoi_data))
 }
-
-library(bench)
-library(lobstr)
-
-# Initialize memory tracking
-chunk_memory_results <- list()
-report_start_memory <- lobstr::mem_used()
-
-# Set up memory profiling hook
-knitr::knit_hooks$set(
-  memory_profile = function(before, options, envir) {
-    if (before) {
-      # Capture state before chunk runs
-      assign("chunk_start_memory", lobstr::mem_used(), envir = .GlobalEnv)
-    } else {
-      # Capture state after chunk runs
-      current_total_mem <- lobstr::mem_used()
-      chunk_start_mem <- get("chunk_start_memory", envir = .GlobalEnv)
-      
-      chunk_name <- options$label %||% "unnamed_chunk"
-      memory_increase <- current_total_mem - chunk_start_mem
-      
-      # Print formatted output
-      cat(sprintf(
-        "\n--- Memory Profile: %s ---\nIncrease: %s\nTotal Used: %s\n",
-        chunk_name, 
-        format(memory_increase), 
-        format(current_total_mem)
-      ))
-    }
-  }
-)
-
-# Set default hook for all chunks
-knitr::opts_chunk$set(memory_profile = TRUE)
-    
 ```
 
 ## Selected Layers Data Information
