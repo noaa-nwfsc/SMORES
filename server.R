@@ -2576,11 +2576,15 @@ function(input, output, session) {
         }
       }
       
+      # crop base grid used for geometric mean full calculation to aoi selected
+      aoi_data <- filtered_aoi_data()
+      working_grid<- crop_data_to_aoi(grid_test, aoi_data)
+      
       # Call the weighted geometric mean function
       full_model_data <- calculate_geometric_mean_full(
         submodels = submodels,
         weights = weights,
-        base_grid = grid_test
+        base_grid = working_grid
       )
       
       # Create the full model map

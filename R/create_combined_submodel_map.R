@@ -16,6 +16,9 @@ create_combined_submodel_map <- function(component_data_list, base_grid = grid_t
     # map bounds based on AOI if available
     map_bounds <- aoi_bounds
     
+    # crop base_grid to aoi selected
+    base_grid <- crop_data_to_aoi(base_grid, aoi_data)
+    
     # Start with base grid
     combined_data <- base_grid
     

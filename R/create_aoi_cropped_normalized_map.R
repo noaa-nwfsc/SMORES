@@ -13,27 +13,20 @@ create_aoi_cropped_normalized_map <- function(combined_data, aoi_data_reactive =
     
     # Remove Z & M dimensions
     combined_data <- st_zm(combined_data)
-    aoi_data <- st_zm(aoi_data)
-    
-    # Crop the combined data to the WEA boundary using intersection
-    cropped_data <- st_intersection(combined_data, aoi_data)
-    
-    # Check if we have any data after cropping
-    if(nrow(cropped_data) == 0) {
-      return(leaflet() %>%
-               addProviderTiles("Esri.OceanBasemap") %>%
-               setView(lng = -124, lat = 38, zoom = 7) %>%
-               addControl("No data intersects with selected AOI", position = "topright"))
-    }
     
     # Filter for valid data
-    map_data <- cropped_data[!is.na(cropped_data$Geo_mean), ]
+    map_data <- combined_data
+    
+    # Filter for valid data
+    if("Geo_mean" %in% names(map_data)) {
+      map_data <- map_data[!is.na(map_data$Geo_mean), ]
+    }
     
     if(nrow(map_data) == 0) {
       return(leaflet() %>%
                addProviderTiles("Esri.OceanBasemap") %>%
                setView(lng = -124, lat = 38, zoom = 7) %>%
-               addControl("No valid data in selected AOI", position = "topright"))
+               addControl("No valid data to display", position = "topright"))
     }
     
     # Get the min and max values from the CROPPED data only for normalization
