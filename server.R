@@ -1167,6 +1167,9 @@ function(input, output, session) {
           combined_data <- calculate_product_value(combined_data)
         }
         
+        # 2. DEBUGGING: Print size to console
+        print(paste("Fisheries Method:", method, "- Rows:", nrow(combined_data)))
+        
         # Verify calculation result
         expected_col <- switch(method,
                                "geometric_mean" = "Geo_mean",
@@ -1176,27 +1179,28 @@ function(input, output, session) {
         # Create the map
         map_result <- create_combined_map(
           combined_data = combined_data,
-          map_title = paste("Offshore Wind Energy Suitability Score <br> for Fisheries Component -", 
+          map_title = paste("Offshore Wind Energy Suitability Score <br> for Fisheries Component -",
                             switch (method,
-                                    "geometric_mean" = "Geometric Mean", 
+                                    "geometric_mean" = "Geometric Mean",
                                     "lowest" = "Lowest Value",
                                     "product" = "Product")),
           method = method,
-          aoi_data = aoi_data, 
+          aoi_data = aoi_data,
           aoi_bounds = aoi_bounds_cache$current_bounds
         )
-        
+
         # Store the result
         all_results[[method]] <- list(
           combined_data = combined_data,
           map = map_result
         )
-        
+
       }, error = function(e) {
         cat("ERROR in method", method, ":", e$message, "\n")
         showNotification(paste("Error generating", method, "map:", e$message), type = "error")
       })
-    } 
+    }
+
     # Store results - but only for methods that were actually selected
     if("geometric_mean" %in% selected_methods && "geometric_mean" %in% names(all_results)) {
       local({
@@ -1206,7 +1210,7 @@ function(input, output, session) {
         combined_maps_data$fisheries_geo_map <- result$map
       })
     }
-    
+
     if("lowest" %in% selected_methods && "lowest" %in% names(all_results)) {
       local({
         result <- all_results[["lowest"]]
@@ -1215,8 +1219,8 @@ function(input, output, session) {
         combined_maps_data$fisheries_lowest_map <- result$map
       })
     }
-    
-    if("product" %in% selected_methods && "product" %in% names(all_results)) {  
+
+    if("product" %in% selected_methods && "product" %in% names(all_results)) {
       local({
         result <- all_results[["product"]]
         output$combinedFisheriesMap_product <- renderLeaflet({ result$map })
@@ -1224,15 +1228,15 @@ function(input, output, session) {
         combined_maps_data$fisheries_product_map <- result$map
       })
     }
-    
+
     # Set flag to indicate combined map has been generated
     combined_maps_data$fisheries_combined_map_generated <- TRUE
-    
+
     # Remove modal spinner
     removeModal()
-    
-  }) # END of observeEvent
 
+  }) # END of observeEvent
+    
   # Fisheries/Fisheries tab export
   output$fisheriesExportRmd <- downloadHandler(
     filename = function() {
