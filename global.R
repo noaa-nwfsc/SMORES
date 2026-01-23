@@ -15,6 +15,11 @@ library(knitr)
 library(fontawesome)
 library(arrow)
 library(sfarrow)
+library(RhpcBLASctl)
+
+# set number of CPU cores to be used explicitly
+blas_set_num_threads(1)
+omp_set_num_threads(1)
 
 # Code to add _brand.yml theming
 theme <- bslib::bs_theme()
