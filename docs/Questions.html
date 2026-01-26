@@ -143,7 +143,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#q-i-opened-smores-on-the-posit-connect-server-and-the-screen-is-just-white-what-do-i-do" id="toc-q-i-opened-smores-on-the-posit-connect-server-and-the-screen-is-just-white-what-do-i-do" class="nav-link active" data-scroll-target="#q-i-opened-smores-on-the-posit-connect-server-and-the-screen-is-just-white-what-do-i-do">Q: I opened SMORES on the Posit Connect Server and the screen is just white, what do I do?</a></li>
   <li><a href="#q-what-happens-if-i-select-all-area-as-the-area-of-interest-for-the-map-to-show-data-for" id="toc-q-what-happens-if-i-select-all-area-as-the-area-of-interest-for-the-map-to-show-data-for" class="nav-link" data-scroll-target="#q-what-happens-if-i-select-all-area-as-the-area-of-interest-for-the-map-to-show-data-for">Q: What happens if I select <code>All Area</code> as the area of interest for the map to show data for?</a></li>
   <li><a href="#q-why-is-smores-accessed-through-the-posit-connect-test-server-instance" id="toc-q-why-is-smores-accessed-through-the-posit-connect-test-server-instance" class="nav-link" data-scroll-target="#q-why-is-smores-accessed-through-the-posit-connect-test-server-instance">Q: Why is SMORES accessed through the Posit Connect Test Server Instance?</a></li>
-  <li><a href="#q-i-have-selected-a-larger-planning-area-ie.-southern-california-and-the-maps-generate-without-data-and-just-the-area-of-interest-boundary-is-visible.-why-is-the-data-not-showing-up" id="toc-q-i-have-selected-a-larger-planning-area-ie.-southern-california-and-the-maps-generate-without-data-and-just-the-area-of-interest-boundary-is-visible.-why-is-the-data-not-showing-up" class="nav-link" data-scroll-target="#q-i-have-selected-a-larger-planning-area-ie.-southern-california-and-the-maps-generate-without-data-and-just-the-area-of-interest-boundary-is-visible.-why-is-the-data-not-showing-up">Q: I have selected a larger planning area (ie. Southern California) and the maps generate without data and just the Area of Interest boundary is visible. Why is the data not showing up?</a></li>
+  <li><a href="#q-i-have-selected-a-larger-planning-area-ie.-washingtonoregon-and-the-maps-generate-without-data-and-just-the-area-of-interest-boundary-is-visible.-why-is-the-data-not-showing-up" id="toc-q-i-have-selected-a-larger-planning-area-ie.-washingtonoregon-and-the-maps-generate-without-data-and-just-the-area-of-interest-boundary-is-visible.-why-is-the-data-not-showing-up" class="nav-link" data-scroll-target="#q-i-have-selected-a-larger-planning-area-ie.-washingtonoregon-and-the-maps-generate-without-data-and-just-the-area-of-interest-boundary-is-visible.-why-is-the-data-not-showing-up">Q: I have selected a larger planning area (ie. Washington/Oregon) and the maps generate without data and just the Area of Interest boundary is visible. Why is the data not showing up?</a></li>
   <li><a href="#q-can-i-use-the-smores-app-on-my-local-machine-instead-of-running-through-the-posit-connect-test-instance" id="toc-q-can-i-use-the-smores-app-on-my-local-machine-instead-of-running-through-the-posit-connect-test-instance" class="nav-link" data-scroll-target="#q-can-i-use-the-smores-app-on-my-local-machine-instead-of-running-through-the-posit-connect-test-instance">Q: Can I use the SMORES app on my local machine instead of running through the Posit Connect Test Instance?</a></li>
   </ul>
 </nav>
@@ -183,9 +183,29 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="q-why-is-smores-accessed-through-the-posit-connect-test-server-instance">Q: Why is SMORES accessed through the Posit Connect Test Server Instance?</h2>
 <p>A: SMORES is built to be used by NOAA personnel in order to effectively run modeling scenarios built off of the NCCOS Wind Energy Siting process. This application is not currently intended for use by the general public or other organizations. The Test Instance allows NOAA users access to the application hosted on a server while ensuring that the application is being used for its intended use of information gathering, by NOAA personnel and affiliates.</p>
 </section>
-<section id="q-i-have-selected-a-larger-planning-area-ie.-southern-california-and-the-maps-generate-without-data-and-just-the-area-of-interest-boundary-is-visible.-why-is-the-data-not-showing-up" class="level2">
-<h2 class="anchored" data-anchor-id="q-i-have-selected-a-larger-planning-area-ie.-southern-california-and-the-maps-generate-without-data-and-just-the-area-of-interest-boundary-is-visible.-why-is-the-data-not-showing-up">Q: I have selected a larger planning area (ie. Southern California) and the maps generate without data and just the Area of Interest boundary is visible. Why is the data not showing up?</h2>
+<section id="q-i-have-selected-a-larger-planning-area-ie.-washingtonoregon-and-the-maps-generate-without-data-and-just-the-area-of-interest-boundary-is-visible.-why-is-the-data-not-showing-up" class="level2">
+<h2 class="anchored" data-anchor-id="q-i-have-selected-a-larger-planning-area-ie.-washingtonoregon-and-the-maps-generate-without-data-and-just-the-area-of-interest-boundary-is-visible.-why-is-the-data-not-showing-up">Q: I have selected a larger planning area (ie. Washington/Oregon) and the maps generate without data and just the Area of Interest boundary is visible. Why is the data not showing up?</h2>
 <p>A: The SMORES app does its best to show data at multiple scales using the mapping library leaflet(). Some of the large spatial areas essentially max out leaflet’s capacity to show the data at the smaller scale maps (i.e.&nbsp;larger areas) due to the detailed information contained. In order to see the data that was loaded for the larger planning areas utilize the zoom (<code>+</code> button in the upper left hand corner of the map) to zoom in. You can select the zoom button as many times as needed for the data to appear on the interactive maps.</p>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="www/Images/ind_op_ss_ind_button_pushed.png" class="img-fluid figure-img"></p>
+<figcaption>Map without zooming in</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="www/Images/ind_op_ss_ind_button_pushed_zoomed.png" class="img-fluid figure-img"></p>
+<figcaption>Map with zooming in</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section id="q-can-i-use-the-smores-app-on-my-local-machine-instead-of-running-through-the-posit-connect-test-instance" class="level2">
 <h2 class="anchored" data-anchor-id="q-can-i-use-the-smores-app-on-my-local-machine-instead-of-running-through-the-posit-connect-test-instance">Q: Can I use the SMORES app on my local machine instead of running through the Posit Connect Test Instance?</h2>

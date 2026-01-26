@@ -4,7 +4,7 @@ title: ""
 
 Welcome to the documentation guide for the SMORES Shiny App. 
 
-![](www/Images/SMORES_opener.png)
+![](www/Images/main_page.png)
 
 # What does SMORES stand for?
 
