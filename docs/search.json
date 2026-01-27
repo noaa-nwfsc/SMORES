@@ -46,7 +46,7 @@
     "href": "index.html",
     "title": "What does SMORES stand for?",
     "section": "",
-    "text": "Welcome to the documentation guide for the SMORES Shiny App.\n\n\nWhat does SMORES stand for?\nSMORES is an acronym for the Suitability Modeling for Offshore Resources and Energy Siting.\n\n\nWho is SMORES built for?\nSMORES was built in R Shiny for NOAA NMFS teams to be able to use as a fast and interactive tester for scenarios provided to BOEM during the energy use area siting process. The most recent example of this was when the West Coast NOAA offices were working together on the Oregon wind energy areas.\nPreviously, teams worked relatively separately and would have a hard time quickly seeing how their scores would be impacted when combined with other teams (ie. protected habitat and industry). SMORES allows teams to enter their scores and see how the model would run when combined with other sets of scores.\n\n\nWhere does SMORES live?\nThe SMORES Shiny Application was built in RStudio and is hosted on the NOAA NWFSC Github Enterprise account. The Application is also available on the Posit Connect Test Instance. For more information about accessing the SMORES app please visit the SMORES Access Guide page.\n\n\nHow do I report issues or bugs in the app?\nTo report any issues or bugs within the code please create an issue on the Github repository. The issues for this repository can be found here.\n\n\nDisclaimer\nThis application is a scientific product and is not official communication of the National Oceanic and Atmospheric Administration, or the United States Department of Commerce. All NOAA GitHub project code is provided on an ‘as is’ basis and the user assumes responsibility for its use. Any claims against the Department of Commerce or Department of Commerce bureaus stemming from the use of this GitHub project will be governed by all applicable Federal law. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by the Department of Commerce. The Department of Commerce seal and logo, or the seal and logo of a DOC bureau, shall not be used in any manner to imply endorsement of any commercial product or activity by DOC or the United States Government."
+    "text": "Welcome to the documentation guide for the SMORES Shiny App.\n\n\nWhat does SMORES stand for?\nSMORES is an acronym for the Suitability Modeling for Offshore Resources and Energy Siting.\n\n\nWho is SMORES built for?\nSMORES was built in R Shiny for NOAA NMFS teams to be able to use as a fast and interactive tester for scenarios provided to BOEM during the energy use area siting process. The most recent example of this was when the West Coast NOAA offices were working together on the Oregon wind energy areas.\nPreviously, teams worked relatively separately and would have a hard time quickly seeing how their scores would be impacted when combined with other teams (ie. protected habitat and industry). SMORES allows teams to enter their scores and see how the model would run when combined with other sets of scores.\n\n\nWhere does SMORES live?\nThe SMORES Shiny Application was built in RStudio and is hosted on the NOAA NWFSC Github Enterprise account. The Application is also available on the Posit Connect Test Instance. For more information about accessing the SMORES app please visit the SMORES Access Guide page.\n\n\nHow do I report issues or bugs in the app?\nTo report any issues or bugs within the code please create an issue on the Github repository. The issues for this repository can be found here.\n\n\nHow do I request a new data layer be added to the app, so it can be included in the modeling schema?\nTo request a new data layer be added to the SMORES app please either leave a Github issue or fill out this form. Please make sure to include the name of the dataset and a data access point.\n\n\nDisclaimer\nThis application is a scientific product and is not official communication of the National Oceanic and Atmospheric Administration, or the United States Department of Commerce. All NOAA GitHub project code is provided on an ‘as is’ basis and the user assumes responsibility for its use. Any claims against the Department of Commerce or Department of Commerce bureaus stemming from the use of this GitHub project will be governed by all applicable Federal law. Any reference to specific commercial products, processes, or services by service mark, trademark, manufacturer, or otherwise, does not constitute or imply their endorsement, recommendation or favoring by the Department of Commerce. The Department of Commerce seal and logo, or the seal and logo of a DOC bureau, shall not be used in any manner to imply endorsement of any commercial product or activity by DOC or the United States Government."
   },
   {
     "objectID": "Functions.html",
@@ -88,14 +88,14 @@
     "href": "Data.html",
     "title": "Data Sources",
     "section": "",
-    "text": "Brief Description: Wind Energy Areas were derived from wind energy area boundaries off the coasts of California and Oregon obtained from the Bureau of Ocean Energy Management (BOEM). These data sources were filtered and merged to include the following wind energy areas: Morro Bay, Humboldt, Coos Bay, and Brookings.\nAccessed:\nCalifornia Wind Energy Area Boundaries: ArcGIS Rest Service\nDraft Oregon Wind Energy Area Boundaries: Link\nUnits: EPSG:3857\n\n\n\nBrief Description: Planning areas are used to support mostly the National Oil and Gas Program but also other BOEM Programs consisting of a schedule of lease sales indicating the size, timing, and location of proposed leasing activity the Secretary of Interior determines will best meet national energy needs. For oil and gas lease sales, the Program covers a five year period following its approval, and an area must be included in the current 5-Year Program in order to be offered for leasing. Section 18 of the OCS Lands Act prescribes the major steps involved in developing a 5-Year Program, including extensive public comment periods. These polygons are clipped to the Submerged Land Act Boundary and Continental Shelf Boundaries. These data were subsetted to only include planning areas that occurred in California, Oregon, and Washington.\nAccessed: Marine Cadastre\nUnits: These data were created in the applicable NAD83 UTM Projection and re-projected to WGS84 Geographic.\nCitation: Bureau of Ocean Energy Management (BOEM), Office of Strategic Resources (OSR), Geospatial Services Division (GSD)"
+    "text": "Brief Description: Wind Energy Areas were derived from wind energy area boundaries off the coasts of California and Oregon obtained from the Bureau of Ocean Energy Management (BOEM). These data sources were filtered and merged to include the following wind energy areas: Morro Bay, Humboldt, Coos Bay, and Brookings.\nAccessed:\n\nCalifornia Wind Energy Area Boundaries: ArcGIS Rest Service\nDraft Oregon Wind Energy Area Boundaries: Link\n\nUnits: EPSG:3857\n\n\n\nBrief Description: Planning areas are used to support mostly the National Oil and Gas Program but also other BOEM Programs consisting of a schedule of lease sales indicating the size, timing, and location of proposed leasing activity the Secretary of Interior determines will best meet national energy needs. For oil and gas lease sales, the Program covers a five year period following its approval, and an area must be included in the current 5-Year Program in order to be offered for leasing. Section 18 of the OCS Lands Act prescribes the major steps involved in developing a 5-Year Program, including extensive public comment periods. These polygons are clipped to the Submerged Land Act Boundary and Continental Shelf Boundaries. These data were subsetted to only include planning areas that occurred in California, Oregon, and Washington.\nAccessed: Marine Cadastre\nUnits: These data were created in the applicable NAD83 UTM Projection and re-projected to WGS84 Geographic.\nCitation: Bureau of Ocean Energy Management (BOEM), Office of Strategic Resources (OSR), Geospatial Services Division (GSD)"
   },
   {
     "objectID": "Data.html#wind-energy-areas",
     "href": "Data.html#wind-energy-areas",
     "title": "Data Sources",
     "section": "",
-    "text": "Brief Description: Wind Energy Areas were derived from wind energy area boundaries off the coasts of California and Oregon obtained from the Bureau of Ocean Energy Management (BOEM). These data sources were filtered and merged to include the following wind energy areas: Morro Bay, Humboldt, Coos Bay, and Brookings.\nAccessed:\nCalifornia Wind Energy Area Boundaries: ArcGIS Rest Service\nDraft Oregon Wind Energy Area Boundaries: Link\nUnits: EPSG:3857"
+    "text": "Brief Description: Wind Energy Areas were derived from wind energy area boundaries off the coasts of California and Oregon obtained from the Bureau of Ocean Energy Management (BOEM). These data sources were filtered and merged to include the following wind energy areas: Morro Bay, Humboldt, Coos Bay, and Brookings.\nAccessed:\n\nCalifornia Wind Energy Area Boundaries: ArcGIS Rest Service\nDraft Oregon Wind Energy Area Boundaries: Link\n\nUnits: EPSG:3857"
   },
   {
     "objectID": "Data.html#ocs-planning-area",
@@ -116,147 +116,147 @@
     "href": "Data.html#deep-sea-coral-robust-high-suitability",
     "title": "Data Sources",
     "section": "Deep Sea Coral Robust High Suitability",
-    "text": "Deep Sea Coral Robust High Suitability\nBrief Description: BOEM-funded Cross-Shelf Habitat Suitability Modeling of Coral and Sponge Habitat provides spatial predictions of relative habitat suitability for a number of coral and sponge taxa (Poti et al. 2020). In order to examine patterns of habitat suitability across multiple taxa, the Poti et al. (2020) study developed two aggregate products, both of which we felt would be most useful to the NCCOS model: 1) Number of deep-sea coral taxa associated with hard substrate that were predicted to have high habitat suitability, and 2) Number of deep-sea coral taxa associated with hard substrate that were predicted to have robust-high habitat suitability. Instead of integrating habitat suitability models for individual taxa, these two aggregate products show the number of taxa predicted to have high or robust-high habitat suitability, respectively, for each grid cell. The Robust High data product is available within this application. The aggregate products exclude sea pens because most sea pen species do not associate with hard substrate, and exclude sponges due to the low taxonomic specificity, and consequent broad substrate affinities, of input records. Like many deep-sea corals, some sponges, especially glass sponges (e.g., Heterochone calyx) provide structural habitat for other organisms including some groundfishes. Rescaling was conducted using the fuzzy logic Z-shaped membership function from 0.0–1.\nAccessed: ArcGIS Rest Service\nCitation: National Oceanic and Atmospheric Adminstration (NOAA) National Centers for Coastal Ocean Science (NCCOS)"
+    "text": "Deep Sea Coral Robust High Suitability\nBrief Description: BOEM-funded Cross-Shelf Habitat Suitability Modeling of Coral and Sponge Habitat provides spatial predictions of relative habitat suitability for a number of coral and sponge taxa (Poti et al. 2020). In order to examine patterns of habitat suitability across multiple taxa, the Poti et al. (2020) study developed two aggregate products, both of which we felt would be most useful to the NCCOS model: 1) Number of deep-sea coral taxa associated with hard substrate that were predicted to have high habitat suitability, and 2) Number of deep-sea coral taxa associated with hard substrate that were predicted to have robust-high habitat suitability. Instead of integrating habitat suitability models for individual taxa, these two aggregate products show the number of taxa predicted to have high or robust-high habitat suitability, respectively, for each grid cell. The Robust High data product is available within this application. The aggregate products exclude sea pens because most sea pen species do not associate with hard substrate, and exclude sponges due to the low taxonomic specificity, and consequent broad substrate affinities, of input records. Like many deep-sea corals, some sponges, especially glass sponges (e.g., Heterochone calyx) provide structural habitat for other organisms including some groundfishes. Rescaling was conducted using the fuzzy logic Z-shaped membership function from 0.0–1.\nAccessed: ArcGIS Rest Service\nCitation: Poti, M.; Henkel, S.; Bizzarro, J.; Hourigan, T.; Clarke, M.; Whitmire, C.; Powell, A.; Yoklavich, M.; Bauer, L.; Winship, A.; Coyne, M.; Gillett, D.; Gilbane, L.; Christensen, J.; Jeffrey, C. (2020). Cross-Shelf Habitat Suitability Modeling: Characterizing Potential Distributions of Deep-Sea Corals, Sponges, and Macrofauna Offshore of the US West Coast. Retrieved from https://coastalscience.noaa.gov/project/predictive-benthic-habitat-suitability-modeling-of-deep-sea-biota-on-the-us-pacific-outer-continental-shelf/"
   },
   {
     "objectID": "Data.html#seeps",
     "href": "Data.html#seeps",
     "title": "Data Sources",
     "section": "Seeps",
-    "text": "Seeps\nBrief Description: Methane bubble streams identified during multibeam sonar surveys often indicate the location of active methane seeps and associated seep communities on the seafloor. We curated data layers from recent publications that summarize the point locations of these bubble streams. Recent remotely operated vehicle (ROV) surveys have confirmed active gas venting on the seafloor for some of these locations, as well as the presence of methane seep communities.\nAccessed: Unpublished\nUnits\nCitation"
+    "text": "Seeps\nBrief Description: Methane bubble streams identified during multibeam sonar surveys often indicate the location of active methane seeps and associated seep communities on the seafloor. We curated data layers from recent publications that summarize the point locations of these bubble streams. Recent remotely operated vehicle (ROV) surveys have confirmed active gas venting on the seafloor for some of these locations, as well as the presence of methane seep communities.\nAccessed: Unpublished\nCitation"
   },
   {
     "objectID": "Data.html#shelf-break",
     "href": "Data.html#shelf-break",
     "title": "Data Sources",
     "section": "Shelf Break",
-    "text": "Shelf Break\nBrief Description: The continental shelf break is a physiographic feature that is sometimes represented as a particular isobath but is more appropriately delineated from geophysical data. We extracted the line feature representing the boundary between the “shelf” and “slope” physiographic classes from the Goldfinger et al. 2014 Surficial Geologic Habitat v.4.0 layer. The line between these polygons was extracted and buffered by 10-km on either side.\nAccessed:\nUnits\nCitation: Goldfinger et al. 2014 Surficial Geologic Habitat v.4.0; https://www.boem.gov/sites/default/files/environmentalstewardship/Environmental-Studies/PacificRegion/Studies/BOEM2014-662-Vol-1.pdf"
+    "text": "Shelf Break\nBrief Description: The continental shelf break is a physiographic feature that is sometimes represented as a particular isobath but is more appropriately delineated from geophysical data. We extracted the line feature representing the boundary between the “shelf” and “slope” physiographic classes from the Goldfinger et al. 2014 Surficial Geologic Habitat v.4.0 layer. The line between these polygons was extracted and buffered by 10-km on either side.\nAccessed:\nCitation: Goldfinger, Chris & Henkel, Sarah & Romsos, Christopher & Havron, Andrea & Black, Bran. (2014). Benthic Habitat Characterization Offshore the Pacific Northwest Volume 1: Evaluation of Continental Shelf Geology. 10.13140/2.1.3345.0561."
   },
   {
     "objectID": "Data.html#efhca",
     "href": "Data.html#efhca",
     "title": "Data Sources",
     "section": "EFHCA",
-    "text": "EFHCA\nBrief Description: Shapefile depicting boundaries of EFH conservation areas. This shapefile is not a legal boundary but is rather a geospatial representation of what is published in the Code of Federal Regulations (50 CFR 660).\nAccessed: NMFS EFH resource site.\nUnits\nCitation"
+    "text": "EFHCA\nBrief Description: Shapefile depicting boundaries of EFH conservation areas. This shapefile is not a legal boundary but is rather a geospatial representation of what is published in the Code of Federal Regulations (50 CFR 660).\nAccessed: NMFS EFH resource site.\nCitation"
   },
   {
     "objectID": "Data.html#efhca-700-fathoms",
     "href": "Data.html#efhca-700-fathoms",
     "title": "Data Sources",
     "section": "EFHCA 700 fathoms",
-    "text": "EFHCA 700 fathoms\nBrief Description: Shapefile depicting boundary of the “Seaward of the 700-fm bottom trawl closure” EFH conservation area. This shapefile is not a legal boundary but is rather a geospatial representation of what is published in the Code of Federal Regulations (50 CFR 660).\nAccessed\nUnits\nCitation"
+    "text": "EFHCA 700 fathoms\nBrief Description: Shapefile depicting boundary of the “Seaward of the 700-fm bottom trawl closure” EFH conservation area. This shapefile is not a legal boundary but is rather a geospatial representation of what is published in the Code of Federal Regulations (50 CFR 660).\nAccessed\nCitation"
   },
   {
     "objectID": "Data.html#hapc-aoi",
     "href": "Data.html#hapc-aoi",
     "title": "Data Sources",
     "section": "HAPC AOI",
-    "text": "HAPC AOI\nBrief Description: Habitat Areas of Particular Concern Areas of Interest. Areas of interest are discrete areas that are of special interest due to their unique geological and ecological characteristics. The following areas of interest are designated HAPCs:\nOff of Washington: All waters and sea bottom in state waters shoreward from the three nautical mile boundary of the territorial sea shoreward to MHHW.\nOff of Oregon: Daisy Bank/Nelson Island, Thompson Seamount, President Jackson Seamount.\nOff of California: all seamounts, including Gumdrop Seamount, Pioneer Seamount, Guide Seamount, Taney Seamount, Davidson Seamount, and San Juan Seamount; Mendocino Ridge; Cordell Bank; Monterey Canyon; specific areas in the Federal waters of the Channel Islands National Marine Sanctuary; specific areas of the Cowcod Conservation Area.\nAccessed:\nUnits\nCitation"
+    "text": "HAPC AOI\nBrief Description: Habitat Areas of Particular Concern Areas of Interest. Areas of interest are discrete areas that are of special interest due to their unique geological and ecological characteristics. The following areas of interest are designated HAPCs:\nOff of Washington: All waters and sea bottom in state waters shoreward from the three nautical mile boundary of the territorial sea shoreward to MHHW.\nOff of Oregon: Daisy Bank/Nelson Island, Thompson Seamount, President Jackson Seamount.\nOff of California: all seamounts, including Gumdrop Seamount, Pioneer Seamount, Guide Seamount, Taney Seamount, Davidson Seamount, and San Juan Seamount; Mendocino Ridge; Cordell Bank; Monterey Canyon; specific areas in the Federal waters of the Channel Islands National Marine Sanctuary; specific areas of the Cowcod Conservation Area.\nAccessed:\nCitation"
   },
   {
     "objectID": "Data.html#hapc-rocky-reef",
     "href": "Data.html#hapc-rocky-reef",
     "title": "Data Sources",
     "section": "HAPC Rocky Reef",
-    "text": "HAPC Rocky Reef\nBrief Description: Habitat Areas of Particular Concern Rocky Reefs. The rocky reefs HAPC includes those waters, substrates and other biogenic features associated with hard substrate (bedrock, boulders, cobble, gravel, etc.) to MHHW.\nAccessed:\nUnits\nCitation"
+    "text": "HAPC Rocky Reef\nBrief Description: Habitat Areas of Particular Concern Rocky Reefs. The rocky reefs HAPC includes those waters, substrates and other biogenic features associated with hard substrate (bedrock, boulders, cobble, gravel, etc.) to MHHW.\nAccessed:\nCitation"
   },
   {
     "objectID": "Data.html#esa-critical-habitat-for-southern-resident-killer-whales",
     "href": "Data.html#esa-critical-habitat-for-southern-resident-killer-whales",
     "title": "Data Sources",
     "section": "ESA Critical Habitat for Southern Resident Killer Whales",
-    "text": "ESA Critical Habitat for Southern Resident Killer Whales\nBrief Description\nAccessed: Data reference\nUnits\nCitation: NOAA NMFS"
+    "text": "ESA Critical Habitat for Southern Resident Killer Whales\nBrief Description: Southern Resident killer whales - critical habitat\nAccessed: Data reference\nCitation: NOAA Fisheries’ West Coast Region, 2022"
   },
   {
     "objectID": "Data.html#esa-critical-habitat-for-leatherback-sea-turtles",
     "href": "Data.html#esa-critical-habitat-for-leatherback-sea-turtles",
     "title": "Data Sources",
     "section": "ESA Critical Habitat for Leatherback Sea Turtles",
-    "text": "ESA Critical Habitat for Leatherback Sea Turtles\nBrief Description\nAccessed: Unpublished\nUnits\nCitation"
+    "text": "ESA Critical Habitat for Leatherback Sea Turtles\nBrief Description: Leatherback sea turtles critical habitat (foraging)\nAccessed: Unpublished\nCitation: NOAA Fisheries’ West Coast Region, 2022"
   },
   {
-    "objectID": "Data.html#esa-critical-habitat-for-humpback-whales---mexico-and-central-dps",
-    "href": "Data.html#esa-critical-habitat-for-humpback-whales---mexico-and-central-dps",
+    "objectID": "Data.html#esa-critical-habitat-for-humpback-whales---mexico-and-central-distinct-population-segments",
+    "href": "Data.html#esa-critical-habitat-for-humpback-whales---mexico-and-central-distinct-population-segments",
     "title": "Data Sources",
-    "section": "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS",
-    "text": "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS\nBrief Description\nAccessed: Unpublished\nCitation: NOAA NMFS"
+    "section": "ESA Critical Habitat for Humpback Whales - Mexico and Central Distinct Population Segments",
+    "text": "ESA Critical Habitat for Humpback Whales - Mexico and Central Distinct Population Segments\nBrief Description: Humpback whales Mexico, and Central America distinct population segments critical habitat (foraging)\nAccessed: Unpublished\nCitation: NOAA Fisheries’ West Coast Region, 2022"
   },
   {
     "objectID": "Data.html#biologically-important-area---blue-whale",
     "href": "Data.html#biologically-important-area---blue-whale",
     "title": "Data Sources",
     "section": "Biologically Important Area - Blue Whale",
-    "text": "Biologically Important Area - Blue Whale\nBrief Description\nAccessed: Unpublished\nUnits\nCitation: NOAA NMFS"
+    "text": "Biologically Important Area - Blue Whale\nBrief Description: Blue whales biologically important areas (foraging)\nAccessed: Unpublished\nCitation: NOAA Fisheries’ West Coast Region, 2022"
   },
   {
     "objectID": "Data.html#at-sea-hake-mid-water-trawl",
     "href": "Data.html#at-sea-hake-mid-water-trawl",
     "title": "Data Sources",
     "section": "At-Sea Hake Mid-Water Trawl",
-    "text": "At-Sea Hake Mid-Water Trawl\nBrief Description: Logbooks from PacFIN via the NMFS NWSC observer program\nAccessed: Unpublished\nUnits\nCitation"
+    "text": "At-Sea Hake Mid-Water Trawl\nBrief Description: These data represent the At-sea hake mid-water trawl (mothership and catcher/processor vessels). Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from the NWFSC Observer Program, and PacFIN. Hours trawled was calculated from vessels between 2002 to 2019 from logbooks accessed through PacFIN via the NMFS NWFSC observer program database.\nAccessed: Unpublished\nCitation"
   },
   {
     "objectID": "Data.html#shoreside-hake-mid-water-trawl",
     "href": "Data.html#shoreside-hake-mid-water-trawl",
     "title": "Data Sources",
     "section": "Shoreside Hake Mid-Water Trawl",
-    "text": "Shoreside Hake Mid-Water Trawl\nBrief Description: Logbooks from PacFIN via the observer database and from ODFW, NMFS NWFSC Observer Program\nAccessed: Unpublished\nUnits\nCitation"
+    "text": "Shoreside Hake Mid-Water Trawl\nBrief Description: Brief Description: These data represent the shoreside hake mid-water trawl. Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from the NWFSC Observer Program, and PacFIN. Hours trawled were calculated from vessels between 2002 to 2020 from logbooks accessed through PacFIN via the NMFS NWFSC observer program database for 2011 to 2019 and logbooks for 2002 to 2010 and 2020 from Oregon Department of Fish and Wildlife.\nAccessed: Unpublished\nCitation"
   },
   {
     "objectID": "Data.html#groundfish-bottom-trawl",
     "href": "Data.html#groundfish-bottom-trawl",
     "title": "Data Sources",
     "section": "Groundfish Bottom Trawl",
-    "text": "Groundfish Bottom Trawl\nBrief Description: Logbooks from PacFIN via the NMFS NWSC observer program database\nAccessed: Unpublished\nUnits\nCitation"
+    "text": "Groundfish Bottom Trawl\nBrief Description: These data represent the Groundfish bottom trawl (limited entry plus catch shares) fishery. One metric was calculated for consideration using the methodology above. Hours trawled, or the cumulative sum of hours trawled, was calculated for vessels recorded from 2002 to 2020 from logbooks from PacFIN via the NMFS NWFSC observer program database.\nAccessed: Unpublished\nCitation"
   },
   {
     "objectID": "Data.html#groundfish-pot-gear",
     "href": "Data.html#groundfish-pot-gear",
     "title": "Data Sources",
     "section": "Groundfish Pot Gear",
-    "text": "Groundfish Pot Gear\nBrief Description\nAccessed: Unpublished\nUnits\nCitation"
+    "text": "Groundfish Pot Gear\nBrief Description: These data represent the groundfish fixed gear - pot fishery. Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from data provided by Oregon Department of Fish and Wildlife. Gear hours soaked were calculated from vessels between 2011 to 2020 from data provided by Oregon Department of Fish and Wildlife.\nAccessed: Unpublished\nCitation"
   },
   {
     "objectID": "Data.html#groundfish-long-line-gear",
     "href": "Data.html#groundfish-long-line-gear",
     "title": "Data Sources",
     "section": "Groundfish Long Line Gear",
-    "text": "Groundfish Long Line Gear\nBrief Description\nAccessed: Unpublished\nUnits\nCitation"
+    "text": "Groundfish Long Line Gear\nBrief Description: These data represent the groundfish fixed gear - longline fishery. Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from data provided by Oregon Department of Fish and Wildlife. Gear hours soaked were calculated from vessels between 2011 to 2020 from data provided by Oregon Department of Fish and Wildlife.\nAccessed: Unpublished\nCitation"
   },
   {
     "objectID": "Data.html#pink-shrimp-trawl",
     "href": "Data.html#pink-shrimp-trawl",
     "title": "Data Sources",
     "section": "Pink Shrimp Trawl",
-    "text": "Pink Shrimp Trawl\nBrief Description: ODFW logbook, PacFIN\nAccessed: Unpublished\nUnits\nCitation"
+    "text": "Pink Shrimp Trawl\nBrief Description: These data represent the pink shrimp trawl fishery. Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from data provided by Oregon Department of Fish and Wildlife logbook and PacFIN. Hours trawled was calculated from vessels between 2011 to 2020 from data provided by Oregon Department of Fish and Wildlife logbooks and PacFIN.\nAccessed: Unpublished\nCitation"
   },
   {
     "objectID": "Data.html#dungeness-crab",
     "href": "Data.html#dungeness-crab",
     "title": "Data Sources",
     "section": "Dungeness Crab",
-    "text": "Dungeness Crab\nBrief Description: ODFW logbook, PacFIN\nAccessed: Unpublished\nUnits\nCitation"
+    "text": "Dungeness Crab\nBrief Description: These data represent the dungeness crab pot fishery. Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from data provided by Oregon Department of Fish and Wildlife logbooks and PacFIN. Number of pots per vessel was calculated for the following seasons: 2007/08 -to 2010/11 and 2018/19 to 2019/20 seasons from data provided by Oregon Department of Fish and Wildlife logbooks and PacFIN.\nAccessed: Unpublished\nCitation"
   },
   {
     "objectID": "Data.html#commercial-trollhook-and-line-albacore",
     "href": "Data.html#commercial-trollhook-and-line-albacore",
     "title": "Data Sources",
     "section": "Commercial Troll/Hook and Line Albacore",
-    "text": "Commercial Troll/Hook and Line Albacore\nBrief Description: NMFS SWFSC, PacFIN\nAccessed: Unpublished\nUnits\nCitation"
+    "text": "Commercial Troll/Hook and Line Albacore\nBrief Description: These data represent the commercial albacore - troll/hook-and-line fishery. Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from data provided by NMFS SWFSC and PacFIN. Hours fished were calculated from vessels between 2005 to 2021 from data provided by NMFS SWFSC.\nAccessed: Unpublished\nCitation"
   },
   {
     "objectID": "Data.html#charter-vessel-albacore-trollhook-and-line",
     "href": "Data.html#charter-vessel-albacore-trollhook-and-line",
     "title": "Data Sources",
     "section": "Charter Vessel Albacore Troll/Hook and Line",
-    "text": "Charter Vessel Albacore Troll/Hook and Line\nBrief Description:\nAccessed: Unpublished\nUnits\nCitation"
+    "text": "Charter Vessel Albacore Troll/Hook and Line\nBrief Description: These data represent the recreational charter albacore - troll/hook and line fishery. One metric was calculated for consideration using the methodology above. Days fished was calculated, as the cumulative sum of days fished, from vessels between 2005 to 2021 from data provided by NMFS SWFSC.\nAccessed: Unpublished\nCitation"
   },
   {
     "objectID": "Data.html#trawl-fisheries",
     "href": "Data.html#trawl-fisheries",
     "title": "Data Sources",
     "section": "Trawl Fisheries",
-    "text": "Trawl Fisheries\nBrief Description: Trawl fisheries (bottom and mid-water trawl), in particular, have little flexibility in where they fish due to their operational logistics. The gear requires large spaces for maneuverability and is incompatible with other structures and cables/mooring lines in the water, including what would likely be infrastructure for floating offshore wind platforms and anchors. The targeted species are also associated with locations along the shelf and slope and specific depth ranges. Therefore, these fisheries are especially vulnerable to fragmentation of fishing grounds. Four trawl fisheries operate within the two OR Call Areas: Groundfish bottom trawl (Federal), At-sea hake mid-water trawl (Federal), Shoreside hake mid-water trawl (Federal), Pink shrimp trawl (State).\nFor the four trawl fisheries, NMFS and ODFW calculated the regions where the top 75% of the ranked importance values occur.\nAccessed: Unpublished\nUnits\nCitation: If you have additional questions please refer to the Fisheries Considerations provided by NOAA’s National Marine Fisheries Service (NMFS) and Oregon Department of Fish and Wildlife (ODFW) included in the NCCOS Spatial Modeling of Oregon Call Areas as Appendix E."
+    "text": "Trawl Fisheries\nBrief Description: Trawl fisheries (bottom and mid-water trawl), in particular, have little flexibility in where they fish due to their operational logistics. The gear requires large spaces for maneuverability and is incompatible with other structures and cables/mooring lines in the water, including what would likely be infrastructure for floating offshore wind platforms and anchors. The targeted species are also associated with locations along the shelf and slope and specific depth ranges. Therefore, these fisheries are especially vulnerable to fragmentation of fishing grounds. Four trawl fisheries operate within the two OR Call Areas: Groundfish bottom trawl (Federal), At-sea hake mid-water trawl (Federal), Shoreside hake mid-water trawl (Federal), Pink shrimp trawl (State).\nFor the four trawl fisheries, NMFS and ODFW calculated the regions where the top 75% of the ranked importance values occur.\nAccessed: Unpublished\nCitation:"
   },
   {
     "objectID": "Data.html#fixed-surveys",

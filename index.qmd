@@ -22,7 +22,11 @@ The SMORES Shiny Application was built in RStudio and is hosted on the NOAA NWFS
 
 # How do I report issues or bugs in the app?
 
-To report any issues or bugs within the code please create an issue on the Github repository. The issues for this repository can be found [here](https://github.com/noaa-nwfsc/SMORES/issues).
+To report any issues or bugs within the code please create an issue on the Github repository. The issues for this repository can be found [here](https://github.com/noaa-nwfsc/SMORES/issues){target="_blank"}.
+
+# How do I request a new data layer be added to the app, so it can be included in the modeling schema?
+
+To request a new data layer be added to the SMORES app please either leave a Github issue or fill out this [form](https://docs.google.com/forms/d/e/1FAIpQLScVcpkcSC8S1xwG7Flo56gbgyL4rHu5b1yWlUZic28BLpYZ8w/viewform?usp=sharing&ouid=115812646753688012888){target="_blank"}. Please make sure to include the name of the dataset and a data access point. 
 
 # Disclaimer
 

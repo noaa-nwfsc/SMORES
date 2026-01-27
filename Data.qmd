@@ -11,9 +11,9 @@ format: html
 
 **Accessed**:
 
-California Wind Energy Area Boundaries: [ArcGIS Rest Service](https://services7.arcgis.com/G5Ma95RzqJRPKsWL/ArcGIS/rest/services/Wind_Lease_Boundaries__BOEM_/FeatureServer){target="_blank"}
+- California Wind Energy Area Boundaries: [ArcGIS Rest Service](https://services7.arcgis.com/G5Ma95RzqJRPKsWL/ArcGIS/rest/services/Wind_Lease_Boundaries__BOEM_/FeatureServer){target="_blank"}
 
-Draft Oregon Wind Energy Area Boundaries: [Link](https://www.boem.gov/renewable-energy/state-activities/oregon-activities){target="_blank"}
+- Draft Oregon Wind Energy Area Boundaries: [Link](https://www.boem.gov/renewable-energy/state-activities/oregon-activities){target="_blank"}
 
 **Units**: EPSG:3857
 
@@ -47,15 +47,13 @@ membership function from 0.0–1.
 
 **Accessed**: [ArcGIS Rest Service](https://gis.ngdc.noaa.gov/arcgis/rest/services/nccos/USWestCoast_DeepSeaCoralsSponges/MapServer/256){target="_blank"}
 
-**Citation**: National Oceanic and Atmospheric Adminstration (NOAA) National Centers for Coastal Ocean Science (NCCOS)
+**Citation**: Poti, M.; Henkel, S.; Bizzarro, J.; Hourigan, T.; Clarke, M.; Whitmire, C.; Powell, A.; Yoklavich, M.; Bauer, L.; Winship, A.; Coyne, M.; Gillett, D.; Gilbane, L.; Christensen, J.; Jeffrey, C. (2020). Cross-Shelf Habitat Suitability Modeling: Characterizing Potential Distributions of Deep-Sea Corals, Sponges, and Macrofauna Offshore of the US West Coast. Retrieved from [https://coastalscience.noaa.gov/project/predictive-benthic-habitat-suitability-modeling-of-deep-sea-biota-on-the-us-pacific-outer-continental-shelf/](https://coastalscience.noaa.gov/project/predictive-benthic-habitat-suitability-modeling-of-deep-sea-biota-on-the-us-pacific-outer-continental-shelf/){target="_blank"}
 
 ## Seeps
 
 **Brief Description**: Methane bubble streams identified during multibeam sonar surveys often indicate the location of active methane seeps and associated seep communities on the seafloor. We curated data layers from recent publications that summarize the point locations of these bubble streams. Recent remotely operated vehicle (ROV) surveys have confirmed active gas venting on the seafloor for some of these locations, as well as the presence of methane seep communities. 
 
 **Accessed**: Unpublished
-
-**Units**
 
 **Citation**
 
@@ -65,18 +63,13 @@ membership function from 0.0–1.
 
 **Accessed**: 
 
-**Units**
-
-**Citation**: Goldfinger et al. 2014
-Surficial Geologic Habitat v.4.0; https://www.boem.gov/sites/default/files/environmentalstewardship/Environmental-Studies/PacificRegion/Studies/BOEM2014-662-Vol-1.pdf
+**Citation**: Goldfinger, Chris & Henkel, Sarah & Romsos, Christopher & Havron, Andrea & Black, Bran. (2014). Benthic Habitat Characterization Offshore the Pacific Northwest Volume 1: Evaluation of Continental Shelf Geology. 10.13140/2.1.3345.0561. 
 
 ## EFHCA
 
 **Brief Description**: Shapefile depicting boundaries of EFH conservation areas. This shapefile is not a legal boundary but is rather a geospatial representation of what is published in the Code of Federal Regulations (50 CFR 660).
 
 **Accessed**: NMFS EFH resource [site](https://www.fisheries.noaa.gov/resource/map/essential-fish-habitat-groundfish-and-salmon){target="_blank"}. 
-
-**Units**
 
 **Citation**
 
@@ -85,8 +78,6 @@ Surficial Geologic Habitat v.4.0; https://www.boem.gov/sites/default/files/envir
 **Brief Description**: Shapefile depicting boundary of the "Seaward of the 700-fm bottom trawl closure" EFH conservation area. This shapefile is not a legal boundary but is rather a geospatial representation of what is published in the Code of Federal Regulations (50 CFR 660).
 
 **Accessed**
-
-**Units**
 
 **Citation**
 
@@ -102,8 +93,6 @@ Off of California: all seamounts, including Gumdrop Seamount, Pioneer Seamount, 
 
 **Accessed**: 
 
-**Units**
-
 **Citation**
 
 ## HAPC Rocky Reef
@@ -112,139 +101,121 @@ Off of California: all seamounts, including Gumdrop Seamount, Pioneer Seamount, 
 
 **Accessed**: 
 
-**Units**
-
 **Citation**
 
 # Species Layers
 
 ## ESA Critical Habitat for Southern Resident Killer Whales
 
-**Brief Description**
+**Brief Description**: Southern Resident killer whales - critical habitat
 
 **Accessed**: [Data reference](https://www.fisheries.noaa.gov/action/critical-habitat-southern-resident-killer-whale){target="_blank"}
 
-**Units**
-
-**Citation**: NOAA NMFS
+**Citation**: NOAA Fisheries’ West Coast Region, 2022 
 
 ## ESA Critical Habitat for Leatherback Sea Turtles
 
-**Brief Description**
+**Brief Description**: Leatherback sea turtles critical habitat (foraging)
 
 **Accessed**: Unpublished
 
-**Units**
+**Citation**: NOAA Fisheries’ West Coast Region, 2022 
 
-**Citation**
+## ESA Critical Habitat for Humpback Whales - Mexico and Central Distinct Population Segments
 
-## ESA Critical Habitat for Humpback Whales - Mexico and Central DPS
-
-**Brief Description**
+**Brief Description**: Humpback whales Mexico, and Central America distinct population segments critical habitat (foraging)
 
 **Accessed**: Unpublished
 
-**Citation**: NOAA NMFS
+**Citation**: NOAA Fisheries’ West Coast Region, 2022 
 
 ## Biologically Important Area - Blue Whale
 
-**Brief Description**
+**Brief Description**: Blue whales biologically important areas (foraging)
 
 **Accessed**: Unpublished
 
-**Units**
-
-**Citation**: NOAA NMFS
+**Citation**: NOAA Fisheries’ West Coast Region, 2022 
 
 # Fisheries Layers
 
+To generate fisheries layers the following methodology was utilized by NMFS and ODFW per Appendix E of A Wind Energy Area Siting Analysis for the Oregon Call Areas [Report](https://tethys.pnnl.gov/sites/default/files/publications/Carlton_et_al_2024.pdf){target="_blank"}: 
+
+Fishing location information and duration fished were extracted or calculated from state and federal logbook and federal observer program datasets for each fishing event for each fishery. Straight lines were drawn between the fishing start and end geocoordinates to create fishing event lines when both values were available; point locations were created when only a single fishing event geocoordinate was available. Each line or point location was matched to corresponding PacFIN fish ticket information to retrieve inflation-adjusted ex-vessel (in 2020 USD) revenue derived from each fishing event.  These lines and points of fishing effort and revenue were then overlaid and summarized on a 2x2-km grid. 
+
+Data was rank transformed for the fishing effort and revenue data. Each grid cell had a normalized (between 0 and 1) rank-transformed revenue and effort value. The higher of the two normalized values per grid cell was selected to be the Ranked Importance score. 
+
+* Note that data does not account for future shifts in species distributions and corresponding shifts in fisheries activity.
+
 ## At-Sea Hake Mid-Water Trawl
 
-**Brief Description**: Logbooks from PacFIN via the NMFS NWSC observer program
+**Brief Description**: These data represent the At-sea hake mid-water trawl (mothership and catcher/processor vessels). Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from the NWFSC Observer Program, and PacFIN. Hours trawled was calculated from vessels between 2002 to 2019 from logbooks accessed through PacFIN via the NMFS NWFSC observer program database.
 
 **Accessed**: Unpublished
-
-**Units**
 
 **Citation**
 
 ## Shoreside Hake Mid-Water Trawl
 
-**Brief Description**: Logbooks from PacFIN via the observer database and from ODFW, NMFS NWFSC Observer Program
+**Brief Description**: Brief Description: These data represent the shoreside hake mid-water trawl. Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from the NWFSC Observer Program, and PacFIN. Hours trawled were calculated from vessels between 2002 to 2020 from logbooks accessed through PacFIN via the NMFS NWFSC observer program database for 2011 to 2019 and logbooks for 2002 to 2010 and 2020 from Oregon Department of Fish and Wildlife.
 
 **Accessed**: Unpublished
-
-**Units**
 
 **Citation**
 
 ## Groundfish Bottom Trawl
 
-**Brief Description**: Logbooks from PacFIN via the NMFS NWSC observer program database
+**Brief Description**: These data represent the Groundfish bottom trawl (limited entry plus catch shares) fishery. One metric was calculated for consideration using the methodology above. Hours trawled, or the cumulative sum of hours trawled, was calculated for vessels recorded from 2002 to 2020 from logbooks from PacFIN via the NMFS NWFSC observer program database.
 
 **Accessed**: Unpublished
-
-**Units**
 
 **Citation**
 
 ## Groundfish Pot Gear
 
-**Brief Description**
+**Brief Description**: These data represent the groundfish fixed gear - pot fishery. Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from data provided by Oregon Department of Fish and Wildlife. Gear hours soaked were calculated from vessels between 2011 to 2020 from data provided by Oregon Department of Fish and Wildlife.
 
 **Accessed**: Unpublished
-
-**Units**
 
 **Citation**
 
 ## Groundfish Long Line Gear
 
-**Brief Description**
+**Brief Description**: These data represent the groundfish fixed gear - longline fishery. Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from data provided by Oregon Department of Fish and Wildlife. Gear hours soaked were calculated from vessels between 2011 to 2020 from data provided by Oregon Department of Fish and Wildlife.
 
 **Accessed**: Unpublished
-
-**Units**
 
 **Citation**
 
 ## Pink Shrimp Trawl
 
-**Brief Description**: ODFW logbook, PacFIN
+**Brief Description**: These data represent the pink shrimp trawl fishery. Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from data provided by Oregon Department of Fish and Wildlife logbook and PacFIN. Hours trawled was calculated from vessels between 2011 to 2020 from data provided by Oregon Department of Fish and Wildlife logbooks and PacFIN.
 
 **Accessed**: Unpublished
-
-**Units**
 
 **Citation**
 
 ## Dungeness Crab
 
-**Brief Description**: ODFW logbook, PacFIN
+**Brief Description**: These data represent the dungeness crab pot fishery. Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from data provided by Oregon Department of Fish and Wildlife logbooks and PacFIN. Number of pots per vessel was calculated for the following seasons: 2007/08 -to 2010/11 and 2018/19 to 2019/20 seasons from data provided by Oregon Department of Fish and Wildlife logbooks and PacFIN.
 
 **Accessed**: Unpublished
-
-**Units**
 
 **Citation**
 
 ## Commercial Troll/Hook and Line Albacore
 
-**Brief Description**: NMFS SWFSC, PacFIN
+**Brief Description**: These data represent the commercial albacore - troll/hook-and-line fishery. Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from data provided by NMFS SWFSC and PacFIN. Hours fished were calculated from vessels between 2005 to 2021 from data provided by NMFS SWFSC.
 
 **Accessed**: Unpublished
-
-**Units**
 
 **Citation**
 
 ## Charter Vessel Albacore Troll/Hook and Line
 
-**Brief Description**: 
+**Brief Description**: These data represent the recreational charter albacore - troll/hook and line fishery. One metric was calculated for consideration using the methodology above. Days fished was calculated, as the cumulative sum of days fished, from vessels between 2005 to 2021 from data provided by NMFS SWFSC.
 
 **Accessed**: Unpublished
-
-**Units**
 
 **Citation**
 
@@ -256,9 +227,7 @@ For the four trawl fisheries, NMFS and ODFW calculated the regions where the top
 
 **Accessed**: Unpublished
 
-**Units**
-
-**Citation**: If you have additional questions please refer to the Fisheries Considerations provided by NOAA's National Marine Fisheries Service (NMFS) and Oregon Department of Fish and Wildlife (ODFW) included in the NCCOS Spatial Modeling of Oregon Call Areas as [Appendix E](https://www.boem.gov/sites/default/files/documents/renewable-energy/state-activities/Appendix%20B_NCCOS%20Final%20WEA%20Report_Oregon.pdf){target="_blank"}. 
+**Citation**:
 
 # Scientific Surveys Layers
 
