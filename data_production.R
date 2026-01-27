@@ -105,13 +105,13 @@
 # #save data to capture all static values a user can select
 # canyons_scored_long <- pivot_longer(canyon_scored, cols = starts_with(c("0", "1")), names_to = "Canyon", values_to = "Score.Canyon") %>%
 #   sf::st_transform(4326) %>%
-#   select(-Canyon) %>% 
+#   select(-Canyon) %>%
 #   st_zm()
 # 
 # st_write_parquet(canyons_scored_crs, "C:\\GitHub\\SMORES\\data\\canyon_scored_full.parquet")
 # canyons_scored_long_reread <- st_read_parquet("C:\\GitHub\\SMORES\\data\\canyon_scored_full.parquet")
 # 
-# canyons_scored_crs <- canyons_scored_long_reread %>% 
+# canyons_scored_crs <- canyons_scored_long_reread %>%
 #   sf::st_transform(4326)  %>%
 #   st_zm()
 # 
@@ -1075,9 +1075,20 @@
 # 
 # trawl_fisheries <- trawl_fisheries[-485, ]
 # 
+# #index removal successful
+# plot(trawl_fisheries)
+# 
 # st_geometry_type(trawl_fisheries)
 # 
-# st_write_parquet(trawl_fisheries, "C:\\GitHub\\SMORES\\data\\trawl_fisheries_scored_full.parquet")
+# # returns false for a number of data points
+# st_is_valid(trawl_fisheries)
+# 
+# valid_trawl <- st_make_valid(trawl_fisheries)
+# plot(trawl_fisheries)
+# plot(valid_trawl)
+# st_is_valid(valid_trawl)
+# 
+# st_write_parquet(valid_trawl, "C:\\GitHub\\SMORES\\data\\trawl_fisheries_scored_full.parquet")
 # 
 # #WEA's
 # BOEM.gdb <- "Z:\\ArcGIS\\Projects\\OWEC\\p30\\boem_offshorewindenergy.gdb"
