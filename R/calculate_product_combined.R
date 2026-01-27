@@ -23,7 +23,6 @@ calculate_product_value <- function(combined_data) {
       if(!is.numeric(vals)) vals <- as.numeric(vals)
       
       # Treat NA as 1 for Product Logic
-      # (Mathematical equivalent of "Ignoring" the layer)
       vals[is.na(vals)] <- 1
       result_vector <- result_vector * vals
     }
