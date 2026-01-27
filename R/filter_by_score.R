@@ -6,9 +6,32 @@ filter_by_score <- function(df, selected_score, base_grid = NULL, layer_name = N
     return(df)
   }
   
-  # 2. Excluded Layers (Return immediately)
+  # 2. Excluded Layers (Trawl Fisheries)
+  # These layers skip the standard score filtering because we want to keep all their values
+  # (Preventing the "filling of 1s" that happens when we drop rows).
   excluded_layers <- c("Trawl Fisheries @ 75%")
+  
   if(!is.null(layer_name) && layer_name %in% excluded_layers) {
+    
+    # --- NEW: CROP TO AOI ---
+    # We use the base_grid (which is the AOI) to filter the rows of the Trawl data.
+    
+    if(!is.null(base_grid) && "CellID_2km" %in% names(base_grid) && "CellID_2km" %in% names(df)) {
+      
+      # Get the list of Cell IDs that exist in the AOI
+      valid_ids <- base_grid$CellID_2km
+      
+      # Filter the Trawl data to keep ONLY rows that are in the AOI
+      # This performs the crop without changing the scores
+      if("sf" %in% class(df)) {
+        df <- df[df$CellID_2km %in% valid_ids, ]
+      } else {
+        df <- df[df$CellID_2km %in% valid_ids, ]
+      }
+    }
+    
+    # Return the cropped, but UNFILTERED data.
+    # This preserves real zeros and scores, satisfying "should not have 1s filled in".
     return(df)
   }
   
