@@ -1,37 +1,35 @@
-# Calculate lowest value across all score columns
 calculate_lowest_value <- function(combined_data) {
   
-  # Find all score columns
   score_cols <- names(combined_data)[grep("^Score\\.", names(combined_data))]
   
   if(length(score_cols) > 0) {
     
-    # Extract score values without geometry
+    strict_cols <- attr(combined_data, "strict_na_cols")
+    
     if("sf" %in% class(combined_data)) {
       score_df <- sf::st_drop_geometry(combined_data)[, score_cols, drop = FALSE]
     } else {
       score_df <- combined_data[, score_cols, drop = FALSE]
     }
     
-    # --- VECTORIZED CALCULATION (Instant) ---
-    
-    # We iterate through columns to ensure they are numeric and fill NAs with 1.
-    # This treats missing data as 1
-    score_df[] <- lapply(score_df, function(x) {
-      # Handle potential list-columns from parquet/sf logic
+    # Hybrid Imputation
+    score_df[] <- lapply(names(score_df), function(col_name) {
+      x <- score_df[[col_name]]
       if(is.list(x)) x <- unlist(x)
-      
-      # Ensure numeric
       x <- as.numeric(x)
       
-      # Replace NA with 1
-      x[is.na(x)] <- 1
+      # Only fill NAs with 1 if it is NOT a strict column
+      if (!col_name %in% strict_cols) {
+        x[is.na(x)] <- 1
+      }
       return(x)
     })
     
-    # Execute pmin efficiently
-    # pmin compares Index 1 of Col A vs Index 1 of Col B, etc.
-    combined_data$Lowest_value <- do.call(pmin, score_df)
+    # Use na.rm = TRUE to ignore the Strict NAs (masked layers)
+    combined_data$Lowest_value <- do.call(pmin, c(score_df, list(na.rm = TRUE)))
+    
+    # Filter out rows that are entirely NA
+    combined_data <- combined_data[!is.na(combined_data$Lowest_value) & !is.infinite(combined_data$Lowest_value), ]
   }
   
   return(combined_data)

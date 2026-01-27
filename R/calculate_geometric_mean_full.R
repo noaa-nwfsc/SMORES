@@ -55,7 +55,7 @@ calculate_geometric_mean_full <- function(submodels, weights, base_grid) {
       combined_data$Overall_Geo_mean <- combined_data[[weighted_columns[1]]]
       
     } else {
-      # Multiple submodels - use weighted geometric mean
+ 
       # Get all weighted component columns as a matrix
       weight_matrix <- combined_data %>%
         st_drop_geometry() %>%
