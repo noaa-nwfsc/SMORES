@@ -25,17 +25,17 @@ To generate a full model run you will move through the first 5 tabs from left to
 
 Each sub-tab contains further detail on scoring suggestions and cues to generate the layers of your choice.
 
-**Step 1**: Navigate to the Area of Interest tab and select a region you would like your analyses to focus on.
+**Step 1**: Navigate to the Area of Interest tab and select an area or region you would like your analyses to focus on.
 
-**Step 2**: Navigate to the Natural Resources Submodel Tab. You will start at the Habitat sub-tab and select the scores you would like in this model run. Once you have configured your individual layer scores you will select the calculation method you would like used to combine these layers (geometric mean, lowest value, product). This will generate your combined maps. You can opt to export a copy of your results by selecting the Export button at the bottom of the page.
+**Step 2**: Navigate to the Natural Resources Submodel Tab. You will start at the Habitat sub-tab and select the scores you would like in this model run. Once you have configured your individual layer scores you will select the `Generate Maps` button to visualize the individual layers you selected. You will then select the calculation method(s) used to combine these layers (geometric mean, lowest value, product). Combined maps will then be generated when you select the `Generate Combined Maps` button. You can opt to export a copy of your results by selecting the `Export` button at the bottom of the page.
 
 **Step 3**: Navigate to the Species tab and repeat the process you used for the habitat tab.
 
-**Step 4**: Navigate to the Combined Submodel Tab. You will select which calculation method you would like for your combined maps to be included in the overall submodel calculation. You will then click on the generate Combined Submodel button which will produce 3 maps. The first map will represent the combined submodel score for the whole west coast. The second map will show the combined submodel score for the area of interest you previously selected. The third map will show the combined submodel for the area of interest normalized using a minimum maximum normalization.You can opt to export a copy of your results by selecting the Export button at the bottom of the page.
+**Step 4**: Navigate to the Combined Submodel Tab. You will select which calculation method you would like for your combined maps to be included in the overall submodel calculation. *Note you are only able to select methods that you previously generated. You will then click on the `Generate Combined Submodel` button which will produce 2 maps. The first map will be the combined submodel score for the area of interest. The second map will show the combined submodel for the area of interest normalized using a minimum maximum normalization. *Note the normalized map is for visual use only and is not used in downstream calculations. You can opt to export a copy of your results by selecting the `Export` button at the bottom of the page.
 
 *At this stage the Natural Resources Submodel that will be included in the Full Model has been generated.*
 
-**Step 5**: Repeat steps 2-4 for the Fisheries Submodel which will include selecting scores for fisheries and trawl fisheries layers. \*Note that when you combine the fisheries layers with the trawl fishery layers the trawl fishery score will replace the score in grid cells within the top 75% of the trawl fisheries' ranked importance values. This is a different methodology than previous sections.
+**Step 5**: Repeat steps 2-4 for the Fisheries Submodel which will include selecting scores for fisheries and trawl fisheries layers. *Note that when you combine the fisheries layers with the trawl fishery layers the trawl fishery score will replace the score in grid cells within the top 75% of the trawl fisheries' ranked importance values. This is a different methodology than previous sections.
 
 *At this stage the Fisheries Submodel that will be included in the Full Model has been generated.*
 
@@ -43,7 +43,7 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
 
 *At this stage the Industry & Operations Submodel that will be included in the Full Model has been generated.*
 
-**Step 7**: Navigate to the Full Model Tab. You will select which submodels you would like to be included in the calculation of the full model and then select the weight you would like applied to each submodel. Once you have configured your submodels you will click on the generate Full Model button which will produce 3 maps.The first map will represent the full model scores for the whole west coast. The second map will show the full model scores for the area of interest you previously selected. The third map will show the full model for the area of interest normalized using a minimum maximum normalization.You can opt to export a copy of your results by selecting the Export button at the bottom of the page.
+**Step 7**: Navigate to the Full Model Tab. You will select which submodels you would like to be included in the calculation of the full model and then select the weight you would like applied to each submodel. Once you have configured your submodels you will click on the `Generate Full Model` button which will produce the map of the full model run for the selected area of interest. You can opt to export a copy of your results by selecting the `Export` button at the bottom of the page.
 
 ## Repository Structure
 <details>
