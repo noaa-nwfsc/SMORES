@@ -1,99 +1,103 @@
 calculate_geometric_mean_full <- function(submodels, weights, base_grid) {
   
-  # Weight Preparation
   if(length(submodels) == 0) {
     stop("No submodels provided for suitability calculation.")
   }
   
-  # Store raw weights used in the model construction as a named vector for easy lookup
-  weight_vector <- unlist(weights)
+  # drop geometry to create base grid
+  if("sf" %in% class(base_grid)) {
+    base_df <- sf::st_drop_geometry(base_grid)
+    base_geom <- sf::st_geometry(base_grid)
+  } else {
+    base_df <- base_grid
+    base_geom <- NULL
+  }
   
-  # Calculate Weighted Components
-  combined_data <- base_grid
-  weighted_columns <- c()
+  # Start with just the ID column
+  combined_df <- base_df[, "CellID_2km", drop = FALSE]
   
-  for(i in seq_along(submodels)) {
-    submodel_name <- names(submodels)[i]
-    submodel_data <- submodels[[i]]
+  # Vectors to track valid columns and their weights
+  data_col_names <- c()
+  weight_lookup <- unlist(weights)
+  ordered_weights <- c()
+  
+  for(submodel_name in names(submodels)) {
+    submodel_data <- submodels[[submodel_name]]
     
-    # Use the raw input weight directly
-    weight <- weight_vector[[submodel_name]] 
-    
+    # Validation check
     if(is.null(submodel_data) || !"Geo_mean" %in% names(submodel_data)) {
       warning(paste("Submodel", submodel_name, "is missing or lacks 'Geo_mean'. Skipping."))
       next
     }
     
-    # Weighted component: C_i = x_i ^ W_i (W_i is the raw weight)
-    weighted_col_name <- paste0("Weighted_", submodel_name)
+    # Extract just the ID and Score
+    temp_df <- sf::st_drop_geometry(submodel_data)[, c("CellID_2km", "Geo_mean")]
     
-    temp_data <- submodel_data %>%
-      st_drop_geometry() %>%
-      select(CellID_2km, Geo_mean) %>%
-      mutate(
-        !!weighted_col_name := case_when(
-          is.na(Geo_mean) ~ NA_real_,
-          Geo_mean == 0 ~ 0,
-          Geo_mean > 0 ~ Geo_mean^weight,
-          TRUE ~ NA_real_
-        )
-      ) %>%
-      select(CellID_2km, !!weighted_col_name)
+    # Rename to submodel name
+    names(temp_df)[2] <- submodel_name
     
-    # Join with combined data
-    combined_data <- dplyr::left_join(combined_data, temp_data, by = "CellID_2km")
+    # Fast Left Join
+    combined_df <- dplyr::left_join(combined_df, temp_df, by = "CellID_2km")
     
-    weighted_columns <- c(weighted_columns, weighted_col_name)
+    # Track this column and its weight
+    data_col_names <- c(data_col_names, submodel_name)
+    ordered_weights <- c(ordered_weights, weight_lookup[[submodel_name]])
   }
   
-  # Calculate Overall Suitability (Weighted Geometric Mean)
-  if(length(weighted_columns) > 0) {
+  # Vectorized Weighted Geometric Mean Calculation
+  if(length(data_col_names) > 0) {
     
-    # For single submodel case, just copy the weighted values directly
-    if(length(weighted_columns) == 1) {
-      # Direct assignment for single submodel
-      combined_data$Overall_Geo_mean <- combined_data[[weighted_columns[1]]]
-      
-    } else {
- 
-      # Get all weighted component columns as a matrix
-      weight_matrix <- combined_data %>%
-        st_drop_geometry() %>%
-        select(all_of(weighted_columns)) %>%
-        as.matrix()
-      
-      # Calculate geometric mean row by row
-      combined_data$Overall_Geo_mean <- apply(weight_matrix, 1, function(row) {
-        non_na_vals <- row[!is.na(row)]
-        
-        if(length(non_na_vals) == 0) {
-          return(NA_real_)
-        } else if(any(non_na_vals == 0)) {
-          return(0)
-        } else {
-          # Get corresponding weights for non-NA values
-          non_na_indices <- which(!is.na(row))
-          contributing_cols <- weighted_columns[non_na_indices]
-          contributing_submodel_names <- gsub("Weighted_", "", contributing_cols)
-          participating_weights <- weight_vector[contributing_submodel_names]
-          sum_weights <- sum(participating_weights, na.rm = TRUE)
-          
-          if(sum_weights > 0) {
-            product_P <- prod(non_na_vals)
-            if(is.finite(product_P) && product_P > 0) {
-              result <- product_P^(1 / sum_weights)
-              if(is.finite(result)) return(result) else return(NA_real_)
-            }
-          }
-          return(NA_real_)
-        }
-      })
-    }
+    # Convert scores to matrix for math operations
+    score_matrix <- as.matrix(combined_df[, data_col_names, drop = FALSE])
+    mode(score_matrix) <- "numeric"
+    
+    # Create a matching matrix of weights (Rows = Cells, Cols = Layers)
+    n_rows <- nrow(score_matrix)
+    weight_matrix <- matrix(ordered_weights, nrow = n_rows, ncol = length(ordered_weights), byrow = TRUE)
+    
+    # Create a mask of where data actually exists
+    is_valid <- !is.na(score_matrix)
+    
+    # If a cell has NA for a layer, the weight for that layer becomes 0
+    weight_matrix[!is_valid] <- 0
+    
+    # Replace NA with 1 so the log() function doesn't crash
+    score_matrix[!is_valid] <- 1
+    
+    # If any *valid* submodel has a score of 0, the result is 0
+    has_zeros <- rowSums((score_matrix == 0) & is_valid, na.rm = TRUE) > 0
+    
+    # Step A: Numerator -> Sum of Weighted Logs
+    # suppressWarnings handles log(0) producing -Inf (we fix 0s later)
+    log_scores <- suppressWarnings(log(score_matrix))
+    log_scores[is.infinite(log_scores)] <- 0 # Temp fix for 0s
+    weighted_log_sum <- rowSums(weight_matrix * log_scores)
+    
+    # Step B: Denominator -> Sum of Valid Weights
+    # This ensures that if a layer is missing, the weights of the *remaining* layers scale up.
+    total_valid_weight <- rowSums(weight_matrix)
+    
+    # Step C: Final Calculation
+    overall_score <- rep(NA_real_, n_rows)
+    has_data <- total_valid_weight > 0
+    
+    overall_score[has_data] <- exp(weighted_log_sum[has_data] / total_valid_weight[has_data])
+    
+    # Step D: Apply Zero Logic (0 overrides everything)
+    overall_score[has_zeros] <- 0
+    
+    # Assign Result
+    combined_df$Overall_Geo_mean <- overall_score
+    
   } else {
-    # No valid submodels processed
-    combined_data$Overall_Geo_mean <- NA_real_
+    combined_df$Overall_Geo_mean <- NA_real_
   }
   
-  # Return the combined data
-  return(combined_data)
+  # Re-attach Geometry
+  if(!is.null(base_geom)) {
+    result_sf <- sf::st_as_sf(combined_df, geometry = base_geom)
+    return(result_sf)
+  } else {
+    return(combined_df)
+  }
 }
