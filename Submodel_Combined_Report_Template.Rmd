@@ -154,7 +154,27 @@ if (!is.null(params$component_layer_details) && length(params$component_layer_de
   # Create a comprehensive table showing all layers used in each component
   layer_details_list <- list()
   
-  for (component in names(params$component_layer_details)) {
+  # Component order to maintain
+  preferred_order <- c(
+    "Habitat", 
+    "Species", 
+    "Fisheries", 
+    "Trawl Fisheries", 
+    "Scientific Surveys", 
+    "Submarine Cables"
+  )
+  
+  available_components <- names(params$component_layer_details)
+  
+  sorted_components <- intersect(preferred_order, available_components)
+  
+  # Append any other components that might exist but weren't in our preferred list
+  remaining <- setdiff(available_components, preferred_order)
+  final_component_order <- c(sorted_components, remaining)
+  
+  global_row_counter <- 1
+  
+  for (component in final_component_order) {
     component_data <- params$component_layer_details[[component]]
     component_method <- component_data$method %||% "Unknown"
     component_layers <- component_data$layers %||% list()
@@ -170,8 +190,10 @@ if (!is.null(params$component_layer_details) && length(params$component_layer_de
           Score_Used = score_used,
           Component = component,
           Method = component_method,
+          order_id = global_row_counter, # Capture explicit order
           stringsAsFactors = FALSE
         )
+        global_row_counter <- global_row_counter + 1
       }
     }
   }
@@ -184,18 +206,21 @@ if (!is.null(params$component_layer_details) && length(params$component_layer_de
     if (!is.null(data_timestamps_df)) {
       all_layer_details <- all_layer_details %>%
         left_join(data_timestamps_df, by = "Layer_Name") %>%
+        # Remove duplicates if any
+        distinct(Layer_Name, Component, .keep_all = TRUE) %>%
+        arrange(order_id) %>%
         mutate(
           Data_Type = ifelse(is.na(Data_Type), "Unknown", Data_Type),
           Last_Updated = ifelse(is.na(Last_Updated), "Unknown", Last_Updated))
       
       # Display table with timestamps
-      kable(all_layer_details, 
+      kable(all_layer_details %>% select(-order_id), 
             col.names = c("Layer Name", "Selected Score", "Component", "Component Calculation Method", "Data Type", "Last Updated"),
             format = "html",
             table.attr = "class='table table-striped config-table'")
     } else {
-      # Display table without timestamps
-      kable(all_layer_details, 
+      # Display table without timestamps (still sorted)
+      kable(all_layer_details %>% select(-order_id), 
             col.names = c("Layer Name", "Selected Score", "Component", "Component Calculation Method"),
             format = "html",
             table.attr = "class='table table-striped config-table'")
@@ -212,14 +237,14 @@ if (!is.null(params$component_layer_details) && length(params$component_layer_de
 
 The combined submodel map represents the integration of all selected components using their specified calculation methods for the selected area of interest. The final combination is calculated using the geometric mean of the component scores to produce a unified assessment. This dataset are the scores that will be passed to the full model calculation.
 
-```{r}
+```{r, results='asis'}
 if (!is.null(params$combined_data)) {
   # Check if combined_data has the geometry and expected columns
   if (inherits(params$combined_data, 'sf')) {
-    cat("**Combined Submodel Data Points:** ", nrow(params$combined_data), "  \n")
-    cat("**Final Combination Method:** Geometric Mean of Component Scores  \n")
     
-    # Show value column information
+    # 1. Data Points (Standardized Label)
+    cat("**Data Points:** ", nrow(params$combined_data), "  \n")
+
     value_column <- if("Geo_mean" %in% names(params$combined_data)) "Geo_mean" else "Combined_Score"
     if (value_column %in% names(params$combined_data)) {
       valid_values <- params$combined_data[[value_column]][!is.na(params$combined_data[[value_column]])]
@@ -227,12 +252,16 @@ if (!is.null(params$combined_data)) {
         cat("**Value Range:** ", round(min(valid_values), 3), " to ", round(max(valid_values), 3), "  \n")
       }
     }
+    
+    cat("**Calculation Method:** Geometric Mean  \n")
+    
     cat("\n")
   }
 } else {
   cat("*Combined submodel data not available.*")
 }
 
+# Display the map
 if (!is.null(params$combined_map)) {
   params$combined_map
 } else {

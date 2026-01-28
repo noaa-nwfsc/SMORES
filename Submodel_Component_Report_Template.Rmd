@@ -40,21 +40,56 @@ render_individual_map_from_config <- function(config) {
 
 This report includes data from the following selected layers:
 
-```{r data-time, memory_profile=TRUE}
+```{r data-time}
+
 if (is.null(params$data_timestamps)) {
-  # Call the same function used in app
   timestamp_info <- get_data_timestamps()
   data_timestamps_table <- timestamp_info$data_timestamps
 } else {
   data_timestamps_table <- params$data_timestamps$data_timestamps
 }
 
-if (!is.null(data_timestamps_table)) {
-  display_table <- data_timestamps_table %>%
-    filter(!is.na(formatted_date)) %>%
-    select(dataset_name, description, data_type, formatted_date) %>%
+
+selected_config_list <- list()
+
+if (!is.null(params$map_configs) && length(params$map_configs) > 0) {
+  for (i in seq_along(params$map_configs)) {
+    config <- params$map_configs[[i]]
+    
+
+    layer_name <- config$layer %||% "Unknown"
+    score_val <- config$score %||% "N/A"
+    
+    selected_config_list[[length(selected_config_list) + 1]] <- data.frame(
+      dataset_name = layer_name,
+      selected_score = score_val,
+      order_id = i,  # Capture the original order from the app
+      stringsAsFactors = FALSE
+    )
+  }
+}
+
+if (length(selected_config_list) > 0) {
+  selected_config_df <- do.call(rbind, selected_config_list)
+} else {
+  selected_config_df <- NULL
+}
+
+
+if (!is.null(data_timestamps_table) && !is.null(selected_config_df)) {
+  
+
+  display_table <- selected_config_df %>%
+    left_join(data_timestamps_table, by = "dataset_name") %>%
+
+    distinct(dataset_name, selected_score, .keep_all = TRUE) %>%
+
+    arrange(order_id) %>%
+
+    select(dataset_name, selected_score, description, data_type, formatted_date) %>%
     rename(
       "Layer Name" = dataset_name,
+      "Selected Score" = selected_score,
       "Description" = description,
       "Data Type" = data_type,
       "Last Updated" = formatted_date
@@ -65,10 +100,10 @@ if (!is.null(data_timestamps_table)) {
           format = "html",
           table.attr = "class='table table-striped'")
   } else {
-    cat("No timestamp information available for the selected data layers.")
+    cat("No information available for the selected data layers.")
   }
 } else {
-  cat("Timestamp information not available.")
+  cat("Timestamp or configuration information not available.")
 }
 ```
 
@@ -76,7 +111,7 @@ if (!is.null(data_timestamps_table)) {
 
 The following maps are individual data layers that have been visualized for the study area. The maps are zoomed to the area of interest that was previously selected, and shown in a red outline. To view the wider study area select the zoom out button on the map. To more closely analyze a cell click on the cell of interest and a pop-up will generate with the assigned score. Above each of the maps is a block containing relevant information: layer name, score assigned, and the number of cells that are represented by this data layer.
 
-```{r individual-map1, results='asis', memory_profile=TRUE}
+```{r individual-map1, results='asis'}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 1) {
     config <- params$map_configs[[1]]
     
@@ -86,7 +121,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 1) {
   }
 ```
 
-```{r individual-map2, results='asis', memory_profile=TRUE}
+```{r individual-map2, results='asis'}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 2) {
     config <- params$map_configs[[2]]
     
@@ -96,7 +131,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 2) {
   }
 ```
 
-```{r individual-map3, results='asis', memory_profile=TRUE}
+```{r individual-map3, results='asis'}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 3) {
     config <- params$map_configs[[3]]
     
@@ -106,7 +141,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 3) {
   }
 ```
 
-```{r individual-map4, results='asis', memory_profile=TRUE}
+```{r individual-map4, results='asis'}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 4) {
     config <- params$map_configs[[4]]
     
@@ -116,7 +151,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 4) {
   }
 ```
 
-```{r individual-map5, results='asis', memory_profile=TRUE}
+```{r individual-map5, results='asis'}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 5) {
     config <- params$map_configs[[5]]
     
@@ -126,7 +161,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 5) {
   }
 ```
 
-```{r individual-map6, results='asis', memory_profile=TRUE}
+```{r individual-map6, results='asis'}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 6) {
     config <- params$map_configs[[6]]
     
@@ -136,7 +171,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 6) {
   }
 ```
 
-```{r individual-map7, results='asis', memory_profile=TRUE}
+```{r individual-map7, results='asis'}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 7) {
     config <- params$map_configs[[7]]
     
@@ -146,7 +181,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 7) {
   }
 ```
 
-```{r individual-map8, results='asis', memory_profile=TRUE}
+```{r individual-map8, results='asis'}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 8) {
     config <- params$map_configs[[8]]
     
@@ -156,7 +191,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 8) {
   }
 ```
 
-```{r individual-map9, results='asis', memory_profile=TRUE}
+```{r individual-map9, results='asis'}
 if(!is.null(params$map_configs) && length(params$map_configs) >= 9) {
     config <- params$map_configs[[9]]
     
@@ -170,7 +205,7 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 9) {
 
 The following maps are combined data layers that have been calculated and visualized for the study area. The maps are zoomed to the area of interest that was previously selected, and shown in a red outline. To view the wider study area select the zoom out button on the map. To more closely analyze a cell click on the cell of interest and a pop-up will generate with the assigned score. Above each of the maps is a block containing relevant information: the number of cells that are represented by this data layer, and the calculation method used (geometric mean, lowest value, or product method).
 
-```{r geometric-mean-map, results='asis', memory_profile=TRUE}
+```{r geometric-mean-map, results='asis'}
 if ("geometric_mean" %in% params$selected_methods && !is.null(params$combined_map_objects[["geometric_mean"]])) {
   cat("\n\n### Combined Map - Geometric Mean\n\n")
   
@@ -196,7 +231,7 @@ if ("geometric_mean" %in% params$selected_methods && !is.null(params$combined_ma
 }
 ```
 
-```{r lowest-map, results='asis', memory_profile=TRUE}
+```{r lowest-map, results='asis'}
 if ("lowest" %in% params$selected_methods && !is.null(params$combined_map_objects[["lowest"]])) {
   cat("\n\n### Combined Map - Lowest Value\n\n")
   
@@ -222,7 +257,7 @@ if ("lowest" %in% params$selected_methods && !is.null(params$combined_map_object
 }
 ```
 
-```{r product-map, results='asis', memory_profile=TRUE}
+```{r product-map, results='asis'}
 if ("product" %in% params$selected_methods && !is.null(params$combined_map_objects[["product"]])) {
   cat("\n\n### Combined Map - Product\n\n")
   
