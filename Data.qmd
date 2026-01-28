@@ -71,15 +71,15 @@ membership function from 0.0–1.
 
 **Accessed**: NMFS EFH resource [site](https://www.fisheries.noaa.gov/resource/map/essential-fish-habitat-groundfish-and-salmon){target="_blank"}. 
 
-**Citation**
+**Citation**: 
 
 ## EFHCA 700 fathoms
 
 **Brief Description**: Shapefile depicting boundary of the "Seaward of the 700-fm bottom trawl closure" EFH conservation area. This shapefile is not a legal boundary but is rather a geospatial representation of what is published in the Code of Federal Regulations (50 CFR 660).
 
-**Accessed**
+**Accessed**:
 
-**Citation**
+**Citation**:
 
 ## HAPC AOI
 
@@ -141,27 +141,35 @@ Off of California: all seamounts, including Gumdrop Seamount, Pioneer Seamount, 
 
 To generate fisheries layers the following methodology was utilized by NMFS and ODFW per Appendix E of A Wind Energy Area Siting Analysis for the Oregon Call Areas [Report](https://tethys.pnnl.gov/sites/default/files/publications/Carlton_et_al_2024.pdf){target="_blank"}: 
 
-Fishing location information and duration fished were extracted or calculated from state and federal logbook and federal observer program datasets for each fishing event for each fishery. Straight lines were drawn between the fishing start and end geocoordinates to create fishing event lines when both values were available; point locations were created when only a single fishing event geocoordinate was available. Each line or point location was matched to corresponding PacFIN fish ticket information to retrieve inflation-adjusted ex-vessel (in 2020 USD) revenue derived from each fishing event.  These lines and points of fishing effort and revenue were then overlaid and summarized on a 2x2-km grid. 
+Fishing location information and duration fished were extracted or calculated from ODFW, federal logbook, and West Coast Groundfish Observer Program (WCGOP) datasets for each fishing event for each fishery. Unless otherwise noted, all included fisheries were commercial. Straight lines were drawn between the fishing start and end geocoordinates to create fishing event lines (pot-strings, hauls, etc.) when both values were available; point locations were created when only a single fishing event geocoordinate was available. Landings specific information included with each line or point location was matched to corresponding PacFIN fish ticket information to retrieve inflation-adjusted ex-vessel (in 2020 USD) revenue for each fishing event. These lines and points of fishing effort and revenue were then overlaid and summarized on a 2x2-km grid. For the line features, the proportions of those features that spanned more than one grid cell were attributed to each corresponding grid cell, based on the proportion contained in each grid cell.
 
-Data was rank transformed for the fishing effort and revenue data. Each grid cell had a normalized (between 0 and 1) rank-transformed revenue and effort value. The higher of the two normalized values per grid cell was selected to be the Ranked Importance score. 
+Data were rank transformed for the fishing effort and revenue data. Each grid cell had a normalized (between 0 and 1) rank-transformed revenue and effort value. The higher of the two normalized values per grid cell was selected to be the Ranked Importance score. 
 
-* Note that data does not account for future shifts in species distributions and corresponding shifts in fisheries activity.
+*Note that data do not account for future shifts in species distributions and corresponding shifts in fisheries activity.
 
 ## At-Sea Hake Mid-Water Trawl
 
-**Brief Description**: These data represent the At-sea hake mid-water trawl (mothership and catcher/processor vessels). Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from the NWFSC Observer Program, and PacFIN. Hours trawled was calculated from vessels between 2002 to 2019 from logbooks accessed through PacFIN via the NMFS NWFSC observer program database.
+**Brief Description**: These data represent the At-sea hake (Pacific whiting) mid-water trawl (mothership and catcher/processor vessels). Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from the NWFSC Observer Program, and PacFIN (Feist et al. 2025). Hours trawled was calculated from vessels between 2002 to 2019 from logbooks accessed through PacFIN via the NMFS NWFSC observer program database.
 
 **Accessed**: Unpublished
 
-**Citation**
+**Citation**:
+
+- Carlton, J. ; Jossart, J.; Pendleton, F.; Sumait, N.; Miller, J.; Thurston-Keller, J.; Reeb, D.; Gilbane, L.; Pereksta, D.; Schroeder, D.; Morris Jr, J. (2024). A Wind Energy Area Siting Analysis For The Oregon Call Areas (Report No. : OCS Study BOEM 2024-015). Report by National Oceanic and Atmospheric Administration (NOAA).
+
+- Feist, BE, R Griffin, JF Samhouri, L Riekkola, AO Shelton, YA Chen, K Somers, K Andrews, OR Liu & J Isé (2025) Mapping the value of commercial fishing and potential costs of offshore wind energy on the U.S. West Coast: towards an assessment of resource use tradeoffs.  PLOS One  20(2): e0315319.  DOI:  [10.1371/journal.pone.0315319](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0315319){target="_blank"}
 
 ## Shoreside Hake Mid-Water Trawl
 
-**Brief Description**: Brief Description: These data represent the shoreside hake mid-water trawl. Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from the NWFSC Observer Program, and PacFIN. Hours trawled were calculated from vessels between 2002 to 2020 from logbooks accessed through PacFIN via the NMFS NWFSC observer program database for 2011 to 2019 and logbooks for 2002 to 2010 and 2020 from Oregon Department of Fish and Wildlife.
+**Brief Description**: Brief Description: These data represent the shoreside hake mid-water trawl. Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from the NWFSC Observer Program, and PacFIN (Feist et al. 2025). Hours trawled were calculated from vessels between 2002 to 2020 from logbooks accessed through PacFIN via the NMFS NWFSC observer program database for 2011 to 2019 and logbooks for 2002 to 2010 and 2020 from Oregon Department of Fish and Wildlife.
 
 **Accessed**: Unpublished
 
-**Citation**
+**Citation**:
+
+- Carlton, J. ; Jossart, J.; Pendleton, F.; Sumait, N.; Miller, J.; Thurston-Keller, J.; Reeb, D.; Gilbane, L.; Pereksta, D.; Schroeder, D.; Morris Jr, J. (2024). A Wind Energy Area Siting Analysis For The Oregon Call Areas (Report No. : OCS Study BOEM 2024-015). Report by National Oceanic and Atmospheric Administration (NOAA).
+
+- Feist, BE, R Griffin, JF Samhouri, L Riekkola, AO Shelton, YA Chen, K Somers, K Andrews, OR Liu & J Isé (2025) Mapping the value of commercial fishing and potential costs of offshore wind energy on the U.S. West Coast: towards an assessment of resource use tradeoffs.  PLOS One  20(2): e0315319.  DOI:  [10.1371/journal.pone.0315319](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0315319){target="_blank"}
 
 ## Groundfish Bottom Trawl
 
@@ -169,7 +177,7 @@ Data was rank transformed for the fishing effort and revenue data. Each grid cel
 
 **Accessed**: Unpublished
 
-**Citation**
+**Citation**: Carlton, J. ; Jossart, J.; Pendleton, F.; Sumait, N.; Miller, J.; Thurston-Keller, J.; Reeb, D.; Gilbane, L.; Pereksta, D.; Schroeder, D.; Morris Jr, J. (2024). A Wind Energy Area Siting Analysis For The Oregon Call Areas (Report No. : OCS Study BOEM 2024-015). Report by National Oceanic and Atmospheric Administration (NOAA).
 
 ## Groundfish Pot Gear
 
@@ -177,7 +185,7 @@ Data was rank transformed for the fishing effort and revenue data. Each grid cel
 
 **Accessed**: Unpublished
 
-**Citation**
+**Citation**: Carlton, J. ; Jossart, J.; Pendleton, F.; Sumait, N.; Miller, J.; Thurston-Keller, J.; Reeb, D.; Gilbane, L.; Pereksta, D.; Schroeder, D.; Morris Jr, J. (2024). A Wind Energy Area Siting Analysis For The Oregon Call Areas (Report No. : OCS Study BOEM 2024-015). Report by National Oceanic and Atmospheric Administration (NOAA).
 
 ## Groundfish Long Line Gear
 
@@ -185,31 +193,43 @@ Data was rank transformed for the fishing effort and revenue data. Each grid cel
 
 **Accessed**: Unpublished
 
-**Citation**
+**Citation**: Carlton, J. ; Jossart, J.; Pendleton, F.; Sumait, N.; Miller, J.; Thurston-Keller, J.; Reeb, D.; Gilbane, L.; Pereksta, D.; Schroeder, D.; Morris Jr, J. (2024). A Wind Energy Area Siting Analysis For The Oregon Call Areas (Report No. : OCS Study BOEM 2024-015). Report by National Oceanic and Atmospheric Administration (NOAA).
 
 ## Pink Shrimp Trawl
 
-**Brief Description**: These data represent the pink shrimp trawl fishery. Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from data provided by Oregon Department of Fish and Wildlife logbook and PacFIN. Hours trawled was calculated from vessels between 2011 to 2020 from data provided by Oregon Department of Fish and Wildlife logbooks and PacFIN.
+**Brief Description**: These data represent the pink shrimp trawl fishery. Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from data provided by Oregon Department of Fish and Wildlife logbook and PacFIN (Feist et al. 2025). Hours trawled was calculated from vessels between 2011 to 2020 from data provided by Oregon Department of Fish and Wildlife logbooks and PacFIN.
 
 **Accessed**: Unpublished
 
-**Citation**
+**Citation**:
+
+- Carlton, J. ; Jossart, J.; Pendleton, F.; Sumait, N.; Miller, J.; Thurston-Keller, J.; Reeb, D.; Gilbane, L.; Pereksta, D.; Schroeder, D.; Morris Jr, J. (2024). A Wind Energy Area Siting Analysis For The Oregon Call Areas (Report No. : OCS Study BOEM 2024-015). Report by National Oceanic and Atmospheric Administration (NOAA).
+
+- Feist, BE, R Griffin, JF Samhouri, L Riekkola, AO Shelton, YA Chen, K Somers, K Andrews, OR Liu & J Isé (2025) Mapping the value of commercial fishing and potential costs of offshore wind energy on the U.S. West Coast: towards an assessment of resource use tradeoffs.  PLOS One  20(2): e0315319.  DOI:  [10.1371/journal.pone.0315319](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0315319){target="_blank"}
 
 ## Dungeness Crab
 
-**Brief Description**: These data represent the dungeness crab pot fishery. Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from data provided by Oregon Department of Fish and Wildlife logbooks and PacFIN. Number of pots per vessel was calculated for the following seasons: 2007/08 -to 2010/11 and 2018/19 to 2019/20 seasons from data provided by Oregon Department of Fish and Wildlife logbooks and PacFIN.
+**Brief Description**: These data represent the Dungeness crab pot fishery. Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from data provided by Oregon Department of Fish and Wildlife logbooks and PacFIN (Feist et al. 2025). Number of pots per vessel was calculated for the following seasons: 2007/08 -to 2010/11 and 2018/19 to 2019/20 seasons from data provided by Oregon Department of Fish and Wildlife logbooks and PacFIN.
 
 **Accessed**: Unpublished
 
-**Citation**
+**Citation**: 
+
+- Carlton, J. ; Jossart, J.; Pendleton, F.; Sumait, N.; Miller, J.; Thurston-Keller, J.; Reeb, D.; Gilbane, L.; Pereksta, D.; Schroeder, D.; Morris Jr, J. (2024). A Wind Energy Area Siting Analysis For The Oregon Call Areas (Report No. : OCS Study BOEM 2024-015). Report by National Oceanic and Atmospheric Administration (NOAA).
+
+- Feist, BE, R Griffin, JF Samhouri, L Riekkola, AO Shelton, YA Chen, K Somers, K Andrews, OR Liu & J Isé (2025) Mapping the value of commercial fishing and potential costs of offshore wind energy on the U.S. West Coast: towards an assessment of resource use tradeoffs.  PLOS One  20(2): e0315319.  DOI:  [10.1371/journal.pone.0315319](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0315319){target="_blank"}
 
 ## Commercial Troll/Hook and Line Albacore
 
-**Brief Description**: These data represent the commercial albacore - troll/hook-and-line fishery. Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from data provided by NMFS SWFSC and PacFIN. Hours fished were calculated from vessels between 2005 to 2021 from data provided by NMFS SWFSC.
+**Brief Description**: These data represent the commercial albacore - troll/hook-and-line fishery. Two metrics were calculated for consideration using the methodology above. Inflation-adjusted revenue was calculated for vessels recorded from 2011 to 2020 from data provided by NMFS SWFSC and PacFIN (Feist et al. 2025). Hours fished were calculated from vessels between 2005 to 2021 from data provided by NMFS SWFSC.
 
 **Accessed**: Unpublished
 
-**Citation**
+**Citation**:
+
+- Carlton, J. ; Jossart, J.; Pendleton, F.; Sumait, N.; Miller, J.; Thurston-Keller, J.; Reeb, D.; Gilbane, L.; Pereksta, D.; Schroeder, D.; Morris Jr, J. (2024). A Wind Energy Area Siting Analysis For The Oregon Call Areas (Report No. : OCS Study BOEM 2024-015). Report by National Oceanic and Atmospheric Administration (NOAA).
+
+- Feist, BE, R Griffin, JF Samhouri, L Riekkola, AO Shelton, YA Chen, K Somers, K Andrews, OR Liu & J Isé (2025) Mapping the value of commercial fishing and potential costs of offshore wind energy on the U.S. West Coast: towards an assessment of resource use tradeoffs.  PLOS One  20(2): e0315319.  DOI:  [10.1371/journal.pone.0315319](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0315319){target="_blank"}
 
 ## Charter Vessel Albacore Troll/Hook and Line
 
@@ -217,7 +237,7 @@ Data was rank transformed for the fishing effort and revenue data. Each grid cel
 
 **Accessed**: Unpublished
 
-**Citation**
+**Citation**: Carlton, J. ; Jossart, J.; Pendleton, F.; Sumait, N.; Miller, J.; Thurston-Keller, J.; Reeb, D.; Gilbane, L.; Pereksta, D.; Schroeder, D.; Morris Jr, J. (2024). A Wind Energy Area Siting Analysis For The Oregon Call Areas (Report No. : OCS Study BOEM 2024-015). Report by National Oceanic and Atmospheric Administration (NOAA).
 
 ## Trawl Fisheries 
 
@@ -227,7 +247,7 @@ For the four trawl fisheries, NMFS and ODFW calculated the regions where the top
 
 **Accessed**: Unpublished
 
-**Citation**:
+**Citation**: Carlton, J. ; Jossart, J.; Pendleton, F.; Sumait, N.; Miller, J.; Thurston-Keller, J.; Reeb, D.; Gilbane, L.; Pereksta, D.; Schroeder, D.; Morris Jr, J. (2024). A Wind Energy Area Siting Analysis For The Oregon Call Areas (Report No. : OCS Study BOEM 2024-015). Report by National Oceanic and Atmospheric Administration (NOAA).
 
 # Scientific Surveys Layers
 
@@ -235,13 +255,11 @@ For the four trawl fisheries, NMFS and ODFW calculated the regions where the top
 
 **Brief Description**: This data product is intended to help communicate the geographic extent and operations of NOAA Fisheries offshore ship-based scientific surveys along the U.S. west coast (California, Oregon, Washington). NOAA Fisheries conducts numerous scientific surveys to inform the status of fish stocks and protected resources. For the West Coast Region, more than a dozen surveys are conducted routinely across the continental margin, focusing either on pelagic or demersal species or the ecosystem as a whole. These surveys collect a variety of biological and environmental data to provide a synoptic view of the habitats and ecosystems for which the target species inhabit. The surveys utilize varying designs including fixed stations where a number of operations are centered, transect lines where fishery acoustic data are continually collected, and stratified random sampling, to name a few.
 
-Fixed surveys are defined by NOAA Fisheries as those with fixed station designs, where sampling occurs at the same locations across the time frame of the survey. Survey locations (points) and transects (lines) were bufferred to represent the effective sampling area for these stations and transects.
+Fixed surveys are defined by NOAA Fisheries as those with fixed station designs, where sampling occurs at the same locations across the time frame of the survey. Survey locations (points) and transects (lines) were buffered to represent the effective sampling area for these stations and transects.
 
-**Accessed**
+**Accessed**:
 
-**Units**
-
-**Citation**
+**Citation**:
 
 ## Periodic Surveys
 
@@ -249,11 +267,9 @@ Fixed surveys are defined by NOAA Fisheries as those with fixed station designs,
 
 Periodic surveys are defined by NOAA Fisheries as those with random station designs, where sampling occurs periodically or at randomly-selected locations across the survey domain.
 
-**Accessed**
+**Accessed**:
 
-**Units**
-
-**Citation**
+**Citation**:
 
 # Submarine Cable Layers
 
