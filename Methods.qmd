@@ -10,7 +10,7 @@ The SMORES application was built from the spatial planning processes developed f
 
 ## Components
 
-This application is broken up into different components. These components are carried through the application and provide clarity in when different functions are applied. These components are as follows:
+This application is broken up into different components. These components are carried through the application and provide clarity fir when different functions are applied. These components are as follows:
 
 - **Individual Layers**
 
@@ -63,6 +63,8 @@ Z-membership data is selected when data has been re-scaled using a fuzzy logic Z
 ### Ranked Importance
 
 Ranked Importance data is used to represent fisheries data per the fisheries data and methods provided by NMFS in Appendix E of A Wind Energy Area Siting Analysis for the Oregon Call Areas [Report](https://www.boem.gov/sites/default/files/documents/renewable-energy/state-activities/Appendix%20B_NCCOS%20Final%20WEA%20Report_Oregon.pdf){target="_blank"}. For more information please visit the `Data` page. Cells that do not have a ranked importance score for that individual layer are assigned a score of 1. 
+
+*Note that fisheries layers were developed specifically for the Oregon call area siting analysis and therefore only cover the geographic extent of these call areas at this time. Fisheries data should only be included in the model if you are interested in the Coos Bay and Brookings WEA's, or the Washington/Oregon OCS Planning area. Configuring fisheries layers for other areas will result in a high suitability score (1) being applied to each of these cells.  
 
 ## Individual layers to submodel components
 
