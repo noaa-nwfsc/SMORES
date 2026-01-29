@@ -4755,7 +4755,7 @@
   },
   "files": {
     ".RData": {
-      "checksum": "686fbd82d4fbfddb0150b21614c6c480"
+      "checksum": "61813c90c0dd8c4a026e8b1e9538fd9a"
     },
     ".RDataTmp": {
       "checksum": "0d85aa7653f1fe06f834fd0ccc79c3dd"
@@ -5115,7 +5115,7 @@
       "checksum": "6bb7768d2e5972673806e17f6ab3a9b0"
     },
     "R/calculate_submodel_geometric_mean.R": {
-      "checksum": "fafc789e39406c3ee6479179f7e69822"
+      "checksum": "b6d737fea2de15f6a302a36d4e84f278"
     },
     "R/check_submodel_status.R": {
       "checksum": "4122cec809221442958cc3a0a5d1cbd7"
