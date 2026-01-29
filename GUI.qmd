@@ -5,13 +5,15 @@ format: html
 
 The dashboard is organized by the navigation bar at the top with the following tabs: Area of Interest, Natural Resources Submodel, Fisheries Submodel, Industry & Operations Submodel, Full Model, Methods, and Data. The Overview tab provides an overview of how to use the application, and the Methods and Data tabs provide information and app functions and input data, respectively.
 
-![](www/Images/main_page.png)
-
 To generate a full model run you will move through the tabs from left to right. 
+
+![](www/Images/main_page.png)
 
 Each sub-tab contains further detail on scoring suggestions and cues to generate the layers of your choice.
 
-Step 1: Navigate to the Area of Interest tab and select a region you would like your analyses to focus on.
+## Step 1: Select your area of interest
+
+Navigate to the Area of Interest tab and select a region you would like your analyses to focus on.
 
 ![](www/Images/area_of_interest.png)
 To select a different area of interest, you will click on the desired area's button. 
@@ -20,7 +22,9 @@ By selecting an area of interest, the maps will be set to crop the data to this 
 
 ![](www/Images/area_of_interest_wa_or_selected.png)
 
-Step 2: Navigate to the Natural Resources Submodel Tab.
+## Step 2: Configure a component for a submodel (habitat used as an example)
+
+Navigate to the Natural Resources Submodel Tab.
 
 ![](www/Images/nat_res_habitat_opener.png)
 
@@ -31,20 +35,17 @@ To select a score for a layer, you will first check the box next to the layer to
 
 ![](www/Images/score_selection.png)
 
-Scores typically range from 0 (exclude, very unsuitable) to 1 (most suitable). Some layers due to their structure will have alternative options such as the z-membership scores or a very limited option pool. If you have questions about which scores are represented on this app, please reference the documents found in the methods section. 
+Scores typically range from 0 (exclude, very unsuitable) to 1 (most suitable). Some layers due to their structure will have alternative options such as the z-membership scores or a very limited option pool. If you have questions about which scores are represented on this app, please reference the methods section. 
 
 As you configure the individual layers you will see white boxes appear to the right. 
 
 ![](www/Images/nat_res_habitat_ind_configured.png)
 
-
 Each of these white boxes is where an individual map will generate once you select `generate maps`.
-
-![](www/Images/nat_res_habitat_ind_button.png)
 
 ![](www/Images/nat_res_habitat_ind_button_pushed.png)
 
-Each of these individual maps is dynamic. The maps can be zoomed in or zoomed out and will show the full spread of the data if you continue to zoom out (the map on the right hand of the image is demonstrating a zoomed out view). Additionally, you can move the area of focus by dragging the map. 
+Each of these individual maps is dynamic. The maps can be zoomed in or zoomed out and will show the full spread of the data if you continue to zoom out. Additionally, you can move the area of focus by dragging the map. 
 
 *Note: if you initialized the layer but selected `None` for the score, the map will not generate
 
@@ -52,16 +53,19 @@ Once you have configured your individual layer scores you will select the calcul
 
 ![](www/Images/nat_res_habitat_comb_button_pushed.png)
 
-
 You can opt to export a copy of your results by selecting the `Export` button at the bottom of the page.When you select `Export` a loading screen will show on the app to indicate that the report is generating. 
 
 ![](www/Images/generating report.png)
 
-Step 3: Navigate to the Species tab and repeat the process you used for the Habitat tab.
+## Step 3: Configure a second component for a submodel (species used as an example)
+
+Navigate to the Species tab and repeat the process you used for the Habitat tab.
 
 ![](www/Images/nat_res_species_opener.png)
 
-Step 4: Navigate to the Combined Submodel tab. 
+## Step 4: Configure the natural resources submodel
+
+Navigate to the Combined Submodel tab. 
 
 ![](www/Images/nat_res_combined_opener.png)
 
@@ -75,9 +79,11 @@ You will select which calculation method (geometric mean, product, or lowest) fo
 
 You can opt to export a copy of your results by selecting the `Export` button at the bottom of the page.
 
-At this stage the Natural Resources Submodel that will be included in the Full Model has been generated.
+*At this stage the Natural Resources Submodel that will be included in the Full Model has been generated.*
 
-Step 5: Repeat steps 2-4 for the Fisheries Submodel, which will include selecting scores for two components. The first component is fisheries. 
+## Step 5: Configure the fisheries submodel
+
+Repeat steps 2-4 for the Fisheries Submodel, which will include selecting scores for two components. The first component is fisheries. 
 
 
 ![](www/Images/fisheries_fisheries_opener.png)
@@ -94,9 +100,12 @@ The second component is trawl fisheries.
 
 At this stage the Fisheries Submodel that will be included in the Full Model will be generated. If you choose to not configure a submodel's components you will not be able to generate a combined map. The app will display an error message like the one shown above. 
 
-Step 6: Repeat steps 2-4 for the Industry & Operations Submodel. The Industry & Operations Submodel is comprised of two components. The first component is scientific surveys. 
+## Step 6: Configure the industry and operations submodel
+
+Repeat steps 2-4 for the Industry & Operations Submodel. The Industry & Operations Submodel is comprised of two components. The first component is scientific surveys. 
 
 ![](www/Images/ind_op_ss_opener.png)
+
 The second component is submarine cable lines. 
 
 ![](www/Images/ind_op_cable_opener.png)
@@ -104,7 +113,9 @@ The second component is submarine cable lines.
 
 At this stage the Industry & Operations Submodel that will be included in the Full Model has been generated.
 
-Step 7: Navigate to the Full Model Tab. 
+## Step 7: Configure and visualize a full model run
+
+Navigate to the Full Model Tab. 
 
 ![](www/Images/full_opener.png)
 
@@ -118,4 +129,4 @@ Once you have configured your submodels, you will click on the `Generate Full Mo
 
 You can opt to export a copy of your results by selecting the `Export` button at the bottom of the page. The report will be a HTML based report. 
 
-![](www/Images/full_report_start.png)
+![](www/Images/full_model_table_layout.png)
