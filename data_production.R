@@ -27,17 +27,22 @@ grid.5km <- sf::st_read(
 
 st_write_parquet(
   grid.2km,
-  "C:\\GitHub\\SMORES\\data\\2km\\2km_grid_full.parquet"
+  "C:\\GitHub\\SMORES\\data\\2km\\grid_full.parquet"
 )
 
 st_write_parquet(
   grid.5km,
-  "C:\\GitHub\\SMORES\\data\\5km\\5km_grid_full.parquet"
+  "C:\\GitHub\\SMORES\\data\\5km\\grid_full.parquet"
 )
 
 # get base grid as a dataframe
-base_grid_df <- grid.2km %>%
+base_grid_df <- grid.5km %>%
   st_drop_geometry()
+
+write_parquet(
+  base_grid_df,
+  "C:\\GitHub\\SMORES\\data\\5km\\base_grid_df.parquet"
+)
 
 # set standard coordinate reference system if using 2 km square grid
 crsOut <- st_crs(grid.5km)
