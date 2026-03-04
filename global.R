@@ -6,6 +6,7 @@ library(shinycssloaders)
 library(markdown)
 library(tidyverse)
 library(bslib)
+library(brand.yml)
 library(shinyWidgets)
 library(sf)
 library(yaml)
@@ -21,7 +22,7 @@ library(RhpcBLASctl)
 blas_set_num_threads(1)
 omp_set_num_threads(1)
 
-# Code to add _brand.yml theming
+# Code to add _brand.yml theming, note having brand.yml package loaded is required
 theme <- bslib::bs_theme()
 
 # Load custom functions
