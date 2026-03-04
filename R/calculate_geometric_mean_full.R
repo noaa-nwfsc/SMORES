@@ -4,11 +4,11 @@ calculate_geometric_mean_full <- function(submodels, weights, base_grid) {
   }
 
   # drop geometry to create base grid
-  if ("sf" %in% class(active_base_grid_df())) {
-    base_df <- sf::st_drop_geometry(active_base_grid_df())
-    base_geom <- sf::st_geometry(active_base_grid_df())
+  if ("sf" %in% class(base_grid)) {
+    base_df <- sf::st_drop_geometry(base_grid)
+    base_geom <- sf::st_geometry(base_grid)
   } else {
-    base_df <- active_base_grid_df()
+    base_df <- base_grid
     base_geom <- NULL
   }
 
@@ -35,7 +35,7 @@ calculate_geometric_mean_full <- function(submodels, weights, base_grid) {
       next
     }
 
-    # --- FIX: Extract just the dynamic ID and Score ---
+    # Extract just the dynamic ID and Score
     temp_df <- sf::st_drop_geometry(submodel_data)[, c(id_col, "Geo_mean")]
 
     # Rename to submodel name
