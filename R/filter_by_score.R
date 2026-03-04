@@ -49,8 +49,6 @@ filter_by_score <- function(
     return(df)
   }
 
-  # 5. Standard Filtering Logic
-  # Find score columns
   score_cols <- names(df)[grep("^Score\\.", names(df))]
 
   if (length(score_cols) == 0) {
@@ -58,13 +56,20 @@ filter_by_score <- function(
     return(df)
   }
 
-  # Create filter condition
   rows_to_keep <- rep(FALSE, nrow(df))
+  target_score_num <- suppressWarnings(as.numeric(selected_score))
+  is_numeric_target <- !is.na(target_score_num)
 
   for (col in score_cols) {
-    col_values <- as.character(df[[col]])
-    matches <- col_values == as.character(selected_score)
-    matches[is.na(matches)] <- FALSE
+    if (is_numeric_target) {
+      # Safe mathematical comparison
+      col_values <- suppressWarnings(as.numeric(df[[col]]))
+      matches <- !is.na(col_values) & abs(col_values - target_score_num) < 1e-6
+    } else {
+      # Fallback for text
+      col_values <- as.character(df[[col]])
+      matches <- !is.na(col_values) & col_values == as.character(selected_score)
+    }
     rows_to_keep <- rows_to_keep | matches
   }
 

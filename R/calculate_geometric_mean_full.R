@@ -12,8 +12,10 @@ calculate_geometric_mean_full <- function(submodels, weights, base_grid) {
     base_geom <- NULL
   }
 
-  # Start with just the ID column
-  combined_df <- active_base_grid_df()[, "CellID", drop = FALSE]
+  id_col <- grep("^CellID", names(base_df), value = TRUE)[1]
+
+  # Start with just the ID column dynamically
+  combined_df <- base_df[, id_col, drop = FALSE]
 
   # Vectors to track valid columns and their weights
   data_col_names <- c()
@@ -33,14 +35,14 @@ calculate_geometric_mean_full <- function(submodels, weights, base_grid) {
       next
     }
 
-    # Extract just the ID and Score
-    temp_df <- sf::st_drop_geometry(submodel_data)[, c("CellID", "Geo_mean")]
+    # --- FIX: Extract just the dynamic ID and Score ---
+    temp_df <- sf::st_drop_geometry(submodel_data)[, c(id_col, "Geo_mean")]
 
     # Rename to submodel name
     names(temp_df)[2] <- submodel_name
 
-    # Fast Left Join
-    combined_df <- dplyr::left_join(combined_df, temp_df, by = "CellID")
+    # Fast Left Join using dynamic ID
+    combined_df <- dplyr::left_join(combined_df, temp_df, by = id_col)
 
     # Track this column and its weight
     data_col_names <- c(data_col_names, submodel_name)
