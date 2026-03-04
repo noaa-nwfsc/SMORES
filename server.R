@@ -529,6 +529,19 @@ function(input, output, session) {
 
             # 2. Build the dynamic file path using the Resolution Tracker
             res <- current_resolution()
+
+            # --- NEW: VISUAL RESOLUTION TRACKER ---
+            showNotification(
+              paste(
+                "✅ Successfully loaded",
+                res,
+                "resolution grid for",
+                local_config$layer
+              ),
+              type = "message",
+              duration = 12
+            )
+
             file_path <- file.path("data", res, target_filename)
 
             # 3. Read the file from the disk
@@ -543,11 +556,29 @@ function(input, output, session) {
             )
 
             # 4. Crop and prepare for caching
-            processed_config_data <- raw_data
+            processed_config_data <- scored_data
             if (!is.null(processed_config_data) && !is.null(aoi_data)) {
               processed_config_data <- crop_data_to_aoi(
                 processed_config_data,
                 aoi_data
+              )
+            }
+
+            # set continuous color palette for DSC RH Z Membership layer
+            if (
+              !is.null(local_config$color) && local_config$color == "continuous"
+            ) {
+              score_type <- if (
+                local_config$layer == "Deep Sea Coral Robust High Suitability"
+              ) {
+                "z_membership"
+              } else {
+                "ranked_importance"
+              }
+              local_config$color_palette <- create_continuous_palette(
+                processed_config_data,
+                score_type,
+                local_config$layer
               )
             }
 
@@ -699,14 +730,23 @@ function(input, output, session) {
             )
 
             # 4. Crop and prepare for caching
-            processed_config_data <- raw_data
+            processed_config_data <- scored_data
             if (!is.null(processed_config_data) && !is.null(aoi_data)) {
               processed_config_data <- crop_data_to_aoi(
                 processed_config_data,
                 aoi_data
               )
             }
-            # --------------------------------------------------
+
+            if (
+              !is.null(local_config$color) && local_config$color == "continuous"
+            ) {
+              local_config$color_palette <- create_continuous_palette(
+                processed_config_data,
+                "ranked_importance",
+                local_config$layer
+              )
+            }
 
             # Get the score column for this layer
             score_col <- switch(
@@ -887,7 +927,7 @@ function(input, output, session) {
             )
 
             # 3. Crop and prepare for caching
-            processed_config_data <- raw_data
+            processed_config_data <- scored_data
             if (!is.null(processed_config_data) && !is.null(aoi_data)) {
               processed_config_data <- crop_data_to_aoi(
                 processed_config_data,
