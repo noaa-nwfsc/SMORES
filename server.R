@@ -198,7 +198,7 @@ function(input, output, session) {
           "Central California",
           "Northern California",
           "Washington/Oregon"
-        ), # Add "All Areas" option
+        ),
         selected = "all" # Select "All" by default
       )
     }
@@ -510,7 +510,6 @@ function(input, output, session) {
               last_config != current_config_hash ||
               !map_id %in% individual_maps_created$naturalresources
           ) {
-            # --- NEW JUST-IN-TIME LOADING LOGIC ---
             # local_config$data is now the base filename string (e.g., "DSC_RH_scored_full.parquet")
             base_filename <- local_config$data
 
@@ -530,22 +529,9 @@ function(input, output, session) {
             # 2. Build the dynamic file path using the Resolution Tracker
             res <- current_resolution()
 
-            # --- NEW: VISUAL RESOLUTION TRACKER ---
-            showNotification(
-              paste(
-                "✅ Successfully loaded",
-                res,
-                "resolution grid for",
-                local_config$layer
-              ),
-              type = "message",
-              duration = 12
-            )
-
             file_path <- file.path("data", res, target_filename)
 
-            # 3. Read the file from the disk
-            # (Assuming your custom readRDS_preprocessed function handles the file path and layer name)
+            # Read the file from the disk
             raw_data <- readRDS_preprocessed(file_path, local_config$layer)
 
             scored_data <- filter_by_score(
