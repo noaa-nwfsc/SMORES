@@ -1,15 +1,24 @@
 function(input, output, session) {
-  # Determine which resolution is selected for the current area of interest
   current_resolution <- reactive({
-    selected_area <- input$aoiAreaSelector %||% "all"
+    selected_area <- input$aoiAreaSelector
 
-    # Look up the resolution, default to "5km"
-    res <- resolution_for_aoi[[selected_area]]
-    if (is.null(res)) {
-      return("5km")
+    # Handle initial UI load states
+    if (
+      is.null(selected_area) ||
+        selected_area == "" ||
+        selected_area == "loading"
+    ) {
+      selected_area <- "all"
     }
 
-    return(res)
+    # check if the area exists in our vector
+    if (selected_area %in% names(resolution_for_aoi)) {
+      # extract the string
+      return(unname(resolution_for_aoi[selected_area]))
+    }
+
+    # Default fallback
+    return("5km")
   })
 
   active_grid_test <- reactive({
@@ -150,6 +159,27 @@ function(input, output, session) {
 
       # Explicitly free up RAM by forcing memory to clear
       gc()
+
+      res <- current_resolution()
+
+      # Only show popup if a user selects a value that is not all
+      if (
+        current_area != "all" && current_area != "" && current_area != "loading"
+      ) {
+        res <- current_resolution()
+
+        showNotification(
+          paste(
+            "🚩",
+            current_area,
+            "selected. Base grid resolution set to",
+            res,
+            "."
+          ),
+          type = "message",
+          duration = 10
+        )
+      }
 
       aoi_data <- filtered_aoi_data()
 

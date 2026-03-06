@@ -1413,3 +1413,12 @@
 #   st_zm()
 
 # st_write_parquet(wea_ocs_join, "C:\\GitHub\\SMORES\\data\\WEA_OCS.parquet")
+
+# # CA Suitable Sea Space
+# CA_SeaSpace_path <- "G:\\Shared drives\\NMFS NWC OEI GIS\\ArcGIS\\Projects\\AB 525 Sea Space Area of Interest_ea1857\\commondata\\osw_technical_potential_02112022\\SeaSpace_1.shp"
+# CA_SeaSpace_layer <- sf::st_read(CA_SeaSpace_path) |>
+#   mutate(Area_Name = c("Area_1", "Area_2", "Area_3")) |>
+#   sf::st_transform('+proj=longlat +datum=WGS84')
+
+# SeaSpace_transformed <- CA_SeaSpace_layer |>
+#   select(Area_Name, geometry)
