@@ -1,33 +1,38 @@
 tagList(
-  
   # Custom CSS
   tags$head(
     tags$link(rel = "stylesheet", type = "text/css", href = "styles.css"),
-    tags$link(rel = "stylesheet", 
-              href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css")
+    tags$link(
+      rel = "stylesheet",
+      href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    )
   ),
-  
+
   # Custom header with logo
   div(
     class = "container-fluid",
     style = "margin: 10px 0; display: flex; justify-content: space-between; align-items: center;",
-    
+
     # Left side blank with a placeholder
     div(style = "visibility: hidden;", "Placeholder"),
-    
+
     # Right side will have NOAA logo
     div(
       # note do not include www folder in file path or link will appear broken
-      img(src = "logos/NOAA_FISHERIES_logoH.png", height = "60px", alt = "NOAA Fisheries Logo")
+      img(
+        src = "logos/NOAA_FISHERIES_logoH.png",
+        height = "60px",
+        alt = "NOAA Fisheries Logo"
+      )
     )
   ),
-  
+
   # Navbar
   page_navbar(
     theme = theme,
     title = "Suitability Modeling", # title text
     fillable = TRUE,
-    
+
     # Tab 1: Overview
     nav_panel(
       title = "Overview",
@@ -43,12 +48,12 @@ tagList(
     ),
     # Tab 2: Area of Interest
     generate_area_of_interest_sidebar(),
-    
+
     # Tab 3: Natural Resources Submodel Tab with Inset Tabs
     nav_panel(
       title = "Natural Resources Submodel",
       icon = icon("sun"),
-      
+
       # Layout with sidebar for tabs
       layout_sidebar(
         # Sidebar for picker inputs that change based on tab selection
@@ -64,7 +69,7 @@ tagList(
             title = "Habitat",
             icon = icon("earth-oceania"),
             value = "habitat",
-            
+
             # Info about map settings
             card(
               card_header("Map Configuration"),
@@ -72,18 +77,17 @@ tagList(
                 includeMarkdown("markdown/habitat.md")
               )
             ),
-            
+
             # Container for multiple maps
             uiOutput("multipleMapsContainer_habitat")
-            
           ),
-          
+
           # Inset Tab 2
           nav_panel(
             title = "Species",
             icon = icon("otter"),
             value = "species",
-            
+
             # Info about map settings
             card(
               card_header("Scoring Information"),
@@ -91,25 +95,26 @@ tagList(
                 includeMarkdown("markdown/species.md")
               )
             ),
-            
+
             # Container for multiple maps
             uiOutput("multipleMapsContainer_species")
-            
           ),
           # Inset Tab 3
           nav_panel(
             title = "Combined Submodel",
             icon = icon("object-group"),
             value = "combined_model_natural_resources",
-            
+
             # Info card
             card(
               card_header("Combined Natural Resources Submodel"),
               card_body(
-                includeMarkdown("markdown/combined_natural_resources_submodel.md")
+                includeMarkdown(
+                  "markdown/combined_natural_resources_submodel.md"
+                )
               )
             ),
-            
+
             # Map container - ALWAYS present, conditionally populated
             card(
               card_header("Combined Natural Resources Submodel Result"),
@@ -141,7 +146,7 @@ tagList(
             title = "Fisheries",
             icon = icon("microscope"),
             value = "fisheries",
-            
+
             # Info about map settings
             card(
               card_header("Map Configuration"),
@@ -149,17 +154,16 @@ tagList(
                 includeMarkdown("markdown/fisheries.md")
               )
             ),
-            
+
             # Container for multiple maps
             uiOutput("multipleMapsContainer_fisheries")
-            
           ),
           # Inset Tab 2
           nav_panel(
             title = "Trawl Fisheries",
             icon = icon("fish-fins"),
             value = "trawl",
-            
+
             # Info about map settings
             card(
               card_header("Map Configuration"),
@@ -167,17 +171,16 @@ tagList(
                 includeMarkdown("markdown/trawl_fisheries.md")
               )
             ),
-            
+
             # Container for multiple maps
             uiOutput("multipleMapsContainer_trawl")
-            
           ),
           # Inset Tab 3
           nav_panel(
             title = "Combined Submodel",
             icon = icon("object-group"),
             value = "combined_model_fisheries",
-            
+
             # Info card
             card(
               card_header("Combined Fisheries Submodel"),
@@ -214,7 +217,7 @@ tagList(
             title = "Scientific Surveys",
             icon = icon("microscope"),
             value = "surveys",
-            
+
             # Info about map settings
             card(
               card_header("Map Configuration"),
@@ -222,18 +225,17 @@ tagList(
                 includeMarkdown("markdown/surveys.md")
               )
             ),
-            
+
             # Container for multiple maps
             uiOutput("multipleMapsContainer_surveys")
-            
           ),
-          
+
           # Inset Tab 2
           nav_panel(
             title = "Submarine Cables",
             icon = icon("industry"),
             value = "cables",
-            
+
             # Info about map settings
             card(
               card_header("Map Configuration"),
@@ -241,22 +243,23 @@ tagList(
                 includeMarkdown("markdown/cables.md")
               )
             ),
-            
+
             # Container for multiple maps
             uiOutput("multipleMapsContainer_cables")
-            
           ),
           # Inset Tab 3
           nav_panel(
             title = "Combined Submodel",
             icon = icon("object-group"),
             value = "combined_model_industry_operations",
-            
+
             # Info card
             card(
               card_header("Combined Industry & Operations Submodel"),
               card_body(
-                includeMarkdown("markdown/combined_industry_operations_submodel.md")
+                includeMarkdown(
+                  "markdown/combined_industry_operations_submodel.md"
+                )
               )
             ),
             card(
@@ -278,13 +281,13 @@ tagList(
         sidebar = sidebar(
           uiOutput("dynamicSidebar_full_model")
         ),
-        
+
         # Main content area
         card(
           card_header("Full Combined Model"),
           card_body(
             includeMarkdown("markdown/full_model.md"),
-            
+
             # Add the single line here:
             htmlOutput("fullCombinedMapContainer")
           )
@@ -301,25 +304,22 @@ tagList(
           withMathJax(includeMarkdown("markdown/methods.md")) # function within R Shiny to render LaTex equations
         )
       )
-    ), 
+    ),
     # Tab 7: Data
     nav_panel(
       title = "Data",
       icon = icon("database"),
-      
+
       # Info card
       card(
         card_header("Dataset Information"),
         card_body(
           p(strong("Most recent data update: "), most_recent_update),
-          # data table that shows when data has been edited 
+
+          uiOutput("active_grid_banner"),
+
+          # data table that shows when data has been edited
           tableOutput("data_timestamps_table")
-        )
-      ),
-      card(
-        card_header("Data Sources Information"),
-        card_body(
-          includeMarkdown("markdown/data.md")
         )
       ),
     )
