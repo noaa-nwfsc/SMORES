@@ -162,25 +162,6 @@ function(input, output, session) {
 
       res <- current_resolution()
 
-      # Only show popup if a user selects a value that is not all
-      if (
-        current_area != "all" && current_area != "" && current_area != "loading"
-      ) {
-        res <- current_resolution()
-
-        showNotification(
-          paste(
-            "🚩",
-            current_area,
-            "selected. Base grid resolution set to",
-            res,
-            "."
-          ),
-          type = "message",
-          duration = 10
-        )
-      }
-
       aoi_data <- filtered_aoi_data()
 
       if (!is.null(aoi_data) && nrow(aoi_data) > 0) {
@@ -3473,19 +3454,6 @@ function(input, output, session) {
     }
   )
 
-  output$active_grid_banner <- renderUI({
-    res <- current_resolution()
-    div(
-      class = "alert alert-info",
-      style = "margin-top: 15px; margin-bottom: 15px; background-color: #e7f3fe; border-left: 6px solid #2196F3;",
-      HTML(paste(
-        "ℹ️ <strong>Active Grid:</strong> Based on your Area of Interest, the model is currently using the <strong>",
-        res,
-        "</strong> base grid."
-      ))
-    )
-  })
-
   # Data tab timestamp table
   output$data_timestamps_table <- renderTable({
     res <- current_resolution()
@@ -3515,5 +3483,45 @@ function(input, output, session) {
     names(df) <- c("Dataset", "Description", "Data Type", col_2km, col_5km)
 
     return(df)
+  })
+  # banner for data tab
+  output$active_grid_banner <- renderUI({
+    res <- current_resolution()
+    div(
+      class = "alert alert-info",
+      style = "margin-top: 15px; margin-bottom: 15px; background-color: #e7f3fe; border-left: 6px solid #2196F3;",
+      HTML(paste(
+        "ℹ️ <strong>Active Grid:</strong> Based on your Area of Interest, the model is currently using the <strong>",
+        res,
+        "</strong> base grid."
+      ))
+    )
+  })
+
+  # banner for aoi tab
+  output$aoi_grid_banner <- renderUI({
+    current_area <- input$aoiAreaSelector
+
+    # Only render if a specific area is actively selected
+    if (
+      !is.null(current_area) &&
+        current_area != "all" &&
+        current_area != "" &&
+        current_area != "loading"
+    ) {
+      res <- current_resolution()
+
+      div(
+        class = "alert alert-info",
+        style = "margin-top: 15px; margin-bottom: 15px; background-color: #e7f3fe; border-left: 6px solid #2196F3;",
+        HTML(paste(
+          "ℹ️ <strong>Active Area:</strong> You selected <strong>",
+          current_area,
+          "</strong>. The model is now utilizing the <strong>",
+          res,
+          "</strong> base grid."
+        ))
+      )
+    }
   })
 }

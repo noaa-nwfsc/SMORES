@@ -5,7 +5,7 @@ generate_area_of_interest_sidebar <- function() {
     # Top row: Two vertical rectangles side by side
     layout_columns(
       col_widths = c(6, 6),
-      
+
       # Left column: Description
       card(
         card_header("Area of Interest"),
@@ -14,13 +14,13 @@ generate_area_of_interest_sidebar <- function() {
           includeMarkdown("markdown/area_of_interest.md")
         )
       ),
-      
+
       # Right column: Area Selection Info
       card(
         card_header("Area Selection Information"),
         card_body(
-          style = "height: 300px; overflow-y: hidden;",
-          
+          style = "height: 550px; overflow-y: auto; display: block;",
+
           div(
             style = "text-align: center;",
             radioButtons(
@@ -30,10 +30,18 @@ generate_area_of_interest_sidebar <- function() {
               selected = "loading",
               inline = TRUE
             ),
-            p("Select one Area of Interest to filter the dataset. The map will update to highlight the selected area. *Please note the `All Areas` option is for visual purposes **only**. To generate a model run please select any other area of interest ")
+            p(
+              "Select one Area of Interest to filter the dataset. The map will update to highlight the selected area. *Please note the `All Areas` option is for visual purposes **only**. To generate a model run please select any other area of interest "
+            )
           ),
-          
-          leafletOutput("aoiMap", height = "250px")
+
+          # Dynamic banner placeholder
+          uiOutput("aoi_grid_banner"),
+
+          div(
+            style = "min-height: 350px; margin-bottom: 15px;",
+            leafletOutput("aoiMap", height = "350px")
+          )
         )
       )
     )
