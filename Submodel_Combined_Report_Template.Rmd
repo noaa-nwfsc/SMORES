@@ -10,6 +10,7 @@ output:
     toc_float: true
     self_contained: true
 params:
+  active_resolution: NULL
   submodel_name: "Combined Submodel"
   selected_components: NULL
   component_methods: NULL
@@ -30,52 +31,61 @@ source("global_report_generation.R")
 ```
 
 ## Selected Data Layer Information
+
+This report includes data from the following selected layers at the `r params$active_resolution` grid size:
+
 ```{r}
 # Add detailed component layer information with timestamps
-if (!is.null(params$component_layer_details) && length(params$component_layer_details) > 0) {
-  
+if (
+  !is.null(params$component_layer_details) &&
+    length(params$component_layer_details) > 0
+) {
   # Get data timestamps for joining
   data_timestamps_df <- NULL
   if (!is.null(params$data_timestamps)) {
-    data_timestamps_df <- params$data_timestamps %>%
-      select(dataset_name, data_type, formatted_date) %>%
-      rename(Layer_Name = dataset_name, Data_Type = data_type, Last_Updated = formatted_date)
+    data_timestamps_df <- params$data_timestamps$data_timestamps |>
+      select(dataset_name, data_type, formatted_date) |>
+      rename(
+        Layer_Name = dataset_name,
+        Data_Type = data_type,
+        Last_Updated = formatted_date
+      )
   }
-  
+
   # Create a comprehensive table showing all layers used in each component
   layer_details_list <- list()
-  
+
   # Component order to maintain
   preferred_order <- c(
-    "Habitat", 
-    "Species", 
-    "Fisheries", 
-    "Trawl Fisheries", 
-    "Scientific Surveys", 
+    "Habitat",
+    "Species",
+    "Fisheries",
+    "Trawl Fisheries",
+    "Scientific Surveys",
     "Submarine Cables"
   )
-  
+
   available_components <- names(params$component_layer_details)
-  
+
   sorted_components <- intersect(preferred_order, available_components)
-  
+
   # Append any other components that might exist but weren't in our preferred list
   remaining <- setdiff(available_components, preferred_order)
   final_component_order <- c(sorted_components, remaining)
-  
+
   global_row_counter <- 1
-  
+
   for (component in final_component_order) {
     component_data <- params$component_layer_details[[component]]
     component_method <- component_data$method %||% "Unknown"
     component_layers <- component_data$layers %||% list()
-    
+
     if (length(component_layers) > 0) {
       for (i in seq_along(component_layers)) {
         # Safely extract values with fallbacks
         layer_name <- component_layers[[i]]$layer_name %||% "Unknown"
         score_used <- component_layers[[i]]$score_used %||% "Unknown"
-        
+
         layer_details_list[[length(layer_details_list) + 1]] <- data.frame(
           Layer_Name = layer_name,
           Score_Used = score_used,
@@ -88,33 +98,50 @@ if (!is.null(params$component_layer_details) && length(params$component_layer_de
       }
     }
   }
-  
+
   if (length(layer_details_list) > 0) {
     # Combine all layer details into one data frame
     all_layer_details <- do.call(rbind, layer_details_list)
-    
+
     # Join with timestamps if available
     if (!is.null(data_timestamps_df)) {
-      all_layer_details <- all_layer_details %>%
-        left_join(data_timestamps_df, by = "Layer_Name") %>%
+      all_layer_details <- all_layer_details |>
+        left_join(data_timestamps_df, by = "Layer_Name") |>
         # Remove duplicates if any
-        distinct(Layer_Name, Component, .keep_all = TRUE) %>%
-        arrange(order_id) %>%
+        distinct(Layer_Name, Component, .keep_all = TRUE) |>
+        arrange(order_id) |>
         mutate(
           Data_Type = ifelse(is.na(Data_Type), "Unknown", Data_Type),
-          Last_Updated = ifelse(is.na(Last_Updated), "Unknown", Last_Updated))
-      
+          Last_Updated = ifelse(is.na(Last_Updated), "Unknown", Last_Updated)
+        )
+
       # Display table with timestamps
-      kable(all_layer_details %>% select(-order_id), 
-            col.names = c("Layer Name", "Selected Score", "Component", "Component Calculation Method", "Data Type", "Last Updated"),
-            format = "html",
-            table.attr = "class='table table-striped config-table'")
+      kable(
+        all_layer_details |> select(-order_id),
+        col.names = c(
+          "Layer Name",
+          "Selected Score",
+          "Component",
+          "Component Calculation Method",
+          "Data Type",
+          paste0("Last Updated (", params$active_resolution, ")")
+        ),
+        format = "html",
+        table.attr = "class='table table-striped config-table'"
+      )
     } else {
       # Display table without timestamps (still sorted)
-      kable(all_layer_details %>% select(-order_id), 
-            col.names = c("Layer Name", "Selected Score", "Component", "Component Calculation Method"),
-            format = "html",
-            table.attr = "class='table table-striped config-table'")
+      kable(
+        all_layer_details %>% select(-order_id),
+        col.names = c(
+          "Layer Name",
+          "Selected Score",
+          "Component",
+          "Component Calculation Method"
+        ),
+        format = "html",
+        table.attr = "class='table table-striped config-table'"
+      )
     }
   } else {
     cat("No individual layer details available.\\n")
@@ -132,20 +159,31 @@ The combined submodel map represents the integration of all selected components 
 if (!is.null(params$combined_data)) {
   # Check if combined_data has the geometry and expected columns
   if (inherits(params$combined_data, 'sf')) {
-    
     # 1. Data Points (Standardized Label)
     cat("**Data Points:** ", nrow(params$combined_data), "  \n")
 
-    value_column <- if("Geo_mean" %in% names(params$combined_data)) "Geo_mean" else "Combined_Score"
+    value_column <- if ("Geo_mean" %in% names(params$combined_data)) {
+      "Geo_mean"
+    } else {
+      "Combined_Score"
+    }
     if (value_column %in% names(params$combined_data)) {
-      valid_values <- params$combined_data[[value_column]][!is.na(params$combined_data[[value_column]])]
-      if(length(valid_values) > 0) {
-        cat("**Value Range:** ", round(min(valid_values), 3), " to ", round(max(valid_values), 3), "  \n")
+      valid_values <- params$combined_data[[value_column]][
+        !is.na(params$combined_data[[value_column]])
+      ]
+      if (length(valid_values) > 0) {
+        cat(
+          "**Value Range:** ",
+          round(min(valid_values), 3),
+          " to ",
+          round(max(valid_values), 3),
+          "  \n"
+        )
       }
     }
-    
+
     cat("**Calculation Method:** Geometric Mean  \n")
-    
+
     cat("\n")
   }
 } else {
@@ -168,6 +206,8 @@ This map shows the data rescaled to a 0 to 1 range using a min-max normalization
 if (!is.null(params$aoi_cropped_normalized_map)) {
   params$aoi_cropped_normalized_map
 } else {
-  cat("*AOI-cropped normalized map not available. Please select a specific AOI area.*")
+  cat(
+    "*AOI-cropped normalized map not available. Please select a specific AOI area.*"
+  )
 }
 ```

@@ -10,6 +10,7 @@ output:
     toc_float: true
     self_contained: true
 params:
+  active_resolution: NULL
   map_configs: NULL
   combined_data_list: NULL    
   selected_methods: NULL    
@@ -30,7 +31,7 @@ source("global_report_generation.R")
 render_individual_map_from_config <- function(config) {
   # Get AOI data same way as the server
   aoi_data <- params$aoi_data
-  
+
   # Call the pure function directly - this generates the exact same map as the app
   return(create_individual_map(config, aoi_data))
 }
@@ -38,7 +39,7 @@ render_individual_map_from_config <- function(config) {
 
 ## Selected Layers Data Information
 
-This report includes data from the following selected layers:
+This report includes data from the following selected layers at the `r params$active_resolution` grid size:
 
 ```{r data-time}
 
@@ -55,15 +56,14 @@ selected_config_list <- list()
 if (!is.null(params$map_configs) && length(params$map_configs) > 0) {
   for (i in seq_along(params$map_configs)) {
     config <- params$map_configs[[i]]
-    
 
     layer_name <- config$layer %||% "Unknown"
     score_val <- config$score %||% "N/A"
-    
+
     selected_config_list[[length(selected_config_list) + 1]] <- data.frame(
       dataset_name = layer_name,
       selected_score = score_val,
-      order_id = i,  # Capture the original order from the app
+      order_id = i, # Capture the original order from the app
       stringsAsFactors = FALSE
     )
   }
@@ -77,8 +77,6 @@ if (length(selected_config_list) > 0) {
 
 
 if (!is.null(data_timestamps_table) && !is.null(selected_config_df)) {
-  
-
   display_table <- selected_config_df %>%
     left_join(data_timestamps_table, by = "dataset_name") %>%
 
@@ -86,19 +84,33 @@ if (!is.null(data_timestamps_table) && !is.null(selected_config_df)) {
 
     arrange(order_id) %>%
 
-    select(dataset_name, selected_score, description, data_type, formatted_date) %>%
+    select(
+      dataset_name,
+      selected_score,
+      description,
+      data_type,
+      formatted_date
+    ) %>%
     rename(
       "Layer Name" = dataset_name,
       "Selected Score" = selected_score,
       "Description" = description,
-      "Data Type" = data_type,
-      "Last Updated" = formatted_date
+      "Data Type" = data_type
     )
-  
+
+  # Dynamically rename the timestamp column based on the grid resolution
+  names(display_table)[names(display_table) == "formatted_date"] <- paste0(
+    "Last Updated (",
+    params$active_resolution,
+    ")"
+  )
+
   if (nrow(display_table) > 0) {
-    kable(display_table, 
-          format = "html",
-          table.attr = "class='table table-striped'")
+    kable(
+      display_table,
+      format = "html",
+      table.attr = "class='table table-striped'"
+    )
   } else {
     cat("No information available for the selected data layers.")
   }
@@ -112,93 +124,93 @@ if (!is.null(data_timestamps_table) && !is.null(selected_config_df)) {
 The following maps are individual data layers that have been visualized for the study area. The maps are zoomed to the area of interest that was previously selected, and shown in a red outline. To view the wider study area select the zoom out button on the map. To more closely analyze a cell click on the cell of interest and a pop-up will generate with the assigned score. Above each of the maps is a block containing relevant information: layer name, score assigned, and the number of cells that are represented by this data layer.
 
 ```{r individual-map1, results='asis'}
-if(!is.null(params$map_configs) && length(params$map_configs) >= 1) {
-    config <- params$map_configs[[1]]
-    
-    cat("\n\n### Map", 1, ":", config$layer, "(Score:", config$score, ")\n\n")
+if (!is.null(params$map_configs) && length(params$map_configs) >= 1) {
+  config <- params$map_configs[[1]]
 
-    render_individual_map_from_config(config)
-  }
+  cat("\n\n### Map", 1, ":", config$layer, "(Score:", config$score, ")\n\n")
+
+  render_individual_map_from_config(config)
+}
 ```
 
 ```{r individual-map2, results='asis'}
-if(!is.null(params$map_configs) && length(params$map_configs) >= 2) {
-    config <- params$map_configs[[2]]
-    
-    cat("\n\n### Map", 2, ":", config$layer, "(Score:", config$score, ")\n\n")
+if (!is.null(params$map_configs) && length(params$map_configs) >= 2) {
+  config <- params$map_configs[[2]]
 
-    render_individual_map_from_config(config)
-  }
+  cat("\n\n### Map", 2, ":", config$layer, "(Score:", config$score, ")\n\n")
+
+  render_individual_map_from_config(config)
+}
 ```
 
 ```{r individual-map3, results='asis'}
-if(!is.null(params$map_configs) && length(params$map_configs) >= 3) {
-    config <- params$map_configs[[3]]
-    
-    cat("\n\n### Map", 3, ":", config$layer, "(Score:", config$score, ")\n\n")
+if (!is.null(params$map_configs) && length(params$map_configs) >= 3) {
+  config <- params$map_configs[[3]]
 
-    render_individual_map_from_config(config)
-  }
+  cat("\n\n### Map", 3, ":", config$layer, "(Score:", config$score, ")\n\n")
+
+  render_individual_map_from_config(config)
+}
 ```
 
 ```{r individual-map4, results='asis'}
-if(!is.null(params$map_configs) && length(params$map_configs) >= 4) {
-    config <- params$map_configs[[4]]
-    
-    cat("\n\n### Map", 4, ":", config$layer, "(Score:", config$score, ")\n\n")
+if (!is.null(params$map_configs) && length(params$map_configs) >= 4) {
+  config <- params$map_configs[[4]]
 
-    render_individual_map_from_config(config)
-  }
+  cat("\n\n### Map", 4, ":", config$layer, "(Score:", config$score, ")\n\n")
+
+  render_individual_map_from_config(config)
+}
 ```
 
 ```{r individual-map5, results='asis'}
-if(!is.null(params$map_configs) && length(params$map_configs) >= 5) {
-    config <- params$map_configs[[5]]
-    
-    cat("\n\n### Map", 5, ":", config$layer, "(Score:", config$score, ")\n\n")
+if (!is.null(params$map_configs) && length(params$map_configs) >= 5) {
+  config <- params$map_configs[[5]]
 
-    render_individual_map_from_config(config)
-  }
+  cat("\n\n### Map", 5, ":", config$layer, "(Score:", config$score, ")\n\n")
+
+  render_individual_map_from_config(config)
+}
 ```
 
 ```{r individual-map6, results='asis'}
-if(!is.null(params$map_configs) && length(params$map_configs) >= 6) {
-    config <- params$map_configs[[6]]
-    
-    cat("\n\n### Map", 6, ":", config$layer, "(Score:", config$score, ")\n\n")
+if (!is.null(params$map_configs) && length(params$map_configs) >= 6) {
+  config <- params$map_configs[[6]]
 
-    render_individual_map_from_config(config)
-  }
+  cat("\n\n### Map", 6, ":", config$layer, "(Score:", config$score, ")\n\n")
+
+  render_individual_map_from_config(config)
+}
 ```
 
 ```{r individual-map7, results='asis'}
-if(!is.null(params$map_configs) && length(params$map_configs) >= 7) {
-    config <- params$map_configs[[7]]
-    
-    cat("\n\n### Map", 7, ":", config$layer, "(Score:", config$score, ")\n\n")
+if (!is.null(params$map_configs) && length(params$map_configs) >= 7) {
+  config <- params$map_configs[[7]]
 
-    render_individual_map_from_config(config)
-  }
+  cat("\n\n### Map", 7, ":", config$layer, "(Score:", config$score, ")\n\n")
+
+  render_individual_map_from_config(config)
+}
 ```
 
 ```{r individual-map8, results='asis'}
-if(!is.null(params$map_configs) && length(params$map_configs) >= 8) {
-    config <- params$map_configs[[8]]
-    
-    cat("\n\n### Map", 8, ":", config$layer, "(Score:", config$score, ")\n\n")
+if (!is.null(params$map_configs) && length(params$map_configs) >= 8) {
+  config <- params$map_configs[[8]]
 
-    render_individual_map_from_config(config)
-  }
+  cat("\n\n### Map", 8, ":", config$layer, "(Score:", config$score, ")\n\n")
+
+  render_individual_map_from_config(config)
+}
 ```
 
 ```{r individual-map9, results='asis'}
-if(!is.null(params$map_configs) && length(params$map_configs) >= 9) {
-    config <- params$map_configs[[9]]
-    
-    cat("\n\n### Map", 9, ":", config$layer, "(Score:", config$score, ")\n\n")
+if (!is.null(params$map_configs) && length(params$map_configs) >= 9) {
+  config <- params$map_configs[[9]]
 
-    render_individual_map_from_config(config)
-  }
+  cat("\n\n### Map", 9, ":", config$layer, "(Score:", config$score, ")\n\n")
+
+  render_individual_map_from_config(config)
+}
 ```
 
 ## Combined Maps
@@ -206,78 +218,114 @@ if(!is.null(params$map_configs) && length(params$map_configs) >= 9) {
 The following maps are combined data layers that have been calculated and visualized for the study area. The maps are zoomed to the area of interest that was previously selected, and shown in a red outline. To view the wider study area select the zoom out button on the map. To more closely analyze a cell click on the cell of interest and a pop-up will generate with the assigned score. Above each of the maps is a block containing relevant information: the number of cells that are represented by this data layer, and the calculation method used (geometric mean, lowest value, or product method).
 
 ```{r geometric-mean-map, results='asis'}
-if ("geometric_mean" %in% params$selected_methods && !is.null(params$combined_map_objects[["geometric_mean"]])) {
+if (
+  "geometric_mean" %in%
+    params$selected_methods &&
+    !is.null(params$combined_map_objects[["geometric_mean"]])
+) {
   cat("\n\n### Combined Map - Geometric Mean\n\n")
-  
+
   # Add data summary information
   if (!is.null(params$combined_data_list[["geometric_mean"]])) {
     combined_data <- params$combined_data_list[["geometric_mean"]]
     if (inherits(combined_data, 'sf')) {
       cat("**Data Points:** ", nrow(combined_data), "  \n")
-      
+
       if ("Geo_mean" %in% names(combined_data)) {
-        valid_values <- combined_data[["Geo_mean"]][!is.na(combined_data[["Geo_mean"]])]
-        if(length(valid_values) > 0) {
-          cat("**Value Range:** ", round(min(valid_values), 3), " to ", round(max(valid_values), 3), "  \n")
+        valid_values <- combined_data[["Geo_mean"]][
+          !is.na(combined_data[["Geo_mean"]])
+        ]
+        if (length(valid_values) > 0) {
+          cat(
+            "**Value Range:** ",
+            round(min(valid_values), 3),
+            " to ",
+            round(max(valid_values), 3),
+            "  \n"
+          )
         }
       }
       cat("**Calculation Method:** Geometric Mean  \n")
       cat("\n")
     }
   }
-  
+
   # Display the map
   params$combined_map_objects[["geometric_mean"]]
 }
 ```
 
 ```{r lowest-map, results='asis'}
-if ("lowest" %in% params$selected_methods && !is.null(params$combined_map_objects[["lowest"]])) {
+if (
+  "lowest" %in%
+    params$selected_methods &&
+    !is.null(params$combined_map_objects[["lowest"]])
+) {
   cat("\n\n### Combined Map - Lowest Value\n\n")
-  
+
   # Add data summary information
   if (!is.null(params$combined_data_list[["lowest"]])) {
     combined_data <- params$combined_data_list[["lowest"]]
     if (inherits(combined_data, 'sf')) {
       cat("**Data Points:** ", nrow(combined_data), "  \n")
-      
+
       if ("Lowest_value" %in% names(combined_data)) {
-        valid_values <- combined_data[["Lowest_value"]][!is.na(combined_data[["Lowest_value"]])]
-        if(length(valid_values) > 0) {
-          cat("**Value Range:** ", round(min(valid_values), 3), " to ", round(max(valid_values), 3), "  \n")
+        valid_values <- combined_data[["Lowest_value"]][
+          !is.na(combined_data[["Lowest_value"]])
+        ]
+        if (length(valid_values) > 0) {
+          cat(
+            "**Value Range:** ",
+            round(min(valid_values), 3),
+            " to ",
+            round(max(valid_values), 3),
+            "  \n"
+          )
         }
       }
       cat("**Calculation Method:** Lowest Value  \n")
       cat("\n")
     }
   }
-  
+
   # Display the map
   params$combined_map_objects[["lowest"]]
 }
 ```
 
 ```{r product-map, results='asis'}
-if ("product" %in% params$selected_methods && !is.null(params$combined_map_objects[["product"]])) {
+if (
+  "product" %in%
+    params$selected_methods &&
+    !is.null(params$combined_map_objects[["product"]])
+) {
   cat("\n\n### Combined Map - Product\n\n")
-  
+
   # Add data summary information
   if (!is.null(params$combined_data_list[["product"]])) {
     combined_data <- params$combined_data_list[["product"]]
     if (inherits(combined_data, 'sf')) {
       cat("**Data Points:** ", nrow(combined_data), "  \n")
-      
+
       if ("Product_value" %in% names(combined_data)) {
-        valid_values <- combined_data[["Product_value"]][!is.na(combined_data[["Product_value"]])]
-        if(length(valid_values) > 0) {
-          cat("**Value Range:** ", round(min(valid_values), 3), " to ", round(max(valid_values), 3), "  \n")
+        valid_values <- combined_data[["Product_value"]][
+          !is.na(combined_data[["Product_value"]])
+        ]
+        if (length(valid_values) > 0) {
+          cat(
+            "**Value Range:** ",
+            round(min(valid_values), 3),
+            " to ",
+            round(max(valid_values), 3),
+            "  \n"
+          )
         }
       }
       cat("**Calculation Method:** Product  \n")
       cat("\n")
     }
   }
-  
+
   # Display the map
   params$combined_map_objects[["product"]]
 }

@@ -7,7 +7,8 @@ generate_submodel_component_report <- function(
   combined_maps_data,
   input,
   filtered_aoi_data,
-  file
+  file,
+  current_res
 ) {
   # Component configuration
   component_config <- list(
@@ -88,7 +89,11 @@ generate_submodel_component_report <- function(
   }
 
   # Get filtered timestamp information
-  timestamp_info <- get_filtered_timestamp_data(valid_configs, component_type)
+  timestamp_info <- get_filtered_timestamp_data(
+    valid_configs,
+    component_type,
+    current_res
+  )
 
   # Get AOI data
   aoi_data <- filtered_aoi_data()
@@ -159,6 +164,7 @@ generate_submodel_component_report <- function(
     input = "Submodel_Component_Report_Template.Rmd",
     output_file = file,
     params = list(
+      active_resolution = current_res,
       map_configs = map_configs_with_cropped_data,
       combined_data_list = combined_data_list,
       combined_map_objects = combined_map_objects,

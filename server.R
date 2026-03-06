@@ -1327,7 +1327,8 @@ function(input, output, session) {
         combined_maps_data = combined_maps_data,
         input = input,
         filtered_aoi_data = filtered_aoi_data,
-        file = file
+        file = file,
+        current_res = current_resolution()
       )
     }
   )
@@ -1530,7 +1531,8 @@ function(input, output, session) {
         combined_maps_data = combined_maps_data,
         input = input,
         filtered_aoi_data = filtered_aoi_data,
-        file = file
+        file = file,
+        current_res = current_resolution()
       )
     }
   )
@@ -1744,7 +1746,8 @@ function(input, output, session) {
         combined_maps_data = combined_maps_data,
         input = input,
         filtered_aoi_data = filtered_aoi_data,
-        file = file
+        file = file,
+        current_res = current_resolution()
       )
     }
   )
@@ -1947,7 +1950,8 @@ function(input, output, session) {
         combined_maps_data = combined_maps_data,
         input = input,
         filtered_aoi_data = filtered_aoi_data,
-        file = file
+        file = file,
+        current_res = current_resolution()
       )
     }
   )
@@ -2150,7 +2154,8 @@ function(input, output, session) {
         combined_maps_data = combined_maps_data,
         input = input,
         filtered_aoi_data = filtered_aoi_data,
-        file = file
+        file = file,
+        current_res = current_resolution()
       )
     }
   )
@@ -2354,7 +2359,8 @@ function(input, output, session) {
         combined_maps_data = combined_maps_data,
         input = input,
         filtered_aoi_data = filtered_aoi_data,
-        file = file
+        file = file,
+        current_res = current_resolution()
       )
     }
   )
@@ -2445,18 +2451,6 @@ function(input, output, session) {
         status$industry_operations
       )
     )
-  })
-
-  # Data tab timestamp table
-  output$data_timestamps_table <- renderTable({
-    data_timestamps %>%
-      select(dataset_name, description, data_type, formatted_date) %>%
-      rename(
-        "Dataset" = dataset_name,
-        "Description" = description,
-        "Data Type" = data_type,
-        "Last Updated" = formatted_date
-      )
   })
 
   # Add this output to handle validation messages
@@ -2707,7 +2701,8 @@ function(input, output, session) {
         combined_maps_data = combined_maps_data,
         filtered_aoi_data = filtered_aoi_data,
         data_timestamps = data_timestamps,
-        file = file
+        file = file,
+        current_res = current_resolution()
       )
     }
   )
@@ -2955,7 +2950,8 @@ function(input, output, session) {
         combined_maps_data = combined_maps_data,
         filtered_aoi_data = filtered_aoi_data,
         data_timestamps = data_timestamps,
-        file = file
+        file = file,
+        current_res = current_resolution()
       )
     }
   )
@@ -3205,7 +3201,8 @@ function(input, output, session) {
         combined_maps_data = combined_maps_data,
         filtered_aoi_data = filtered_aoi_data,
         data_timestamps = data_timestamps,
-        file = file
+        file = file,
+        current_res = current_resolution()
       )
     }
   )
@@ -3470,8 +3467,53 @@ function(input, output, session) {
         combined_maps_data = combined_maps_data,
         filtered_aoi_data = filtered_aoi_data,
         data_timestamps = data_timestamps,
-        file = file
+        file = file,
+        current_res = current_resolution()
       )
     }
   )
+
+  output$active_grid_banner <- renderUI({
+    res <- current_resolution()
+    div(
+      class = "alert alert-info",
+      style = "margin-top: 15px; margin-bottom: 15px; background-color: #e7f3fe; border-left: 6px solid #2196F3;",
+      HTML(paste(
+        "ℹ️ <strong>Active Grid:</strong> Based on your Area of Interest, the model is currently using the <strong>",
+        res,
+        "</strong> base grid."
+      ))
+    )
+  })
+
+  # Data tab timestamp table
+  output$data_timestamps_table <- renderTable({
+    res <- current_resolution()
+
+    # Dynamically highlight the active column header
+    col_2km <- if (res == "2km") {
+      "2km Grid Last Updated (ACTIVE)"
+    } else {
+      "2km Grid Last Updated"
+    }
+    col_5km <- if (res == "5km") {
+      "5km Grid Last Updated (ACTIVE)"
+    } else {
+      "5km Grid Last Updated"
+    }
+
+    df <- data_timestamps %>%
+      select(
+        dataset_name,
+        description,
+        data_type,
+        formatted_date_2km,
+        formatted_date_5km
+      )
+
+    # Rename columns using our dynamic headers
+    names(df) <- c("Dataset", "Description", "Data Type", col_2km, col_5km)
+
+    return(df)
+  })
 }

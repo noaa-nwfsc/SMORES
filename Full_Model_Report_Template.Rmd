@@ -10,6 +10,7 @@ output:
     toc_float: true
     self_contained: true
 params:
+  active_resolution: NULL
   submodels_used: NULL
   submodel_weights_original: NULL
   natural_resources_components: NULL
@@ -33,30 +34,38 @@ source("global_report_generation.R")
 
 ## Model Configuration
 
+This report includes data from the following selected layers at the `r params$active_resolution` grid size:
+
 ```{r, results='asis'}
 
-if (!is.null(params$component_layer_details) && length(params$component_layer_details) > 0) {
-  
+if (
+  !is.null(params$component_layer_details) &&
+    length(params$component_layer_details) > 0
+) {
   # Get data timestamps
   data_timestamps_df <- NULL
   if (!is.null(params$data_timestamps)) {
-    data_timestamps_df <- params$data_timestamps %>%
-     select(dataset_name, data_type, formatted_date) %>%
-     rename(Layer_Name = dataset_name, Data_Type = data_type, Last_Updated = formatted_date)
+    data_timestamps_df <- params$data_timestamps$data_timestamps |>
+      select(dataset_name, data_type, formatted_date) |>
+      rename(
+        Layer_Name = dataset_name,
+        Data_Type = data_type,
+        Last_Updated = formatted_date
+      )
   }
-  
+
   layer_details_list <- list()
-  
+
   # Iterate through all submodels/components to build the table
   for (submodel in names(params$component_layer_details)) {
     submodel_data <- params$component_layer_details[[submodel]]
-    
+
     if (!is.null(submodel_data) && length(submodel_data) > 0) {
       for (component in names(submodel_data)) {
         component_data <- submodel_data[[component]]
         component_method <- component_data$method %||% "Unknown"
         component_layers <- component_data$layers %||% list()
-        
+
         if (length(component_layers) > 0) {
           for (i in seq_along(component_layers)) {
             layer_details_list[[length(layer_details_list) + 1]] <- data.frame(
@@ -78,63 +87,96 @@ if (!is.null(params$component_layer_details) && length(params$component_layer_de
       }
     }
   }
-  
+
   # 2. GENERATE TABLES IF DATA EXISTS
   if (length(layer_details_list) > 0) {
     all_layer_details <- do.call(rbind, layer_details_list)
-    
+
     # Define Sorting Orders
-    submodel_order_keys <- c("natural_resources", "fisheries", "industry_operations")
-    component_sort_order <- c("Habitat", "Species", "Fisheries", "Trawl Fisheries", "Scientific Surveys", "Submarine Cables")
-    
+    submodel_order_keys <- c(
+      "natural_resources",
+      "fisheries",
+      "industry_operations"
+    )
+    component_sort_order <- c(
+      "Habitat",
+      "Species",
+      "Fisheries",
+      "Trawl Fisheries",
+      "Scientific Surveys",
+      "Submarine Cables"
+    )
+
     # Iterate through each submodel to create separate tables
     for (sm_key in submodel_order_keys) {
-      
       # Filter data for this specific submodel
-      sm_data <- all_layer_details %>% filter(Submodel_Key == sm_key)
-      
+      sm_data <- all_layer_details |> filter(Submodel_Key == sm_key)
+
       if (nrow(sm_data) > 0) {
         # Get Weight
         weight_val <- params$submodel_weights_original[[sm_key]] %||% 0
         display_name <- unique(sm_data$Submodel_Display)[1]
-        
+
         # Sort the data specifically for this table
-        sm_data_sorted <- sm_data %>%
+        sm_data_sorted <- sm_data |>
           mutate(sort_id = match(Component, component_sort_order)) %>%
           arrange(sort_id, Layer_Name)
-        
-        final_table_data <- sm_data_sorted %>%
+
+        final_table_data <- sm_data_sorted |>
           select(Layer_Name, Score_Used, Component, Method)
-          
+
         if (!is.null(data_timestamps_df)) {
-          final_table_data <- final_table_data %>%
+          final_table_data <- final_table_data |>
             left_join(data_timestamps_df, by = "Layer_Name") %>%
             distinct(Layer_Name, Component, .keep_all = TRUE) %>%
             mutate(
               Data_Type = ifelse(is.na(Data_Type), "Unknown", Data_Type),
-              Last_Updated = ifelse(is.na(Last_Updated), "Unknown", Last_Updated)
+              Last_Updated = ifelse(
+                is.na(Last_Updated),
+                "Unknown",
+                Last_Updated
+              )
             )
-            
-           # Define columns with timestamps
-           col_names <- c("Layer Name", "Selected Score", "Component", "Component Calculation Method", "Data Type", "Last Updated")
+
+          # Define columns with timestamps
+          col_names <- c(
+            "Layer Name",
+            "Selected Score",
+            "Component",
+            "Component Calculation Method",
+            "Data Type",
+            paste0("Last Updated (", params$active_resolution, ")")
+          )
         } else {
-           # Define columns without timestamps
-           col_names <- c("Layer Name", "Selected Score", "Component", "Component Calculation Method")
+          # Define columns without timestamps
+          col_names <- c(
+            "Layer Name",
+            "Selected Score",
+            "Component",
+            "Component Calculation Method"
+          )
         }
-        
+
         # Print Header with Weight
-        cat(paste0("\n### ", display_name, " (Weight: ", round(weight_val, 2), ")\n\n"))
-        
+        cat(paste0(
+          "\n### ",
+          display_name,
+          " (Weight: ",
+          round(weight_val, 2),
+          ")\n\n"
+        ))
+
         # Print Table
-        print(kable(final_table_data,
-              col.names = col_names,
-              format = "html",
-              table.attr = "class='table table-striped config-table'"))
-        
+        print(kable(
+          final_table_data,
+          col.names = col_names,
+          format = "html",
+          table.attr = "class='table table-striped config-table'"
+        ))
+
         cat("\n<br>\n") # Add spacing between tables
       }
     }
-    
   } else {
     cat("No individual layer details available.\n")
   }
@@ -152,21 +194,33 @@ if (!is.null(params$combined_maps_data)) {
   # Check if combined_data has the geometry and expected columns
   if (inherits(params$combined_maps_data, 'sf')) {
     cat("**Full Model Data Points:** ", nrow(params$combined_maps_data), "  \n")
-    cat("**Final Combination Method:** Weighted Geometric Mean of Submodel Scores  \n")
-    
+    cat(
+      "**Final Combination Method:** Weighted Geometric Mean of Submodel Scores  \n"
+    )
+
     # Show value column information
-    value_column <- if("Overall_Geo_mean" %in% names(params$combined_maps_data)) {
+    value_column <- if (
+      "Overall_Geo_mean" %in% names(params$combined_maps_data)
+    ) {
       "Overall_Geo_mean"
-    } else if("Geo_mean" %in% names(params$combined_maps_data)) {
+    } else if ("Geo_mean" %in% names(params$combined_maps_data)) {
       "Geo_mean"
     } else {
       "Combined_Score"
     }
-    
+
     if (value_column %in% names(params$combined_maps_data)) {
-      valid_values <- params$combined_maps_data[[value_column]][!is.na(params$combined_maps_data[[value_column]])]
-      if(length(valid_values) > 0) {
-        cat("**Value Range:** ", round(min(valid_values), 3), " to ", round(max(valid_values), 3), "  \n")
+      valid_values <- params$combined_maps_data[[value_column]][
+        !is.na(params$combined_maps_data[[value_column]])
+      ]
+      if (length(valid_values) > 0) {
+        cat(
+          "**Value Range:** ",
+          round(min(valid_values), 3),
+          " to ",
+          round(max(valid_values), 3),
+          "  \n"
+        )
       }
     }
     cat("\n")

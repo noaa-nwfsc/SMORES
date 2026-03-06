@@ -4,7 +4,8 @@ generate_submodel_combined_report <- function(
   combined_maps_data,
   filtered_aoi_data,
   data_timestamps,
-  file
+  file,
+  current_res
 ) {
   # Show spinner modal
   show_spinner_modal(
@@ -310,7 +311,11 @@ generate_submodel_combined_report <- function(
 
   # Get filtered timestamp information for the combined submodel
   all_configs <- list()
-  timestamp_info <- get_filtered_timestamp_data(all_configs, "combined")
+  timestamp_info <- get_filtered_timestamp_data(
+    all_configs,
+    "combined",
+    current_res
+  )
 
   # Get filtered AOI data for the report
   aoi_data <- filtered_aoi_data()
@@ -320,6 +325,7 @@ generate_submodel_combined_report <- function(
     input = "Submodel_Combined_Report_Template.Rmd",
     output_file = file,
     params = list(
+      active_resolution = current_res,
       submodel_name = submodel_display_name,
       selected_components = selected_components,
       component_methods = component_methods,

@@ -3,7 +3,8 @@ generate_full_model_report <- function(
   combined_maps_data,
   filtered_aoi_data,
   data_timestamps,
-  file
+  file,
+  current_res
 ) {
   # Show spinner modal
   show_spinner_modal(
@@ -314,7 +315,11 @@ generate_full_model_report <- function(
 
   # Get filtered timestamp information for the full model
   all_configs <- list()
-  timestamp_info <- get_filtered_timestamp_data(all_configs, "full_model")
+  timestamp_info <- get_filtered_timestamp_data(
+    all_configs,
+    "full_model",
+    current_res
+  )
 
   # Get filtered AOI data for the report
   aoi_data <- filtered_aoi_data()
@@ -328,6 +333,7 @@ generate_full_model_report <- function(
     input = "Full_Model_Report_Template.Rmd",
     output_file = file,
     params = list(
+      active_resolution = current_res,
       submodels_used = submodels_used,
       submodel_weights_original = submodel_weights_original,
       weight_natural_resources = natural_resources_weight,
