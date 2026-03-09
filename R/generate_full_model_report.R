@@ -345,7 +345,7 @@ generate_full_model_report <- function(
       component_layer_details = component_layer_details,
       combined_maps_data = full_data,
       full_map = full_map,
-      data_timestamps = data_timestamps,
+      data_timestamps = timestamp_info,
       aoi_data = aoi_data
     ),
     envir = new.env(parent = globalenv())
