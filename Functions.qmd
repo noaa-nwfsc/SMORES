@@ -7,82 +7,82 @@ The SMORES app uses a variety of custom functions to create a model run. Some of
 
 ## Functions used for Mapping and Aesthetics:
 
-#### filter_by_score()
+#### [filter_by_score()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/filter_by_score.R){target="_blank"}
 
 Function to select the user selected score for each individual layer. All data is pre-loaded with the available score options to minimize loading times within the application. 
 
-#### apply_calculation_method()
+#### [apply_calculation_method()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/apply_calculation_method.R){target="_blank"}
 
 Function to create data for a combined submodel map using the user-selected method (geometric mean, lowest, or product). 
 
-#### calculate_geometric_mean_combined()
+#### [calculate_geometric_mean_combined()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_geometric_mean_combined.R){target="_blank"}
 
 Function that when applied calculates the geometric mean for an applied set of layers for each 2 km cell.
 
-#### calculate_lowest_combined()
+#### [calculate_lowest_combined()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_lowest_combined.R){target="_blank"}
 
 Function that when applied calculates the lowest score for an applied set of layers for each 2km cell.
 
-#### calculate_product_combined()
+#### [calculate_product_combined()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_product_combined.R){target="_blank"}
 
 Function that when applied calculates the product score for an applied set of layers for each 2km cell.
 
-#### create_individual_map()
+#### [create_individual_map()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/create_individual_map.R){target="_blank"}
 
 Function that creates the individual layer-centric maps for each submodel components (ie. blue whale distribution, EFHCA areas). This function applies the area of interest, the name of the layer, and the score to improve visualizing each piece that will be added to the model. 
 
-#### create_combined_map()
+#### [create_combined_map()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/create_combined_map.R){target="_blank"}
 
 Function that creates the combined map for each submodel component (ie habitat, species). This function applies the area of interest, the combined data score from the user selected method (ie. geometric mean, lowest, product). 
 
-#### calculate_submodel_geometric_mean()
+#### [calculate_submodel_geometric_mean()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_submodel_geometric_mean.R){target="_blank"}
 
 Function that calculates the geometric mean for combining submodels. This function has extra handling built in to handle values of 0. 
 
-#### check_submodel_status()
+#### [check_submodel_status()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/check_submodel_status.R){target="_blank"}
 
 Function to indicate which submodels are ready to be included in the full model run. 
 
-#### create_combined_submodel_map()
+#### [create_combined_submodel_map()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/create_combined_submodel_map.R){target="_blank"}
 
 Function to generate the combined submodel maps. This function is applied to the combined submodel tabs of natural resources, fisheries, and industry and operations submodels. 
 
-#### create_aoi_cropped_map()
+#### [create_aoi_cropped_map()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/create_aoi_cropped_map.R){target="_blank"}
 
 Function to generate the combined submodel map restricted to a user selected area of interest. This map is auto-generated under the combined submodel map. The combined submodel data is cropped to the area of interest selected at the beginning of the application. *Note if a user has selected 'All Areas' for the area of interest this map will not generate. 
 
-#### create_aoi_cropped_normalized_map()
+#### [create_aoi_cropped_normalized_map()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/create_aoi_cropped_normalized_map.R){target="_blank"}
 
 Function to generate the combined submodel map restricted to a user selected area of interest and normalized. This map is auto-generated under the combined submodel map and cropped area of interest map. The combined submodel data is normalized from 0 to 1 using the data range inside the area of interest. *Note if a user has selected 'All Areas' for the area of interest this map will not generate. 
 
-#### create_full_model_map()
+#### [create_full_model_map()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/create_full_model_map.R){target="_blank"}
 
 Function to create the full model run map. This function applies the user-selected weight to each submodel by taking each submodel columns and raising it to the weight. These weighted submodel data are then combined using a geometric mean. The full model can be calculated with however many submodels are selected by the user. All weights will need to sum to 1. 
 
-#### crop_data_to_aoi()
+#### [crop_data_to_aoi()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/crop_data_to_aoi.R){target="_blank"}
 
 Function to crop data from the full grid to the user-selected area of interest with a 1 kilometer buffer before data is passed to mapping functions. 
 
 ## Functions used for data:
 
-#### data_timestamps()
+#### [data_timestamps()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/data_timestamps.R){target="_blank"}
 
 Function to set the names, definition, data type, and retrieve the last time the data were updated in the SMORES repository for display on the data page. 
 
-#### filtered_data_timestamps()
+#### [filtered_data_timestamps()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/filtered_data_timestamps.R){target="_blank"}
 
 Function to filter which datasets are in use within the app for the SMORES reports. 
 
 ## Functions used for generating reports:
 
-#### generate_submodel_component_report()
+#### [generate_submodel_component_report()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/generate_submodel_component_report.R){target="_blank"}
 
 Function to pass user selected options into an HTML report template for each submodel component (ie. habitat, species). The information passed includes the data layers selected, individual maps, method for calculating the combined component map, and the combined component map. 
 
-#### generate_submodel_combined_report()
+#### [generate_submodel_combined_report()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/generate_submodel_combined_report.R){target="_blank"}
 
 Function to pass user selected options into an HTML report template for each submodel (ie. natural resources, fisheries). The information passed includes the data layers selected, individual layer information, combination method selected for components, combined map, area of interest cropped combined map, and normalized cropped area of interest map.
 
-#### generate_full_model_report()
+#### [generate_full_model_report()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/generate_full_model_report.R){target="_blank"}
 
 Function to pass user selected options into an HTML report template for a full model run. The information passed includes the submodels includes, weights applied, individual data layer information, the full combined model map, area of interest cropped full combined map, and the normalized cropped area of interest full combined map. 

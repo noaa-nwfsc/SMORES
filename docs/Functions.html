@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.8.27">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -32,14 +32,15 @@ ul.task-list li input[type="checkbox"] {
 <meta name="quarto:offset" content="./">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-dfb324f25d9b1687192fa8be62ac8f9c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-e31584831b205ffbb2d98406f31c2a5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -172,85 +173,85 @@ ul.task-list li input[type="checkbox"] {
 <section id="functions-used-for-mapping-and-aesthetics" class="level2">
 <h2 class="anchored" data-anchor-id="functions-used-for-mapping-and-aesthetics">Functions used for Mapping and Aesthetics:</h2>
 <section id="filter_by_score" class="level4">
-<h4 class="anchored" data-anchor-id="filter_by_score">filter_by_score()</h4>
+<h4 class="anchored" data-anchor-id="filter_by_score"><a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/filter_by_score.R" target="_blank">filter_by_score()</a></h4>
 <p>Function to select the user selected score for each individual layer. All data is pre-loaded with the available score options to minimize loading times within the application.</p>
 </section>
 <section id="apply_calculation_method" class="level4">
-<h4 class="anchored" data-anchor-id="apply_calculation_method">apply_calculation_method()</h4>
+<h4 class="anchored" data-anchor-id="apply_calculation_method"><a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/apply_calculation_method.R" target="_blank">apply_calculation_method()</a></h4>
 <p>Function to create data for a combined submodel map using the user-selected method (geometric mean, lowest, or product).</p>
 </section>
 <section id="calculate_geometric_mean_combined" class="level4">
-<h4 class="anchored" data-anchor-id="calculate_geometric_mean_combined">calculate_geometric_mean_combined()</h4>
+<h4 class="anchored" data-anchor-id="calculate_geometric_mean_combined"><a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_geometric_mean_combined.R" target="_blank">calculate_geometric_mean_combined()</a></h4>
 <p>Function that when applied calculates the geometric mean for an applied set of layers for each 2 km cell.</p>
 </section>
 <section id="calculate_lowest_combined" class="level4">
-<h4 class="anchored" data-anchor-id="calculate_lowest_combined">calculate_lowest_combined()</h4>
+<h4 class="anchored" data-anchor-id="calculate_lowest_combined"><a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_lowest_combined.R" target="_blank">calculate_lowest_combined()</a></h4>
 <p>Function that when applied calculates the lowest score for an applied set of layers for each 2km cell.</p>
 </section>
 <section id="calculate_product_combined" class="level4">
-<h4 class="anchored" data-anchor-id="calculate_product_combined">calculate_product_combined()</h4>
+<h4 class="anchored" data-anchor-id="calculate_product_combined"><a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_product_combined.R" target="_blank">calculate_product_combined()</a></h4>
 <p>Function that when applied calculates the product score for an applied set of layers for each 2km cell.</p>
 </section>
 <section id="create_individual_map" class="level4">
-<h4 class="anchored" data-anchor-id="create_individual_map">create_individual_map()</h4>
+<h4 class="anchored" data-anchor-id="create_individual_map"><a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/create_individual_map.R" target="_blank">create_individual_map()</a></h4>
 <p>Function that creates the individual layer-centric maps for each submodel components (ie. blue whale distribution, EFHCA areas). This function applies the area of interest, the name of the layer, and the score to improve visualizing each piece that will be added to the model.</p>
 </section>
 <section id="create_combined_map" class="level4">
-<h4 class="anchored" data-anchor-id="create_combined_map">create_combined_map()</h4>
+<h4 class="anchored" data-anchor-id="create_combined_map"><a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/create_combined_map.R" target="_blank">create_combined_map()</a></h4>
 <p>Function that creates the combined map for each submodel component (ie habitat, species). This function applies the area of interest, the combined data score from the user selected method (ie. geometric mean, lowest, product).</p>
 </section>
 <section id="calculate_submodel_geometric_mean" class="level4">
-<h4 class="anchored" data-anchor-id="calculate_submodel_geometric_mean">calculate_submodel_geometric_mean()</h4>
+<h4 class="anchored" data-anchor-id="calculate_submodel_geometric_mean"><a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/calculate_submodel_geometric_mean.R" target="_blank">calculate_submodel_geometric_mean()</a></h4>
 <p>Function that calculates the geometric mean for combining submodels. This function has extra handling built in to handle values of 0.</p>
 </section>
 <section id="check_submodel_status" class="level4">
-<h4 class="anchored" data-anchor-id="check_submodel_status">check_submodel_status()</h4>
+<h4 class="anchored" data-anchor-id="check_submodel_status"><a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/check_submodel_status.R" target="_blank">check_submodel_status()</a></h4>
 <p>Function to indicate which submodels are ready to be included in the full model run.</p>
 </section>
 <section id="create_combined_submodel_map" class="level4">
-<h4 class="anchored" data-anchor-id="create_combined_submodel_map">create_combined_submodel_map()</h4>
+<h4 class="anchored" data-anchor-id="create_combined_submodel_map"><a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/create_combined_submodel_map.R" target="_blank">create_combined_submodel_map()</a></h4>
 <p>Function to generate the combined submodel maps. This function is applied to the combined submodel tabs of natural resources, fisheries, and industry and operations submodels.</p>
 </section>
 <section id="create_aoi_cropped_map" class="level4">
-<h4 class="anchored" data-anchor-id="create_aoi_cropped_map">create_aoi_cropped_map()</h4>
+<h4 class="anchored" data-anchor-id="create_aoi_cropped_map"><a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/create_aoi_cropped_map.R" target="_blank">create_aoi_cropped_map()</a></h4>
 <p>Function to generate the combined submodel map restricted to a user selected area of interest. This map is auto-generated under the combined submodel map. The combined submodel data is cropped to the area of interest selected at the beginning of the application. *Note if a user has selected ‘All Areas’ for the area of interest this map will not generate.</p>
 </section>
 <section id="create_aoi_cropped_normalized_map" class="level4">
-<h4 class="anchored" data-anchor-id="create_aoi_cropped_normalized_map">create_aoi_cropped_normalized_map()</h4>
+<h4 class="anchored" data-anchor-id="create_aoi_cropped_normalized_map"><a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/create_aoi_cropped_normalized_map.R" target="_blank">create_aoi_cropped_normalized_map()</a></h4>
 <p>Function to generate the combined submodel map restricted to a user selected area of interest and normalized. This map is auto-generated under the combined submodel map and cropped area of interest map. The combined submodel data is normalized from 0 to 1 using the data range inside the area of interest. *Note if a user has selected ‘All Areas’ for the area of interest this map will not generate.</p>
 </section>
 <section id="create_full_model_map" class="level4">
-<h4 class="anchored" data-anchor-id="create_full_model_map">create_full_model_map()</h4>
+<h4 class="anchored" data-anchor-id="create_full_model_map"><a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/create_full_model_map.R" target="_blank">create_full_model_map()</a></h4>
 <p>Function to create the full model run map. This function applies the user-selected weight to each submodel by taking each submodel columns and raising it to the weight. These weighted submodel data are then combined using a geometric mean. The full model can be calculated with however many submodels are selected by the user. All weights will need to sum to 1.</p>
 </section>
 <section id="crop_data_to_aoi" class="level4">
-<h4 class="anchored" data-anchor-id="crop_data_to_aoi">crop_data_to_aoi()</h4>
+<h4 class="anchored" data-anchor-id="crop_data_to_aoi"><a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/crop_data_to_aoi.R" target="_blank">crop_data_to_aoi()</a></h4>
 <p>Function to crop data from the full grid to the user-selected area of interest with a 1 kilometer buffer before data is passed to mapping functions.</p>
 </section>
 </section>
 <section id="functions-used-for-data" class="level2">
 <h2 class="anchored" data-anchor-id="functions-used-for-data">Functions used for data:</h2>
 <section id="data_timestamps" class="level4">
-<h4 class="anchored" data-anchor-id="data_timestamps">data_timestamps()</h4>
+<h4 class="anchored" data-anchor-id="data_timestamps"><a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/data_timestamps.R" target="_blank">data_timestamps()</a></h4>
 <p>Function to set the names, definition, data type, and retrieve the last time the data were updated in the SMORES repository for display on the data page.</p>
 </section>
 <section id="filtered_data_timestamps" class="level4">
-<h4 class="anchored" data-anchor-id="filtered_data_timestamps">filtered_data_timestamps()</h4>
+<h4 class="anchored" data-anchor-id="filtered_data_timestamps"><a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/filtered_data_timestamps.R" target="_blank">filtered_data_timestamps()</a></h4>
 <p>Function to filter which datasets are in use within the app for the SMORES reports.</p>
 </section>
 </section>
 <section id="functions-used-for-generating-reports" class="level2">
 <h2 class="anchored" data-anchor-id="functions-used-for-generating-reports">Functions used for generating reports:</h2>
 <section id="generate_submodel_component_report" class="level4">
-<h4 class="anchored" data-anchor-id="generate_submodel_component_report">generate_submodel_component_report()</h4>
+<h4 class="anchored" data-anchor-id="generate_submodel_component_report"><a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/generate_submodel_component_report.R" target="_blank">generate_submodel_component_report()</a></h4>
 <p>Function to pass user selected options into an HTML report template for each submodel component (ie. habitat, species). The information passed includes the data layers selected, individual maps, method for calculating the combined component map, and the combined component map.</p>
 </section>
 <section id="generate_submodel_combined_report" class="level4">
-<h4 class="anchored" data-anchor-id="generate_submodel_combined_report">generate_submodel_combined_report()</h4>
+<h4 class="anchored" data-anchor-id="generate_submodel_combined_report"><a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/generate_submodel_combined_report.R" target="_blank">generate_submodel_combined_report()</a></h4>
 <p>Function to pass user selected options into an HTML report template for each submodel (ie. natural resources, fisheries). The information passed includes the data layers selected, individual layer information, combination method selected for components, combined map, area of interest cropped combined map, and normalized cropped area of interest map.</p>
 </section>
 <section id="generate_full_model_report" class="level4">
-<h4 class="anchored" data-anchor-id="generate_full_model_report">generate_full_model_report()</h4>
+<h4 class="anchored" data-anchor-id="generate_full_model_report"><a href="https://github.com/noaa-nwfsc/SMORES/blob/main/R/generate_full_model_report.R" target="_blank">generate_full_model_report()</a></h4>
 <p>Function to pass user selected options into an HTML report template for a full model run. The information passed includes the submodels includes, weights applied, individual data layer information, the full combined model map, area of interest cropped full combined map, and the normalized cropped area of interest full combined map.</p>
 
 
@@ -309,13 +310,14 @@ ul.task-list li input[type="checkbox"] {
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
