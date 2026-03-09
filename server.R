@@ -208,7 +208,9 @@ function(input, output, session) {
           "Southern California",
           "Central California",
           "Northern California",
-          "Washington/Oregon"
+          "Washington/Oregon",
+          "AB 525 Suitable Sea Space",
+          "AB 525 Sea Space Area of Interest"
         ),
         selected = "all" # Select "All" by default
       )

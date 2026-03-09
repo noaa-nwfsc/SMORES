@@ -79,7 +79,7 @@ most_recent_update <- timestamp_info$most_recent_update
 
 # Load datasets with automatic preprocessing
 # WEA's and OCS Planning Areas as of 12/22
-AOI <- readRDS_preprocessed("data/WEA_OCS.parquet", "AOI")
+AOI <- readRDS_preprocessed("data/AOI_Full.parquet", "AOI")
 
 ## Natural Resources Submodel
 # Create a list of all datasets
@@ -136,7 +136,9 @@ resolution_for_aoi <- c(
   "Southern California" = "5km",
   "Central California" = "5km",
   "Northern California" = "5km",
-  "Washington/Oregon" = "5km"
+  "Washington/Oregon" = "5km",
+  "AB 525 Suitable Sea Space" = "2km",
+  "AB 525 Sea Space Area of Interest" = "2km"
 )
 
 # Weight values

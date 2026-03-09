@@ -1412,13 +1412,44 @@
 #   sf::st_transform(4326) %>%
 #   st_zm()
 
-# st_write_parquet(wea_ocs_join, "C:\\GitHub\\SMORES\\data\\WEA_OCS.parquet")
+# # CA Sea Space : Areas of Interest
+# CA_SeaSpace_aoi_path <- "G:\\Shared drives\\NMFS NWC OEI GIS\\ArcGIS\\Projects\\AB 525 Sea Space Area of Interest_ea1857\\commondata\\osw_technical_potential_02112022\\SeaSpace_1.shp"
+# CA_SeaSpace_layer <- sf::st_read(CA_SeaSpace_aoi_path) |>
+#   summarise(geometry = sf::st_union(geometry)) |>
+#   sf::st_transform('+proj=longlat +datum=WGS84') |>
+#   sf::st_transform(4326) |>
+#   mutate(Area_Name = "AB 525 Sea Space Area of Interest") |>
+#   st_zm()
 
-# # CA Suitable Sea Space
-# CA_SeaSpace_path <- "G:\\Shared drives\\NMFS NWC OEI GIS\\ArcGIS\\Projects\\AB 525 Sea Space Area of Interest_ea1857\\commondata\\osw_technical_potential_02112022\\SeaSpace_1.shp"
-# CA_SeaSpace_layer <- sf::st_read(CA_SeaSpace_path) |>
-#   mutate(Area_Name = c("Area_1", "Area_2", "Area_3")) |>
-#   sf::st_transform('+proj=longlat +datum=WGS84')
+# # CA Suitable Sea Space : Sea Space Areas
+# CA_SeaSpace_Northern_path <- "G:\\Shared drives\\NMFS NWC OEI GIS\\ArcGIS\\Projects\\OWEC\\shapefiles\\MasterAG_Aggregated_NS_Merge_Export.shp"
+# CA_SeaSpace_Northern <- sf::st_read(CA_SeaSpace_Northern_path) |>
+#   select(CA_Area_Na, geometry) |>
+#   summarise(geometry = sf::st_union(geometry)) |>
+#   mutate(Area_Name = "Sea_Space_Northern") |>
+#   sf::st_transform('+proj=longlat +datum=WGS84') |>
+#   sf::st_transform(4326)
+# plot(CA_SeaSpace_Northern)
 
-# SeaSpace_transformed <- CA_SeaSpace_layer |>
-#   select(Area_Name, geometry)
+# CA_SeaSpace_Southern_path <- "G:\\Shared drives\\NMFS NWC OEI GIS\\ArcGIS\\Projects\\OWEC\\shapefiles\\MasterAG_Aggregated_SSC_1.shp"
+# CA_SeaSpace_Southern <- sf::st_read(CA_SeaSpace_Southern_path) |>
+#   select(PROT_NUM, geometry) |>
+#   summarise(geometry = sf::st_union(geometry)) |>
+#   mutate(Area_Name = "Sea_Space_Southern") |>
+#   sf::st_transform('+proj=longlat +datum=WGS84') |>
+#   sf::st_transform(4326)
+
+# SeaSpace_Areas_combined <- CA_SeaSpace_Northern |>
+#   bind_rows(CA_SeaSpace_Southern) |>
+#   summarise(geometry = sf::st_union(geometry)) |>
+#   mutate(Area_Name = "AB 525 Suitable Sea Space")
+
+# # Areas of Interest Full
+# Areas_Of_Interest_Full <- wea_ocs_join |>
+#   bind_rows(SeaSpace_Areas_combined) |>
+#   bind_rows(CA_SeaSpace_layer)
+
+# st_write_parquet(
+#   Areas_Of_Interest_Full,
+#   "C:\\GitHub\\SMORES\\data\\AOI_Full.parquet"
+# )
