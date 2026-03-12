@@ -60,11 +60,11 @@ Canyons <- sf::st_read(
 
 Canyons.Score = 0.1
 
-# 2. Intersect and calculate the area of the overlapping pieces
+# intersect and calculate the area of the overlapping pieces
 Canyons.grid <- sf::st_intersection(Canyons, grid_2km) %>%
   mutate(intersect_area = st_area(.))
 
-# 3. Sum the overlapping area per cell and calculate the threshold
+# sum the overlapping area per cell and calculate the threshold
 canyon_threshold <- Canyons.grid %>%
   st_drop_geometry() %>%
   group_by(CellID_2km, cell_area) %>%
