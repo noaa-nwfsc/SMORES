@@ -1,0 +1,34 @@
+
+```{r}
+# calculate the area of the grid cells
+grid_2km <- grid.2km %>%
+  mutate(cell_area = st_area(.))
+
+# fit the grid and calculate piece sizes
+ALCO.grid <- sf::st_intersection(ALCO, grid_2km) %>%
+  mutate(intersect_area = sf::st_area(.))
+
+# calculate the area-weighted average
+alco_weighted <- ALCO.grid %>%
+  st_drop_geometry() %>%
+  mutate(
+    intersect_area_num = as.numeric(intersect_area),
+    cell_area_num = as.numeric(cell_area),
+
+    # calculate the percentage of the cell this specific piece covers
+    area_weight = intersect_area_num / cell_area_num,
+
+    # multiply the continuous value by its weight
+    weighted_score = ALCO_RI * area_weight
+  ) %>%
+  group_by(CellID_2km) %>%
+  # sum all the weighted pieces together for the final cell score
+  summarize(
+    Score.ALCO = sum(weighted_score, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# rejoin to the spatial grid
+alco_scored <- grid_2km %>%
+  inner_join(alco_weighted, by = "CellID_2km")
+```

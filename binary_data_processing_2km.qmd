@@ -1,0 +1,116 @@
+# Data Processing for SMORES binary datasets for the 2km grid 
+
+Datasets to be processed:
+
+Canyon
+
+Plan: each dataset will have its own code chunk. All processing will live in that code chunk. The top of the document will house functions, data pathways, and other pieces that will be utilised throughout the script. 
+
+
+```{r, set-up}
+#load libraries
+library(tidyverse)
+library(sf)
+#library(nominatimlite)
+library(arcgis)
+library(arrow)
+library(sfarrow)
+
+# 2km base grid
+grid.2km <- sf::st_read(
+  dsn = "G:\\Shared drives\\NMFS NWC FRAM GIS\\GIS_Base\\Grid.gdb",
+  layer = "grid2km_ETsquare"
+)
+
+# st_write_parquet(
+#   grid.2km,
+#   "C:\\GitHub\\SMORES\\data\\2km\\grid_full.parquet"
+# )
+
+# get base grid as a dataframe
+base_grid_df <- grid.2km %>%
+  st_drop_geometry()
+
+# write_parquet(
+#   base_grid_df,
+#   "C:\\GitHub\\SMORES\\data\\5km\\base_grid_df.parquet"
+# )
+
+# set standard coordinate reference system if using 2 km square grid
+crsOut <- st_crs(grid.2km)
+
+# calculate the area of the grid cells
+grid_2km <- grid.2km %>%
+  mutate(cell_area = st_area(.))
+
+# file path where collections of layers lives
+melissa_file_path <- "G:\\Shared drives\\NMFS NWC OEI GIS\\ArcGIS\\Projects\\OWEC\\p30\\nccos_share_CA2.gdb"
+
+```
+
+# Canyons
+
+```{r canyons}
+# read file in
+Canyons <- sf::st_read(
+  dsn = melissa_file_path,
+  layer = "SubmarineCanyons_WestCoast_diss"
+) %>%
+  st_transform(crsOut)
+
+Canyons.Score = 0.1
+
+# 2. Intersect and calculate the area of the overlapping pieces
+Canyons.grid <- sf::st_intersection(Canyons, grid_2km) %>%
+  mutate(intersect_area = st_area(.))
+
+# 3. Sum the overlapping area per cell and calculate the threshold
+canyon_threshold <- Canyons.grid %>%
+  st_drop_geometry() %>%
+  group_by(CellID_2km, cell_area) %>%
+  summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
+  mutate(
+    coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
+  ) %>%
+  # keep cells with greater than or equal to 50% coverage
+  filter(coverage_pct >= 0.5) %>%
+  mutate(Score.Canyons = Canyons.Score) %>%
+  select(CellID_2km, Score.Canyons)
+
+canyon_scored <- grid.2km %>%
+  inner_join(canyon_threshold, by = "CellID_2km") %>%
+  rename("0.1" = Score.Canyons) %>%
+  mutate(
+    "0" = 0,
+    "0.01" = 0.01,
+    "0.001" = 0.001,
+    "0.2" = 0.2,
+    "0.3" = 0.3,
+    "0.4" = 0.4,
+    "0.5" = 0.5,
+    "0.6" = 0.6,
+    "0.7" = 0.7,
+    "0.8" = 0.8,
+    "0.9" = 0.9,
+    "1" = 1
+  )
+
+# transform data structure so that score.canyons is filterable by app
+canyons_scored_long <- pivot_longer(
+  canyon_scored,
+  cols = starts_with(c("0", "1")),
+  names_to = "Canyon",
+  values_to = "Score.Canyon"
+) %>%
+  sf::st_transform(4326) %>%
+  select(-Canyon) %>%
+  st_zm()
+
+st_write_parquet(
+  canyons_scored_long,
+  "C:\\GitHub\\SMORES\\data\\2km\\canyon_scored_2km_new.parquet"
+)
+
+plot(canyons_scored_long)
+
+```
