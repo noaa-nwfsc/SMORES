@@ -668,7 +668,7 @@ leatherback_turtle <- ESA_Critical_Habitat %>%
 leatherback.Score = 0.1
 
 # intersect and calculate the area of the overlapping pieces
-leatherback.grid <- sf::st_intersection(leatherback, grid_2km) %>%
+leatherback.grid <- sf::st_intersection(leatherback_turtle, grid_2km) %>%
   mutate(intersect_area = st_area(.))
 
 # sum the overlapping area per cell and calculate the threshold
@@ -788,13 +788,6 @@ humpback_whale <- ESA_Critical_Habitat %>%
   filter(commonName == "Whale, humpback") %>%
   select(-c(statusType, scientific, listingSta, federalReg)) %>%
   st_transform(crsOut)
-# humpback_whale.grid <- sf::st_intersection(humpback_whale, grd.norcal) %>%
-#   mutate(Score.humpback_whale = 1) %>%
-#   mutate(area.part = st_area(.)) %>%
-#   group_by(CellID_2km) %>% #use for 2km grid
-#   #group_by(GRID_ID) %>% #use for NCCOS hexagonal grid
-#   slice_max(area.part, n = 1) %>%
-#   select(CellID_2km, Score.humpback_whale) #use for 2km grid
 
 #Error:
 # Error in scan(text = lst[[length(lst)]], quiet = TRUE) :
@@ -818,7 +811,7 @@ st_is_valid(humpback_whale_buffer, reason = TRUE)
 humpback.Score = 0.1
 
 # intersect and calculate the area of the overlapping pieces
-humpback.grid <- sf::st_intersection(humpback_whale, grid_2km) %>%
+humpback.grid <- sf::st_intersection(humpback_whale_buffer, grid_2km) %>%
   mutate(intersect_area = st_area(.))
 
 # sum the overlapping area per cell and calculate the threshold
@@ -996,5 +989,76 @@ surveys_periodic_scored_long <- pivot_longer(
 st_write_parquet(
   surveys_periodic_scored_long,
   "C:\\GitHub\\SMORES\\data\\2km\\Surveys_periodic_2km_new.parquet"
+)
+```
+
+# Cables
+
+## submarine cables
+
+```{r}
+furl_nms <- "https://coast.noaa.gov/arcgis/rest/services/Hosted/SubmarineCables/FeatureServer/0"
+nms_layer <- arc_read(
+  furl_nms,
+  where = "status = 'In Service'
+                or status = 'Under Construction'"
+) %>%
+  st_transform(crsOut)
+
+st_is_valid(nms_layer, reason = TRUE)
+
+nms_layer_valid <- st_make_valid(nms_layer)
+
+cable.Score = 0.1
+
+# intersect and calculate the area of the overlapping pieces
+cable.grid <- sf::st_intersection(nms_layer_valid, grid_2km) %>%
+  mutate(intersect_area = st_area(.))
+
+# sum the overlapping area per cell and calculate the threshold
+cable_threshold <- cable.grid %>%
+  st_drop_geometry() %>%
+  group_by(CellID_2km, cell_area) %>%
+  summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
+  mutate(
+    coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
+  ) %>%
+  # keep cells with greater than or equal to 50% coverage
+  filter(coverage_pct >= 0.5) %>%
+  mutate(Score.cable = cable.Score) %>%
+  select(CellID_2km, Score.cable)
+
+cable_scored <- grid.2km %>%
+  inner_join(cable_threshold, by = "CellID_2km") %>%
+  rename("0.1" = Score.cable) %>%
+  mutate(
+    "0" = 0,
+    "0.01" = 0.01,
+    "0.001" = 0.001,
+    "0.2" = 0.2,
+    "0.3" = 0.3,
+    "0.4" = 0.4,
+    "0.5" = 0.5,
+    "0.6" = 0.6,
+    "0.7" = 0.7,
+    "0.8" = 0.8,
+    "0.9" = 0.9,
+    "1" = 1
+  )
+
+# transform data structure so that score.canyons is filterable by app
+cable_scored_long <- pivot_longer(
+  cable_scored,
+  cols = starts_with(c("0", "1")),
+  names_to = "cable",
+  values_to = "Score.cable"
+) %>%
+  sf::st_transform(4326) %>%
+  select(-cable) %>%
+  st_zm()
+
+st_write_parquet(
+  cable_scored_long,
+  "C:\\GitHub\\SMORES\\data\\2km\\Submarine_cable_2km_new.parquet"
 )
 ```
