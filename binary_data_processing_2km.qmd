@@ -376,3 +376,198 @@ st_write_parquet(
   "C:\\GitHub\\SMORES\\data\\2km\\EFHCA_scored_2km_new.parquet"
 )
 ```
+
+
+# EFHCA 700 Fathoms - Essential Fish Habitat Conservation Areas
+
+```{r efhca 700}
+# read file in
+EFHCA_700 <- sf::st_read(
+  dsn = melissa_file_path,
+  layer = "EFH_Groundfish_ConsArea_700fm"
+) %>%
+  st_transform(crsOut)
+
+EFHCA.700.Score = 0.1
+
+# intersect and calculate the area of the overlapping pieces
+EFHCA.700.grid <- sf::st_intersection(EFHCA_700, grid_2km) %>%
+  mutate(intersect_area = st_area(.))
+
+# sum the overlapping area per cell and calculate the threshold
+EFHCA_700_threshold <- EFHCA.700.grid %>%
+  st_drop_geometry() %>%
+  group_by(CellID_2km, cell_area) %>%
+  summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
+  mutate(
+    coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
+  ) %>%
+  # keep cells with greater than or equal to 50% coverage
+  filter(coverage_pct >= 0.5) %>%
+  mutate(Score.EFHCA.700 = EFHCA.700.Score) %>%
+  select(CellID_2km, Score.EFHCA.700)
+
+EFHCA_700_scored <- grid.2km %>%
+  inner_join(EFHCA_700_threshold, by = "CellID_2km") %>%
+  rename("0.1" = Score.EFHCA.700) %>%
+  mutate(
+    "0" = 0,
+    "0.01" = 0.01,
+    "0.001" = 0.001,
+    "0.2" = 0.2,
+    "0.3" = 0.3,
+    "0.4" = 0.4,
+    "0.5" = 0.5,
+    "0.6" = 0.6,
+    "0.7" = 0.7,
+    "0.8" = 0.8,
+    "0.9" = 0.9,
+    "1" = 1
+  )
+
+# transform data structure so that score.canyons is filterable by app
+EFHCA_700_scored_long <- pivot_longer(
+  EFHCA_700_scored,
+  cols = starts_with(c("0", "1")),
+  names_to = "EFHCA_700",
+  values_to = "Score.EFHCA.700"
+) %>%
+  sf::st_transform(4326) %>%
+  select(-EFHCA_700) %>%
+  st_zm()
+
+st_write_parquet(
+  EFHCA_700_scored_long,
+  "C:\\GitHub\\SMORES\\data\\2km\\EFHCA_700_scored_2km_new.parquet"
+)
+```
+
+
+# HAPCaoi - Habitat Areas of Particular Concern
+
+```{r HAPCaoi}
+# read file in
+HAPCaoi <- sf::st_read(
+  dsn = melissa_file_path,
+  layer = "EFH_Groundfish_HAPC_AOI"
+) %>%
+  st_transform(crsOut)
+
+HAPC.AOI.Score = 0.1
+
+# intersect and calculate the area of the overlapping pieces
+HAPC.AOI.grid <- sf::st_intersection(HAPCaoi, grid_2km) %>%
+  mutate(intersect_area = st_area(.))
+
+# sum the overlapping area per cell and calculate the threshold
+HAPCaoi_threshold <- HAPC.AOI.grid %>%
+  st_drop_geometry() %>%
+  group_by(CellID_2km, cell_area) %>%
+  summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
+  mutate(
+    coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
+  ) %>%
+  # keep cells with greater than or equal to 50% coverage
+  filter(coverage_pct >= 0.5) %>%
+  mutate(Score.HAPC.AOI = HAPC.AOI.Score) %>%
+  select(CellID_2km, Score.HAPC.AOI)
+
+HAPCaoi_scored <- grid.2km %>%
+  inner_join(HAPCaoi_threshold, by = "CellID_2km") %>%
+  rename("0.1" = Score.HAPC.AOI) %>%
+  mutate(
+    "0" = 0,
+    "0.01" = 0.01,
+    "0.001" = 0.001,
+    "0.2" = 0.2,
+    "0.3" = 0.3,
+    "0.4" = 0.4,
+    "0.5" = 0.5,
+    "0.6" = 0.6,
+    "0.7" = 0.7,
+    "0.8" = 0.8,
+    "0.9" = 0.9,
+    "1" = 1
+  )
+
+# transform data structure so that score.canyons is filterable by app
+HAPCaoi_scored_long <- pivot_longer(
+  HAPCaoi_scored,
+  cols = starts_with(c("0", "1")),
+  names_to = "HAPCaoi",
+  values_to = "Score.HAPC.AOI"
+) %>%
+  sf::st_transform(4326) %>%
+  select(-HAPCaoi) %>%
+  st_zm()
+
+st_write_parquet(
+  HAPCaoi_scored_long,
+  "C:\\GitHub\\SMORES\\data\\2km\\HAPCaoi_scored_2km_new.parquet"
+)
+```
+
+
+# HAPCreef - Habitat Areas of Particular Concern Rocky Reef
+
+```{r HAPCreef}
+# read file in
+HAPCreef <- sf::st_read(
+  dsn = melissa_file_path,
+  layer = "EFH_Groundfish_HAPC_RockyReef_v20250627"
+) %>%
+  st_transform(crsOut)
+
+HAPC.AOI.Score = 0.1
+
+# intersect and calculate the area of the overlapping pieces
+HAPC.AOI.grid <- sf::st_intersection(HAPCaoi, grid_2km) %>%
+  mutate(intersect_area = st_area(.))
+
+# sum the overlapping area per cell and calculate the threshold
+HAPCaoi_threshold <- HAPC.AOI.grid %>%
+  st_drop_geometry() %>%
+  group_by(CellID_2km, cell_area) %>%
+  summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
+  mutate(
+    coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
+  ) %>%
+  # keep cells with greater than or equal to 50% coverage
+  filter(coverage_pct >= 0.5) %>%
+  mutate(Score.HAPC.AOI = HAPC.AOI.Score) %>%
+  select(CellID_2km, Score.HAPC.AOI)
+
+HAPCaoi_scored <- grid.2km %>%
+  inner_join(HAPCaoi_threshold, by = "CellID_2km") %>%
+  rename("0.1" = Score.HAPC.AOI) %>%
+  mutate(
+    "0" = 0,
+    "0.01" = 0.01,
+    "0.001" = 0.001,
+    "0.2" = 0.2,
+    "0.3" = 0.3,
+    "0.4" = 0.4,
+    "0.5" = 0.5,
+    "0.6" = 0.6,
+    "0.7" = 0.7,
+    "0.8" = 0.8,
+    "0.9" = 0.9,
+    "1" = 1
+  )
+
+# transform data structure so that score.canyons is filterable by app
+HAPCaoi_scored_long <- pivot_longer(
+  HAPCaoi_scored,
+  cols = starts_with(c("0", "1")),
+  names_to = "HAPCaoi",
+  values_to = "Score.HAPC.AOI"
+) %>%
+  sf::st_transform(4326) %>%
+  select(-HAPCaoi) %>%
+  st_zm()
+
+st_write_parquet(
+  HAPCaoi_scored_long,
+  "C:\\GitHub\\SMORES\\data\\2km\\HAPCaoi_scored_2km_new.parquet"
+)
+```
