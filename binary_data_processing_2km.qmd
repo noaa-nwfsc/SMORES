@@ -1,11 +1,8 @@
 # Data Processing for SMORES binary datasets for the 2km grid 
 
-Datasets to be processed:
-
-Canyon
+Methodology: Set threshold - 50%
 
 Plan: each dataset will have its own code chunk. All processing will live in that code chunk. The top of the document will house functions, data pathways, and other pieces that will be utilised throughout the script. 
-
 
 ```{r, set-up}
 #load libraries

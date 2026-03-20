@@ -1,0 +1,610 @@
+# Data Processing for SMORES binary datasets for the 5km grid 
+
+Methodology: Area Weighted Average
+
+Plan: each dataset will have its own code chunk. All processing will live in that code chunk. The top of the document will house functions, data pathways, and other pieces that will be utilised throughout the script. 
+
+```{r setup}
+#load libraries
+library(tidyverse)
+library(sf)
+library(arcgis)
+library(arrow)
+library(sfarrow)
+
+# 2km base grid
+grid.5km <- sf::st_read(
+  dsn = "G:\\Shared drives\\NMFS NWC FRAM GIS\\GIS_Base\\Grid.gdb",
+  layer = "grid5km_ETsquare"
+)
+
+# st_write_parquet(
+#   grid.2km,
+#   "C:\\GitHub\\SMORES\\data\\2km\\grid_full.parquet"
+# )
+
+# get base grid as a dataframe
+base_grid_df <- grid.5km %>%
+  st_drop_geometry()
+
+# write_parquet(
+#   base_grid_df,
+#   "C:\\GitHub\\SMORES\\data\\5km\\base_grid_df.parquet"
+# )
+
+# set standard coordinate reference system if using 2 km square grid
+crsOut <- st_crs(grid.5km)
+
+# calculate the area of the grid cells
+grid_5km <- grid.5km %>%
+  mutate(cell_area = st_area(.))
+
+Fisheries <- sf::st_read(
+  "G:\\My Drive\\SMORES\\NCCOSfisherieslayers20250815081621\\Non-Confidential_NMFS_fisheries_submodel_data_2km_grid.shp"
+) %>%
+  st_transform(crsOut)
+
+Trawl_Fisheries <- sf::st_read(
+  "G:\\My Drive\\SMORES\\Scenario_4_trawl_polygon\\Scenario_4_trawl_polygon.shp"
+)
+```
+
+# Fisheries Layers
+
+## ASH
+
+```{r ASH}
+ASH <- Fisheries %>%
+  select(ASH_RI)
+
+# calculating the ranked importance scoring
+ASH.grid_RI <- sf::st_intersection(ASH, grid_5km) %>%
+  mutate(
+    # calculate area of each resulting puzzle piece
+    intersect_area = sf::st_area(geometry),
+    # percentage of the 5km cell this piece occupies
+    area_weight = as.numeric(intersect_area) / as.numeric(cell_area),
+    # Multiply the original 2km score by its new spatial weight
+    weighted_score = ASH_RI * area_weight
+  ) %>%
+  st_drop_geometry() %>%
+  group_by(CellID_5km) %>%
+  # sum all the weighted pieces together to get the final average
+  summarize(
+    Score.ASH_Ranked_Importance = sum(weighted_score, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(!is.na(Score.ASH_Ranked_Importance))
+
+# join new scores back to 5km spatial grid and transform
+ASH_RI_5km <- grid.5km %>%
+  inner_join(ASH.grid_RI, by = "CellID_5km") %>%
+  sf::st_transform('+proj=longlat +datum=WGS84')
+
+st_write_parquet(
+  ASH_RI_5km,
+  "C:\\GitHub\\SMORES\\data\\5km\\ASH_Ranked_Importance_scored_new.parquet"
+)
+
+# calculating the user selected scores
+ASH_presence <- ASH.grid_RI %>%
+  st_drop_geometry() %>%
+  distinct(CellID_5km)
+
+ASH_scored_static <- grid.5km %>%
+  # inner_join automatically drops any 5km cells that don't have ASH present
+  inner_join(ASH_presence, by = "CellID_5km") %>%
+  mutate(
+    "0" = 0,
+    "0.01" = 0.01,
+    "0.001" = 0.001
+  ) %>%
+  pivot_longer(
+    cols = c("0", "0.01", "0.001"),
+    names_to = "ASH",
+    values_to = "Score.ASH"
+  ) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84') %>%
+  select(-ASH)
+
+plot(ASH_scored_static)
+st_write_parquet(
+  ASH_scored,
+  "C:\\GitHub\\SMORES\\data\\5km\\ASH_scored_full_new.parquet"
+)
+```
+
+## SSH
+
+```{r SSH}
+SSH <- Fisheries %>%
+  select(SSH_RI)
+
+# calculating the ranked importance scoring
+SSH.grid_RI <- sf::st_intersection(SSH, grid_5km) %>%
+  mutate(
+    # calculate area of each resulting puzzle piece
+    intersect_area = sf::st_area(geometry),
+    # percentage of the 5km cell this piece occupies
+    area_weight = as.numeric(intersect_area) / as.numeric(cell_area),
+    # Multiply the original 2km score by its new spatial weight
+    weighted_score = SSH_RI * area_weight
+  ) %>%
+  st_drop_geometry() %>%
+  group_by(CellID_5km) %>%
+  # sum all the weighted pieces together to get the final average
+  summarize(
+    Score.SSH_Ranked_Importance = sum(weighted_score, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(!is.na(Score.SSH_Ranked_Importance))
+
+# join new scores back to 5km spatial grid and transform
+SSH_RI_5km <- grid.5km %>%
+  inner_join(SSH.grid_RI, by = "CellID_5km") %>%
+  sf::st_transform('+proj=longlat +datum=WGS84')
+
+st_write_parquet(
+  SSH_RI_5km,
+  "C:\\GitHub\\SMORES\\data\\5km\\SSH_Ranked_Importance_scored_new.parquet"
+)
+
+# calculating the user selected scores
+SSH_presence <- SSH.grid_RI %>%
+  st_drop_geometry() %>%
+  distinct(CellID_5km)
+
+SSH_scored_static <- grid.5km %>%
+  # inner_join automatically drops any 5km cells that don't have ASH present
+  inner_join(SSH_presence, by = "CellID_5km") %>%
+  mutate(
+    "0" = 0,
+    "0.01" = 0.01,
+    "0.001" = 0.001
+  ) %>%
+  pivot_longer(
+    cols = c("0", "0.01", "0.001"),
+    names_to = "SSH",
+    values_to = "Score.SSH"
+  ) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84') %>%
+  select(-SSH)
+
+st_write_parquet(
+  SSH_scored_static,
+  "C:\\GitHub\\SMORES\\data\\5km\\SSH_scored_full_new.parquet"
+)
+```
+
+## Groundfish Bottom Trawl - GFBT
+
+```{r GFBT}
+GFBT <- Fisheries %>%
+  select(GFBT_RI)
+
+# calculating the ranked importance scoring
+GFBT.grid_RI <- sf::st_intersection(GFBT, grid_5km) %>%
+  mutate(
+    # calculate area of each resulting puzzle piece
+    intersect_area = sf::st_area(geometry),
+    # percentage of the 5km cell this piece occupies
+    area_weight = as.numeric(intersect_area) / as.numeric(cell_area),
+    # Multiply the original 2km score by its new spatial weight
+    weighted_score = GFBT_RI * area_weight
+  ) %>%
+  st_drop_geometry() %>%
+  group_by(CellID_5km) %>%
+  # sum all the weighted pieces together to get the final average
+  summarize(
+    Score.GFBT_Ranked_Importance = sum(weighted_score, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(!is.na(Score.GFBT_Ranked_Importance))
+
+# join new scores back to 5km spatial grid and transform
+GFBT_RI_5km <- grid.5km %>%
+  inner_join(GFBT.grid_RI, by = "CellID_5km") %>%
+  sf::st_transform('+proj=longlat +datum=WGS84')
+
+st_write_parquet(
+  GFBT_RI_5km,
+  "C:\\GitHub\\SMORES\\data\\5km\\GFBT_Ranked_Importance_scored_new.parquet"
+)
+
+# calculating the user selected scores
+GFBT_presence <- GFBT.grid_RI %>%
+  st_drop_geometry() %>%
+  distinct(CellID_5km)
+
+GFBT_scored_static <- grid.5km %>%
+  # inner_join automatically drops any 5km cells that don't have ASH present
+  inner_join(GFBT_presence, by = "CellID_5km") %>%
+  mutate(
+    "0" = 0,
+    "0.01" = 0.01,
+    "0.001" = 0.001
+  ) %>%
+  pivot_longer(
+    cols = c("0", "0.01", "0.001"),
+    names_to = "GFBT",
+    values_to = "Score.GFBT"
+  ) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84') %>%
+  select(-GFBT)
+
+st_write_parquet(
+  GFBT_scored_static,
+  "C:\\GitHub\\SMORES\\data\\5km\\GFBT_scored_full_new.parquet"
+)
+```
+
+## Groundfish Pot Gear - GFP
+```{r GFP}
+GFP <- Fisheries %>%
+  select(GFP_RI)
+
+# calculating the ranked importance scoring
+GFP.grid_RI <- sf::st_intersection(GFP, grid_5km) %>%
+  mutate(
+    # calculate area of each resulting puzzle piece
+    intersect_area = sf::st_area(geometry),
+    # percentage of the 5km cell this piece occupies
+    area_weight = as.numeric(intersect_area) / as.numeric(cell_area),
+    # Multiply the original 2km score by its new spatial weight
+    weighted_score = GFP_RI * area_weight
+  ) %>%
+  st_drop_geometry() %>%
+  group_by(CellID_5km) %>%
+  # sum all the weighted pieces together to get the final average
+  summarize(
+    Score.GFP_Ranked_Importance = sum(weighted_score, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(!is.na(Score.GFP_Ranked_Importance))
+
+# join new scores back to 5km spatial grid and transform
+GFP_RI_5km <- grid.5km %>%
+  inner_join(GFP.grid_RI, by = "CellID_5km") %>%
+  sf::st_transform('+proj=longlat +datum=WGS84')
+
+st_write_parquet(
+  GFP_RI_5km,
+  "C:\\GitHub\\SMORES\\data\\5km\\GFP_Ranked_Importance_scored_new.parquet"
+)
+
+# calculating the user selected scores
+GFP_presence <- GFP.grid_RI %>%
+  st_drop_geometry() %>%
+  distinct(CellID_5km)
+
+GFP_scored_static <- grid.5km %>%
+  # inner_join automatically drops any 5km cells that don't have ASH present
+  inner_join(GFP_presence, by = "CellID_5km") %>%
+  mutate(
+    "0" = 0,
+    "0.01" = 0.01,
+    "0.001" = 0.001
+  ) %>%
+  pivot_longer(
+    cols = c("0", "0.01", "0.001"),
+    names_to = "GFP",
+    values_to = "Score.GFP"
+  ) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84') %>%
+  select(-GFP)
+
+st_write_parquet(
+  GFP_scored_static,
+  "C:\\GitHub\\SMORES\\data\\5km\\GFP_scored_full_new.parquet"
+)
+```
+
+## Groundfish Long Line - GFLL
+
+```{r GFLL}
+GFLL <- Fisheries %>%
+  select(GFLL_RI)
+
+# calculating the ranked importance scoring
+GFLL.grid_RI <- sf::st_intersection(GFLL, grid_5km) %>%
+  mutate(
+    # calculate area of each resulting puzzle piece
+    intersect_area = sf::st_area(geometry),
+    # percentage of the 5km cell this piece occupies
+    area_weight = as.numeric(intersect_area) / as.numeric(cell_area),
+    # Multiply the original 2km score by its new spatial weight
+    weighted_score = GFLL_RI * area_weight
+  ) %>%
+  st_drop_geometry() %>%
+  group_by(CellID_5km) %>%
+  # sum all the weighted pieces together to get the final average
+  summarize(
+    Score.GFLL_Ranked_Importance = sum(weighted_score, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(!is.na(Score.GFLL_Ranked_Importance))
+
+# join new scores back to 5km spatial grid and transform
+GFLL_RI_5km <- grid.5km %>%
+  inner_join(GFLL.grid_RI, by = "CellID_5km") %>%
+  sf::st_transform('+proj=longlat +datum=WGS84')
+
+st_write_parquet(
+  GFLL_RI_5km,
+  "C:\\GitHub\\SMORES\\data\\5km\\GFLL_Ranked_Importance_scored_new.parquet"
+)
+
+# calculating the user selected scores
+GFLL_presence <- GFLL.grid_RI %>%
+  st_drop_geometry() %>%
+  distinct(CellID_5km)
+
+GFLL_scored_static <- grid.5km %>%
+  # inner_join automatically drops any 5km cells that don't have ASH present
+  inner_join(GFLL_presence, by = "CellID_5km") %>%
+  mutate(
+    "0" = 0,
+    "0.01" = 0.01,
+    "0.001" = 0.001
+  ) %>%
+  pivot_longer(
+    cols = c("0", "0.01", "0.001"),
+    names_to = "GFLL",
+    values_to = "Score.GFLL"
+  ) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84') %>%
+  select(-GFLL)
+
+st_write_parquet(
+  GFLL_scored_static,
+  "C:\\GitHub\\SMORES\\data\\5km\\GFLL_scored_full_new.parquet"
+)
+```
+
+## Pink Shrimp - PS
+
+```{r PS}
+PS <- Fisheries %>%
+  select(PS_RI)
+
+# calculating the ranked importance scoring
+PS.grid_RI <- sf::st_intersection(PS, grid_5km) %>%
+  mutate(
+    # calculate area of each resulting puzzle piece
+    intersect_area = sf::st_area(geometry),
+    # percentage of the 5km cell this piece occupies
+    area_weight = as.numeric(intersect_area) / as.numeric(cell_area),
+    # Multiply the original 2km score by its new spatial weight
+    weighted_score = PS_RI * area_weight
+  ) %>%
+  st_drop_geometry() %>%
+  group_by(CellID_5km) %>%
+  # sum all the weighted pieces together to get the final average
+  summarize(
+    Score.PS_Ranked_Importance = sum(weighted_score, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(!is.na(Score.PS_Ranked_Importance))
+
+# join new scores back to 5km spatial grid and transform
+PS_RI_5km <- grid.5km %>%
+  inner_join(PS.grid_RI, by = "CellID_5km") %>%
+  sf::st_transform('+proj=longlat +datum=WGS84')
+
+st_write_parquet(
+  PS_RI_5km,
+  "C:\\GitHub\\SMORES\\data\\5km\\PS_Ranked_Importance_scored_new.parquet"
+)
+
+# calculating the user selected scores
+PS_presence <- PS.grid_RI %>%
+  st_drop_geometry() %>%
+  distinct(CellID_5km)
+
+PS_scored_static <- grid.5km %>%
+  # inner_join automatically drops any 5km cells that don't have ASH present
+  inner_join(PS_presence, by = "CellID_5km") %>%
+  mutate(
+    "0" = 0,
+    "0.01" = 0.01,
+    "0.001" = 0.001
+  ) %>%
+  pivot_longer(
+    cols = c("0", "0.01", "0.001"),
+    names_to = "PS",
+    values_to = "Score.PS"
+  ) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84') %>%
+  select(-PS)
+
+st_write_parquet(
+  PS_scored_static,
+  "C:\\GitHub\\SMORES\\data\\5km\\PS_scored_full_new.parquet"
+)
+```
+
+## Dungeness Crab - CRAB
+
+```{r CRAB}
+CRAB <- Fisheries %>%
+  select(CRAB_RI)
+
+# calculating the ranked importance scoring
+CRAB.grid_RI <- sf::st_intersection(CRAB, grid_5km) %>%
+  mutate(
+    # calculate area of each resulting puzzle piece
+    intersect_area = sf::st_area(geometry),
+    # percentage of the 5km cell this piece occupies
+    area_weight = as.numeric(intersect_area) / as.numeric(cell_area),
+    # Multiply the original 2km score by its new spatial weight
+    weighted_score = CRAB_RI * area_weight
+  ) %>%
+  st_drop_geometry() %>%
+  group_by(CellID_5km) %>%
+  # sum all the weighted pieces together to get the final average
+  summarize(
+    Score.CRAB_Ranked_Importance = sum(weighted_score, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(!is.na(Score.CRAB_Ranked_Importance))
+
+# join new scores back to 5km spatial grid and transform
+CRAB_RI_5km <- grid.5km %>%
+  inner_join(CRAB.grid_RI, by = "CellID_5km") %>%
+  sf::st_transform('+proj=longlat +datum=WGS84')
+
+st_write_parquet(
+  CRAB_RI_5km,
+  "C:\\GitHub\\SMORES\\data\\5km\\CRAB_Ranked_Importance_scored_new.parquet"
+)
+
+# calculating the user selected scores
+CRAB_presence <- CRAB.grid_RI %>%
+  st_drop_geometry() %>%
+  distinct(CellID_5km)
+
+CRAB_scored_static <- grid.5km %>%
+  # inner_join automatically drops any 5km cells that don't have ASH present
+  inner_join(CRAB_presence, by = "CellID_5km") %>%
+  mutate(
+    "0" = 0,
+    "0.01" = 0.01,
+    "0.001" = 0.001
+  ) %>%
+  pivot_longer(
+    cols = c("0", "0.01", "0.001"),
+    names_to = "CRAB",
+    values_to = "Score.CRAB"
+  ) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84') %>%
+  select(-CRAB)
+
+st_write_parquet(
+  CRAB_scored_static,
+  "C:\\GitHub\\SMORES\\data\\5km\\CRAB_scored_full_new.parquet"
+)
+```
+
+## Commercial troll/hook and line albacore - ALCO
+
+```{r ALCO}
+ALCO <- Fisheries %>%
+  select(ALCO_RI)
+
+# calculating the ranked importance scoring
+ALCO.grid_RI <- sf::st_intersection(ALCO, grid_5km) %>%
+  mutate(
+    # calculate area of each resulting puzzle piece
+    intersect_area = sf::st_area(geometry),
+    # percentage of the 5km cell this piece occupies
+    area_weight = as.numeric(intersect_area) / as.numeric(cell_area),
+    # Multiply the original 2km score by its new spatial weight
+    weighted_score = ALCO_RI * area_weight
+  ) %>%
+  st_drop_geometry() %>%
+  group_by(CellID_5km) %>%
+  # sum all the weighted pieces together to get the final average
+  summarize(
+    Score.ALCO_Ranked_Importance = sum(weighted_score, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(!is.na(Score.ALCO_Ranked_Importance))
+
+# join new scores back to 5km spatial grid and transform
+ALCO_RI_5km <- grid.5km %>%
+  inner_join(ALCO.grid_RI, by = "CellID_5km") %>%
+  sf::st_transform('+proj=longlat +datum=WGS84')
+
+st_write_parquet(
+  ALCO_RI_5km,
+  "C:\\GitHub\\SMORES\\data\\5km\\ALCO_Ranked_Importance_scored_new.parquet"
+)
+
+# calculating the user selected scores
+ALCO_presence <- ALCO.grid_RI %>%
+  st_drop_geometry() %>%
+  distinct(CellID_5km)
+
+ALCO_scored_static <- grid.5km %>%
+  # inner_join automatically drops any 5km cells that don't have ASH present
+  inner_join(ALCO_presence, by = "CellID_5km") %>%
+  mutate(
+    "0" = 0,
+    "0.01" = 0.01,
+    "0.001" = 0.001
+  ) %>%
+  pivot_longer(
+    cols = c("0", "0.01", "0.001"),
+    names_to = "ALCO",
+    values_to = "Score.ALCO"
+  ) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84') %>%
+  select(-ALCO)
+
+st_write_parquet(
+  ALCO_scored_static,
+  "C:\\GitHub\\SMORES\\data\\5km\\ALCO_scored_full_new.parquet"
+)
+```
+
+## Charter vessel albacore troll/hook and line - ALCH
+
+```{r ALCH}
+ALCH <- Fisheries %>%
+  select(ALCH_RI)
+
+# calculating the ranked importance scoring
+ALCH.grid_RI <- sf::st_intersection(ALCH, grid_5km) %>%
+  mutate(
+    # calculate area of each resulting puzzle piece
+    intersect_area = sf::st_area(geometry),
+    # percentage of the 5km cell this piece occupies
+    area_weight = as.numeric(intersect_area) / as.numeric(cell_area),
+    # Multiply the original 2km score by its new spatial weight
+    weighted_score = ALCH_RI * area_weight
+  ) %>%
+  st_drop_geometry() %>%
+  group_by(CellID_5km) %>%
+  # sum all the weighted pieces together to get the final average
+  summarize(
+    Score.ALCH_Ranked_Importance = sum(weighted_score, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(!is.na(Score.ALCH_Ranked_Importance))
+
+# join new scores back to 5km spatial grid and transform
+ALCH_RI_5km <- grid.5km %>%
+  inner_join(ALCH.grid_RI, by = "CellID_5km") %>%
+  sf::st_transform('+proj=longlat +datum=WGS84')
+
+st_write_parquet(
+  ALCH_RI_5km,
+  "C:\\GitHub\\SMORES\\data\\5km\\ALCH_Ranked_Importance_scored_new.parquet"
+)
+
+# calculating the user selected scores
+ALCH_presence <- ALCH.grid_RI %>%
+  st_drop_geometry() %>%
+  distinct(CellID_5km)
+
+ALCH_scored_static <- grid.5km %>%
+  # inner_join automatically drops any 5km cells that don't have ASH present
+  inner_join(ALCH_presence, by = "CellID_5km") %>%
+  mutate(
+    "0" = 0,
+    "0.01" = 0.01,
+    "0.001" = 0.001
+  ) %>%
+  pivot_longer(
+    cols = c("0", "0.01", "0.001"),
+    names_to = "ALCH",
+    values_to = "Score.ALCH"
+  ) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84') %>%
+  select(-ALCH)
+
+st_write_parquet(
+  ALCH_scored_static,
+  "C:\\GitHub\\SMORES\\data\\5km\\ALCH_scored_full_new.parquet"
+)
+```
