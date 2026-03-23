@@ -168,6 +168,9 @@ DSC_RH_scored_long <- pivot_longer(
   select(-DSC_RH) %>%
   st_zm()
 
+ggplot(data = DSC_RH_scored_long) +
+  geom_sf(aes(fill = Score.DSC_RH))
+
 st_write_parquet(
   DSC_RH_scored_long,
   "C:\\GitHub\\SMORES\\data\\5km\\DSC_RH_scored_full.parquet"

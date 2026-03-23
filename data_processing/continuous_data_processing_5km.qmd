@@ -654,14 +654,17 @@ DSC.RobustHigh <- sf::st_read(
   st_transform(crsOut)
 
 DSC.2km_intersect <- sf::st_intersection(DSC.RobustHigh, grid_2km) %>%
-  mutate(area.part = st_area(.)) %>%
-  group_by(CellID_2km) %>%
-  # keep only the largest overlapping piece, prevent ties from duplicating rows
-  slice_max(area.part, n = 1, with_ties = FALSE) %>%
-  ungroup() %>%
+  mutate(intersect_area = st_area(.)) %>%
+  group_by(CellID_2km, cell_area, gridcode) %>%
+  mutate(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
+  mutate(
+    coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
+  ) %>%
+  # keep cells with greater than or equal to 50% coverage
+  filter(coverage_pct >= 0.5) %>%
   select(CellID_2km, gridcode)
 
-# rop geometry to run the Z-membership math efficiently
+# drop geometry to run the Z-membership math efficiently
 DSC_2km_df <- DSC.2km_intersect %>% st_drop_geometry()
 
 z_membership <- function(df, col_name, b_variance) {
@@ -692,7 +695,7 @@ DSC_2km_df$Score.Z_Membership <- z_membership(DSC_2km_df, 'gridcode', 0.001)
 DSC_2km_scored_spatial <- grid_2km %>%
   inner_join(DSC_2km_df, by = "CellID_2km")
 
-grid_5km <- grid.5km %>% # Assuming grid_test is your 5km grid here
+grid_5km <- grid.5km %>%
   mutate(cell_area_5km = st_area(.))
 
 # calculate weights
@@ -709,7 +712,7 @@ DSC_5km_weighted <- sf::st_intersection(DSC_2km_scored_spatial, grid_5km) %>%
   # group by the 5km Cell ID and sum the weighted fractions
   group_by(CellID_5km) %>%
   summarize(
-    Score.Z_Membership_5km = sum(weighted_z_score, na.rm = TRUE),
+    Score.Z_Membership = sum(weighted_z_score, na.rm = TRUE),
     .groups = "drop"
   )
 
@@ -717,6 +720,10 @@ DSC_RH_z_membership_final <- grid_5km %>%
   inner_join(DSC_5km_weighted, by = "CellID_5km") %>%
   select(-cell_area_5km) %>%
   sf::st_transform('+proj=longlat +datum=WGS84')
+
+z <- ggplot(DSC_RH_z_membership_final) +
+  geom_sf(aes(fill = Score.Z_Membership))
+z
 
 st_write_parquet(
   DSC_RH_z_membership_final,
