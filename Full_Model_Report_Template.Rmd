@@ -45,7 +45,18 @@ if (
   # Get data timestamps
   data_timestamps_df <- NULL
   if (!is.null(params$data_timestamps)) {
-    data_timestamps_df <- params$data_timestamps$data_timestamps |>
+    # grab the raw dataframe
+    temp_df <- params$data_timestamps$data_timestamps
+
+    # force the resolution column to be named 'formatted_date'
+    if (params$active_resolution == "2km") {
+      temp_df$formatted_date <- temp_df$formatted_date_2km
+    } else {
+      temp_df$formatted_date <- temp_df$formatted_date_5km
+    }
+
+    # pipe it into the table
+    data_timestamps_df <- temp_df |>
       select(dataset_name, data_type, formatted_date) |>
       rename(
         Layer_Name = dataset_name,
