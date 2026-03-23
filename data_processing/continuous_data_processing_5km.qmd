@@ -11,6 +11,7 @@ library(sf)
 library(arcgis)
 library(arrow)
 library(sfarrow)
+library(ggplot2)
 
 # 2km base grid
 grid.5km <- sf::st_read(
@@ -74,7 +75,9 @@ ASH.grid_RI <- sf::st_intersection(ASH, grid_5km) %>%
     Score.ASH_Ranked_Importance = sum(weighted_score, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  filter(!is.na(Score.ASH_Ranked_Importance))
+  filter(!is.na(Score.ASH_Ranked_Importance)) %>%
+  # remove 0 values for continuity with NCCOS report
+  filter(Score.ASH_Ranked_Importance != 0.000)
 
 # join new scores back to 5km spatial grid and transform
 ASH_RI_5km <- grid.5km %>%
@@ -107,9 +110,8 @@ ASH_scored_static <- grid.5km %>%
   sf::st_transform('+proj=longlat +datum=WGS84') %>%
   select(-ASH)
 
-plot(ASH_scored_static)
 st_write_parquet(
-  ASH_scored,
+  ASH_scored_static,
   "C:\\GitHub\\SMORES\\data\\5km\\ASH_scored_full_new.parquet"
 )
 ```
@@ -137,7 +139,8 @@ SSH.grid_RI <- sf::st_intersection(SSH, grid_5km) %>%
     Score.SSH_Ranked_Importance = sum(weighted_score, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  filter(!is.na(Score.SSH_Ranked_Importance))
+  filter(!is.na(Score.SSH_Ranked_Importance)) %>%
+  filter(Score.SSH_Ranked_Importance != 0.000)
 
 # join new scores back to 5km spatial grid and transform
 SSH_RI_5km <- grid.5km %>%
@@ -199,7 +202,8 @@ GFBT.grid_RI <- sf::st_intersection(GFBT, grid_5km) %>%
     Score.GFBT_Ranked_Importance = sum(weighted_score, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  filter(!is.na(Score.GFBT_Ranked_Importance))
+  filter(!is.na(Score.GFBT_Ranked_Importance)) %>%
+  filter(Score.GFBT_Ranked_Importance != 0.000)
 
 # join new scores back to 5km spatial grid and transform
 GFBT_RI_5km <- grid.5km %>%
@@ -260,7 +264,8 @@ GFP.grid_RI <- sf::st_intersection(GFP, grid_5km) %>%
     Score.GFP_Ranked_Importance = sum(weighted_score, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  filter(!is.na(Score.GFP_Ranked_Importance))
+  filter(!is.na(Score.GFP_Ranked_Importance)) %>%
+  filter(Score.GFP_Ranked_Importance != 0.000)
 
 # join new scores back to 5km spatial grid and transform
 GFP_RI_5km <- grid.5km %>%
@@ -322,7 +327,8 @@ GFLL.grid_RI <- sf::st_intersection(GFLL, grid_5km) %>%
     Score.GFLL_Ranked_Importance = sum(weighted_score, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  filter(!is.na(Score.GFLL_Ranked_Importance))
+  filter(!is.na(Score.GFLL_Ranked_Importance)) %>%
+  filter(Score.GFLL_Ranked_Importance != 0.000)
 
 # join new scores back to 5km spatial grid and transform
 GFLL_RI_5km <- grid.5km %>%
@@ -384,7 +390,8 @@ PS.grid_RI <- sf::st_intersection(PS, grid_5km) %>%
     Score.PS_Ranked_Importance = sum(weighted_score, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  filter(!is.na(Score.PS_Ranked_Importance))
+  filter(!is.na(Score.PS_Ranked_Importance)) %>%
+  filter(Score.PS_Ranked_Importance != 0.000)
 
 # join new scores back to 5km spatial grid and transform
 PS_RI_5km <- grid.5km %>%
@@ -446,7 +453,8 @@ CRAB.grid_RI <- sf::st_intersection(CRAB, grid_5km) %>%
     Score.CRAB_Ranked_Importance = sum(weighted_score, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  filter(!is.na(Score.CRAB_Ranked_Importance))
+  filter(!is.na(Score.CRAB_Ranked_Importance)) %>%
+  filter(Score.CRAB_Ranked_Importance != 0.000)
 
 # join new scores back to 5km spatial grid and transform
 CRAB_RI_5km <- grid.5km %>%
@@ -508,7 +516,8 @@ ALCO.grid_RI <- sf::st_intersection(ALCO, grid_5km) %>%
     Score.ALCO_Ranked_Importance = sum(weighted_score, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  filter(!is.na(Score.ALCO_Ranked_Importance))
+  filter(!is.na(Score.ALCO_Ranked_Importance)) %>%
+  filter(Score.ALCO_Ranked_Importance != 0.000)
 
 # join new scores back to 5km spatial grid and transform
 ALCO_RI_5km <- grid.5km %>%
@@ -570,7 +579,8 @@ ALCH.grid_RI <- sf::st_intersection(ALCH, grid_5km) %>%
     Score.ALCH_Ranked_Importance = sum(weighted_score, na.rm = TRUE),
     .groups = "drop"
   ) %>%
-  filter(!is.na(Score.ALCH_Ranked_Importance))
+  filter(!is.na(Score.ALCH_Ranked_Importance)) %>%
+  filter(Score.ALCH_Ranked_Importance != 0.000)
 
 # join new scores back to 5km spatial grid and transform
 ALCH_RI_5km <- grid.5km %>%
@@ -716,4 +726,47 @@ st_write_parquet(
   DSC_RH_z_membership_final,
   "C:\\GitHub\\SMORES\\data\\5km\\DSC_RH_z_membership_scored_full_5km.parquet"
 )
+```
+
+
+```{r}
+#comparison
+
+new_ALCH <- st_read_parquet(
+  "C:\\GitHub\\SMORES\\data\\5km\\ALCH_Ranked_Importance_scored_new.parquet"
+) %>%
+  filter(Score.ALCH_Ranked_Importance != 0.000)
+
+old_ALCH <- st_read_parquet(
+  "C:\\GitHub\\SMORES\\data\\5km\\ALCH_Ranked_Importance_scored_full.parquet"
+)
+
+plot_new_ALCH <- ggplot(data = new_ALCH) +
+  geom_sf(aes(fill = Score.ALCH_Ranked_Importance))
+
+plot_new_ALCH
+
+plot_old_ALCH <- ggplot(data = old_ALCH) +
+  geom_sf(aes(fill = Score.ALCH_Ranked_Importance))
+
+plot_old_ALCH
+# visual check looks like we need to remove values of 0
+
+new_ALCO <- st_read_parquet(
+  "C:\\GitHub\\SMORES\\data\\5km\\ALCO_Ranked_Importance_scored_new.parquet"
+) |>
+  filter(Score.ALCO_Ranked_Importance != 0.000)
+old_ALCO <- st_read_parquet(
+  "C:\\GitHub\\SMORES\\data\\5km\\ALCO_Ranked_Importance_scored_full.parquet"
+)
+
+plot_new_ALCO <- ggplot(data = new_ALCO) +
+  geom_sf(aes(fill = Score.ALCO_Ranked_Importance))
+
+plot_new_ALCO
+
+plot_old_ALCO <- ggplot(data = old_ALCO) +
+  geom_sf(aes(fill = Score.ALCO_Ranked_Importance))
+
+plot_old_ALCO
 ```
