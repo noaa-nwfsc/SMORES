@@ -1,4 +1,4 @@
-# Data Processing for SMORES binary datasets for the 5km grid 
+# Data Processing for SMORES binary datasets for the 2km grid 
 
 Methodology: Set threshold - 50%
 
@@ -8,15 +8,14 @@ Plan: each dataset will have its own code chunk. All processing will live in tha
 #load libraries
 library(tidyverse)
 library(sf)
-#library(nominatimlite)
 library(arcgis)
 library(arrow)
 library(sfarrow)
 
 # 2km base grid
-grid.5km <- sf::st_read(
+grid.2km <- sf::st_read(
   dsn = "G:\\Shared drives\\NMFS NWC FRAM GIS\\GIS_Base\\Grid.gdb",
-  layer = "grid5km_ETsquare"
+  layer = "grid2km_ETsquare"
 )
 
 # st_write_parquet(
@@ -25,7 +24,7 @@ grid.5km <- sf::st_read(
 # )
 
 # get base grid as a dataframe
-base_grid_df <- grid.5km %>%
+base_grid_df <- grid.2km %>%
   st_drop_geometry()
 
 # write_parquet(
@@ -34,10 +33,10 @@ base_grid_df <- grid.5km %>%
 # )
 
 # set standard coordinate reference system if using 2 km square grid
-crsOut <- st_crs(grid.5km)
+crsOut <- st_crs(grid.2km)
 
 # calculate the area of the grid cells
-grid_5km <- grid.5km %>%
+grid_2km <- grid.2km %>%
   mutate(cell_area = st_area(.))
 
 # file path where collections of layers lives
@@ -60,13 +59,13 @@ Canyons <- sf::st_read(
 Canyons.Score = 0.1
 
 # intersect and calculate the area of the overlapping pieces
-Canyons.grid <- sf::st_intersection(Canyons, grid_5km) %>%
+Canyons.grid <- sf::st_intersection(Canyons, grid_2km) %>%
   mutate(intersect_area = st_area(.))
 
 # sum the overlapping area per cell and calculate the threshold
 canyon_threshold <- Canyons.grid %>%
   st_drop_geometry() %>%
-  group_by(CellID_5km, cell_area) %>%
+  group_by(CellID_2km, cell_area) %>%
   summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
   mutate(
     coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
@@ -74,10 +73,10 @@ canyon_threshold <- Canyons.grid %>%
   # keep cells with greater than or equal to 50% coverage
   filter(coverage_pct >= 0.5) %>%
   mutate(Score.Canyons = Canyons.Score) %>%
-  select(CellID_5km, Score.Canyons)
+  select(CellID_2km, Score.Canyons)
 
-canyon_scored <- grid.5km %>%
-  inner_join(canyon_threshold, by = "CellID_5km") %>%
+canyon_scored <- grid.2km %>%
+  inner_join(canyon_threshold, by = "CellID_2km") %>%
   rename("0.1" = Score.Canyons) %>%
   mutate(
     "0" = 0,
@@ -107,8 +106,14 @@ canyons_scored_long <- pivot_longer(
 
 st_write_parquet(
   canyons_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\canyon_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\2km\\canyon_scored_2km_new.parquet"
 )
+
+canyon_old_2 <- st_read_parquet(
+  "C:\\GitHub\\SMORES\\data\\2km\\canyon_scored_full.parquet"
+)
+
+plot(canyons_scored_long)
 ```
 
 ## Deep Sea Coral
@@ -124,13 +129,13 @@ DSC.RobustHigh <- sf::st_read(
 DSC.RH.Score = 0.1
 
 # intersect and calculate the area of the overlapping pieces
-DSC.RobustHigh.grid <- sf::st_intersection(DSC.RobustHigh, grid_5km) %>%
+DSC.RobustHigh.grid <- sf::st_intersection(DSC.RobustHigh, grid_2km) %>%
   mutate(intersect_area = st_area(.))
 
 # sum the overlapping area per cell and calculate the threshold
 DSC.RobustHigh_threshold <- DSC.RobustHigh.grid %>%
   st_drop_geometry() %>%
-  group_by(CellID_5km, cell_area) %>%
+  group_by(CellID_2km, cell_area) %>%
   summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
   mutate(
     coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
@@ -138,10 +143,10 @@ DSC.RobustHigh_threshold <- DSC.RobustHigh.grid %>%
   # keep cells with greater than or equal to 50% coverage
   filter(coverage_pct >= 0.5) %>%
   mutate(Score.DSC.RH = DSC.RH.Score) %>%
-  select(CellID_5km, Score.DSC.RH)
+  select(CellID_2km, Score.DSC.RH)
 
-DSC_RH_scored <- grid.5km %>%
-  inner_join(DSC.RobustHigh_threshold, by = "CellID_5km") %>%
+DSC_RH_scored <- grid.2km %>%
+  inner_join(DSC.RobustHigh_threshold, by = "CellID_2km") %>%
   rename("0.1" = Score.DSC.RH) %>%
   mutate(
     "0" = 0,
@@ -171,7 +176,7 @@ DSC_RH_scored_long <- pivot_longer(
 
 st_write_parquet(
   DSC_RH_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\DSC_RH_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\2km\\DSC_RH_scored_2km_new.parquet"
 )
 ```
 
@@ -189,13 +194,13 @@ Seeps <- sf::st_read(
 Seeps.Score = 0.1
 
 # intersect and calculate the area of the overlapping pieces
-Seeps.grid <- sf::st_intersection(Seeps, grid_5km) %>%
+Seeps.grid <- sf::st_intersection(Seeps, grid_2km) %>%
   mutate(intersect_area = st_area(.))
 
 # sum the overlapping area per cell and calculate the threshold
 Seeps_threshold <- Seeps.grid %>%
   st_drop_geometry() %>%
-  group_by(CellID_5km, cell_area) %>%
+  group_by(CellID_2km, cell_area) %>%
   summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
   mutate(
     coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
@@ -203,10 +208,10 @@ Seeps_threshold <- Seeps.grid %>%
   # keep cells with greater than or equal to 50% coverage
   filter(coverage_pct >= 0.5) %>%
   mutate(Score.Seeps = Seeps.Score) %>%
-  select(CellID_5km, Score.Seeps)
+  select(CellID_2km, Score.Seeps)
 
-Seeps_scored <- grid.5km %>%
-  inner_join(Seeps_threshold, by = "CellID_5km") %>%
+Seeps_scored <- grid.2km %>%
+  inner_join(Seeps_threshold, by = "CellID_2km") %>%
   rename("0.1" = Score.Seeps) %>%
   mutate(
     "0" = 0,
@@ -236,7 +241,7 @@ Seeps_scored_long <- pivot_longer(
 
 st_write_parquet(
   Seeps_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\Seeps_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\2km\\Seeps_scored_2km_new.parquet"
 )
 ```
 
@@ -254,13 +259,13 @@ ShlfBrk <- sf::st_read(
 ShlfBrk.Score = 0.1
 
 # intersect and calculate the area of the overlapping pieces
-ShlfBrk.grid <- sf::st_intersection(ShlfBrk, grid_5km) %>%
+ShlfBrk.grid <- sf::st_intersection(ShlfBrk, grid_2km) %>%
   mutate(intersect_area = st_area(.))
 
 # sum the overlapping area per cell and calculate the threshold
 ShlfBrk_threshold <- ShlfBrk.grid %>%
   st_drop_geometry() %>%
-  group_by(CellID_5km, cell_area) %>%
+  group_by(CellID_2km, cell_area) %>%
   summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
   mutate(
     coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
@@ -268,10 +273,10 @@ ShlfBrk_threshold <- ShlfBrk.grid %>%
   # keep cells with greater than or equal to 50% coverage
   filter(coverage_pct >= 0.5) %>%
   mutate(Score.ShlfBrk = ShlfBrk.Score) %>%
-  select(CellID_5km, Score.ShlfBrk)
+  select(CellID_2km, Score.ShlfBrk)
 
-ShlfBrk_scored <- grid.5km %>%
-  inner_join(ShlfBrk_threshold, by = "CellID_5km") %>%
+ShlfBrk_scored <- grid.2km %>%
+  inner_join(ShlfBrk_threshold, by = "CellID_2km") %>%
   rename("0.1" = Score.ShlfBrk) %>%
   mutate(
     "0" = 0,
@@ -301,7 +306,7 @@ ShlfBrk_scored_long <- pivot_longer(
 
 st_write_parquet(
   ShlfBrk_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\ShlfBrk_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\2km\\ShlfBrk_scored_2km_new.parquet"
 )
 ```
 
@@ -319,13 +324,13 @@ EFHCA <- sf::st_read(
 EFHCA.Score = 0.1
 
 # intersect and calculate the area of the overlapping pieces
-EFHCA.grid <- sf::st_intersection(EFHCA, grid_5km) %>%
+EFHCA.grid <- sf::st_intersection(EFHCA, grid_2km) %>%
   mutate(intersect_area = st_area(.))
 
 # sum the overlapping area per cell and calculate the threshold
 EFHCA_threshold <- EFHCA.grid %>%
   st_drop_geometry() %>%
-  group_by(CellID_5km, cell_area) %>%
+  group_by(CellID_2km, cell_area) %>%
   summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
   mutate(
     coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
@@ -333,10 +338,10 @@ EFHCA_threshold <- EFHCA.grid %>%
   # keep cells with greater than or equal to 50% coverage
   filter(coverage_pct >= 0.5) %>%
   mutate(Score.EFHCA = EFHCA.Score) %>%
-  select(CellID_5km, Score.EFHCA)
+  select(CellID_2km, Score.EFHCA)
 
-EFHCA_scored <- grid.5km %>%
-  inner_join(EFHCA_threshold, by = "CellID_5km") %>%
+EFHCA_scored <- grid.2km %>%
+  inner_join(EFHCA_threshold, by = "CellID_2km") %>%
   rename("0.1" = Score.EFHCA) %>%
   mutate(
     "0" = 0,
@@ -366,7 +371,7 @@ EFHCA_scored_long <- pivot_longer(
 
 st_write_parquet(
   EFHCA_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\EFHCA_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\2km\\EFHCA_scored_2km_new.parquet"
 )
 ```
 
@@ -384,13 +389,13 @@ EFHCA_700 <- sf::st_read(
 EFHCA.700.Score = 0.1
 
 # intersect and calculate the area of the overlapping pieces
-EFHCA.700.grid <- sf::st_intersection(EFHCA_700, grid_5km) %>%
+EFHCA.700.grid <- sf::st_intersection(EFHCA_700, grid_2km) %>%
   mutate(intersect_area = st_area(.))
 
 # sum the overlapping area per cell and calculate the threshold
 EFHCA_700_threshold <- EFHCA.700.grid %>%
   st_drop_geometry() %>%
-  group_by(CellID_5km, cell_area) %>%
+  group_by(CellID_2km, cell_area) %>%
   summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
   mutate(
     coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
@@ -398,10 +403,10 @@ EFHCA_700_threshold <- EFHCA.700.grid %>%
   # keep cells with greater than or equal to 50% coverage
   filter(coverage_pct >= 0.5) %>%
   mutate(Score.EFHCA.700 = EFHCA.700.Score) %>%
-  select(CellID_5km, Score.EFHCA.700)
+  select(CellID_2km, Score.EFHCA.700)
 
-EFHCA_700_scored <- grid.5km %>%
-  inner_join(EFHCA_700_threshold, by = "CellID_5km") %>%
+EFHCA_700_scored <- grid.2km %>%
+  inner_join(EFHCA_700_threshold, by = "CellID_2km") %>%
   rename("0.1" = Score.EFHCA.700) %>%
   mutate(
     "0" = 0,
@@ -431,7 +436,7 @@ EFHCA_700_scored_long <- pivot_longer(
 
 st_write_parquet(
   EFHCA_700_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\EFHCA_700_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\2km\\EFHCA_700_scored_2km_new.parquet"
 )
 ```
 
@@ -449,13 +454,13 @@ HAPCaoi <- sf::st_read(
 HAPC.AOI.Score = 0.1
 
 # intersect and calculate the area of the overlapping pieces
-HAPC.AOI.grid <- sf::st_intersection(HAPCaoi, grid_5km) %>%
+HAPC.AOI.grid <- sf::st_intersection(HAPCaoi, grid_2km) %>%
   mutate(intersect_area = st_area(.))
 
 # sum the overlapping area per cell and calculate the threshold
 HAPCaoi_threshold <- HAPC.AOI.grid %>%
   st_drop_geometry() %>%
-  group_by(CellID_5km, cell_area) %>%
+  group_by(CellID_2km, cell_area) %>%
   summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
   mutate(
     coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
@@ -463,10 +468,10 @@ HAPCaoi_threshold <- HAPC.AOI.grid %>%
   # keep cells with greater than or equal to 50% coverage
   filter(coverage_pct >= 0.5) %>%
   mutate(Score.HAPC.AOI = HAPC.AOI.Score) %>%
-  select(CellID_5km, Score.HAPC.AOI)
+  select(CellID_2km, Score.HAPC.AOI)
 
-HAPCaoi_scored <- grid.5km %>%
-  inner_join(HAPCaoi_threshold, by = "CellID_5km") %>%
+HAPCaoi_scored <- grid.2km %>%
+  inner_join(HAPCaoi_threshold, by = "CellID_2km") %>%
   rename("0.1" = Score.HAPC.AOI) %>%
   mutate(
     "0" = 0,
@@ -496,7 +501,7 @@ HAPCaoi_scored_long <- pivot_longer(
 
 st_write_parquet(
   HAPCaoi_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\HAPCaoi_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\2km\\HAPCaoi_scored_2km_new.parquet"
 )
 ```
 
@@ -504,6 +509,7 @@ st_write_parquet(
 ## HAPCreef - Habitat Areas of Particular Concern Rocky Reef
 
 ```{r HAPCreef}
+
 # read file in
 HAPCreef <- sf::st_read(
   dsn = melissa_file_path,
@@ -514,13 +520,13 @@ HAPCreef <- sf::st_read(
 HAPC.RR.Score = 0.1
 
 # intersect and calculate the area of the overlapping pieces
-HAPC.RR.grid <- sf::st_intersection(HAPCreef, grid_5km) %>%
+HAPC.RR.grid <- sf::st_intersection(HAPCreef, grid_2km) %>%
   mutate(intersect_area = st_area(.))
 
 # sum the overlapping area per cell and calculate the threshold
 HAPCreef_threshold <- HAPC.RR.grid %>%
   st_drop_geometry() %>%
-  group_by(CellID_5km, cell_area) %>%
+  group_by(CellID_2km, cell_area) %>%
   summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
   mutate(
     coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
@@ -528,10 +534,10 @@ HAPCreef_threshold <- HAPC.RR.grid %>%
   # keep cells with greater than or equal to 50% coverage
   filter(coverage_pct >= 0.5) %>%
   mutate(Score.HAPC.RR = HAPC.RR.Score) %>%
-  select(CellID_5km, Score.HAPC.RR)
+  select(CellID_2km, Score.HAPC.RR)
 
-HAPCreef_scored <- grid.5km %>%
-  inner_join(HAPCreef_threshold, by = "CellID_5km") %>%
+HAPCreef_scored <- grid.2km %>%
+  inner_join(HAPCreef_threshold, by = "CellID_2km") %>%
   rename("0.1" = Score.HAPC.RR) %>%
   mutate(
     "0" = 0,
@@ -561,7 +567,7 @@ HAPCreef_scored_long <- pivot_longer(
 
 st_write_parquet(
   HAPCreef_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\HAPCreef_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\2km\\HAPCreef_scored_2km_new.parquet"
 )
 ```
 
@@ -573,6 +579,14 @@ st_write_parquet(
 ESA_Critical_Habitat <- sf::st_read(
   dsn = "G:\\Shared drives\\NMFS NWC OEI GIS\\ArcGIS\\Projects\\OWEC\\p30\\protected_species_density_layers\\nmfs_combined\\Critical_Habitat_Areas_by_the_National_Marine_Fisheries_Service\\Critical_Habitat_Areas_by_the_National_Marine_Fisheries_Service.shp"
 )
+
+bia_bw_nms <- "https://services2.arcgis.com/C8EMgrsFcRFL6LrL/ArcGIS/rest/services/BIA_II_WebMerc/FeatureServer/1"
+# contains parent and core - parent = entire range, core = intensified use areas such as breeding ground or feeding site
+bia_bw_nms_layer <- arc_read(
+  bia_bw_nms,
+  where = "Common_Name = 'Blue whale'"
+) %>%
+  st_transform(crsOut)
 ```
 
 ## Killer Whale
@@ -587,13 +601,13 @@ killer_whale <- ESA_Critical_Habitat %>%
 killer_whale.Score = 0.1
 
 # intersect and calculate the area of the overlapping pieces
-killer_whale.grid <- sf::st_intersection(killer_whale, grid_5km) %>%
+killer_whale.grid <- sf::st_intersection(killer_whale, grid_2km) %>%
   mutate(intersect_area = st_area(.))
 
 # sum the overlapping area per cell and calculate the threshold
 killer_whale_threshold <- killer_whale.grid %>%
   st_drop_geometry() %>%
-  group_by(CellID_5km, cell_area) %>%
+  group_by(CellID_2km, cell_area) %>%
   summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
   mutate(
     coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
@@ -601,10 +615,10 @@ killer_whale_threshold <- killer_whale.grid %>%
   # keep cells with greater than or equal to 50% coverage
   filter(coverage_pct >= 0.5) %>%
   mutate(Score.killer_whale = killer_whale.Score) %>%
-  select(CellID_5km, Score.killer_whale)
+  select(CellID_2km, Score.killer_whale)
 
-killer_whale_scored <- grid.5km %>%
-  inner_join(killer_whale_threshold, by = "CellID_5km") %>%
+killer_whale_scored <- grid.2km %>%
+  inner_join(killer_whale_threshold, by = "CellID_2km") %>%
   rename("0.1" = Score.killer_whale) %>%
   mutate(
     "0" = 0,
@@ -634,7 +648,7 @@ killer_whale_scored_long <- pivot_longer(
 
 st_write_parquet(
   killer_whale_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\Killer_whale_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\2km\\Killer_whale_scored_2km_new.parquet"
 )
 ```
 
@@ -650,13 +664,13 @@ leatherback_turtle <- ESA_Critical_Habitat %>%
 leatherback.Score = 0.1
 
 # intersect and calculate the area of the overlapping pieces
-leatherback.grid <- sf::st_intersection(leatherback_turtle, grid_5km) %>%
+leatherback.grid <- sf::st_intersection(leatherback_turtle, grid_2km) %>%
   mutate(intersect_area = st_area(.))
 
 # sum the overlapping area per cell and calculate the threshold
 leatherback_threshold <- leatherback.grid %>%
   st_drop_geometry() %>%
-  group_by(CellID_5km, cell_area) %>%
+  group_by(CellID_2km, cell_area) %>%
   summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
   mutate(
     coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
@@ -664,10 +678,10 @@ leatherback_threshold <- leatherback.grid %>%
   # keep cells with greater than or equal to 50% coverage
   filter(coverage_pct >= 0.5) %>%
   mutate(Score.leatherback = leatherback.Score) %>%
-  select(CellID_5km, Score.leatherback)
+  select(CellID_2km, Score.leatherback)
 
-leatherback_scored <- grid.5km %>%
-  inner_join(leatherback_threshold, by = "CellID_5km") %>%
+leatherback_scored <- grid.2km %>%
+  inner_join(leatherback_threshold, by = "CellID_2km") %>%
   rename("0.1" = Score.leatherback) %>%
   mutate(
     "0" = 0,
@@ -697,23 +711,13 @@ leatherback_scored_long <- pivot_longer(
 
 st_write_parquet(
   leatherback_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\Leatherback_turtle_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\2km\\Leatherback_turtle_scored_2km_new.parquet"
 )
 ```
-
-
 ## Blue Whale
 
 ```{r blue-whale}
 # read file in
-bia_bw_nms <- "https://services2.arcgis.com/C8EMgrsFcRFL6LrL/ArcGIS/rest/services/BIA_II_WebMerc/FeatureServer/1"
-# contains parent and core - parent = entire range, core = intensified use areas such as breeding ground or feeding site
-bia_bw_nms_layer <- arc_read(
-  bia_bw_nms,
-  where = "Common_Name = 'Blue whale'"
-) %>%
-  st_transform(crsOut)
-
 blue_whale <- bia_bw_nms_layer %>%
   select(c(Common_Name, Stock, Area_Name, geometry)) %>%
   st_transform(crsOut)
@@ -721,13 +725,13 @@ blue_whale <- bia_bw_nms_layer %>%
 blue.Score = 0.1
 
 # intersect and calculate the area of the overlapping pieces
-blue.grid <- sf::st_intersection(blue_whale, grid_5km) %>%
+blue.grid <- sf::st_intersection(blue_whale, grid_2km) %>%
   mutate(intersect_area = st_area(.))
 
 # sum the overlapping area per cell and calculate the threshold
 blue_threshold <- blue.grid %>%
   st_drop_geometry() %>%
-  group_by(CellID_5km, cell_area) %>%
+  group_by(CellID_2km, cell_area) %>%
   summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
   mutate(
     coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
@@ -735,10 +739,10 @@ blue_threshold <- blue.grid %>%
   # keep cells with greater than or equal to 50% coverage
   filter(coverage_pct >= 0.5) %>%
   mutate(Score.blue = blue.Score) %>%
-  select(CellID_5km, Score.blue)
+  select(CellID_2km, Score.blue)
 
-blue_scored <- grid.5km %>%
-  inner_join(blue_threshold, by = "CellID_5km") %>%
+blue_scored <- grid.2km %>%
+  inner_join(blue_threshold, by = "CellID_2km") %>%
   rename("0.1" = Score.blue) %>%
   mutate(
     "0" = 0,
@@ -768,7 +772,7 @@ blue_scored_long <- pivot_longer(
 
 st_write_parquet(
   blue_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\Blue_whale_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\2km\\Blue_whale_scored_2km_new.parquet"
 )
 ```
 
@@ -803,13 +807,13 @@ st_is_valid(humpback_whale_buffer, reason = TRUE)
 humpback.Score = 0.1
 
 # intersect and calculate the area of the overlapping pieces
-humpback.grid <- sf::st_intersection(humpback_whale_buffer, grid_5km) %>%
+humpback.grid <- sf::st_intersection(humpback_whale_buffer, grid_2km) %>%
   mutate(intersect_area = st_area(.))
 
 # sum the overlapping area per cell and calculate the threshold
 humpback_threshold <- humpback.grid %>%
   st_drop_geometry() %>%
-  group_by(CellID_5km, cell_area) %>%
+  group_by(CellID_2km, cell_area) %>%
   summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
   mutate(
     coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
@@ -817,10 +821,10 @@ humpback_threshold <- humpback.grid %>%
   # keep cells with greater than or equal to 50% coverage
   filter(coverage_pct >= 0.5) %>%
   mutate(Score.humpback = humpback.Score) %>%
-  select(CellID_5km, Score.humpback)
+  select(CellID_2km, Score.humpback)
 
-humpback_scored <- grid.5km %>%
-  inner_join(humpback_threshold, by = "CellID_5km") %>%
+humpback_scored <- grid.2km %>%
+  inner_join(humpback_threshold, by = "CellID_2km") %>%
   rename("0.1" = Score.humpback) %>%
   mutate(
     "0" = 0,
@@ -850,7 +854,7 @@ humpback_scored_long <- pivot_longer(
 
 st_write_parquet(
   humpback_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\Humpback_whale_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\2km\\Humpback_whale_scored_2km_new.parquet"
 )
 ```
 
@@ -869,13 +873,13 @@ Surveys_fixed <- sf::st_read(
 surveys.fixed.Score = 0.1
 
 # intersect and calculate the area of the overlapping pieces
-surveys_fixed.grid <- sf::st_intersection(Surveys_fixed, grid_5km) %>%
+surveys_fixed.grid <- sf::st_intersection(Surveys_fixed, grid_2km) %>%
   mutate(intersect_area = st_area(.))
 
 # sum the overlapping area per cell and calculate the threshold
 surveys_fixed_threshold <- surveys_fixed.grid %>%
   st_drop_geometry() %>%
-  group_by(CellID_5km, cell_area) %>%
+  group_by(CellID_2km, cell_area) %>%
   summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
   mutate(
     coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
@@ -883,10 +887,10 @@ surveys_fixed_threshold <- surveys_fixed.grid %>%
   # keep cells with greater than or equal to 50% coverage
   filter(coverage_pct >= 0.5) %>%
   mutate(Score.surveys.fixed = surveys.fixed.Score) %>%
-  select(CellID_5km, Score.surveys.fixed)
+  select(CellID_2km, Score.surveys.fixed)
 
-surveys_fixed_scored <- grid.5km %>%
-  inner_join(surveys_fixed_threshold, by = "CellID_5km") %>%
+surveys_fixed_scored <- grid.2km %>%
+  inner_join(surveys_fixed_threshold, by = "CellID_2km") %>%
   rename("0.1" = Score.surveys.fixed) %>%
   mutate(
     "0" = 0,
@@ -916,7 +920,7 @@ surveys_fixed_scored_long <- pivot_longer(
 
 st_write_parquet(
   surveys_fixed_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\Surveys_fixed_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\2km\\Surveys_fixed_2km_new.parquet"
 )
 ```
 
@@ -933,13 +937,13 @@ Surveys_periodic <- sf::st_read(
 surveys.periodic.Score = 0.1
 
 # intersect and calculate the area of the overlapping pieces
-surveys_periodic.grid <- sf::st_intersection(Surveys_periodic, grid_5km) %>%
+surveys_periodic.grid <- sf::st_intersection(Surveys_periodic, grid_2km) %>%
   mutate(intersect_area = st_area(.))
 
 # sum the overlapping area per cell and calculate the threshold
 surveys_periodic_threshold <- surveys_periodic.grid %>%
   st_drop_geometry() %>%
-  group_by(CellID_5km, cell_area) %>%
+  group_by(CellID_2km, cell_area) %>%
   summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
   mutate(
     coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
@@ -947,10 +951,10 @@ surveys_periodic_threshold <- surveys_periodic.grid %>%
   # keep cells with greater than or equal to 50% coverage
   filter(coverage_pct >= 0.5) %>%
   mutate(Score.surveys.periodic = surveys.periodic.Score) %>%
-  select(CellID_5km, Score.surveys.periodic)
+  select(CellID_2km, Score.surveys.periodic)
 
-surveys_periodic_scored <- grid.5km %>%
-  inner_join(surveys_periodic_threshold, by = "CellID_5km") %>%
+surveys_periodic_scored <- grid.2km %>%
+  inner_join(surveys_periodic_threshold, by = "CellID_2km") %>%
   rename("0.1" = Score.surveys.periodic) %>%
   mutate(
     "0" = 0,
@@ -980,7 +984,7 @@ surveys_periodic_scored_long <- pivot_longer(
 
 st_write_parquet(
   surveys_periodic_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\Surveys_periodic_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\2km\\Surveys_periodic_2km_new.parquet"
 )
 ```
 
@@ -997,18 +1001,20 @@ nms_layer <- arc_read(
 ) %>%
   st_transform(crsOut)
 
+st_is_valid(nms_layer, reason = TRUE)
+
 nms_layer_valid <- st_make_valid(nms_layer)
 
 cable.Score = 0.1
 
 # intersect and calculate the area of the overlapping pieces
-cable.grid <- sf::st_intersection(nms_layer_valid, grid_5km) %>%
+cable.grid <- sf::st_intersection(nms_layer_valid, grid_2km) %>%
   mutate(intersect_area = st_area(.))
 
 # sum the overlapping area per cell and calculate the threshold
 cable_threshold <- cable.grid %>%
   st_drop_geometry() %>%
-  group_by(CellID_5km, cell_area) %>%
+  group_by(CellID_2km, cell_area) %>%
   summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
   mutate(
     coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
@@ -1016,10 +1022,10 @@ cable_threshold <- cable.grid %>%
   # keep cells with greater than or equal to 50% coverage
   filter(coverage_pct >= 0.5) %>%
   mutate(Score.cable = cable.Score) %>%
-  select(CellID_5km, Score.cable)
+  select(CellID_2km, Score.cable)
 
-cable_scored <- grid.5km %>%
-  inner_join(cable_threshold, by = "CellID_5km") %>%
+cable_scored <- grid.2km %>%
+  inner_join(cable_threshold, by = "CellID_2km") %>%
   rename("0.1" = Score.cable) %>%
   mutate(
     "0" = 0,
@@ -1049,6 +1055,6 @@ cable_scored_long <- pivot_longer(
 
 st_write_parquet(
   cable_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\Submarine_cable_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\2km\\Submarine_cable_2km_new.parquet"
 )
 ```

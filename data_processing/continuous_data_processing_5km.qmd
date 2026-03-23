@@ -608,3 +608,112 @@ st_write_parquet(
   "C:\\GitHub\\SMORES\\data\\5km\\ALCH_scored_full_new.parquet"
 )
 ```
+
+# Deep Sea Coral Robust High 
+
+
+```{r}
+# get base grid as a dataframe
+base_grid_df <- grid.2km %>%
+  st_drop_geometry()
+
+# write_parquet(
+#   base_grid_df,
+#   "C:\\GitHub\\SMORES\\data\\5km\\base_grid_df.parquet"
+# )
+
+# set standard coordinate reference system if using 2 km square grid
+crsOut <- st_crs(grid.2km)
+# 2km base grid
+grid.2km <- sf::st_read(
+  dsn = "G:\\Shared drives\\NMFS NWC FRAM GIS\\GIS_Base\\Grid.gdb",
+  layer = "grid2km_ETsquare"
+)
+
+# calculate the area of the grid cells
+grid_2km <- grid.2km %>%
+  mutate(cell_area = st_area(.))
+
+
+# set standard coordinate reference system if using 2 km square grid
+crsOut <- st_crs(grid.2km)
+
+#convert each layer to sf object
+melissa_file_path <- "G:\\Shared drives\\NMFS NWC OEI GIS\\ArcGIS\\Projects\\OWEC\\p30\\nccos_share_CA2.gdb"
+
+DSC.RobustHigh <- sf::st_read(
+  dsn = melissa_file_path,
+  layer = "DSC_HabitatSuitability_RobustHigh"
+) %>%
+  st_transform(crsOut)
+
+DSC.2km_intersect <- sf::st_intersection(DSC.RobustHigh, grid_2km) %>%
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>%
+  # keep only the largest overlapping piece, prevent ties from duplicating rows
+  slice_max(area.part, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  select(CellID_2km, gridcode)
+
+# rop geometry to run the Z-membership math efficiently
+DSC_2km_df <- DSC.2km_intersect %>% st_drop_geometry()
+
+z_membership <- function(df, col_name, b_variance) {
+  col_name <- enquo(col_name)
+  zmf.sum <- c()
+  obs.sum <- df %>% pull((!!col_name))
+  a = min(obs.sum, na.rm = TRUE)
+  b = max(obs.sum, na.rm = TRUE) + b_variance
+  for (i in 1:length(obs.sum)) {
+    if (is.na(obs.sum[i])) {
+      zmf.sum[i] = 1
+    } else if (obs.sum[i] <= a) {
+      zmf.sum[i] = 1
+    } else if (obs.sum[i] <= (a + b) / 2) {
+      zmf.sum[i] = 1 - 2 * ((obs.sum[i] - a) / (b - a))^2
+    } else if (obs.sum[i] <= b) {
+      zmf.sum[i] = 2 * ((obs.sum[i] - b) / (b - a))^2
+    } else if (obs.sum[i] >= b) {
+      zmf.sum[i] = 0
+    }
+  }
+  return(zmf.sum)
+}
+
+# get the Z-membership score for each 2km cell
+DSC_2km_df$Score.Z_Membership <- z_membership(DSC_2km_df, 'gridcode', 0.001)
+
+DSC_2km_scored_spatial <- grid_2km %>%
+  inner_join(DSC_2km_df, by = "CellID_2km")
+
+grid_5km <- grid_test %>% # Assuming grid_test is your 5km grid here
+  mutate(cell_area_5km = st_area(geometry))
+
+# calculate weights
+DSC_5km_weighted <- sf::st_intersection(DSC_2km_scored_spatial, grid_5km) %>%
+  mutate(
+    intersect_area = st_area(geometry),
+    # Calculate what percentage of the 5km cell this 2km piece occupies
+    area_weight = as.numeric(intersect_area) / as.numeric(cell_area_5km),
+    # Multiply the 2km Z-score by the area weight
+    weighted_z_score = Score.Z_Membership * area_weight
+  ) %>%
+  st_drop_geometry() %>%
+
+  # 7. Group by the 5km Cell ID and sum the weighted fractions
+  group_by(CellID_5km) %>%
+  summarize(
+    Score.Z_Membership_5km = sum(weighted_z_score, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+DSC_RH_z_membership_final <- grid_5km %>%
+  inner_join(DSC_5km_weighted, by = "CellID_5km") %>%
+  select(-cell_area_5km) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84')
+
+st_write_parquet(
+  DSC_RH_z_membership_final,
+  "C:\\GitHub\\SMORES\\data\\5km\\DSC_RH_z_membership_scored_full_5km.parquet"
+)
+```

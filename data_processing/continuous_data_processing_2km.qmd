@@ -1,0 +1,488 @@
+# Data Processing for SMORES continuous datasets for the 5km grid 
+
+Methodology: Area Weighted Average
+
+Plan: each dataset will have its own code chunk. All processing will live in that code chunk. The top of the document will house functions, data pathways, and other pieces that will be utilised throughout the script. 
+
+
+```{r setup}
+#load libraries
+library(tidyverse)
+library(sf)
+library(arcgis)
+library(arrow)
+library(sfarrow)
+
+# 2km base grid
+grid.2km <- sf::st_read(
+  dsn = "G:\\Shared drives\\NMFS NWC FRAM GIS\\GIS_Base\\Grid.gdb",
+  layer = "grid2km_ETsquare"
+)
+
+# st_write_parquet(
+#   grid.2km,
+#   "C:\\GitHub\\SMORES\\data\\2km\\grid_full.parquet"
+# )
+
+# get base grid as a dataframe
+base_grid_df <- grid.5km %>%
+  st_drop_geometry()
+
+# write_parquet(
+#   base_grid_df,
+#   "C:\\GitHub\\SMORES\\data\\5km\\base_grid_df.parquet"
+# )
+
+# calculate the area of the grid cells
+grid_2km <- grid.2km %>%
+  mutate(cell_area = st_area(.))
+
+# set standard coordinate reference system if using 2 km square grid
+crsOut <- st_crs(grid.2km)
+
+Fisheries <- sf::st_read(
+  "G:\\My Drive\\SMORES\\NCCOSfisherieslayers20250815081621\\Non-Confidential_NMFS_fisheries_submodel_data_2km_grid.shp"
+) %>%
+  st_transform(crsOut)
+
+Trawl_Fisheries <- sf::st_read(
+  "G:\\My Drive\\SMORES\\Scenario_4_trawl_polygon\\Scenario_4_trawl_polygon.shp"
+)
+
+#convert each layer to sf object
+melissa_file_path <- "G:\\Shared drives\\NMFS NWC OEI GIS\\ArcGIS\\Projects\\OWEC\\p30\\nccos_share_CA2.gdb"
+```
+
+
+# Deep Sea Coral Robust High Suitability Z Membership
+```{r DSC}
+DSC.RobustHigh <- sf::st_read(
+  dsn = melissa_file_path,
+  layer = "DSC_HabitatSuitability_RobustHigh"
+) %>%
+  st_transform(crsOut)
+
+DSC.2km_intersect <- sf::st_intersection(DSC.RobustHigh, grid_2km) %>%
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>%
+  # keep only the largest overlapping piece, prevent ties from duplicating rows
+  slice_max(area.part, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
+  select(CellID_2km, gridcode)
+
+# rop geometry to run the Z-membership math efficiently
+DSC_2km_df <- DSC.2km_intersect %>% st_drop_geometry()
+
+z_membership <- function(df, col_name, b_variance) {
+  col_name <- enquo(col_name)
+  zmf.sum <- c()
+  obs.sum <- df %>% pull((!!col_name))
+  a = min(obs.sum, na.rm = TRUE)
+  b = max(obs.sum, na.rm = TRUE) + b_variance
+  for (i in 1:length(obs.sum)) {
+    if (is.na(obs.sum[i])) {
+      zmf.sum[i] = 1
+    } else if (obs.sum[i] <= a) {
+      zmf.sum[i] = 1
+    } else if (obs.sum[i] <= (a + b) / 2) {
+      zmf.sum[i] = 1 - 2 * ((obs.sum[i] - a) / (b - a))^2
+    } else if (obs.sum[i] <= b) {
+      zmf.sum[i] = 2 * ((obs.sum[i] - b) / (b - a))^2
+    } else if (obs.sum[i] >= b) {
+      zmf.sum[i] = 0
+    }
+  }
+  return(zmf.sum)
+}
+
+# get the Z-membership score for each 2km cell
+DSC_2km_df$Score.Z_Membership <- z_membership(DSC_2km_df, 'gridcode', 0.001)
+
+DSC_2km_scored_spatial <- grid_2km %>%
+  inner_join(DSC_2km_df, by = "CellID_2km")
+
+st_write_parquet(
+  DSC_RH_z_membership_final,
+  "C:\\GitHub\\SMORES\\data\\2km\\DSC_RH_z_membership_scored_full_2km.parquet"
+)
+```
+
+# At-Sea hake mid-water trawl = ASH_RI in fisheries dataset
+```{r ASH}
+ASH <- Fisheries %>%
+  select(ASH_RI)
+ASH.grid_RI <- sf::st_intersection(ASH, grid.2km) %>%
+  mutate(Score.ASH_Ranked_Importance = ASH_RI) %>%
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.ASH_Ranked_Importance) %>% #checked and no duplicates present but there are na values present
+  filter(!is.na(Score.ASH_Ranked_Importance)) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84')
+
+st_write_parquet(
+  ASH.grid_RI,
+  "C:\\GitHub\\SMORES\\data\\2km\\ASH_Ranked_Importance_scored_full.parquet"
+)
+
+# to make the user selected score options
+ASH.grid <- ASH.grid_RI %>%
+  st_drop_geometry() %>%
+  group_by(CellID_2km) %>%
+  distinct(CellID_2km, .keep_all = TRUE)
+ASH_scored <- grid_test %>%
+  full_join(ASH.grid, by = "CellID_2km") %>%
+  filter(!is.na(Score.ASH_Ranked_Importance)) %>%
+  rename("0" = Score.ASH_Ranked_Importance) %>%
+  mutate("0" = 0, "0.01" = 0.01, "0.001" = 0.001) %>%
+  pivot_longer(
+    cols = starts_with(c("0.", 0)),
+    names_to = "ASH",
+    values_to = "Score.ASH"
+  ) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84') %>%
+  select(-ASH)
+
+st_write_parquet(
+  ASH_scored,
+  "C:\\GitHub\\SMORES\\data\\2km\\ASH_scored_full.parquet"
+)
+```
+
+# Shoreside hake mid-water trawl = SSH_RI in fisheries dataset
+```{r SSH}
+SSH <- Fisheries %>%
+  select(SSH_RI)
+SSH.grid_RI <- sf::st_intersection(SSH, grid.2km) %>%
+  mutate(Score.SSH_Ranked_Importance = SSH_RI) %>%
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.SSH_Ranked_Importance) %>% #checked and no duplicates present
+  filter(!is.na(Score.SSH_Ranked_Importance)) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84')
+
+st_write_parquet(
+  SSH.grid_RI,
+  "C:\\GitHub\\SMORES\\data\\2km\\SSH_Ranked_Importance_scored_full.parquet"
+)
+
+# to make the user selected score options
+SSH.grid <- SSH.grid_RI %>%
+  st_drop_geometry() %>%
+  group_by(CellID_2km) %>%
+  distinct(CellID_2km, .keep_all = TRUE)
+SSH_scored <- grid_test %>%
+  full_join(SSH.grid, by = "CellID_2km") %>%
+  filter(!is.na(Score.SSH_Ranked_Importance)) %>%
+  rename("0" = Score.SSH_Ranked_Importance) %>%
+  mutate("0" = 0, "0.01" = 0.01, "0.001" = 0.001) %>%
+  pivot_longer(
+    cols = starts_with(c("0.", 0)),
+    names_to = "SSH",
+    values_to = "Score.SSH"
+  ) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84') %>%
+  select(-SSH)
+
+st_write_parquet(
+  SSH_scored,
+  "C:\\GitHub\\SMORES\\data\\2km\\SSH_scored_full.parquet"
+)
+```
+
+# Groundfish bottom trawl = GFBT_RI in fisheries dataset
+```{r GFBT}
+GFBT <- Fisheries %>%
+  select(GFBT_RI)
+GFBT.grid_RI <- sf::st_intersection(GFBT, grid_test) %>%
+  mutate(Score.GFBT_Ranked_Importance = GFBT_RI) %>%
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.GFBT_Ranked_Importance) %>% #checked and no duplicates present
+  filter(!is.na(Score.GFBT_Ranked_Importance)) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84')
+
+st_write_parquet(
+  GFBT.grid_RI,
+  "C:\\GitHub\\SMORES\\data\\2km\\GFBT_Ranked_Importance_scored_full.parquet"
+)
+
+# to make the user selected score options
+GFBT.grid <- GFBT.grid_RI %>%
+  st_drop_geometry() %>%
+  group_by(CellID_2km) %>%
+  distinct(CellID_2km, .keep_all = TRUE)
+GFBT_scored <- grid_test %>%
+  full_join(GFBT.grid, by = "CellID_2km") %>%
+  filter(!is.na(Score.GFBT_Ranked_Importance)) %>%
+  rename("0" = Score.GFBT_Ranked_Importance) %>%
+  mutate("0" = 0, "0.01" = 0.01, "0.001" = 0.001) %>%
+  pivot_longer(
+    cols = starts_with(c("0.", 0)),
+    names_to = "GFBT",
+    values_to = "Score.GFBT"
+  ) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84') %>%
+  select(-GFBT)
+
+st_write_parquet(
+  GFBT_scored,
+  "C:\\GitHub\\SMORES\\data\\2km\\GFBT_scored_full.parquet"
+)
+```
+
+# Groundfish pot gear = GFP_RI in fisheries dataset
+```{r GFP}
+GFP <- Fisheries %>%
+  select(GFP_RI)
+GFP.grid_RI <- sf::st_intersection(GFP, grid.2km) %>%
+  mutate(Score.GFP_Ranked_Importance = GFP_RI) %>%
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.GFP_Ranked_Importance) %>% #checked and no duplicates present
+  filter(!is.na(Score.GFP_Ranked_Importance)) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84')
+
+st_write_parquet(
+  GFP.grid_RI,
+  "C:\\GitHub\\SMORES\\data\\2km\\GFP_Ranked_Importance_scored_full.parquet"
+)
+
+# to make the user selected score options
+GFP.grid <- GFP.grid_RI %>%
+  st_drop_geometry() %>%
+  group_by(CellID_2km) %>%
+  distinct(CellID_2km, .keep_all = TRUE)
+GFP_scored <- grid_test %>%
+  full_join(GFP.grid, by = "CellID_2km") %>%
+  filter(!is.na(Score.GFP_Ranked_Importance)) %>%
+  rename("0" = Score.GFP_Ranked_Importance) %>%
+  mutate("0" = 0, "0.01" = 0.01, "0.001" = 0.001) %>%
+  pivot_longer(
+    cols = starts_with(c("0.", 0)),
+    names_to = "GFP",
+    values_to = "Score.GFP"
+  ) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84') %>%
+  select(-GFP)
+
+st_write_parquet(
+  GFP_scored,
+  "C:\\GitHub\\SMORES\\data\\2km\\GFP_scored_full.parquet"
+)
+```
+
+# Groundfish longline gear = GFLL_RI in fisheries dataset
+```{r GFLL}
+GFLL <- Fisheries %>%
+  select(GFLL_RI)
+GFLL.grid_RI <- sf::st_intersection(GFLL, grid.2km) %>%
+  mutate(Score.GFLL_Ranked_Importance = GFLL_RI) %>%
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.GFLL_Ranked_Importance) %>% #checked and no duplicates present
+  filter(!is.na(Score.GFLL_Ranked_Importance)) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84')
+
+st_write_parquet(
+  GFLL.grid_RI,
+  "C:\\GitHub\\SMORES\\data\\5km\\GFLL_Ranked_Importance_scored_full.parquet"
+)
+
+# to make the user selected score options
+GFLL.grid <- GFLL.grid_RI %>%
+  st_drop_geometry() %>%
+  group_by(CellID_2km) %>%
+  distinct(CellID_2km, .keep_all = TRUE)
+GFLL_scored <- grid_test %>%
+  full_join(GFLL.grid, by = "CellID_2km") %>%
+  filter(!is.na(Score.GFLL_Ranked_Importance)) %>%
+  rename("0" = Score.GFLL_Ranked_Importance) %>%
+  mutate("0" = 0, "0.01" = 0.01, "0.001" = 0.001) %>%
+  pivot_longer(
+    cols = starts_with(c("0.", 0)),
+    names_to = "GFLL",
+    values_to = "Score.GFLL"
+  ) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84') %>%
+  select(-GFLL)
+
+st_write_parquet(
+  GFLL_scored,
+  "C:\\GitHub\\SMORES\\data\\2km\\GFLL_scored_full.parquet"
+)
+```
+
+# Pink shrimp trawl = PS_RI in fisheries dataset
+```{r PS}
+PS <- Fisheries %>%
+  select(PS_RI)
+
+PS.grid_RI <- sf::st_intersection(PS, grid.2km) %>%
+  mutate(Score.PS_Ranked_Importance = PS_RI) %>%
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.PS_Ranked_Importance) %>% #checked and no duplicates present
+  filter(!is.na(Score.PS_Ranked_Importance)) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84')
+st_crs(DSC_RH_scored_long) == st_crs(PS.grid_RI)
+
+st_write_parquet(
+  PS.grid_RI,
+  "C:\\GitHub\\SMORES\\data\\2km\\PS_Ranked_Importance_scored_full.parquet"
+)
+
+# to make the user selected score options
+PS.grid <- PS.grid_RI %>%
+  st_drop_geometry() %>%
+  group_by(CellID_2km) %>%
+  distinct(CellID_2km, .keep_all = TRUE)
+PS_scored <- grid_test %>%
+  full_join(PS.grid, by = "CellID_2km") %>%
+  filter(!is.na(Score.PS_Ranked_Importance)) %>%
+  rename("0" = Score.PS_Ranked_Importance) %>%
+  mutate("0" = 0, "0.01" = 0.01, "0.001" = 0.001) %>%
+  pivot_longer(
+    cols = starts_with(c("0.", 0)),
+    names_to = "PS",
+    values_to = "Score.PS"
+  ) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84') %>%
+  select(-PS)
+
+st_write_parquet(
+  PS_scored,
+  "C:\\GitHub\\SMORES\\data\\2km\\PS_scored_full.parquet"
+)
+```
+
+# Dungeness Crab = CRAB_RI in fisheries dataset
+```{r CRAB}
+CRAB <- Fisheries %>%
+  select(CRAB_RI)
+CRAB.grid_RI <- sf::st_intersection(CRAB, grid.2km) %>%
+  mutate(Score.CRAB_Ranked_Importance = CRAB_RI) %>%
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.CRAB_Ranked_Importance) %>% #checked and no duplicates present
+  filter(!is.na(Score.CRAB_Ranked_Importance)) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84')
+
+st_write_parquet(
+  CRAB.grid_RI,
+  "C:\\GitHub\\SMORES\\data\\2km\\CRAB_Ranked_Importance_scored_full.parquet"
+)
+
+# to make the user selected score options
+CRAB.grid <- CRAB.grid_RI %>%
+  st_drop_geometry() %>%
+  group_by(CellID_2km) %>%
+  distinct(CellID_2km, .keep_all = TRUE)
+CRAB_scored <- grid_test %>%
+  full_join(CRAB.grid, by = "CellID_2km") %>%
+  filter(!is.na(Score.CRAB_Ranked_Importance)) %>%
+  rename("0" = Score.CRAB_Ranked_Importance) %>%
+  mutate("0" = 0, "0.01" = 0.01, "0.001" = 0.001) %>%
+  pivot_longer(
+    cols = starts_with(c("0.", 0)),
+    names_to = "CRAB",
+    values_to = "Score.CRAB"
+  ) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84') %>%
+  select(-CRAB)
+
+st_write_parquet(
+  CRAB_scored,
+  "C:\\GitHub\\SMORES\\data\\2km\\CRAB_scored_full.parquet"
+)
+```
+
+# Commercial troll/hook and line albacore = ALCO_RI in fisheries dataset
+```{r ALCO}
+ALCO <- Fisheries %>%
+  select(ALCO_RI)
+ALCO.grid_RI <- sf::st_intersection(ALCO, grid.2km) %>%
+  mutate(Score.ALCO_Ranked_Importance = ALCO_RI) %>%
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.ALCO_Ranked_Importance) %>% #checked and no duplicates present
+  filter(!is.na(Score.ALCO_Ranked_Importance)) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84')
+
+st_write_parquet(
+  ALCO.grid_RI,
+  "C:\\GitHub\\SMORES\\data\\2km\\ALCO_Ranked_Importance_scored_full.parquet"
+)
+
+# to make the user selected score options
+ALCO.grid <- ALCO.grid_RI %>%
+  st_drop_geometry() %>%
+  group_by(CellID_2km) %>%
+  distinct(CellID_2km, .keep_all = TRUE)
+ALCO_scored <- grid_test %>%
+  full_join(ALCO.grid, by = "CellID_2km") %>%
+  filter(!is.na(Score.ALCO_Ranked_Importance)) %>%
+  rename("0" = Score.ALCO_Ranked_Importance) %>%
+  mutate("0" = 0, "0.01" = 0.01, "0.001" = 0.001) %>%
+  pivot_longer(
+    cols = starts_with(c("0.", 0)),
+    names_to = "ALCO",
+    values_to = "Score.ALCO"
+  ) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84') %>%
+  select(-ALCO)
+
+st_write_parquet(
+  ALCO_scored,
+  "C:\\GitHub\\SMORES\\data\\2km\\ALCO_scored_full.parquet"
+)
+```
+
+# Charter vessel albacore troll/hook and line = ALCH_RI in fisheries dataset
+```{r ALCH}
+ALCH <- Fisheries %>%
+  select(ALCH_RI)
+ALCH.grid_RI <- sf::st_intersection(ALCH, grid_test) %>%
+  mutate(Score.ALCH_Ranked_Importance = ALCH_RI) %>%
+  mutate(area.part = st_area(.)) %>%
+  group_by(CellID_2km) %>% #use for 2km grid
+  slice_max(area.part, n = 1) %>%
+  select(CellID_2km, Score.ALCH_Ranked_Importance) %>% #checked and no duplicates present
+  filter(!is.na(Score.ALCH_Ranked_Importance)) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84')
+
+st_write_parquet(
+  ALCH.grid_RI,
+  "C:\\GitHub\\SMORES\\data\\2km\\ALCH_Ranked_Importance_scored_full.parquet"
+)
+
+# to make the user selected score options
+ALCH.grid <- ALCH.grid_RI %>%
+  st_drop_geometry() %>%
+  group_by(CellID_2km) %>%
+  distinct(CellID_2km, .keep_all = TRUE)
+ALCH_scored <- grid_test %>%
+  full_join(ALCH.grid, by = "CellID_2km") %>%
+  filter(!is.na(Score.ALCH_Ranked_Importance)) %>%
+  rename("0" = Score.ALCH_Ranked_Importance) %>%
+  mutate("0" = 0, "0.01" = 0.01, "0.001" = 0.001) %>%
+  pivot_longer(
+    cols = starts_with(c("0.", 0)),
+    names_to = "ALCH",
+    values_to = "Score.ALCH"
+  ) %>%
+  sf::st_transform('+proj=longlat +datum=WGS84') %>%
+  select(-ALCH)
+
+st_write_parquet(
+  ALCH_scored,
+  "C:\\GitHub\\SMORES\\data\\2km\\ALCH_scored_full.parquet"
+)
+```
