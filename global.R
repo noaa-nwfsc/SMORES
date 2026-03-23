@@ -95,10 +95,10 @@ habitat_layer <- list(
 )
 
 species_layer <- list(
-  "ESA Critical Habitat for Southern Resident Killer Whales" = "killer_whale_scored_full.parquet",
-  "ESA Critical Habitat for Leatherback Sea Turtles" = "leatherback_turtle_scored_full.parquet",
-  "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS" = "humpback_whale_scored_full.parquet",
-  "Biologically Important Area - Blue Whale" = "blue_whale_scored_full.parquet"
+  "ESA Critical Habitat for Southern Resident Killer Whales" = "Killer_whale_scored_full.parquet",
+  "ESA Critical Habitat for Leatherback Sea Turtles" = "Leatherback_turtle_scored_full.parquet",
+  "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS" = "Humpback_whale_scored_full.parquet",
+  "Biologically Important Area - Blue Whale" = "Blue_whale_scored_full.parquet"
 )
 
 ##Fisheries Submodel

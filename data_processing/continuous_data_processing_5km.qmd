@@ -631,9 +631,6 @@ base_grid_df <- grid.2km %>%
 #   base_grid_df,
 #   "C:\\GitHub\\SMORES\\data\\5km\\base_grid_df.parquet"
 # )
-
-# set standard coordinate reference system if using 2 km square grid
-crsOut <- st_crs(grid.2km)
 # 2km base grid
 grid.2km <- sf::st_read(
   dsn = "G:\\Shared drives\\NMFS NWC FRAM GIS\\GIS_Base\\Grid.gdb",
@@ -643,7 +640,6 @@ grid.2km <- sf::st_read(
 # calculate the area of the grid cells
 grid_2km <- grid.2km %>%
   mutate(cell_area = st_area(.))
-
 
 # set standard coordinate reference system if using 2 km square grid
 crsOut <- st_crs(grid.2km)
@@ -696,13 +692,13 @@ DSC_2km_df$Score.Z_Membership <- z_membership(DSC_2km_df, 'gridcode', 0.001)
 DSC_2km_scored_spatial <- grid_2km %>%
   inner_join(DSC_2km_df, by = "CellID_2km")
 
-grid_5km <- grid_test %>% # Assuming grid_test is your 5km grid here
-  mutate(cell_area_5km = st_area(geometry))
+grid_5km <- grid.5km %>% # Assuming grid_test is your 5km grid here
+  mutate(cell_area_5km = st_area(.))
 
 # calculate weights
 DSC_5km_weighted <- sf::st_intersection(DSC_2km_scored_spatial, grid_5km) %>%
   mutate(
-    intersect_area = st_area(geometry),
+    intersect_area = st_area(.),
     # Calculate what percentage of the 5km cell this 2km piece occupies
     area_weight = as.numeric(intersect_area) / as.numeric(cell_area_5km),
     # Multiply the 2km Z-score by the area weight
@@ -710,7 +706,7 @@ DSC_5km_weighted <- sf::st_intersection(DSC_2km_scored_spatial, grid_5km) %>%
   ) %>%
   st_drop_geometry() %>%
 
-  # 7. Group by the 5km Cell ID and sum the weighted fractions
+  # group by the 5km Cell ID and sum the weighted fractions
   group_by(CellID_5km) %>%
   summarize(
     Score.Z_Membership_5km = sum(weighted_z_score, na.rm = TRUE),
@@ -724,7 +720,7 @@ DSC_RH_z_membership_final <- grid_5km %>%
 
 st_write_parquet(
   DSC_RH_z_membership_final,
-  "C:\\GitHub\\SMORES\\data\\5km\\DSC_RH_z_membership_scored_full_5km.parquet"
+  "C:\\GitHub\\SMORES\\data\\5km\\DSC_RH_z_membership_scored_full.parquet"
 )
 ```
 
