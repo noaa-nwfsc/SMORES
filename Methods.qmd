@@ -30,23 +30,17 @@ The full model is the result of combining submodels. In the application you can 
 
 ## Pre-processing 
 
-To generate an individual data layer, data sources are processed before they are loaded into the app. This pre-processing step ensures that data layers are in the correct coordinate reference system, overlaid with the grid, and ready to be digested by the application. Pre-processing is done with two main files. [Data_productions.R](https://github.com/noaa-nwfsc/SMORES/blob/main/data_production.R){target="_blank"} prepares the raw data files while [preprocess_spatial_data()](https://github.com/noaa-nwfsc/SMORES/blob/main/R/preprocess_spatial_data.R){target="_blank"} prepares the files for application compatibility. The key steps that are taken by these functions are the following:
+The app reads in pre-processed data layers in order to generate outputs. These data are processed at 2 different scales 2km and 5km grid cells. Larger spatial areas utilize the larger grid size in order to create the most efficient memory usage for the app. There are two data types that this app uses, presence data and continuous data. 
 
-- 2x2-km grid for the west coast of the United States is accessed
+**Presence Data**
 
-- [St_intersection()](https://r-spatial.github.io/sf/reference/geos_binary_ops.html){target="_blank} is run between the individual layer and the 2 km grid to identify grid cells that have data for the individual layer
+Presence data is pre-processed using a threshold method. The raw data is overlaid with the 2km and 5km grid cells, and the area of overlap is calculated. If a grid cell has 50% or greater coverage by a presence data set, that grid cell is retained. These retained grid cells are then processed so that a user can select their score of choice. 
 
-- Grid cells that have values are selected and fitted with a placeholder value (this applies for any layer that is a presence/absence data value)
+**Continuous Data**
 
-- New columns are made for each value a user might select and grid cells are populated with these values
+Continuous data is pre-processed using an area-weighted average method to transition from a 2x2 km to a 5x5 km resolution. The 2km  data is overlaid with the 5x5 km grid cells, and the area of overlap is calculated. For each overlapping fragment, its original score is multiplied by the percentage of the 5km cell it occupies. These proportionally weighted scores are then mathematically summed together to calculate the final continuous score for each 5x5 km grid cell.
 
-- Data frame is pivoted to the long format so that each grid cell has a list of values available to it if the grid cell intersected any individual layers
-
-- Data is transformed to be in the WGS 84 coordinate system for compatibility with [leaflet()](https://leafletjs.com/){target="_blank"} mapping
-
-- Data is saved as a [geoparquet](https://geoparquet.org/){target="_blank"} file format. This format was chosen for its ability to efficiently store large spatial data files.
-
-Data is now prepared to be loaded into the application. 
+All data are transformed to be in the WGS 84 coordinate system for compatibility with [leaflet()](https://leafletjs.com/){target="_blank"} mapping. Leaflet is the mapping engine utilized by this shiny app. Data are saved as a [geoparquet](https://geoparquet.org/){target="_blank"} file format. This format was chosen for its ability to efficiently store large spatial data files.
 
 ## Score Options
 
