@@ -84,7 +84,7 @@ AOI <- readRDS_preprocessed("data/AOI_Full.parquet", "AOI")
 ## Natural Resources Submodel
 # Create a list of all datasets
 habitat_layer <- list(
-  "Canyon" = "canyon_scored_full.parquet",
+  "Canyon" = "Canyon_scored_full.parquet",
   "Deep Sea Coral Robust High Suitability" = "DSC_RH_scored_full.parquet",
   "Seeps" = "Seeps_scored_full.parquet",
   "Shelf Break" = "ShlfBrk_scored_full.parquet",

@@ -106,7 +106,7 @@ canyons_scored_long <- pivot_longer(
 
 st_write_parquet(
   canyons_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\canyon_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\5km\\Canyon_scored_full.parquet"
 )
 ```
 
@@ -170,7 +170,7 @@ DSC_RH_scored_long <- pivot_longer(
 
 st_write_parquet(
   DSC_RH_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\DSC_RH_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\5km\\DSC_RH_scored_full.parquet"
 )
 ```
 
@@ -235,7 +235,7 @@ Seeps_scored_long <- pivot_longer(
 
 st_write_parquet(
   Seeps_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\Seeps_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\5km\\Seeps_scored_full.parquet"
 )
 ```
 
@@ -287,7 +287,7 @@ ShlfBrk_scored <- grid.5km %>%
     "1" = 1
   )
 
-# transform data structure so that score.canyons is filterable by app
+# transform data structure so that score. is filterable by app
 ShlfBrk_scored_long <- pivot_longer(
   ShlfBrk_scored,
   cols = starts_with(c("0", "1")),
@@ -300,7 +300,7 @@ ShlfBrk_scored_long <- pivot_longer(
 
 st_write_parquet(
   ShlfBrk_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\ShlfBrk_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\5km\\ShlfBrk_scored_full.parquet"
 )
 ```
 
@@ -352,7 +352,7 @@ EFHCA_scored <- grid.5km %>%
     "1" = 1
   )
 
-# transform data structure so that score.canyons is filterable by app
+# transform data structure so that score. is filterable by app
 EFHCA_scored_long <- pivot_longer(
   EFHCA_scored,
   cols = starts_with(c("0", "1")),
@@ -365,7 +365,7 @@ EFHCA_scored_long <- pivot_longer(
 
 st_write_parquet(
   EFHCA_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\EFHCA_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\5km\\EFHCA_scored_full.parquet"
 )
 ```
 
@@ -430,7 +430,7 @@ EFHCA_700_scored_long <- pivot_longer(
 
 st_write_parquet(
   EFHCA_700_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\EFHCA_700_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\5km\\EFHCA_700_scored_full.parquet"
 )
 ```
 
@@ -482,7 +482,7 @@ HAPCaoi_scored <- grid.5km %>%
     "1" = 1
   )
 
-# transform data structure so that score.canyons is filterable by app
+# transform data structure so that score. is filterable by app
 HAPCaoi_scored_long <- pivot_longer(
   HAPCaoi_scored,
   cols = starts_with(c("0", "1")),
@@ -495,7 +495,7 @@ HAPCaoi_scored_long <- pivot_longer(
 
 st_write_parquet(
   HAPCaoi_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\HAPCaoi_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\5km\\HAPCaoi_scored_full.parquet"
 )
 ```
 
@@ -547,7 +547,7 @@ HAPCreef_scored <- grid.5km %>%
     "1" = 1
   )
 
-# transform data structure so that score.canyons is filterable by app
+# transform data structure so that score. is filterable by app
 HAPCreef_scored_long <- pivot_longer(
   HAPCreef_scored,
   cols = starts_with(c("0", "1")),
@@ -560,7 +560,7 @@ HAPCreef_scored_long <- pivot_longer(
 
 st_write_parquet(
   HAPCreef_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\HAPCreef_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\5km\\HAPCreef_scored_full.parquet"
 )
 ```
 
@@ -620,7 +620,7 @@ killer_whale_scored <- grid.5km %>%
     "1" = 1
   )
 
-# transform data structure so that score.canyons is filterable by app
+# transform data structure so that score. is filterable by app
 killer_whale_scored_long <- pivot_longer(
   killer_whale_scored,
   cols = starts_with(c("0", "1")),
@@ -633,7 +633,7 @@ killer_whale_scored_long <- pivot_longer(
 
 st_write_parquet(
   killer_whale_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\Killer_whale_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\5km\\Killer_whale_scored_full.parquet"
 )
 ```
 
@@ -683,7 +683,7 @@ leatherback_scored <- grid.5km %>%
     "1" = 1
   )
 
-# transform data structure so that score.canyons is filterable by app
+# transform data structure so that score. is filterable by app
 leatherback_scored_long <- pivot_longer(
   leatherback_scored,
   cols = starts_with(c("0", "1")),
@@ -696,7 +696,7 @@ leatherback_scored_long <- pivot_longer(
 
 st_write_parquet(
   leatherback_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\Leatherback_turtle_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\5km\\Leatherback_turtle_scored_full.parquet"
 )
 ```
 
@@ -754,7 +754,7 @@ blue_scored <- grid.5km %>%
     "1" = 1
   )
 
-# transform data structure so that score.canyons is filterable by app
+# transform data structure so that score. is filterable by app
 blue_scored_long <- pivot_longer(
   blue_scored,
   cols = starts_with(c("0", "1")),
@@ -767,7 +767,7 @@ blue_scored_long <- pivot_longer(
 
 st_write_parquet(
   blue_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\Blue_whale_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\5km\\Blue_whale_scored_full.parquet"
 )
 ```
 
@@ -836,7 +836,7 @@ humpback_scored <- grid.5km %>%
     "1" = 1
   )
 
-# transform data structure so that score.canyons is filterable by app
+# transform data structure so that score. is filterable by app
 humpback_scored_long <- pivot_longer(
   humpback_scored,
   cols = starts_with(c("0", "1")),
@@ -849,7 +849,7 @@ humpback_scored_long <- pivot_longer(
 
 st_write_parquet(
   humpback_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\Humpback_whale_scored_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\5km\\Humpback_whale_scored_full.parquet"
 )
 ```
 
@@ -902,7 +902,7 @@ surveys_fixed_scored <- grid.5km %>%
     "1" = 1
   )
 
-# transform data structure so that score.canyons is filterable by app
+# transform data structure so that score. is filterable by app
 surveys_fixed_scored_long <- pivot_longer(
   surveys_fixed_scored,
   cols = starts_with(c("0", "1")),
@@ -915,8 +915,7 @@ surveys_fixed_scored_long <- pivot_longer(
 
 st_write_parquet(
   surveys_fixed_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\Surveys_fixed_5km_new.parquet"
-)
+  "C:\\GitHub\\SMORES\\data\\5km\\Surveys_fixed_scored_full.parquet"
 ```
 
 ## Periodic Survey Locations
@@ -966,7 +965,7 @@ surveys_periodic_scored <- grid.5km %>%
     "1" = 1
   )
 
-# transform data structure so that score.canyons is filterable by app
+# transform data structure so that score. is filterable by app
 surveys_periodic_scored_long <- pivot_longer(
   surveys_periodic_scored,
   cols = starts_with(c("0", "1")),
@@ -979,7 +978,7 @@ surveys_periodic_scored_long <- pivot_longer(
 
 st_write_parquet(
   surveys_periodic_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\Surveys_periodic_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\5km\\Surveys_periodic_scored_full.parquet"
 )
 ```
 
@@ -1048,7 +1047,7 @@ cable_scored_long <- pivot_longer(
 
 st_write_parquet(
   cable_scored_long,
-  "C:\\GitHub\\SMORES\\data\\5km\\Submarine_cable_5km_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\5km\\Submarine_cable_scored_full.parquet"
 )
 ```
 
@@ -1078,6 +1077,6 @@ trawl_scored <- grid.5km %>%
 
 st_write_parquet(
   trawl_fisheries,
-  "C:\\GitHub\\SMORES\\data\\5km\\trawl_fisheries_scored_full_new.parquet"
+  "C:\\GitHub\\SMORES\\data\\5km\\trawl_fisheries_scored_full.parquet"
 )
 ```
