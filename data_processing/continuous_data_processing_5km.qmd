@@ -1,4 +1,4 @@
-# Data Processing for SMORES binary datasets for the 5km grid 
+<!-- # Data Processing for SMORES binary datasets for the 5km grid 
 
 Methodology: Area Weighted Average
 

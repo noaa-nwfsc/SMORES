@@ -1,4 +1,4 @@
-# Data Processing for SMORES binary datasets for the 5km grid 
+<!-- # Data Processing for SMORES binary datasets for the 5km grid 
 
 Methodology: Set threshold - 50%
 
@@ -1083,3 +1083,4 @@ st_write_parquet(
   "C:\\GitHub\\SMORES\\data\\5km\\trawl_fisheries_scored_full.parquet"
 )
 ```
+ -->

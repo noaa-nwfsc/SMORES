@@ -1,4 +1,4 @@
-# Data Processing for SMORES binary datasets for the 2km grid 
+<!-- # Data Processing for SMORES binary datasets for the 2km grid 
 
 Methodology: Set threshold - 50%
 
@@ -1057,4 +1057,4 @@ st_write_parquet(
   cable_scored_long,
   "C:\\GitHub\\SMORES\\data\\2km\\Submarine_cable_2km_new.parquet"
 )
-```
+``` -->
