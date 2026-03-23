@@ -526,7 +526,7 @@ function(input, output, session) {
             # local_config$data is now the base filename string (e.g., "DSC_RH_scored_full.parquet")
             base_filename <- local_config$data
 
-            # 1. Handle "Hidden" layers based on the selected score
+            # handle "Hidden" layers based on the selected score
             target_filename <- switch(
               local_config$layer,
               "Deep Sea Coral Robust High Suitability" = if (
@@ -539,12 +539,12 @@ function(input, output, session) {
               base_filename # Default to the base filename for everything else
             )
 
-            # 2. Build the dynamic file path using the Resolution Tracker
+            # build the dynamic file path using the Resolution Tracker
             res <- current_resolution()
 
             file_path <- file.path("data", res, target_filename)
 
-            # Read the file from the disk
+            # read the file from the disk
             raw_data <- readRDS_preprocessed(file_path, local_config$layer)
 
             scored_data <- filter_by_score(
@@ -554,7 +554,7 @@ function(input, output, session) {
               local_config$layer
             )
 
-            # 4. Crop and prepare for caching
+            # crop and prepare for caching
             processed_config_data <- scored_data
             if (!is.null(processed_config_data) && !is.null(aoi_data)) {
               processed_config_data <- crop_data_to_aoi(
@@ -581,7 +581,7 @@ function(input, output, session) {
               )
             }
 
-            # Get the score column for this layer
+            # get the score column for this layer
             score_col <- switch(
               local_config$layer,
               "Canyon" = "Score.Canyon",
@@ -605,7 +605,7 @@ function(input, output, session) {
               NULL
             )
 
-            # Cache the processed data for reuse in combined maps
+            # cache the processed data for reuse in combined maps
             individual_processed_data$naturalresources[[config_key]] <- list(
               data = processed_config_data,
               layer = local_config$layer,
@@ -615,7 +615,7 @@ function(input, output, session) {
               component_type = determine_component_type(local_config$layer)
             )
 
-            # Update the map with processed data
+            # update the map with processed data
             output[[map_id]] <- renderLeaflet({
               # Update config with processed data for map creation
               local_config$data <- processed_config_data
@@ -626,12 +626,12 @@ function(input, output, session) {
               )
             })
 
-            # Store the current configuration hash
+            # store the current configuration hash
             individual_maps_last_configs$naturalresources[[
               config_key
             ]] <- current_config_hash
 
-            # Mark as created if not already tracked
+            # mark as created if not already tracked
             if (!map_id %in% individual_maps_created$naturalresources) {
               individual_maps_created$naturalresources <- c(
                 individual_maps_created$naturalresources,
