@@ -1,5 +1,4 @@
-<!-- # Areas of Interest
-
+# Areas of Interest
 
 ```{r}
 #WEA's
@@ -82,4 +81,4 @@ st_write_parquet(
   Areas_Of_Interest_Full,
   "C:\\GitHub\\SMORES\\data\\AOI_Full.parquet"
 )
-``` -->
+```

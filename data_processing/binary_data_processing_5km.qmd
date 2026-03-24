@@ -1,4 +1,4 @@
-<!-- # Data Processing for SMORES binary datasets for the 5km grid 
+# Data Processing for SMORES binary datasets for the 5km grid 
 
 Methodology: Set threshold - 50%
 
@@ -919,6 +919,7 @@ surveys_fixed_scored_long <- pivot_longer(
 st_write_parquet(
   surveys_fixed_scored_long,
   "C:\\GitHub\\SMORES\\data\\5km\\Surveys_fixed_scored_full.parquet"
+)
 ```
 
 ## Periodic Survey Locations
@@ -1083,4 +1084,3 @@ st_write_parquet(
   "C:\\GitHub\\SMORES\\data\\5km\\trawl_fisheries_scored_full.parquet"
 )
 ```
- -->
