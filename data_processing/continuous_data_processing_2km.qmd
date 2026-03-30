@@ -1,4 +1,4 @@
-<!-- # Data Processing for SMORES continuous datasets for the 5km grid 
+# Data Processing for SMORES continuous datasets for the 5km grid 
 
 Methodology: Area Weighted Average
 
@@ -63,14 +63,17 @@ DSC.RobustHigh <- sf::st_read(
   st_transform(crsOut)
 
 DSC.2km_intersect <- sf::st_intersection(DSC.RobustHigh, grid_2km) %>%
-  mutate(area.part = st_area(.)) %>%
-  group_by(CellID_2km) %>%
-  # keep only the largest overlapping piece, prevent ties from duplicating rows
-  slice_max(area.part, n = 1, with_ties = FALSE) %>%
-  ungroup() %>%
+  mutate(intersect_area = st_area(.)) %>%
+  group_by(CellID_2km, cell_area, gridcode) %>%
+  mutate(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
+  mutate(
+    coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
+  ) %>%
+  # keep cells with greater than or equal to 50% coverage
+  filter(coverage_pct >= 0.5) %>%
   select(CellID_2km, gridcode)
 
-# rop geometry to run the Z-membership math efficiently
+# drop geometry to run the Z-membership math efficiently
 DSC_2km_df <- DSC.2km_intersect %>% st_drop_geometry()
 
 z_membership <- function(df, col_name, b_variance) {
@@ -102,8 +105,8 @@ DSC_2km_scored_spatial <- grid_2km %>%
   inner_join(DSC_2km_df, by = "CellID_2km")
 
 st_write_parquet(
-  DSC_RH_z_membership_final,
-  "C:\\GitHub\\SMORES\\data\\2km\\DSC_RH_z_membership_scored_full_2km.parquet"
+  DSC_2km_scored_spatial,
+  "C:\\GitHub\\SMORES\\data\\2km\\DSC_RH_z_membership_scored_full.parquet"
 )
 ```
 
@@ -485,4 +488,4 @@ st_write_parquet(
   ALCH_scored,
   "C:\\GitHub\\SMORES\\data\\2km\\ALCH_scored_full.parquet"
 )
-```
+``` 
