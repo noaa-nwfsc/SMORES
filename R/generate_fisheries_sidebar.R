@@ -1,18 +1,22 @@
-generate_fisheries_sidebar <- function(fisheries_layer, score_values_ranked_importance, current_tab = NULL, submodel_config = NULL) {
-  
+generate_fisheries_sidebar <- function(
+  fisheries_layer,
+  score_values_ranked_importance
+) {
   # Individual fisheries tab logic
   # Create inputs for each fisheries layer
-  layer_inputs <- lapply(fisheries_layer, function(layer_name) { 
+  layer_inputs <- lapply(fisheries_layer, function(layer_name) {
     # Create consistent IDs
     layer_id <- gsub(" ", "_", layer_name)
     layer_id <- gsub("[^A-Za-z0-9_]", "", layer_id)
-    
+
     tagList(
       hr(),
       h5(layer_name),
-      checkboxInput(paste0("EnableFisheriesLayer_", layer_id), 
-                    paste("Include", layer_name), 
-                    value = FALSE),
+      checkboxInput(
+        paste0("EnableFisheriesLayer_", layer_id),
+        paste("Include", layer_name),
+        value = FALSE
+      ),
       conditionalPanel(
         condition = paste0("input.EnableFisheriesLayer_", layer_id, " == true"),
         pickerInput(
@@ -24,40 +28,51 @@ generate_fisheries_sidebar <- function(fisheries_layer, score_values_ranked_impo
       )
     )
   })
-  
+
   # Return the complete sidebar UI for fisheries tab
   tagList(
-    h4("Fisheries Map Settings"), 
+    h4("Fisheries Map Settings"),
     p("Select which fisheries layers to include and their scores:"),
-    
+
     layer_inputs,
-    
+
     hr(),
-    
-    actionButton("update_fisheries_map_btn", "Generate Fisheries Maps", 
-                 class = "btn-primary btn-block"),
+
+    actionButton(
+      "update_fisheries_map_btn",
+      "Generate Fisheries Maps",
+      class = "btn-primary btn-block"
+    ),
     hr(),
-    
+
     h4("Calculation Methods"),
-    checkboxGroupInput("fisheriesCalculationMethods",
-                       "Select calculation methods to generate:",
-                       choices = list(
-                         "Geometric Mean" = "geometric_mean",
-                         "Lowest Value" = "lowest",
-                         "Product" = "product"
-                       ),
-                       selected = "geometric_mean"),
-    
+    checkboxGroupInput(
+      "fisheriesCalculationMethods",
+      "Select calculation methods to generate:",
+      choices = list(
+        "Geometric Mean" = "geometric_mean",
+        "Lowest Value" = "lowest",
+        "Product" = "product"
+      ),
+      selected = "geometric_mean"
+    ),
+
     hr(),
-    
+
     h4("Combined Map Settings"),
-    actionButton("generateCombinedFisheriesMap", "Generate Combined Map(s)", 
-                 class = "btn-primary btn-block"),
+    actionButton(
+      "generateCombinedFisheriesMap",
+      "Generate Combined Map(s)",
+      class = "btn-primary btn-block"
+    ),
     # Export button
     hr(),
     h4("Export"),
-    downloadButton("fisheriesExportRmd", "Export Fisheries Component",
-                   icon = icon("file-export"),
-                   class = "btn-info btn-block")
+    downloadButton(
+      "fisheriesExportRmd",
+      "Export Fisheries Component",
+      icon = icon("file-export"),
+      class = "btn-info btn-block"
+    )
   )
 }

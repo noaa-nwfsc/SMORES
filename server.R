@@ -337,9 +337,13 @@ function(input, output, session) {
 
   # Reactive expression for Natural Resources tab valid configs
   natural_resources_valid_configs <- eventReactive(
-    input$update_natres_map_btn,
+    list(input$update_habitat_map_btn, input$update_species_map_btn),
     {
-      if (input$update_natres_map_btn > 0) {
+      # Check if either button has been clicked at least once
+      if (
+        isTRUE(input$update_habitat_map_btn > 0) ||
+          isTRUE(input$update_species_map_btn > 0)
+      ) {
         show_spinner_modal(
           "Generating Natural Resources Maps",
           "Please wait while data is loaded and maps are created..."
@@ -385,51 +389,56 @@ function(input, output, session) {
     }
   )
 
-  ## Reactive expression for Fisheries tab valid configs
-  fisheries_valid_configs <- eventReactive(input$update_fisheries_map_btn, {
-    if (input$update_fisheries_map_btn > 0) {
-      show_spinner_modal(
-        "Generating Fisheries Maps",
-        "Please wait while data is loaded and maps are created..."
+  fisheries_valid_configs <- eventReactive(
+    list(input$update_fisheries_map_btn, input$update_trawl_map_btn),
+    {
+      if (
+        isTRUE(input$update_fisheries_map_btn > 0) ||
+          isTRUE(input$update_trawl_map_btn > 0)
+      ) {
+        show_spinner_modal(
+          "Generating Fisheries Maps",
+          "Please wait while data is loaded and maps are created..."
+        )
+      }
+
+      is_fisheries <- (!is.null(input$dataTabs_fisheries) &&
+        input$dataTabs_fisheries %in%
+          c("fisheries", "trawl", "combined_model_fisheries")) ||
+        (!is.null(input$navbar) && input$navbar == "Fisheries Submodel")
+
+      if (!is_fisheries) {
+        return(list())
+      }
+
+      current_tab_fisheries <- input$dataTabs_fisheries %||% "fisheries"
+
+      # Set layer data AND prefix based on the tab
+      layer_data <- switch(
+        current_tab_fisheries,
+        "fisheries" = fisheries_layer,
+        "trawl" = trawl_fisheries_layer,
+        NULL
       )
+
+      input_prefix <- switch(
+        current_tab_fisheries,
+        "fisheries" = "Fisheries",
+        "trawl" = "Trawl",
+        NULL
+      )
+
+      # Call the simplified generic function
+      configs <- get_valid_configs_for_tab(
+        input,
+        layer_data,
+        score_colors,
+        input_prefix
+      )
+
+      return(configs)
     }
-
-    is_fisheries <- (!is.null(input$dataTabs_fisheries) &&
-      input$dataTabs_fisheries %in%
-        c("fisheries", "trawl", "combined_model_fisheries")) ||
-      (!is.null(input$navbar) && input$navbar == "Fisheries Submodel")
-
-    if (!is_fisheries) {
-      return(list())
-    }
-
-    current_tab_fisheries <- input$dataTabs_fisheries %||% "fisheries"
-
-    # Set layer data AND prefix based on the tab
-    layer_data <- switch(
-      current_tab_fisheries,
-      "fisheries" = fisheries_layer,
-      "trawl" = trawl_fisheries_layer,
-      NULL
-    )
-
-    input_prefix <- switch(
-      current_tab_fisheries,
-      "fisheries" = "Fisheries",
-      "trawl" = "Trawl",
-      NULL
-    )
-
-    # Call the simplified generic function
-    configs <- get_valid_configs_for_tab(
-      input,
-      layer_data,
-      score_colors,
-      input_prefix
-    )
-
-    return(configs)
-  })
+  )
 
   # Reactive expression for Industry & Operations tab valid configs
   industry_operations_valid_configs <- eventReactive(
@@ -643,13 +652,50 @@ function(input, output, session) {
       }
 
       # remove modal after individual maps have generated
-      if (input$update_natres_map_btn > 0) {
+      if (
+        isTRUE(input$update_habitat_map_btn > 0) ||
+          isTRUE(input$update_species_map_btn > 0)
+      ) {
         removeModal()
       }
     },
     ignoreNULL = FALSE,
     ignoreInit = FALSE
   )
+
+  # Update Fisheries Combined Sidebar Labels
+  observe({
+    # Check if maps are generated
+    fish_ready <- isTRUE(combined_maps_data$fisheries_combined_map_generated)
+    trawl_ready <- isTRUE(combined_maps_data$trawl_combined_map_generated)
+
+    # Dynamically update the label text
+    updateCheckboxInput(
+      session,
+      "includeFisheries",
+      label = HTML(paste(
+        "Include Fisheries Component",
+        if (fish_ready) {
+          "<span class='text-success'> ✓ Ready</span>"
+        } else {
+          "<span class='text-warning'> ⚠ Generate maps first</span>"
+        }
+      ))
+    )
+
+    updateCheckboxInput(
+      session,
+      "includeTrawl",
+      label = HTML(paste(
+        "Include Trawl Component",
+        if (trawl_ready) {
+          "<span class='text-success'> ✓ Ready</span>"
+        } else {
+          "<span class='text-warning'> ⚠ Generate maps first</span>"
+        }
+      ))
+    )
+  })
 
   # Fisheries maps
   observeEvent(
@@ -857,7 +903,10 @@ function(input, output, session) {
       }
 
       # remove modal after individual maps have generated
-      if (input$update_fisheries_map_btn > 0) {
+      if (
+        isTRUE(input$update_fisheries_map_btn > 0) ||
+          isTRUE(input$update_trawl_map_btn > 0)
+      ) {
         removeModal()
       }
     },
@@ -991,82 +1040,6 @@ function(input, output, session) {
     ignoreNULL = FALSE,
     ignoreInit = FALSE
   )
-
-  # Dynamic sidebar content
-  output$dynamicSidebar_natural_resources <- renderUI({
-    current_tab_natural_resources <- input$dataTabs_natural_resources %||%
-      "habitat"
-
-    if (current_tab_natural_resources == "habitat") {
-      # Get the layer names for habitat
-      habitat_layers <- names(habitat_layer)
-      natural_resources_config <- get_natural_resources_config()
-
-      #use function to make habitat sidebar
-      generate_habitat_sidebar(
-        habitat_layers,
-        score_values,
-        current_tab = current_tab_natural_resources,
-        submodel_config = natural_resources_config
-      )
-    } else if (current_tab_natural_resources == "species") {
-      # Get the layer names for species
-      species_layers <- names(species_layer)
-      natural_resources_config <- get_natural_resources_config()
-
-      #use function to make species sidebar
-      generate_species_sidebar(
-        species_layers,
-        score_values,
-        current_tab = current_tab_natural_resources,
-        submodel_config = natural_resources_config
-      )
-      # Combined Model Tab
-    } else if (
-      current_tab_natural_resources == "combined_model_natural_resources"
-    ) {
-      natural_resources_config <- get_natural_resources_config()
-      generate_natural_resources_combined_sidebar(
-        natural_resources_config,
-        combined_maps_data
-      )
-    }
-  })
-
-  # Dynamic sidebar content for fisheries
-  output$dynamicSidebar_fisheries <- renderUI({
-    current_tab_fisheries <- input$dataTabs_fisheries %||% "fisheries"
-
-    if (current_tab_fisheries == "fisheries") {
-      fisheries_layer_names <- names(fisheries_layer)
-      fisheries_config <- get_fisheries_config()
-
-      #use function to make fisheries sidebar
-      generate_fisheries_sidebar(
-        fisheries_layer_names,
-        score_values_ranked_importance,
-        current_tab = current_tab_fisheries,
-        submodel_config = fisheries_config
-      )
-    } else if (current_tab_fisheries == "trawl") {
-      # Get the layer names for species
-      trawl_fisheries_layers <- names(trawl_fisheries_layer)
-      fisheries_config <- get_fisheries_config()
-
-      #use function to make trawl fisheries sidebar
-      generate_trawl_fisheries_sidebar(
-        trawl_fisheries_layer,
-        score_values_trawl_fisheries,
-        current_tab = current_tab_fisheries,
-        submodel_config = fisheries_config
-      )
-
-      # Combined Model Tab
-    } else if (current_tab_fisheries == "combined_model_fisheries") {
-      fisheries_config <- get_fisheries_config()
-      generate_fisheries_combined_sidebar(fisheries_config, combined_maps_data)
-    }
-  })
 
   # Dynamic sidebar content for industry and operations
   output$dynamicSidebar_industry_operations <- renderUI({
@@ -2433,6 +2406,40 @@ function(input, output, session) {
         "Industry & Operations",
         status$industry_operations
       )
+    )
+  })
+
+  # Update Natural Resources Combined Sidebar Labels
+  observe({
+    # Check if maps are generated
+    hab_ready <- isTRUE(combined_maps_data$habitat_combined_map_generated)
+    spec_ready <- isTRUE(combined_maps_data$species_combined_map_generated)
+
+    # Dynamically update the label text on the static UI checkboxes
+    updateCheckboxInput(
+      session,
+      "includeHabitat",
+      label = HTML(paste(
+        "Include Habitat Component",
+        if (hab_ready) {
+          "<span class='text-success'> ✓ Ready</span>"
+        } else {
+          "<span class='text-warning'> ⚠ Generate maps first</span>"
+        }
+      ))
+    )
+
+    updateCheckboxInput(
+      session,
+      "includeSpecies",
+      label = HTML(paste(
+        "Include Species Component",
+        if (spec_ready) {
+          "<span class='text-success'> ✓ Ready</span>"
+        } else {
+          "<span class='text-warning'> ⚠ Generate maps first</span>"
+        }
+      ))
     )
   })
 

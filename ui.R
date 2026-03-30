@@ -58,8 +58,23 @@ tagList(
       layout_sidebar(
         # Sidebar for picker inputs that change based on tab selection
         sidebar = sidebar(
-          # Dynamic picker inputs
-          uiOutput("dynamicSidebar_natural_resources") # Settings for dynamic sidebar live in server.R
+          # static UI container for habitat
+          conditionalPanel(
+            condition = "input.dataTabs_natural_resources == 'habitat'",
+            generate_habitat_sidebar(names(habitat_layer), score_values)
+          ),
+
+          # static ui container for species
+          conditionalPanel(
+            condition = "input.dataTabs_natural_resources == 'species'",
+            generate_species_sidebar(names(species_layer), score_values)
+          ),
+
+          # static ui container for combined natural resources
+          conditionalPanel(
+            condition = "input.dataTabs_natural_resources == 'combined_model_natural_resources'",
+            generate_natural_resources_combined_sidebar()
+          )
         ),
         # Main area with the tab navigation
         navset_tab(
@@ -135,8 +150,29 @@ tagList(
       layout_sidebar(
         # Sidebar for picker inputs that change based on tab selection
         sidebar = sidebar(
-          # Dynamic picker inputs
-          uiOutput("dynamicSidebar_fisheries") # Settings for dynamic sidebar live in server.R
+          # fisheries sidebar static
+          conditionalPanel(
+            condition = "input.dataTabs_fisheries == 'fisheries'",
+            generate_fisheries_sidebar(
+              names(fisheries_layer),
+              score_values_ranked_importance
+            )
+          ),
+
+          # trawl sidebar static
+          conditionalPanel(
+            condition = "input.dataTabs_fisheries == 'trawl'",
+            generate_trawl_fisheries_sidebar(
+              trawl_fisheries_layer,
+              score_values_trawl_fisheries
+            )
+          ),
+
+          # fisheries combined sidebar
+          conditionalPanel(
+            condition = "input.dataTabs_fisheries == 'combined_model_fisheries'",
+            generate_fisheries_combined_sidebar()
+          )
         ),
         # Main area with the tab navigation
         navset_tab(
