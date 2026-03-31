@@ -242,8 +242,23 @@ tagList(
       layout_sidebar(
         # Sidebar for picker inputs that change based on tab selection
         sidebar = sidebar(
-          # Dynamic picker inputs
-          uiOutput("dynamicSidebar_industry_operations") # Settings for dynamic sidebar live in server.R
+          # static surveys sidebar
+          conditionalPanel(
+            condition = "input.dataTabs_industry_operations == 'surveys'",
+            generate_surveys_sidebar(names(surveys_layer), score_values)
+          ),
+
+          # static cables sidebar
+          conditionalPanel(
+            condition = "input.dataTabs_industry_operations == 'cables'",
+            generate_cables_sidebar(names(submarine_cables_layer), score_values)
+          ),
+
+          # combined static sidebar
+          conditionalPanel(
+            condition = "input.dataTabs_industry_operations == 'combined_model_industry_operations'",
+            generate_industry_operations_combined_sidebar()
+          )
         ),
         # Main area with the tab navigation
         navset_tab(
@@ -315,7 +330,7 @@ tagList(
       # Layout with sidebar
       layout_sidebar(
         sidebar = sidebar(
-          uiOutput("dynamicSidebar_full_model")
+          generate_full_model_sidebar()
         ),
 
         # Main content area

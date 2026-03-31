@@ -23,11 +23,24 @@ generate_area_of_interest_sidebar <- function() {
 
           div(
             style = "text-align: center;",
+            # --- THE FIX: Hardcoded static choices ---
             radioButtons(
               "aoiAreaSelector",
               "Select Area of Interest:",
-              choices = c("Loading..." = "loading"),
-              selected = "loading",
+              choices = c(
+                "All Areas" = "all",
+                "Brookings" = "Brookings",
+                "Coos Bay" = "Coos Bay",
+                "Morro Bay" = "Morro Bay",
+                "Humboldt" = "Humboldt",
+                "Southern California" = "Southern California",
+                "Central California" = "Central California",
+                "Northern California" = "Northern California",
+                "Washington/Oregon" = "Washington/Oregon",
+                "AB 525 Suitable Sea Space" = "AB 525 Suitable Sea Space",
+                "AB 525 Sea Space Area of Interest" = "AB 525 Sea Space Area of Interest"
+              ),
+              selected = "all",
               inline = TRUE
             ),
             p(

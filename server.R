@@ -192,31 +192,6 @@ function(input, output, session) {
     }
   })
 
-  #AOI selector options
-  observe({
-    if (!is.null(AOI) && "Area_Name" %in% names(AOI)) {
-      area_names <- sort(unique(AOI$Area_Name))
-      updateRadioButtons(
-        session = session,
-        inputId = "aoiAreaSelector",
-        choices = c(
-          "All Areas" = "all",
-          "Brookings",
-          "Coos Bay",
-          "Morro Bay",
-          "Humboldt",
-          "Southern California",
-          "Central California",
-          "Northern California",
-          "Washington/Oregon",
-          "AB 525 Suitable Sea Space",
-          "AB 525 Sea Space Area of Interest"
-        ),
-        selected = "all" # Select "All" by default
-      )
-    }
-  })
-
   # Reactive expression for filtered AOI data
   filtered_aoi_data <- reactive({
     # If no area is selected or "All Areas" is selected, return all AOI data
@@ -442,9 +417,12 @@ function(input, output, session) {
 
   # Reactive expression for Industry & Operations tab valid configs
   industry_operations_valid_configs <- eventReactive(
-    input$update_industry_map_btn,
+    list(input$update_surveys_map_btn, input$update_cables_map_btn),
     {
-      if (input$update_industry_map_btn > 0) {
+      if (
+        isTRUE(input$update_surveys_map_btn > 0) ||
+          isTRUE(input$update_cables_map_btn > 0)
+      ) {
         show_spinner_modal(
           "Generating Industry & Operations Maps",
           "Please wait while data is loaded and maps are created..."
@@ -490,6 +468,40 @@ function(input, output, session) {
       return(configs)
     }
   )
+
+  # Update Industry & Operations Combined Sidebar Labels
+  observe({
+    # Check if maps are generated
+    surveys_ready <- isTRUE(combined_maps_data$surveys_combined_map_generated)
+    cables_ready <- isTRUE(combined_maps_data$cables_combined_map_generated)
+
+    # Dynamically update the label text
+    updateCheckboxInput(
+      session,
+      "includeSurveys",
+      label = HTML(paste(
+        "Include Scientific Surveys Component",
+        if (surveys_ready) {
+          "<span class='text-success'> ✓ Ready</span>"
+        } else {
+          "<span class='text-warning'> ⚠ Generate maps first</span>"
+        }
+      ))
+    )
+
+    updateCheckboxInput(
+      session,
+      "includeCables",
+      label = HTML(paste(
+        "Include Submarine Cables Component",
+        if (cables_ready) {
+          "<span class='text-success'> ✓ Ready</span>"
+        } else {
+          "<span class='text-warning'> ⚠ Generate maps first</span>"
+        }
+      ))
+    )
+  })
 
   # Natural Resources maps
   observeEvent(
@@ -1033,57 +1045,16 @@ function(input, output, session) {
       }
 
       # remove modal after individual maps have generated
-      if (input$update_industry_map_btn > 0) {
+      if (
+        isTRUE(input$update_surveys_map_btn > 0) ||
+          isTRUE(input$update_cables_map_btn > 0)
+      ) {
         removeModal()
       }
     },
     ignoreNULL = FALSE,
     ignoreInit = FALSE
   )
-
-  # Dynamic sidebar content for industry and operations
-  output$dynamicSidebar_industry_operations <- renderUI({
-    current_tab_industry_operations <- input$dataTabs_industry_operations %||%
-      "surveys"
-
-    if (current_tab_industry_operations == "surveys") {
-      # Get the layer names for surveys
-      surveys_layers <- names(surveys_layer)
-      industry_operations_config <- get_industry_operations_config()
-
-      #use function to make surveys sidebar
-      generate_surveys_sidebar(
-        surveys_layers,
-        score_values,
-        current_tab = current_tab_industry_operations,
-        submodel_config = industry_operations_config
-      )
-    } else if (current_tab_industry_operations == "cables") {
-      # Get the layer names for cables
-      cable_layers <- names(submarine_cables_layer)
-
-      #use function to make cables sidebar
-      generate_cables_sidebar(submarine_cables_layer, score_values)
-
-      #use function to make cables sidebar
-      generate_cables_sidebar(
-        submarine_cables_layer,
-        score_values,
-        current_tab = current_tab_industry_operations,
-        submodel_config = industry_operations_config
-      )
-
-      # Combined Model Tab
-    } else if (
-      current_tab_industry_operations == "combined_model_industry_operations"
-    ) {
-      industry_operations_config <- get_industry_operations_config()
-      generate_industry_operations_combined_sidebar(
-        industry_operations_config,
-        combined_maps_data
-      )
-    }
-  })
 
   # Multiple maps container for habitat
   output$multipleMapsContainer_habitat <- renderUI({
@@ -2334,11 +2305,6 @@ function(input, output, session) {
   # Industry & Operations submodel status
   output$combinedModelStatus_industry_operations <- renderUI({
     check_submodel_status("industry_operations", combined_maps_data)
-  })
-
-  # Dynamic sidebar content for full model tab
-  output$dynamicSidebar_full_model <- renderUI({
-    generate_full_model_sidebar()
   })
 
   # submodel status
