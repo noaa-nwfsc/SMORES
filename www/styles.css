@@ -24,21 +24,21 @@
 
 
 /* =========================================================
-   2. AREA OF INTEREST TAB (The Starting Point)
-   Color: seagrass (#4B8320)
+   2. AREA OF INTEREST TAB (The Deep Foundation)
+   Color: dark-teal (#005E5E)
    ========================================================= */
 .navbar-nav a.nav-link[data-value="Area of Interest"] {
-  background-color: #4B8320 !important;
+  background-color: #005E5E !important;
   color: white !important;
 }
 
 .navbar-nav a.nav-link:hover[data-value="Area of Interest"] {
-  background-color: #76BC21 !important; /* vivid-seagrass for hover */
+  background-color: #00797F !important; /* fisheries-teal for hover */
   color: white !important;
 }
 
 .navbar-nav a.nav-link.active[data-value="Area of Interest"] {
-  background-color: #4B8320 !important;
+  background-color: #005E5E !important;
   color: white !important;
   border-bottom: 4px solid white !important; /* The Active Indicator */
 }
@@ -87,6 +87,26 @@
 
 .navbar-nav .nav-link.active[data-value='Full Model'] {
   background-color: #DB6015 !important;
+  color: white !important;
+  border-bottom: 4px solid white !important; /* The Active Indicator */
+}
+
+/* =========================================================
+   5. SCENARIO MANAGEMENT TAB (The Specialized Tool)
+   Color: urchin (#5761C0)
+   ========================================================= */
+.navbar-nav .nav-link[data-value='Scenario Management'] {
+  background-color: #5761C0 !important;
+  color: white !important;
+}
+
+.navbar-nav .nav-link:hover[data-value='Scenario Management'] {
+  background-color: #737BE6 !important; /* vivid-urchin for hover */
+  color: white !important;
+}
+
+.navbar-nav .nav-link.active[data-value='Scenario Management'] {
+  background-color: #5761C0 !important;
   color: white !important;
   border-bottom: 4px solid white !important; /* The Active Indicator */
 }
