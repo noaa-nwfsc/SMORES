@@ -209,12 +209,16 @@ score_colors <- list(
 is_on_connect <- nzchar(Sys.getenv("CONNECT_SERVER"))
 
 if (is_on_connect) {
-  # 1. BYPASS PROXY: Prevent the server from sending this internal request out to the internet
+  # 1. BYPASS PROXY: Prevent the server from sending this request out to the internet
   Sys.setenv(no_proxy = "localhost,127.0.0.1")
 
-  # 2. INTERNAL LOOPBACK: Uses the port the admin confirmed (8443)
+  # 2. IGNORE SSL MISMATCH: The cert is for the NOAA URL, not 'localhost'.
+  # Since this is internal loopback traffic, it is safe to bypass peer verification.
+  httr::set_config(httr::config(ssl_verifypeer = FALSE, ssl_verifyhost = FALSE))
+
+  # 3. INTERNAL LOOPBACK: Uses the port the admin confirmed (8443)
   app_board <- board_connect(server = "https://localhost:8443")
 } else {
-  # ON LAPTOP: Use the public URL (relies on your RStudio IDE authentication)
+  # ON LAPTOP: Use the public URL
   app_board <- board_connect(server = "https://test-connect.fisheries.noaa.gov")
 }
