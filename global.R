@@ -17,6 +17,7 @@ library(fontawesome)
 library(arrow)
 library(sfarrow)
 library(RhpcBLASctl)
+library(pins) # package for app state restoration
 
 # set number of CPU cores to be used explicitly
 blas_set_num_threads(1)
@@ -201,3 +202,5 @@ score_colors <- list(
   "0.9" = "#791E94", # bright purple
   "1" = "#BE3E82" # berry
 )
+
+app_board <- board_connect()
