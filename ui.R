@@ -353,16 +353,13 @@ tagList(
     nav_panel(
       title = "Scenario Management",
       icon = icon("floppy-disk"),
-      layout_columns(
-        col_widths = c(4, 8),
+      card(
+        card_header("Save Current Configuration"),
+        card_body(
+          # layout_columns places these inputs side-by-side in a single row
+          layout_columns(
+            col_widths = c(3, 3, 4, 2), # Ratios summing to 12 columns
 
-        # Left Column: The Save Form
-        card(
-          card_header("Save Current Configuration"),
-          card_body(
-            p(
-              "Save your current submodel weights, layer selections, and calculation methods to the cloud."
-            ),
             textInput(
               "scenario_name",
               "Scenario Name*",
@@ -373,36 +370,53 @@ tagList(
               "Author/Team*",
               placeholder = "e.g., Team A"
             ),
-            textAreaInput(
+
+            # Swapped textAreaInput to a standard textInput so it stays one line tall
+            textInput(
               "scenario_desc",
               "Description (Optional)",
-              placeholder = "Briefly describe the focus of this configuration..."
+              placeholder = "Briefly describe the focus..."
             ),
-            hr(),
-            actionButton(
-              "save_scenario_btn",
-              "Save to Cloud",
-              class = "btn-success btn-block",
-              icon = icon("cloud-arrow-up")
+
+            # The div margin pushes the button down to align perfectly with the text boxes
+            div(
+              style = "margin-top: 32px;",
+              actionButton(
+                "save_scenario_btn",
+                "Save to Cloud",
+                class = "btn-success",
+                width = "100%",
+                icon = icon("cloud-arrow-up")
+              )
             )
           )
-        ),
+        )
+      ),
+      card(
+        card_header("Scenario Library"),
+        card_body(
+          p(
+            "Select a previously saved scenario from the table below to apply its configuration or remove it from the system."
+          ),
 
-        # Right Column: The Scenario Library
-        card(
-          card_header("Scenario Library"),
-          card_body(
-            p(
-              "Select a previously saved scenario from the table below to load its configuration."
-            ),
-            # DT data table to show the pins
-            DT::DTOutput("scenario_table"),
-            hr(),
+          # The table now has the full width of the screen
+          DT::DTOutput("scenario_table"),
+          hr(),
+
+          # Action buttons grouped on the right for a modern, dashboard feel
+          div(
+            style = "display: flex; gap: 10px; justify-content: flex-end;",
             actionButton(
               "load_scenario_btn",
-              "Load Selected Scenario",
+              "Load Selected",
               class = "btn-primary",
               icon = icon("download")
+            ),
+            actionButton(
+              "delete_scenario_btn",
+              "Delete Selected",
+              class = "btn-danger",
+              icon = icon("trash")
             )
           )
         )
@@ -419,6 +433,7 @@ tagList(
         )
       )
     ),
+
     # Tab 8: Data
     nav_panel(
       title = "Data",

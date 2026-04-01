@@ -2,6 +2,9 @@ function(input, output, session) {
   # Register shinystate metadata callbacks
   app_storage$register_metadata()
 
+  # Define who has "Master Keys" to delete any scenario
+  ADMIN_USERS <- c("melissa.widas", "curt.whitmire")
+
   # exclude action buttons from being captured in the bookmarking process
   setBookmarkExclude(c(
     "save_scenario_btn",
@@ -3611,6 +3614,9 @@ function(input, output, session) {
   observeEvent(input$save_scenario_btn, {
     req(input$scenario_name, input$scenario_author)
 
+    # Capture the true Posit Connect username (fallback to 'local_dev' if on your laptop)
+    current_user <- session$user %||% "local_dev"
+
     show_spinner_modal(
       "Saving Scenario",
       "Pushing configuration to the cloud..."
@@ -3618,11 +3624,11 @@ function(input, output, session) {
 
     tryCatch(
       {
-        # Let shinystate capture the inputs and push them to the board
         app_storage$snapshot(
           metadata = list(
             name = input$scenario_name,
-            author = input$scenario_author,
+            author_display = input$scenario_author, # What the public sees
+            creator_username = current_user, # THE SECURITY LOCK
             desc = input$scenario_desc
           )
         )
@@ -3683,6 +3689,80 @@ function(input, output, session) {
     )
 
     removeModal()
+  })
+
+  # dynamic delete button for scenarios based on posit connect usernames
+  observe({
+    selected_row <- input$scenario_table_rows_selected
+    can_delete <- FALSE # Default state is locked
+
+    # Only proceed if a row is actually selected and the dataframe exists
+    if (length(selected_row) > 0) {
+      sessions_df <- app_storage$get_sessions()
+
+      if (!is.null(sessions_df) && nrow(sessions_df) >= selected_row) {
+        current_user <- session$user %||% "local_dev"
+
+        # Safely extract the creator username
+        creator <- sessions_df$metadata[[selected_row]]$creator_username %||%
+          "unknown"
+
+        # Check permissions
+        if (current_user == creator || current_user %in% ADMIN_USERS) {
+          can_delete <- TRUE
+        }
+      }
+    }
+
+    # toggleState handles both enabling and disabling safely in one line
+    shinyjs::toggleState("delete_scenario_btn", condition = can_delete)
+  })
+
+  # Posit Connect pins board management
+  # 1. Intercept the Delete Click and show a Warning
+  observeEvent(input$delete_scenario_btn, {
+    showModal(modalDialog(
+      title = "⚠️ Confirm Deletion",
+      "Are you sure you want to permanently delete this scenario? This action cannot be undone and will be removed for all users.",
+      size = "s",
+      footer = tagList(
+        modalButton("Cancel"),
+        actionButton("confirm_delete_btn", "Yes, Delete", class = "btn-danger")
+      )
+    ))
+  })
+
+  # 2. Execute the actual deletion when they confirm
+  observeEvent(input$confirm_delete_btn, {
+    removeModal()
+
+    selected_row <- input$scenario_table_rows_selected
+
+    # Failsafe: Ensure a row is still selected
+    req(selected_row)
+
+    sessions_df <- app_storage$get_sessions()
+
+    # Extract the backend system name of the pin
+    pin_to_delete <- sessions_df$name[selected_row]
+
+    tryCatch(
+      {
+        # Physically delete the pin from the Posit Connect board
+        pins::pin_delete(app_board, pin_to_delete)
+
+        showNotification("Scenario permanently deleted.", type = "message")
+
+        # Trigger the table to refresh so the deleted scenario vanishes
+        pin_refresh_trigger(pin_refresh_trigger() + 1)
+      },
+      error = function(e) {
+        showNotification(
+          paste("Error deleting scenario:", e$message),
+          type = "error"
+        )
+      }
+    )
   })
 
   # watches map flags to disable and initiate button clicking ability
