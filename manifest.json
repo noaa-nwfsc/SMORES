@@ -4166,6 +4166,33 @@
         "RemoteSha": "0.7.3"
       }
     },
+    "shinyjs": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "description": {
+        "Package": "shinyjs",
+        "Title": "Easily Improve the User Experience of Your Shiny Apps in Seconds",
+        "Version": "2.1.1",
+        "Authors@R": "person(\"Dean\", \"Attali\", \n    email = \"daattali@gmail.com\",\n    role = c(\"aut\", \"cre\"),\n    comment= c(ORCID=\"0000-0002-5645-3493\"))",
+        "Description": "Perform common useful JavaScript operations in Shiny apps that will\n    greatly improve your apps without having to know any JavaScript. Examples\n    include: hiding an element, disabling an input, resetting an input back to\n    its original value, delaying code execution by a few seconds, and many more\n    useful functions for both the end user and the developer. 'shinyjs' can also\n    be used to easily call your own custom JavaScript functions from R.",
+        "URL": "https://deanattali.com/shinyjs/",
+        "BugReports": "https://github.com/daattali/shinyjs/issues",
+        "Depends": "R (>= 3.1.0)",
+        "Imports": "digest (>= 0.6.8), jsonlite, shiny (>= 1.0.0)",
+        "Suggests": "htmltools (>= 0.2.9), knitr (>= 1.7), rmarkdown, shinyAce,\nshinydisconnect, testthat (>= 0.9.1)",
+        "License": "MIT + file LICENSE",
+        "VignetteBuilder": "knitr",
+        "RoxygenNote": "7.3.3",
+        "Encoding": "UTF-8",
+        "NeedsCompilation": "no",
+        "Packaged": "2026-01-14 23:37:28 UTC; Dean",
+        "Author": "Dean Attali [aut, cre] (ORCID: <https://orcid.org/0000-0002-5645-3493>)",
+        "Maintainer": "Dean Attali <daattali@gmail.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2026-01-15 06:10:08 UTC",
+        "Built": "R 4.5.3; ; 2026-03-28 20:46:47 UTC; windows"
+      }
+    },
     "shinystate": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
@@ -5452,7 +5479,7 @@
       "checksum": "ec0eacb0982101d214ec875d72713990"
     },
     "global.R": {
-      "checksum": "672cef5d8cc76da4e2f6f8bb45e2fb7f"
+      "checksum": "77f37adfb0b4825c459b2a64fa312024"
     },
     "global_report_generation.R": {
       "checksum": "3e661de0f2e851e1d4da17f3469ee0ba"
@@ -5776,7 +5803,7 @@
       "checksum": "bb6078f37506475e9c1c335d26a5c9d6"
     },
     "server.R": {
-      "checksum": "b1edfd6b40319ec77e99fb38beb31e31"
+      "checksum": "767ee7e09ab238852cf4eaf1016fa24b"
     },
     "Submodel_Combined_Report_Template.Rmd": {
       "checksum": "14d9c8162bf8dab7f19012299d3fe259"
@@ -5785,13 +5812,13 @@
       "checksum": "f59aa235665a871fc1a6fcc73884e5d0"
     },
     "ui.R": {
-      "checksum": "6fc84e31b1f784962b56d16279017d93"
+      "checksum": "2aeb9989d93d28e88285aed1a16d6341"
     },
     "www/logos/NOAA_FISHERIES_logoH.png": {
       "checksum": "958d958c7d7108909f27fa0e08e70007"
     },
     "www/styles.css": {
-      "checksum": "bfacbb716b93f7e52944d8b065fcbfbc"
+      "checksum": "4844eae95adc347090ad1b74372f44cc"
     }
   },
   "users": null

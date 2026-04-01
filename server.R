@@ -24,6 +24,43 @@ function(input, output, session) {
     "generateFullModel"
   ))
 
+  onRestored(function(state) {
+    # clear all individual map memory caches
+    individual_processed_data$naturalresources <- list()
+    individual_processed_data$fisheries <- list()
+    individual_processed_data$industryoperations <- list()
+
+    individual_maps_created$naturalresources <- character(0)
+    individual_maps_created$fisheries <- character(0)
+    individual_maps_created$industryoperations <- character(0)
+
+    # reset all "generated" flags to FALSE
+    # (triggers the UI observers to disable the download buttons)
+    combined_maps_data$habitat_combined_map_generated <- FALSE
+    combined_maps_data$species_combined_map_generated <- FALSE
+    combined_maps_data$natural_resources_combined_submodel_generated <- FALSE
+
+    combined_maps_data$fisheries_combined_map_generated <- FALSE
+    combined_maps_data$trawl_combined_map_generated <- FALSE
+    combined_maps_data$fisheries_combined_submodel_generated <- FALSE
+
+    combined_maps_data$surveys_combined_map_generated <- FALSE
+    combined_maps_data$cables_combined_map_generated <- FALSE
+    combined_maps_data$industry_operations_combined_submodel_generated <- FALSE
+
+    combined_maps_data$full_model_generated <- FALSE
+
+    # garbage collection to free up server RAM
+    gc()
+
+    # warn the user
+    showNotification(
+      "ℹ️ Scenario Configuration Loaded! Please navigate to the component tabs and click 'Generate' to rebuild the maps.",
+      type = "warning",
+      duration = 15 # Keep it on screen for 15 seconds
+    )
+  })
+
   # identify app grid size being called
   current_resolution <- reactive({
     selected_area <- input$aoiAreaSelector
@@ -3646,5 +3683,62 @@ function(input, output, session) {
     )
 
     removeModal()
+  })
+
+  # watches map flags to disable and initiate button clicking ability
+  observe({
+    # Natural Resources Exports
+    shinyjs::toggleState(
+      "habitatExportRmd",
+      condition = isTRUE(combined_maps_data$habitat_combined_map_generated)
+    )
+    shinyjs::toggleState(
+      "speciesExportRmd",
+      condition = isTRUE(combined_maps_data$species_combined_map_generated)
+    )
+    shinyjs::toggleState(
+      "naturalResourcesCombinedExport",
+      condition = isTRUE(
+        combined_maps_data$natural_resources_combined_submodel_generated
+      )
+    )
+
+    # Fisheries Exports
+    shinyjs::toggleState(
+      "fisheriesExportRmd",
+      condition = isTRUE(combined_maps_data$fisheries_combined_map_generated)
+    )
+    shinyjs::toggleState(
+      "trawlExportRmd",
+      condition = isTRUE(combined_maps_data$trawl_combined_map_generated)
+    )
+    shinyjs::toggleState(
+      "fisheriesCombinedExport",
+      condition = isTRUE(
+        combined_maps_data$fisheries_combined_submodel_generated
+      )
+    )
+
+    # Industry & Operations Exports
+    shinyjs::toggleState(
+      "surveysExportRmd",
+      condition = isTRUE(combined_maps_data$surveys_combined_map_generated)
+    )
+    shinyjs::toggleState(
+      "cablesExportRmd",
+      condition = isTRUE(combined_maps_data$cables_combined_map_generated)
+    )
+    shinyjs::toggleState(
+      "industryOperationsCombinedExport",
+      condition = isTRUE(
+        combined_maps_data$industry_operations_combined_submodel_generated
+      )
+    )
+
+    # Full Model Export
+    shinyjs::toggleState(
+      "fullModelExportRmd",
+      condition = isTRUE(combined_maps_data$full_model_generated)
+    )
   })
 }

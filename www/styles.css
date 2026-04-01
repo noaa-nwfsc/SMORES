@@ -1,65 +1,95 @@
-/* Custom CSS to style the navbar */
+/* =========================================================
+   1. STANDARD TABS (Overview, Methods, Scenario Management)
+   Color: noaa-sky (#003087)
+   ========================================================= */
 .navbar-nav .nav-link {
   color: white !important;
   background-color: #003087 !important;
   border-radius: 4px 4px 0 0;
   margin-right: 2px;
-}
-
-.navbar-nav .nav-link.active {
-  color: #003087 !important;
-  background-color: white !important;
-  border-radius: 4px 4px 0 0;
+  /* Add a transparent border so the tab doesn't "jump" when it becomes active */
+  border-bottom: 4px solid transparent !important; 
 }
 
 .navbar-nav .nav-link:hover {
-  background-color: #0052A3 !important;
+  background-color: #056FB7 !important; /* medium-sea-blue for hover */
+  color: white !important;
 }
 
-/* Override for model tabs - use medium blue */
-.navbar-nav .nav-link[data-value='Natural Resources Submodel'],
-.navbar-nav .nav-link[data-value='Fisheries Submodel'],
-.navbar-nav .nav-link[data-value='Industry & Operations Submodel'],
-.navbar-nav .nav-link[data-value='Full Model'] {
-  background-color: #0085CA !important;
+.navbar-nav .nav-link.active {
+  background-color: #003087 !important;
+  color: white !important;
+  border-bottom: 4px solid white !important; /* The Active Indicator */
 }
 
-/* Active state for model tabs */
-.navbar-nav .nav-link.active[data-value='Natural Resources Submodel'],
-.navbar-nav .nav-link.active[data-value='Fisheries Submodel'],
-.navbar-nav .nav-link.active[data-value='Industry & Operations Submodel'],
-.navbar-nav .nav-link.active[data-value='Full Model'] {
-  background-color: white !important;
-  color: #0085CA !important;
-}
 
-/* Hover for model tabs */
-.navbar-nav .nav-link:hover[data-value='Natural Resources Submodel'],
-.navbar-nav .nav-link:hover[data-value='Fisheries Submodel'],
-.navbar-nav .nav-link:hover[data-value='Industry & Operations Submodel'],
-.navbar-nav .nav-link:hover[data-value='Full Model'] {
-  background-color: #0066B3 !important;
-}
-
-/* Target the link specifically using the data-value */
+/* =========================================================
+   2. AREA OF INTEREST TAB (The Starting Point)
+   Color: seagrass (#4B8320)
+   ========================================================= */
 .navbar-nav a.nav-link[data-value="Area of Interest"] {
   background-color: #4B8320 !important;
   color: white !important;
 }
 
-/* Hover state */
-.navbar-nav a.nav-link[data-value="Area of Interest"]:hover {
-  background-color: #365E17 !important; /* A slightly darker green */
+.navbar-nav a.nav-link:hover[data-value="Area of Interest"] {
+  background-color: #76BC21 !important; /* vivid-seagrass for hover */
   color: white !important;
 }
 
-/* Active state (when selected) */
 .navbar-nav a.nav-link.active[data-value="Area of Interest"] {
-  background-color: white !important;
-  color: #4B8320  !important;
-  border-bottom: 2px solid #4B8320  !important;
+  background-color: #4B8320 !important;
+  color: white !important;
+  border-bottom: 4px solid white !important; /* The Active Indicator */
 }
 
+
+/* =========================================================
+   3. THE THREE SUBMODELS (The Calculators)
+   Color: noaa-sea (#0085CA)
+   ========================================================= */
+.navbar-nav .nav-link[data-value='Natural Resources Submodel'],
+.navbar-nav .nav-link[data-value='Fisheries Submodel'],
+.navbar-nav .nav-link[data-value='Industry & Operations Submodel'] {
+  background-color: #0085CA !important;
+  color: white !important;
+}
+
+.navbar-nav .nav-link:hover[data-value='Natural Resources Submodel'],
+.navbar-nav .nav-link:hover[data-value='Fisheries Submodel'],
+.navbar-nav .nav-link:hover[data-value='Industry & Operations Submodel'] {
+  background-color: #5EB6D9 !important; /* light-sea-blue for hover */
+  color: white !important;
+}
+
+.navbar-nav .nav-link.active[data-value='Natural Resources Submodel'],
+.navbar-nav .nav-link.active[data-value='Fisheries Submodel'],
+.navbar-nav .nav-link.active[data-value='Industry & Operations Submodel'] {
+  background-color: #0085CA !important;
+  color: white !important;
+  border-bottom: 4px solid white !important; /* The Active Indicator */
+}
+
+
+/* =========================================================
+   4. FULL MODEL TAB (The Finish Line)
+   Color: crustacean (#DB6015)
+   ========================================================= */
+.navbar-nav .nav-link[data-value='Full Model'] {
+  background-color: #DB6015 !important;
+  color: white !important;
+}
+
+.navbar-nav .nav-link:hover[data-value='Full Model'] {
+  background-color: #FF8400 !important; /* vivid-crustacean for hover */
+  color: white !important;
+}
+
+.navbar-nav .nav-link.active[data-value='Full Model'] {
+  background-color: #DB6015 !important;
+  color: white !important;
+  border-bottom: 4px solid white !important; /* The Active Indicator */
+}
 
 /* Background for the nav-tabs container but NOT for the main navbar - light gray*/
 .navset-tab > .nav-tabs,

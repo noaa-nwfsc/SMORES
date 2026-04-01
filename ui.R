@@ -1,6 +1,9 @@
 tagList(
-  # Initialize shinystate JavaScript
+  # initialize shinystate JavaScript
   use_shinystate(),
+  # initialize shinyjs
+  shinyjs::useShinyjs(),
+
   # Custom CSS
   tags$head(
     tags$link(rel = "stylesheet", type = "text/css", href = "styles.css"),

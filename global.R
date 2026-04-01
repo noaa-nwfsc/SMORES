@@ -20,6 +20,7 @@ library(RhpcBLASctl)
 library(pins) # package for app state restoration
 library(shinystate)
 library(DT)
+library(shinyjs)
 
 # set number of CPU cores to be used explicitly
 blas_set_num_threads(1)
