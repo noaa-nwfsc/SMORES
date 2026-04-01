@@ -42,6 +42,33 @@
         "Built": "R 4.5.2; ; 2026-02-18 01:42:28 UTC; windows"
       }
     },
+    "DT": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "description": {
+        "Type": "Package",
+        "Package": "DT",
+        "Title": "A Wrapper of the JavaScript Library 'DataTables'",
+        "Version": "0.34.0",
+        "Authors@R": "c(\n    person(\"Yihui\", \"Xie\", role = \"aut\"),\n    person(\"Joe\", \"Cheng\", , \"joe@posit.co\", role = \"aut\"),\n    person(\"Xianying\", \"Tan\", role = \"aut\"),\n    person(\"Garrick\", \"Aden-Buie\", , \"garrick@posit.co\", role = c(\"aut\", \"cre\"),\n           comment = c(ORCID = \"0000-0002-7111-0077\")),\n    person(\"JJ\", \"Allaire\", role = \"ctb\"),\n    person(\"Maximilian\", \"Girlich\", role = \"ctb\"),\n    person(\"Greg\", \"Freedman Ellis\", role = \"ctb\"),\n    person(\"Johannes\", \"Rauh\", role = \"ctb\"),\n    person(\"SpryMedia Limited\", role = c(\"ctb\", \"cph\"),\n           comment = \"DataTables in htmlwidgets/lib\"),\n    person(\"Brian\", \"Reavis\", role = c(\"ctb\", \"cph\"),\n           comment = \"selectize.js in htmlwidgets/lib\"),\n    person(\"Leon\", \"Gersen\", role = c(\"ctb\", \"cph\"),\n           comment = \"noUiSlider in htmlwidgets/lib\"),\n    person(\"Bartek\", \"Szopka\", role = c(\"ctb\", \"cph\"),\n           comment = \"jquery.highlight.js in htmlwidgets/lib\"),\n    person(\"Alex\", \"Pickering\", role = \"ctb\"),\n    person(\"William\", \"Holmes\", role = \"ctb\"),\n    person(\"Mikko\", \"Marttila\", role = \"ctb\"),\n    person(\"Andres\", \"Quintero\", role = \"ctb\"),\n    person(\"Stéphane\", \"Laurent\", role = \"ctb\"),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"))\n  )",
+        "Description": "Data objects in R can be rendered as HTML tables using the\n    JavaScript library 'DataTables' (typically via R Markdown or Shiny).\n    The 'DataTables' library has been included in this R package. The\n    package name 'DT' is an abbreviation of 'DataTables'.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://github.com/rstudio/DT",
+        "BugReports": "https://github.com/rstudio/DT/issues",
+        "Imports": "crosstalk, htmltools (>= 0.3.6), htmlwidgets (>= 1.3),\njquerylib, jsonlite (>= 0.9.16), magrittr, promises",
+        "Suggests": "bslib, future, httpuv, knitr (>= 1.8), rmarkdown, shiny (>=\n1.6), testit, tibble",
+        "VignetteBuilder": "knitr",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.3.2",
+        "NeedsCompilation": "no",
+        "Packaged": "2025-09-02 13:12:27 UTC; garrick",
+        "Author": "Yihui Xie [aut],\n  Joe Cheng [aut],\n  Xianying Tan [aut],\n  Garrick Aden-Buie [aut, cre] (ORCID:\n    <https://orcid.org/0000-0002-7111-0077>),\n  JJ Allaire [ctb],\n  Maximilian Girlich [ctb],\n  Greg Freedman Ellis [ctb],\n  Johannes Rauh [ctb],\n  SpryMedia Limited [ctb, cph] (DataTables in htmlwidgets/lib),\n  Brian Reavis [ctb, cph] (selectize.js in htmlwidgets/lib),\n  Leon Gersen [ctb, cph] (noUiSlider in htmlwidgets/lib),\n  Bartek Szopka [ctb, cph] (jquery.highlight.js in htmlwidgets/lib),\n  Alex Pickering [ctb],\n  William Holmes [ctb],\n  Mikko Marttila [ctb],\n  Andres Quintero [ctb],\n  Stéphane Laurent [ctb],\n  Posit Software, PBC [cph, fnd]",
+        "Maintainer": "Garrick Aden-Buie <garrick@posit.co>",
+        "Repository": "CRAN",
+        "Date/Publication": "2025-09-02 22:00:06 UTC",
+        "Built": "R 4.5.3; ; 2026-03-28 21:01:55 UTC; windows"
+      }
+    },
     "KernSmooth": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
@@ -452,6 +479,37 @@
         "RemoteRef": "arcgisutils",
         "RemoteRepos": "https://cran.rstudio.com",
         "RemoteSha": "0.4.0"
+      }
+    },
+    "archive": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "description": {
+        "Package": "archive",
+        "Title": "Multi-Format Archive and Compression Support",
+        "Version": "1.1.12.1",
+        "Authors@R": "c(\n    person(\"Jim\", \"Hester\", role = \"aut\",\n           comment = c(ORCID = \"0000-0002-2739-7082\")),\n    person(\"Gábor\", \"Csárdi\", , \"csardi.gabor@gmail.com\", role = c(\"aut\", \"cre\")),\n    person(\"Ondrej\", \"Holy\", role = \"cph\",\n           comment = \"archive_write_add_filter implementation\"),\n    person(\"RStudio\", role = c(\"cph\", \"fnd\"))\n  )",
+        "Description": "Bindings to 'libarchive' <http://www.libarchive.org> the\n    Multi-format archive and compression library. Offers R connections and\n    direct extraction for many archive formats including 'tar', 'ZIP',\n    '7-zip', 'RAR', 'CAB' and compression formats including 'gzip',\n    'bzip2', 'compress', 'lzma' and 'xz'.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://archive.r-lib.org/, https://github.com/r-lib/archive",
+        "BugReports": "https://github.com/r-lib/archive/issues",
+        "Depends": "R (>= 3.6.0)",
+        "Imports": "cli, glue, rlang, tibble",
+        "Suggests": "covr, testthat",
+        "LinkingTo": "cli",
+        "ByteCompile": "true",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.2.1.9000",
+        "SystemRequirements": "libarchive: libarchive-dev (deb), libarchive-devel\n(rpm), libarchive (homebrew), libarchive_dev (csw)",
+        "Biarch": "true",
+        "NeedsCompilation": "yes",
+        "Packaged": "2025-12-16 11:33:05 UTC; ripley",
+        "Author": "Jim Hester [aut] (ORCID: <https://orcid.org/0000-0002-2739-7082>),\n  Gábor Csárdi [aut, cre],\n  Ondrej Holy [cph] (archive_write_add_filter implementation),\n  RStudio [cph, fnd]",
+        "Maintainer": "Gábor Csárdi <csardi.gabor@gmail.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2025-12-24 07:56:02 UTC",
+        "Built": "R 4.5.3; x86_64-w64-mingw32; 2026-03-28 20:32:21 UTC; windows",
+        "Archs": "x64"
       }
     },
     "arcpbf": {
@@ -2980,6 +3038,36 @@
         "RemoteSha": "1.11.1"
       }
     },
+    "pins": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "description": {
+        "Type": "Package",
+        "Package": "pins",
+        "Title": "Pin, Discover, and Share Resources",
+        "Version": "1.4.2",
+        "Authors@R": "c(\n    person(\"Julia\", \"Silge\", , \"julia.silge@posit.co\", role = c(\"cre\", \"aut\"),\n           comment = c(ORCID = \"0000-0002-3671-836X\")),\n    person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = \"aut\",\n           comment = c(ORCID = \"0000-0003-4757-117X\")),\n    person(\"Javier\", \"Luraschi\", , \"jluraschi@gmail.com\", role = \"aut\"),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\"))\n  )",
+        "Description": "Publish data sets, models, and other R objects, making it\n    easy to share them across projects and with your colleagues. You can\n    pin objects to a variety of \"boards\", including local folders (to\n    share on a networked drive or with 'DropBox'), 'Posit Connect',\n    'AWS S3', and more.",
+        "License": "Apache License (>= 2)",
+        "URL": "https://pins.rstudio.com/, https://github.com/rstudio/pins-r",
+        "BugReports": "https://github.com/rstudio/pins-r/issues",
+        "Depends": "R (>= 4.1.0)",
+        "Imports": "cli, digest, fs, generics, glue, httr, jsonlite, lifecycle,\npurrr (>= 1.0.0), rappdirs, rlang (>= 1.1.0), tibble, whisker,\nwithr (>= 2.4.3), yaml",
+        "Suggests": "archive, arrow, AzureStor, covr, data.table, datasets,\nfilelock, gitcreds, googleCloudStorageR, googledrive, httr2,\nids, knitr, Microsoft365R, mime, mockery, nanoparquet, openssl,\npaws.storage, qs2, R.utils, rmarkdown, rsconnect, shiny,\nsodium, testthat (>= 3.1.7), webfakes (>= 1.2.0), xml2, zip",
+        "VignetteBuilder": "knitr",
+        "Config/Needs/website": "tidyverse/tidytemplate",
+        "Config/testthat/edition": "3",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.3.3",
+        "NeedsCompilation": "no",
+        "Packaged": "2026-03-09 13:27:10 UTC; juliasilge",
+        "Author": "Julia Silge [cre, aut] (ORCID: <https://orcid.org/0000-0002-3671-836X>),\n  Hadley Wickham [aut] (ORCID: <https://orcid.org/0000-0003-4757-117X>),\n  Javier Luraschi [aut],\n  Posit Software, PBC [cph, fnd]",
+        "Maintainer": "Julia Silge <julia.silge@posit.co>",
+        "Repository": "CRAN",
+        "Date/Publication": "2026-03-09 14:10:02 UTC",
+        "Built": "R 4.5.3; ; 2026-03-28 20:31:35 UTC; windows"
+      }
+    },
     "pkgconfig": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
@@ -4078,6 +4166,34 @@
         "RemoteSha": "0.7.3"
       }
     },
+    "shinystate": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "description": {
+        "Package": "shinystate",
+        "Title": "Customization of Shiny Bookmarkable State",
+        "Version": "0.1.0",
+        "Authors@R": "c(\n    person(\n      \"Eric\",\n      \"Nantz\",\n      email = \"theRcast@gmail.com\",\n      role = c(\"aut\", \"cre\"),\n      comment = c(ORCID = '0000-0001-8104-7510')\n    ),\n    person(\n      family = \"Eli Lilly and Company\",\n      role = c(\"cph\", \"fnd\")\n    ))",
+        "Description": "Enhance the bookmarkable state feature of 'shiny' with additional\n    customization such as storage location and storage repositories leveraging\n    the 'pins' package.",
+        "License": "MIT + file LICENSE",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.3.2",
+        "Depends": "R (>= 4.0.0)",
+        "Imports": "archive, fs, htmltools, pins, R6, shiny (>= 0.14),",
+        "Suggests": "bslib, DT, knitr, lubridate, rlang, rmarkdown,\nroxy.shinylive, testthat (>= 3.0.0), withr",
+        "Config/testthat/edition": "3",
+        "URL": "https://rpodcast.github.io/shinystate/,\nhttps://github.com/rpodcast/shinystate",
+        "BugReports": "https://github.com/rpodcast/shinystate/issues",
+        "VignetteBuilder": "knitr",
+        "NeedsCompilation": "no",
+        "Packaged": "2025-09-13 02:34:20 UTC; eric",
+        "Author": "Eric Nantz [aut, cre] (ORCID: <https://orcid.org/0000-0001-8104-7510>),\n  Eli Lilly and Company [cph, fnd]",
+        "Maintainer": "Eric Nantz <theRcast@gmail.com>",
+        "Repository": "CRAN",
+        "Date/Publication": "2025-09-18 08:10:01 UTC",
+        "Built": "R 4.5.3; ; 2026-03-28 20:43:08 UTC; windows"
+      }
+    },
     "sourcetools": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
@@ -4818,6 +4934,34 @@
         "Archs": "x64"
       }
     },
+    "whisker": {
+      "Source": "CRAN",
+      "Repository": "https://cran.rstudio.com",
+      "description": {
+        "Package": "whisker",
+        "Maintainer": "Edwin de Jonge <edwindjonge@gmail.com>",
+        "License": "GPL-3",
+        "Title": "{{mustache}} for R, Logicless Templating",
+        "Type": "Package",
+        "LazyLoad": "yes",
+        "Author": "Edwin de Jonge",
+        "Description": "Implements 'Mustache' logicless templating.",
+        "Version": "0.4.1",
+        "URL": "https://github.com/edwindj/whisker",
+        "Suggests": "markdown",
+        "RoxygenNote": "6.1.1",
+        "NeedsCompilation": "no",
+        "Packaged": "2022-12-05 15:15:55 UTC; hornik",
+        "Repository": "CRAN",
+        "Date/Publication": "2022-12-05 15:33:50 UTC",
+        "Built": "R 4.5.2; ; 2026-01-23 01:48:08 UTC; windows",
+        "RemoteType": "standard",
+        "RemotePkgRef": "whisker",
+        "RemoteRef": "whisker",
+        "RemoteRepos": "https://cran.rstudio.com",
+        "RemoteSha": "0.4.1"
+      }
+    },
     "withr": {
       "Source": "CRAN",
       "Repository": "https://cran.rstudio.com",
@@ -5308,7 +5452,7 @@
       "checksum": "ec0eacb0982101d214ec875d72713990"
     },
     "global.R": {
-      "checksum": "862b5821e79ac6432f7d37f25bff7ce9"
+      "checksum": "4342d0f6150d63a3bb78a51abc123bb2"
     },
     "global_report_generation.R": {
       "checksum": "3e661de0f2e851e1d4da17f3469ee0ba"
@@ -5632,7 +5776,7 @@
       "checksum": "bb6078f37506475e9c1c335d26a5c9d6"
     },
     "server.R": {
-      "checksum": "cbccad51b06689bc95717b10a5fc484e"
+      "checksum": "3808117efd821d246cc96b27f2b296fe"
     },
     "Submodel_Combined_Report_Template.Rmd": {
       "checksum": "14d9c8162bf8dab7f19012299d3fe259"
@@ -5641,7 +5785,7 @@
       "checksum": "f59aa235665a871fc1a6fcc73884e5d0"
     },
     "ui.R": {
-      "checksum": "17eeb7cad9b29d6570116aca4eef9587"
+      "checksum": "07ab383336c03b17a30fdc11f70013bf"
     },
     "www/logos/NOAA_FISHERIES_logoH.png": {
       "checksum": "958d958c7d7108909f27fa0e08e70007"

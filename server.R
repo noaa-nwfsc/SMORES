@@ -134,6 +134,70 @@ function(input, output, session) {
     last_update = NULL
   )
 
+  tracked_inputs <- c(
+    # 1. Global Settings
+    "aoiAreaSelector",
+
+    # 2. Natural Resources Settings
+    # (We use grep patterns below to catch all the dynamic layer inputs!)
+    "habitatCalculationMethods",
+    "includeHabitat",
+    "habitatCalculationMethod",
+    "speciesCalculationMethods",
+    "includeSpecies",
+    "speciesCalculationMethod",
+
+    # 3. Fisheries Settings
+    "fisheriesCalculationMethods",
+    "includeFisheries",
+    "fisheriesCalculationMethod",
+    "trawlCalculationMethods",
+    "includeTrawl",
+    "trawlCalculationMethod",
+
+    # 4. Industry & Operations Settings
+    "surveysCalculationMethods",
+    "includeSurveys",
+    "surveysCalculationMethod",
+    "cablesCalculationMethods",
+    "includeCables",
+    "cablesCalculationMethod",
+
+    # 5. Full Model Settings
+    "enableNaturalResources",
+    "weightNaturalResources",
+    "enableFisheries",
+    "weightFisheries",
+    "enableIndustryOperations",
+    "weightIndustryOperations"
+  )
+
+  # via lapply in the UI, we need to gather all dynamic layer inputs and add them to our tracked list.
+  observeEvent(
+    input$aoiAreaSelector,
+    {
+      # Get all current input names
+      all_inputs <- names(input)
+
+      # Find all inputs that start with "Enable" (checkboxes) or end with "Picker" (dropdowns)
+      layer_inputs <- all_inputs[grep(
+        "^Enable.*Layer_|.*ScorePicker_",
+        all_inputs
+      )]
+
+      # Combine our hardcoded list with the dynamic layer inputs
+      final_tracked_inputs <- unique(c(tracked_inputs, layer_inputs))
+
+      # Initialize the state manager to watch these specific inputs
+      state_manager <<- StateManager$new(
+        input = input,
+        session = session,
+        exclude = setdiff(all_inputs, final_tracked_inputs) # ignore everything else
+      )
+    },
+    once = TRUE
+  ) # Only run this once when the app starts
+
   # Observer to update AOI bounds cache when selection changes
   observe({
     current_area <- input$aoiAreaSelector %||% "all"
@@ -3498,5 +3562,139 @@ function(input, output, session) {
         ))
       )
     }
+  })
+
+  # populate the scenario table
+  pin_refresh_trigger <- reactiveVal(0)
+
+  output$scenario_table <- DT::renderDT({
+    pin_refresh_trigger() # Take a dependency on the trigger
+
+    # Search the board for available pins
+    available_pins <- pin_search(app_board)
+
+    # If the board is empty, return an empty dataframe with nice column names
+    if (nrow(available_pins) == 0) {
+      return(DT::datatable(
+        data.frame(
+          Name = character(),
+          Author = character(),
+          Created = character()
+        ),
+        options = list(language = list(emptyTable = "No scenarios saved yet."))
+      ))
+    }
+
+    # Extract metadata to display
+    display_df <- data.frame(
+      Name = available_pins$title,
+      Author = sapply(available_pins$meta, function(m) {
+        m$custom$author %||% "Unknown"
+      }),
+      Created = as.character(available_pins$created),
+      Description = available_pins$description,
+      stringsAsFactors = FALSE
+    )
+
+    DT::datatable(
+      display_df,
+      selection = "single", # Only allow selecting one row at a time
+      options = list(pageLength = 5, dom = 'tip')
+    )
+  })
+
+  # save logic
+  observeEvent(input$save_scenario_btn, {
+    # Require the user to provide a name and author
+    req(input$scenario_name, input$scenario_author)
+
+    show_spinner_modal(
+      "Saving Scenario",
+      "Pushing configuration to the cloud..."
+    )
+
+    # 1. Ask shinystate to gather the current values of all tracked inputs
+    current_state <- state_manager$get_state()
+
+    # 2. Format a safe pin name (no spaces or special characters for the backend file name)
+    safe_pin_name <- gsub("[^A-Za-z0-9_-]", "_", input$scenario_name)
+
+    # 3. Write it to Posit Connect!
+    tryCatch(
+      {
+        pin_write(
+          board = app_board,
+          x = current_state,
+          name = safe_pin_name,
+          type = "rds",
+          title = input$scenario_name,
+          description = input$scenario_desc,
+          metadata = list(author = input$scenario_author) # Storing the author here!
+        )
+
+        showNotification("Scenario saved successfully!", type = "message")
+
+        # Clear the form inputs
+        updateTextInput(session, "scenario_name", value = "")
+        updateTextAreaInput(session, "scenario_desc", value = "")
+
+        # Trigger the table to refresh
+        pin_refresh_trigger(pin_refresh_trigger() + 1)
+      },
+      error = function(e) {
+        showNotification(
+          paste("Error saving scenario:", e$message),
+          type = "error"
+        )
+      }
+    )
+
+    removeModal()
+  })
+
+  # loading a saved scenario into the app
+  observeEvent(input$load_scenario_btn, {
+    # Find out which row the user clicked
+    selected_row <- input$scenario_table_rows_selected
+
+    if (is.null(selected_row)) {
+      showNotification(
+        "Please select a scenario from the table first.",
+        type = "warning"
+      )
+      return()
+    }
+
+    # Get the backend pin name corresponding to that row
+    available_pins <- pin_search(app_board)
+    selected_pin_name <- available_pins$name[selected_row]
+
+    show_spinner_modal("Loading Scenario", "Applying saved configuration...")
+
+    tryCatch(
+      {
+        # 1. Download the list of values from Posit Connect
+        saved_state <- pin_read(app_board, selected_pin_name)
+
+        # 2. Hand the list to shinystate to instantly update the UI!
+        state_manager$set_state(saved_state)
+
+        showNotification(
+          paste("Scenario successfully loaded!"),
+          type = "message"
+        )
+
+        # NOTE: This is exactly where we will add our "Dirty State" map-clearing
+        # safeguard in the next phase!
+      },
+      error = function(e) {
+        showNotification(
+          paste("Error loading scenario:", e$message),
+          type = "error"
+        )
+      }
+    )
+
+    removeModal()
   })
 }

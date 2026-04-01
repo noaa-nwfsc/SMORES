@@ -344,8 +344,66 @@ tagList(
           )
         )
       )
+    ), # Tab 6: Scenario Management
+    nav_panel(
+      title = "Scenario Management",
+      icon = icon("floppy-disk"),
+      layout_columns(
+        col_widths = c(4, 8),
+
+        # Left Column: The Save Form
+        card(
+          card_header("Save Current Configuration"),
+          card_body(
+            p(
+              "Save your current submodel weights, layer selections, and calculation methods to the cloud."
+            ),
+            textInput(
+              "scenario_name",
+              "Scenario Name*",
+              placeholder = "e.g., Draft 1 - High Conservation"
+            ),
+            textInput(
+              "scenario_author",
+              "Author/Team*",
+              placeholder = "e.g., Team A"
+            ),
+            textAreaInput(
+              "scenario_desc",
+              "Description (Optional)",
+              placeholder = "Briefly describe the focus of this configuration..."
+            ),
+            hr(),
+            actionButton(
+              "save_scenario_btn",
+              "Save to Cloud",
+              class = "btn-success btn-block",
+              icon = icon("cloud-arrow-up")
+            )
+          )
+        ),
+
+        # Right Column: The Scenario Library
+        card(
+          card_header("Scenario Library"),
+          card_body(
+            p(
+              "Select a previously saved scenario from the table below to load its configuration."
+            ),
+            # DT data table to show the pins
+            DT::DTOutput("scenario_table"),
+            hr(),
+            actionButton(
+              "load_scenario_btn",
+              "Load Selected Scenario",
+              class = "btn-primary",
+              icon = icon("download")
+            )
+          )
+        )
+      )
     ),
-    # Tab 6: Methods
+    # Tab 7: Methods
     nav_panel(
       title = "Methods",
       icon = icon("route"),
@@ -356,7 +414,7 @@ tagList(
         )
       )
     ),
-    # Tab 7: Data
+    # Tab 8: Data
     nav_panel(
       title = "Data",
       icon = icon("database"),
