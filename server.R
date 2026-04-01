@@ -2,6 +2,28 @@ function(input, output, session) {
   # Register shinystate metadata callbacks
   app_storage$register_metadata()
 
+  # exclude action buttons from being captured in the bookmarking process
+  setBookmarkExclude(c(
+    "save_scenario_btn",
+    "load_scenario_btn",
+    "update_habitat_map_btn",
+    "update_species_map_btn",
+    "update_fisheries_map_btn",
+    "update_trawl_map_btn",
+    "update_surveys_map_btn",
+    "update_cables_map_btn",
+    "generateCombinedHabitatMap",
+    "generateCombinedSpeciesMap",
+    "generateCombinedFisheriesMap",
+    "generateCombinedTrawlMap",
+    "generateCombinedSurveysMap",
+    "generateCombinedCablesMap",
+    "generateNaturalResourcesCombinedSubmodel",
+    "generateFisheriesCombinedSubmodel",
+    "generateIndustryOperationsCombinedSubmodel",
+    "generateFullModel"
+  ))
+
   # identify app grid size being called
   current_resolution <- reactive({
     selected_area <- input$aoiAreaSelector
