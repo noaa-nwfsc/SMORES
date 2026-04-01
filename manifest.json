@@ -1822,12 +1822,7 @@
         "Maintainer": "Jennifer Bryan <jenny@posit.co>",
         "Repository": "CRAN",
         "Date/Publication": "2025-09-10 08:50:06 UTC",
-        "Built": "R 4.5.2; ; 2025-11-08 03:42:41 UTC; windows",
-        "RemoteType": "standard",
-        "RemotePkgRef": "googledrive",
-        "RemoteRef": "googledrive",
-        "RemoteRepos": "https://cran.rstudio.com",
-        "RemoteSha": "2.1.2"
+        "Built": "R 4.5.3; ; 2026-03-22 04:14:05 UTC; windows"
       }
     },
     "googlesheets4": {
@@ -5298,7 +5293,7 @@
       "checksum": "a4b46d5a6782d9e9f52a01d0686ca738"
     },
     "data_processing/continuous_data_processing_2km.qmd": {
-      "checksum": "13f732ec05aaa4f87b17e8b8efa86db5"
+      "checksum": "e6eefa9686c7ec8fb3d6a02a239519cb"
     },
     "data_processing/continuous_data_processing_5km.qmd": {
       "checksum": "5ebf05e3108aad0570a509962a0db4b8"
@@ -5568,19 +5563,19 @@
       "checksum": "c54a0d904c7715911fe1cbad850a0e05"
     },
     "R/generate_area_of_interest_sidebar.R": {
-      "checksum": "6f287ce505d3d506fcbb5025fc01780d"
+      "checksum": "f02b16d7eaeb3da1c02a2fbc16909192"
     },
     "R/generate_cables_sidebar.R": {
-      "checksum": "8d2caf8becac62eb8e8dbf78cf1711b7"
+      "checksum": "a6e13f8c94ac2ff06868ee81af3bf09c"
     },
     "R/generate_combined_map_for_method.R": {
       "checksum": "2fe620a301182588b9890ac7285fc8e5"
     },
     "R/generate_fisheries_combined_sidebar.R": {
-      "checksum": "17aea6858f576019873f06196ea8f6f8"
+      "checksum": "c430ae405203f54a56b17e5564ce85d4"
     },
     "R/generate_fisheries_sidebar.R": {
-      "checksum": "b6df093dc0a75c9a93317bc147485dd3"
+      "checksum": "cf00bab43fa2d3fc32d3c8738293568b"
     },
     "R/generate_full_model_report.R": {
       "checksum": "5df737cae22199b861eb62c09ff778f2"
@@ -5589,16 +5584,16 @@
       "checksum": "4cbcde869f7cd3d3ed4b932cc1a5888f"
     },
     "R/generate_habitat_sidebar.R": {
-      "checksum": "9b6443a170a510deb75d4d5ce77ee6a8"
+      "checksum": "36eec6de2bfa520e08a0552597500cec"
     },
     "R/generate_industry_operations_combined_sidebar.R": {
-      "checksum": "3dab8bec354b6d8f6ca2398137463052"
+      "checksum": "2700ad2efd75ddc7ea890436f8d3291e"
     },
     "R/generate_natural_resources_combined_sidebar.R": {
-      "checksum": "c2f93a1ef75d213a23f1d055bea0f232"
+      "checksum": "32ec33f8df41ec720acf07434f60eabe"
     },
     "R/generate_species_sidebar.R": {
-      "checksum": "d3c6de0db91ff96bfdb481c444418c23"
+      "checksum": "bbe5fa7a9e5e9c96cb4b2376b6d38f00"
     },
     "R/generate_submodel_combined_report.R": {
       "checksum": "0e00d92727f10f22a5d75a5313460b67"
@@ -5607,10 +5602,10 @@
       "checksum": "6632365af65e2f075f36258098629304"
     },
     "R/generate_surveys_sidebar.R": {
-      "checksum": "344e3ac16b4edda2431879f951bfd9e7"
+      "checksum": "a29bbe60dbaab093c007980cb03e1c92"
     },
     "R/generate_trawl_fisheries_sidebar.R": {
-      "checksum": "c047b0419c1b30479e10c2d441d24cf0"
+      "checksum": "ab05a0a2f9ac779bdd08c1a1b5c8b896"
     },
     "R/get_valid_configs_for_tab.R": {
       "checksum": "b32a2aeef1d479978263aa49e7b5cc45"
@@ -5637,7 +5632,7 @@
       "checksum": "bb6078f37506475e9c1c335d26a5c9d6"
     },
     "server.R": {
-      "checksum": "ea238dd20fe389ad6eee7925f5e4bc57"
+      "checksum": "cbccad51b06689bc95717b10a5fc484e"
     },
     "Submodel_Combined_Report_Template.Rmd": {
       "checksum": "14d9c8162bf8dab7f19012299d3fe259"
@@ -5646,7 +5641,7 @@
       "checksum": "f59aa235665a871fc1a6fcc73884e5d0"
     },
     "ui.R": {
-      "checksum": "ec08a67f896b09054b5c276df2bf3818"
+      "checksum": "17eeb7cad9b29d6570116aca4eef9587"
     },
     "www/logos/NOAA_FISHERIES_logoH.png": {
       "checksum": "958d958c7d7108909f27fa0e08e70007"
