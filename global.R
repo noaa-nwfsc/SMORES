@@ -119,7 +119,7 @@ fisheries_layer <- list(
 )
 
 trawl_fisheries_layer <- list(
-  "Trawl Fisheries @ 75%" = "trawl_fisheries_scored_full.parquet"
+  "Trawl Fisheries @ 75%" = "Trawl_fisheries_scored_full.parquet"
 )
 
 ## Industry & Operations Submodel
@@ -128,7 +128,7 @@ surveys_layer <- list(
   "Periodic Surveys" = "Surveys_periodic_scored_full.parquet"
 )
 submarine_cables_layer <- list(
-  "Submarine Cables" = "submarine_cable_scored_full.parquet"
+  "Submarine Cables" = "Submarine_cable_scored_full.parquet"
 )
 
 resolution_for_aoi <- c(
