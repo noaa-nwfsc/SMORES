@@ -3577,7 +3577,6 @@ function(input, output, session) {
         pins::pin_read(app_board, "melissa.widas/sessions")
       },
       error = function(e) {
-        print(paste("MANUAL PIN READ ERROR:", e$message))
         return(NULL)
       }
     )
@@ -3588,15 +3587,16 @@ function(input, output, session) {
         data.frame(
           Name = character(),
           Author = character(),
-          Created = character()
+          `Date Created` = character(),
+          Description = character(),
+          check.names = FALSE
         ),
         options = list(language = list(emptyTable = "No scenarios saved yet."))
       ))
     }
 
-    # Build the display dataframe directly from the flattened columns!
+    # Build the display dataframe directly from the flattened columns
     display_df <- data.frame(
-      # Use %in% names() to safely check if the column exists before pulling it
       Name = if ("name" %in% names(sessions_df)) {
         sessions_df$name
       } else {
@@ -3607,40 +3607,41 @@ function(input, output, session) {
       } else {
         "Unknown"
       },
-
-      # Since the 'created' column is missing from the raw pin, we assign it NA or fetch from pin_meta
-      Created = if ("created" %in% names(sessions_df)) {
-        as.character(sessions_df$created)
+      `Date Created` = if ("date_created" %in% names(sessions_df)) {
+        sessions_df$date_created
       } else {
-        "Recently"
+        "Unknown"
       },
-
       Description = if ("desc" %in% names(sessions_df)) {
         sessions_df$desc
       } else {
         ""
       },
+      # Keep the URL for the Load button, but we will hide it visually
       URL = if ("url" %in% names(sessions_df)) sessions_df$url else "",
-      stringsAsFactors = FALSE
+      stringsAsFactors = FALSE,
+      check.names = FALSE # Prevents R from changing `Date Created` to `Date.Created`
     )
 
     # Render the final table
     DT::datatable(
       display_df,
       selection = "single",
+      rownames = FALSE, # Removes the empty number column on the far left
       options = list(
         pageLength = 5,
         dom = 'tip',
-        columnDefs = list(list(targets = 4, visible = FALSE)) # Hide the URL
+        # In Javascript, column indexes start at 0. URL is the 5th column, so its index is 4.
+        columnDefs = list(list(targets = 4, visible = FALSE))
       )
     )
   })
 
   # save scenario
   observeEvent(input$save_scenario_btn, {
-    req(input$scenario_name, input$scenario_author)
+    # Require the new date field
+    req(input$scenario_name, input$scenario_author, input$scenario_date)
 
-    # Capture the true Posit Connect username (fallback to 'local_dev' if on your laptop)
     current_user <- session$user %||% "local_dev"
 
     show_spinner_modal(
@@ -3652,10 +3653,11 @@ function(input, output, session) {
       {
         app_storage$snapshot(
           session_metadata = list(
-            # <-- FIXED PARAMETER NAME
             name = input$scenario_name,
-            author_display = input$scenario_author, # What the public sees
-            creator_username = current_user, # THE SECURITY LOCK
+            author_display = input$scenario_author,
+            # Force the exact string format just in case
+            date_created = format(as.Date(input$scenario_date), "%m/%d/%Y"),
+            creator_username = current_user,
             desc = input$scenario_desc
           )
         )
@@ -3665,6 +3667,7 @@ function(input, output, session) {
         # Clear the form inputs
         updateTextInput(session, "scenario_name", value = "")
         updateTextAreaInput(session, "scenario_desc", value = "")
+        updateDateInput(session, "scenario_date", value = Sys.Date())
 
         # Trigger the table to refresh
         pin_refresh_trigger(pin_refresh_trigger() + 1)

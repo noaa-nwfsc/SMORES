@@ -359,12 +359,12 @@ tagList(
         card_body(
           # layout_columns places these inputs side-by-side in a single row
           layout_columns(
-            col_widths = c(3, 3, 4, 2), # Ratios summing to 12 columns
+            col_widths = c(3, 2, 2, 3, 2), # Ratios summing to 12 columns
 
             textInput(
               "scenario_name",
               "Scenario Name*",
-              placeholder = "e.g., Draft 1 - High Conservation"
+              placeholder = "e.g., Draft 1..."
             ),
             textInput(
               "scenario_author",
@@ -372,14 +372,20 @@ tagList(
               placeholder = "e.g., Team A"
             ),
 
-            # Swapped textAreaInput to a standard textInput so it stays one line tall
+            # The new Date field, defaulting to today, formatted exactly as requested
+            dateInput(
+              "scenario_date",
+              "Date Created*",
+              value = Sys.Date(),
+              format = "mm/dd/yyyy"
+            ),
+
             textInput(
               "scenario_desc",
               "Description (Optional)",
-              placeholder = "Briefly describe the focus..."
+              placeholder = "Briefly describe..."
             ),
 
-            # The div margin pushes the button down to align perfectly with the text boxes
             div(
               style = "margin-top: 32px;",
               actionButton(
