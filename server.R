@@ -3566,6 +3566,8 @@ function(input, output, session) {
     }
   })
 
+  pin_refresh_trigger <- reactiveVal(0)
+
   output$scenario_table <- DT::renderDT({
     pin_refresh_trigger() # Take a dependency on the trigger
 
