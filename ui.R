@@ -354,6 +354,7 @@ tagList(
       title = "Scenario Management",
       icon = icon("floppy-disk"),
       card(
+        fill = FALSE,
         card_header("Save Current Configuration"),
         card_body(
           # layout_columns places these inputs side-by-side in a single row

@@ -3586,14 +3586,19 @@ function(input, output, session) {
       ))
     }
 
+    # Safely extract the metadata column (handles both potential names shinystate might use)
+    meta_col <- if ("session_metadata" %in% names(sessions_df)) {
+      sessions_df$session_metadata
+    } else {
+      sessions_df$metadata
+    }
+
     # Extract our custom metadata from the list column
     display_df <- data.frame(
-      Name = sapply(sessions_df$metadata, function(m) m$name %||% "Unknown"),
-      Author = sapply(sessions_df$metadata, function(m) {
-        m$author %||% "Unknown"
-      }),
+      Name = sapply(meta_col, function(m) m$name %||% "Unknown"),
+      Author = sapply(meta_col, function(m) m$author_display %||% "Unknown"), # <-- FIXED KEY
       Created = sessions_df$created,
-      Description = sapply(sessions_df$metadata, function(m) m$desc %||% ""),
+      Description = sapply(meta_col, function(m) m$desc %||% ""),
       URL = sessions_df$url, # Hidden column needed for restoring
       stringsAsFactors = FALSE
     )
@@ -3625,7 +3630,8 @@ function(input, output, session) {
     tryCatch(
       {
         app_storage$snapshot(
-          metadata = list(
+          session_metadata = list(
+            # <-- FIXED PARAMETER NAME
             name = input$scenario_name,
             author_display = input$scenario_author, # What the public sees
             creator_username = current_user, # THE SECURITY LOCK
