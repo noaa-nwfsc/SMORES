@@ -3572,10 +3572,30 @@ function(input, output, session) {
   output$scenario_table <- DT::renderDT({
     pin_refresh_trigger() # Take a dependency on the trigger
 
-    # Grab the dataframe of all saved sessions from the board
-    sessions_df <- app_storage$get_sessions()
+    print("=======================================")
+    print("--- 1. TABLE REFRESH TRIGGERED ---")
 
+    # Safely attempt to fetch the sessions
+    sessions_df <- tryCatch(
+      {
+        app_storage$get_sessions()
+      },
+      error = function(e) {
+        print(paste("CRITICAL ERROR FETCHING SESSIONS:", e$message))
+        return(NULL)
+      }
+    )
+
+    print(paste("Is sessions_df NULL?:", is.null(sessions_df)))
+
+    if (!is.null(sessions_df)) {
+      print(paste("Rows found:", nrow(sessions_df)))
+      print(paste("Columns found:", paste(names(sessions_df), collapse = ", ")))
+    }
+
+    # Check for empty fallback
     if (is.null(sessions_df) || nrow(sessions_df) == 0) {
+      print("-> Returning empty fallback table.")
       return(DT::datatable(
         data.frame(
           Name = character(),
@@ -3586,27 +3606,54 @@ function(input, output, session) {
       ))
     }
 
-    # Safely extract the metadata column (handles both potential names shinystate might use)
-    meta_col <- if ("session_metadata" %in% names(sessions_df)) {
-      sessions_df$session_metadata
-    } else {
-      sessions_df$metadata
+    print("--- 2. PARSING METADATA ---")
+    # Safely attempt to build the display dataframe
+    display_df <- tryCatch(
+      {
+        # Determine column name
+        meta_col <- if ("session_metadata" %in% names(sessions_df)) {
+          sessions_df$session_metadata
+        } else if ("metadata" %in% names(sessions_df)) {
+          sessions_df$metadata
+        } else {
+          print("WARNING: Neither metadata nor session_metadata found!")
+          list() # Return empty list to force a safe fail
+        }
+
+        print(paste("Metadata column class:", class(meta_col)))
+
+        data.frame(
+          Name = sapply(meta_col, function(m) m$name %||% "Unknown"),
+          Author = sapply(meta_col, function(m) {
+            m$author_display %||% "Unknown"
+          }),
+          # Forced to character to prevent POSIXct datetime formatting crashes
+          Created = as.character(sessions_df$created),
+          Description = sapply(meta_col, function(m) m$desc %||% ""),
+          URL = sessions_df$url,
+          stringsAsFactors = FALSE
+        )
+      },
+      error = function(e) {
+        print(paste("CRITICAL ERROR PARSING DATAFRAME:", e$message))
+        return(NULL)
+      }
+    )
+
+    if (is.null(display_df)) {
+      print("-> Parsing failed. Returning error table.")
+      return(DT::datatable(data.frame(
+        Error = "Failed to parse scenario metadata."
+      )))
     }
 
-    # Extract our custom metadata from the list column
-    display_df <- data.frame(
-      Name = sapply(meta_col, function(m) m$name %||% "Unknown"),
-      Author = sapply(meta_col, function(m) m$author_display %||% "Unknown"), # <-- FIXED KEY
-      Created = sessions_df$created,
-      Description = sapply(meta_col, function(m) m$desc %||% ""),
-      URL = sessions_df$url, # Hidden column needed for restoring
-      stringsAsFactors = FALSE
-    )
+    print("--- 3. SUCCESS: RENDERING TABLE ---")
+    print(head(display_df, 1))
+    print("=======================================")
 
     DT::datatable(
       display_df,
       selection = "single",
-      # Hide the 5th column (URL) from the user using DataTables options
       options = list(
         pageLength = 5,
         dom = 'tip',
@@ -3768,32 +3815,6 @@ function(input, output, session) {
           type = "error"
         )
       }
-    )
-  })
-
-  observe({
-    print("--- 1. WHAT DOES PINS SEE? ---")
-    tryCatch(
-      {
-        # Ask the board to return every single pin it has access to
-        all_pins <- pins::pin_search(app_board)
-        print(paste("Total pins found on board:", nrow(all_pins)))
-        if (nrow(all_pins) > 0) {
-          print("Names of pins found:")
-          print(head(all_pins$name))
-        }
-      },
-      error = function(e) print(paste("Pins search error:", e$message))
-    )
-
-    print("--- 2. WHAT DOES SHINYSTATE SEE? ---")
-    tryCatch(
-      {
-        # Ask shinystate what it filtered out
-        sessions <- app_storage$get_sessions()
-        print(paste("Total sessions returned to table:", nrow(sessions)))
-      },
-      error = function(e) print(paste("Shinystate error:", e$message))
     )
   })
 
