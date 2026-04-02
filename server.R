@@ -3572,30 +3572,22 @@ function(input, output, session) {
   output$scenario_table <- DT::renderDT({
     pin_refresh_trigger() # Take a dependency on the trigger
 
-    print("=======================================")
-    print("--- 1. TABLE REFRESH TRIGGERED ---")
-
-    # Safely attempt to fetch the sessions
+    # ==========================================
+    # BYPASS SHINYSTATE: Read EXPLICITLY from pins
+    # ==========================================
     sessions_df <- tryCatch(
       {
-        app_storage$get_sessions()
+        # Hardcode the exact ledger name so we NEVER load another app's data
+        pins::pin_read(app_board, "melissa.widas/sessions")
       },
       error = function(e) {
-        print(paste("CRITICAL ERROR FETCHING SESSIONS:", e$message))
+        print(paste("MANUAL PIN READ ERROR:", e$message))
         return(NULL)
       }
     )
 
-    print(paste("Is sessions_df NULL?:", is.null(sessions_df)))
-
-    if (!is.null(sessions_df)) {
-      print(paste("Rows found:", nrow(sessions_df)))
-      print(paste("Columns found:", paste(names(sessions_df), collapse = ", ")))
-    }
-
     # Check for empty fallback
     if (is.null(sessions_df) || nrow(sessions_df) == 0) {
-      print("-> Returning empty fallback table.")
       return(DT::datatable(
         data.frame(
           Name = character(),
@@ -3606,28 +3598,22 @@ function(input, output, session) {
       ))
     }
 
-    print("--- 2. PARSING METADATA ---")
-    # Safely attempt to build the display dataframe
+    # Parse the metadata into a clean dataframe
     display_df <- tryCatch(
       {
-        # Determine column name
+        # Handle potential naming variations from shinystate safely
         meta_col <- if ("session_metadata" %in% names(sessions_df)) {
           sessions_df$session_metadata
-        } else if ("metadata" %in% names(sessions_df)) {
-          sessions_df$metadata
         } else {
-          print("WARNING: Neither metadata nor session_metadata found!")
-          list() # Return empty list to force a safe fail
+          sessions_df$metadata
         }
-
-        print(paste("Metadata column class:", class(meta_col)))
 
         data.frame(
           Name = sapply(meta_col, function(m) m$name %||% "Unknown"),
           Author = sapply(meta_col, function(m) {
             m$author_display %||% "Unknown"
           }),
-          # Forced to character to prevent POSIXct datetime formatting crashes
+          # Force to character to prevent POSIXct rendering crashes in DataTables
           Created = as.character(sessions_df$created),
           Description = sapply(meta_col, function(m) m$desc %||% ""),
           URL = sessions_df$url,
@@ -3635,28 +3621,26 @@ function(input, output, session) {
         )
       },
       error = function(e) {
-        print(paste("CRITICAL ERROR PARSING DATAFRAME:", e$message))
+        print(paste("PARSING ERROR:", e$message))
         return(NULL)
       }
     )
 
+    # Catch if parsing failed entirely
     if (is.null(display_df)) {
-      print("-> Parsing failed. Returning error table.")
       return(DT::datatable(data.frame(
         Error = "Failed to parse scenario metadata."
       )))
     }
 
-    print("--- 3. SUCCESS: RENDERING TABLE ---")
-    print(head(display_df, 1))
-    print("=======================================")
-
+    # Render the final table
     DT::datatable(
       display_df,
       selection = "single",
       options = list(
         pageLength = 5,
         dom = 'tip',
+        # Hide the 5th column (URL - index 4 in zero-based Javascript)
         columnDefs = list(list(targets = 4, visible = FALSE))
       )
     )
