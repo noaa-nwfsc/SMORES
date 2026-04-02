@@ -3695,20 +3695,18 @@ function(input, output, session) {
       return()
     }
 
-    show_spinner_modal("Loading Scenario", "Applying saved configuration...")
+    # Note: We do NOT show a success notification here, because the page
+    # is about to hard-refresh. The onRestored() block will show the success message.
 
     tryCatch(
       {
-        # ==========================================
-        # BYPASS SHINYSTATE: Read directly from pins
-        # ==========================================
+        # 1. Read directly from pins to get the target URL
         sessions_df <- pins::pin_read(app_board, "melissa.widas/sessions")
         selected_url <- sessions_df$url[selected_row]
 
-        # Tell shinystate to inject the saved UI states
-        app_storage$restore(url = selected_url)
-
-        showNotification("Scenario successfully loaded!", type = "message")
+        # 2. Force native Shiny navigation and execute a hard browser refresh
+        updateQueryString(selected_url, mode = "replace")
+        session$reload()
       },
       error = function(e) {
         showNotification(
@@ -3717,8 +3715,6 @@ function(input, output, session) {
         )
       }
     )
-
-    removeModal()
   })
 
   # dynamic delete button for scenarios based on posit connect usernames
