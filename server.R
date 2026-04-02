@@ -3566,41 +3566,72 @@ function(input, output, session) {
     }
   })
 
-  # Reactive trigger to force the table to refresh
-  pin_refresh_trigger <- reactiveVal(0)
-
   output$scenario_table <- DT::renderDT({
-    pin_refresh_trigger()
+    pin_refresh_trigger() # Take a dependency on the trigger
 
-    print("=======================================")
-    print("--- BEGIN SERVER-SIDE DIAGNOSTIC ---")
-
-    tryCatch(
+    # Safely read the pin
+    sessions_df <- tryCatch(
       {
-        # 1. Read the exact pin
-        sessions_df <- pins::pin_read(app_board, "melissa.widas/sessions")
-
-        # 2. Capture the full structural tree of the object
-        struct_output <- capture.output(str(sessions_df))
-
-        # 3. Print it line-by-line to the Posit Connect log so it doesn't get truncated
-        for (line in struct_output) {
-          print(line)
-        }
-
-        print("--- END SERVER-SIDE DIAGNOSTIC ---")
-        print("=======================================")
+        pins::pin_read(app_board, "melissa.widas/sessions")
       },
       error = function(e) {
-        print(paste("DIAGNOSTIC FAILED:", e$message))
+        print(paste("MANUAL PIN READ ERROR:", e$message))
+        return(NULL)
       }
     )
 
-    # Return a temporary placeholder table to the UI so it doesn't crash
-    return(DT::datatable(
-      data.frame(Diagnostic = "Check Posit Connect Logs for output!"),
-      options = list(dom = 't')
-    ))
+    # Check for empty fallback
+    if (is.null(sessions_df) || nrow(sessions_df) == 0) {
+      return(DT::datatable(
+        data.frame(
+          Name = character(),
+          Author = character(),
+          Created = character()
+        ),
+        options = list(language = list(emptyTable = "No scenarios saved yet."))
+      ))
+    }
+
+    # Build the display dataframe directly from the flattened columns!
+    display_df <- data.frame(
+      # Use %in% names() to safely check if the column exists before pulling it
+      Name = if ("name" %in% names(sessions_df)) {
+        sessions_df$name
+      } else {
+        "Unknown"
+      },
+      Author = if ("author_display" %in% names(sessions_df)) {
+        sessions_df$author_display
+      } else {
+        "Unknown"
+      },
+
+      # Since the 'created' column is missing from the raw pin, we assign it NA or fetch from pin_meta
+      Created = if ("created" %in% names(sessions_df)) {
+        as.character(sessions_df$created)
+      } else {
+        "Recently"
+      },
+
+      Description = if ("desc" %in% names(sessions_df)) {
+        sessions_df$desc
+      } else {
+        ""
+      },
+      URL = if ("url" %in% names(sessions_df)) sessions_df$url else "",
+      stringsAsFactors = FALSE
+    )
+
+    # Render the final table
+    DT::datatable(
+      display_df,
+      selection = "single",
+      options = list(
+        pageLength = 5,
+        dom = 'tip',
+        columnDefs = list(list(targets = 4, visible = FALSE)) # Hide the URL
+      )
+    )
   })
 
   # save scenario
