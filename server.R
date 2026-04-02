@@ -3695,8 +3695,7 @@ function(input, output, session) {
       return()
     }
 
-    # Note: We do NOT show a success notification here, because the page
-    # is about to hard-refresh. The onRestored() block will show the success message.
+    show_spinner_modal("Loading Scenario", "Applying saved configuration...")
 
     tryCatch(
       {
@@ -3704,15 +3703,16 @@ function(input, output, session) {
         sessions_df <- pins::pin_read(app_board, "melissa.widas/sessions")
         selected_url <- sessions_df$url[selected_row]
 
-        # 2. Force native Shiny navigation and execute a hard browser refresh
-        updateQueryString(selected_url, mode = "replace")
-        session$reload()
+        # 2. Let shinystate do the heavy lifting!
+        # (Download pin -> Unzip to local dir -> trigger refresh)
+        app_storage$restore(url = selected_url)
       },
       error = function(e) {
         showNotification(
           paste("Error loading scenario:", e$message),
           type = "error"
         )
+        removeModal()
       }
     )
   })
