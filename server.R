@@ -3771,6 +3771,32 @@ function(input, output, session) {
     )
   })
 
+  observe({
+    print("--- 1. WHAT DOES PINS SEE? ---")
+    tryCatch(
+      {
+        # Ask the board to return every single pin it has access to
+        all_pins <- pins::pin_search(app_board)
+        print(paste("Total pins found on board:", nrow(all_pins)))
+        if (nrow(all_pins) > 0) {
+          print("Names of pins found:")
+          print(head(all_pins$name))
+        }
+      },
+      error = function(e) print(paste("Pins search error:", e$message))
+    )
+
+    print("--- 2. WHAT DOES SHINYSTATE SEE? ---")
+    tryCatch(
+      {
+        # Ask shinystate what it filtered out
+        sessions <- app_storage$get_sessions()
+        print(paste("Total sessions returned to table:", nrow(sessions)))
+      },
+      error = function(e) print(paste("Shinystate error:", e$message))
+    )
+  })
+
   # watches map flags to disable and initiate button clicking ability
   observe({
     # Natural Resources Exports
