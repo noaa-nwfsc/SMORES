@@ -3695,20 +3695,20 @@ function(input, output, session) {
       return()
     }
 
-    sessions_df <- app_storage$get_sessions()
-    selected_url <- sessions_df$url[selected_row]
-
     show_spinner_modal("Loading Scenario", "Applying saved configuration...")
 
     tryCatch(
       {
+        # ==========================================
+        # BYPASS SHINYSTATE: Read directly from pins
+        # ==========================================
+        sessions_df <- pins::pin_read(app_board, "melissa.widas/sessions")
+        selected_url <- sessions_df$url[selected_row]
+
         # Tell shinystate to inject the saved UI states
         app_storage$restore(url = selected_url)
 
-        showNotification(
-          paste("Scenario successfully loaded!"),
-          type = "message"
-        )
+        showNotification("Scenario successfully loaded!", type = "message")
       },
       error = function(e) {
         showNotification(
@@ -3726,25 +3726,32 @@ function(input, output, session) {
     selected_row <- input$scenario_table_rows_selected
     can_delete <- FALSE # Default state is locked
 
-    # Only proceed if a row is actually selected and the dataframe exists
+    # Only proceed if a row is actually selected
     if (length(selected_row) > 0) {
-      sessions_df <- app_storage$get_sessions()
+      tryCatch(
+        {
+          # BYPASS SHINYSTATE
+          sessions_df <- pins::pin_read(app_board, "melissa.widas/sessions")
 
-      if (!is.null(sessions_df) && nrow(sessions_df) >= selected_row) {
-        current_user <- session$user %||% "local_dev"
+          if (!is.null(sessions_df) && nrow(sessions_df) >= selected_row) {
+            current_user <- session$user %||% "local_dev"
 
-        # Safely extract the creator username
-        creator <- sessions_df$metadata[[selected_row]]$creator_username %||%
-          "unknown"
+            # Safely extract the creator username from the flattened column
+            creator <- sessions_df$creator_username[selected_row] %||% "unknown"
 
-        # Check permissions
-        if (current_user == creator || current_user %in% ADMIN_USERS) {
-          can_delete <- TRUE
+            # Check permissions
+            if (current_user == creator || current_user %in% ADMIN_USERS) {
+              can_delete <- TRUE
+            }
+          }
+        },
+        error = function(e) {
+          # Fail silently and leave the button locked if the board errors
         }
-      }
+      )
     }
 
-    # toggleState handles both enabling and disabling safely in one line
+    # toggleState handles both enabling and disabling safely
     shinyjs::toggleState("delete_scenario_btn", condition = can_delete)
   })
 
@@ -3771,15 +3778,22 @@ function(input, output, session) {
     # Failsafe: Ensure a row is still selected
     req(selected_row)
 
-    sessions_df <- app_storage$get_sessions()
-
-    # Extract the backend system name of the pin
-    pin_to_delete <- sessions_df$name[selected_row]
-
     tryCatch(
       {
-        # Physically delete the pin from the Posit Connect board
+        # 1. Read the ledger directly
+        sessions_df <- pins::pin_read(app_board, "melissa.widas/sessions")
+
+        # 2. Extract the true backend system name of the pin from the URL
+        url_string <- sessions_df$url[selected_row]
+        pin_hash <- sub(".*_state_id_=", "", url_string)
+        pin_to_delete <- paste0("melissa.widas/", pin_hash)
+
+        # 3. Physically delete the state pin from the Posit Connect board
         pins::pin_delete(app_board, pin_to_delete)
+
+        # 4. Remove the scenario from the ledger and overwrite it
+        sessions_df <- sessions_df[-selected_row, , drop = FALSE]
+        pins::pin_write(app_board, sessions_df, name = "sessions", type = "rds")
 
         showNotification("Scenario permanently deleted.", type = "message")
 
