@@ -3570,80 +3570,37 @@ function(input, output, session) {
   pin_refresh_trigger <- reactiveVal(0)
 
   output$scenario_table <- DT::renderDT({
-    pin_refresh_trigger() # Take a dependency on the trigger
+    pin_refresh_trigger()
 
-    # ==========================================
-    # BYPASS SHINYSTATE: Read EXPLICITLY from pins
-    # ==========================================
-    sessions_df <- tryCatch(
+    print("=======================================")
+    print("--- BEGIN SERVER-SIDE DIAGNOSTIC ---")
+
+    tryCatch(
       {
-        # Hardcode the exact ledger name so we NEVER load another app's data
-        pins::pin_read(app_board, "melissa.widas/sessions")
-      },
-      error = function(e) {
-        print(paste("MANUAL PIN READ ERROR:", e$message))
-        return(NULL)
-      }
-    )
+        # 1. Read the exact pin
+        sessions_df <- pins::pin_read(app_board, "melissa.widas/sessions")
 
-    # Check for empty fallback
-    if (is.null(sessions_df) || nrow(sessions_df) == 0) {
-      return(DT::datatable(
-        data.frame(
-          Name = character(),
-          Author = character(),
-          Created = character()
-        ),
-        options = list(language = list(emptyTable = "No scenarios saved yet."))
-      ))
-    }
+        # 2. Capture the full structural tree of the object
+        struct_output <- capture.output(str(sessions_df))
 
-    # Parse the metadata into a clean dataframe
-    display_df <- tryCatch(
-      {
-        # Handle potential naming variations from shinystate safely
-        meta_col <- if ("session_metadata" %in% names(sessions_df)) {
-          sessions_df$session_metadata
-        } else {
-          sessions_df$metadata
+        # 3. Print it line-by-line to the Posit Connect log so it doesn't get truncated
+        for (line in struct_output) {
+          print(line)
         }
 
-        data.frame(
-          Name = sapply(meta_col, function(m) m$name %||% "Unknown"),
-          Author = sapply(meta_col, function(m) {
-            m$author_display %||% "Unknown"
-          }),
-          # Force to character to prevent POSIXct rendering crashes in DataTables
-          Created = as.character(sessions_df$created),
-          Description = sapply(meta_col, function(m) m$desc %||% ""),
-          URL = sessions_df$url,
-          stringsAsFactors = FALSE
-        )
+        print("--- END SERVER-SIDE DIAGNOSTIC ---")
+        print("=======================================")
       },
       error = function(e) {
-        print(paste("PARSING ERROR:", e$message))
-        return(NULL)
+        print(paste("DIAGNOSTIC FAILED:", e$message))
       }
     )
 
-    # Catch if parsing failed entirely
-    if (is.null(display_df)) {
-      return(DT::datatable(data.frame(
-        Error = "Failed to parse scenario metadata."
-      )))
-    }
-
-    # Render the final table
-    DT::datatable(
-      display_df,
-      selection = "single",
-      options = list(
-        pageLength = 5,
-        dom = 'tip',
-        # Hide the 5th column (URL - index 4 in zero-based Javascript)
-        columnDefs = list(list(targets = 4, visible = FALSE))
-      )
-    )
+    # Return a temporary placeholder table to the UI so it doesn't crash
+    return(DT::datatable(
+      data.frame(Diagnostic = "Check Posit Connect Logs for output!"),
+      options = list(dom = 't')
+    ))
   })
 
   # save scenario
