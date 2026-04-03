@@ -41,7 +41,7 @@ generate_trawl_fisheries_sidebar <- function(
     hr(),
 
     actionButton(
-      "update_trawl_fisheries_map_btn",
+      "update_trawl_map_btn",
       "Generate Trawl Fisheries Maps",
       class = "btn-primary btn-block"
     ),
