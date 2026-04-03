@@ -684,11 +684,11 @@ function(input, output, session) {
               "EFHCA" = "Score.EFHCA",
               "EFHCA 700 fathoms" = "Score.EFHCA.700",
               "HAPC AOI" = "Score.HAPC.AOI",
-              "HAPC Rocky Reef" = "Score.HAPC.Reef",
+              "HAPC Rocky Reef" = "Score.HAPC.RR",
               "ESA Critical Habitat for Southern Resident Killer Whales" = "Score.killer_whale",
-              "ESA Critical Habitat for Leatherback Sea Turtles" = "Score.leatherback_turtle",
-              "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS" = "Score.humpback_whale",
-              "Biologically Important Area - Blue Whale" = "Score.blue_whale",
+              "ESA Critical Habitat for Leatherback Sea Turtles" = "Score.leatherback",
+              "ESA Critical Habitat for Humpback Whales - Mexico and Central DPS" = "Score.humpback",
+              "Biologically Important Area - Blue Whale" = "Score.blue",
               NULL
             )
 
