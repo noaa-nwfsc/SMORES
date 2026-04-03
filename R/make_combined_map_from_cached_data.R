@@ -16,9 +16,6 @@ make_combined_map_from_cached_data <- function(
   base_geom <- sf::st_geometry(base_sf)
 
   score_columns_added <- c()
-
-  # --- NEW: Track Columns for Special Handling ---
-  # We will NOT delete rows. We will just list which columns need strict NA handling.
   strict_na_cols <- c()
 
   # 2. Iterative Join
@@ -31,7 +28,6 @@ make_combined_map_from_cached_data <- function(
       score_col <- cached_config$score_column
 
       if (!is.null(score_col) && score_col %in% names(temp_data)) {
-        # --- FIX: DYNAMIC CELL ID DETECTION ---
         # Automatically find whether we are joining on CellID_2km or CellID_5km
         id_col <- grep(
           "^CellID",
@@ -39,9 +35,38 @@ make_combined_map_from_cached_data <- function(
           value = TRUE
         )[1]
 
+        # ==========================================
+        # DIAGNOSTIC PROBE: WHY ARE WE GETTING NAs?
+        # ==========================================
+        print(paste("=== JOIN DIAGNOSTIC:", config$layer, "==="))
+        print(paste("1. Temp Data Rows:", nrow(temp_data)))
+        print(paste("2. Detected ID Column:", id_col))
+
+        if (is.na(id_col)) {
+          print(
+            "CRITICAL WARNING: No CellID column found in Species data. Tabular left_join will fail!"
+          )
+          print(paste(
+            "Available Columns:",
+            paste(names(temp_data), collapse = ", ")
+          ))
+        } else {
+          matching_cells <- sum(temp_data[[id_col]] %in% base_df[[id_col]])
+          print(paste(
+            "3. Matching CellIDs found in base grid:",
+            matching_cells
+          ))
+        }
+        print("=======================================")
+
         # Subset dynamically using the detected ID column
         temp_df_clean <- sf::st_drop_geometry(temp_data)[, c(id_col, score_col)]
-        unique_col_name <- paste0("Score.", config_key)
+
+        # --- FIX: KEEP EXACT SHORT SPECIES NAMES & APPEND SCORE ---
+        # e.g., "Score.killer_whale_0.1".
+        # This prevents identical names if an admin loads two different scoring systems.
+        unique_col_name <- paste0(score_col, "_", config$score)
+
         names(temp_df_clean)[2] <- unique_col_name
 
         # Dynamic Left Join (Keeps all data, creates NAs where missing)
@@ -49,7 +74,7 @@ make_combined_map_from_cached_data <- function(
 
         score_columns_added <- c(score_columns_added, unique_col_name)
 
-        # --- IDENTIFY SPECIAL LAYERS ---
+        # IDENTIFY SPECIAL LAYERS
         is_trawl <- grepl("Trawl Fisheries", config$layer, ignore.case = TRUE)
         is_coral_z <- (config$layer ==
           "Deep Sea Coral Robust High Suitability" &&
@@ -63,7 +88,6 @@ make_combined_map_from_cached_data <- function(
   }
 
   # 3. Store the tag as an attribute
-  # We pass this list to the calculation functions so they know which cols are "Strict"
   base_sf_final <- sf::st_as_sf(base_df, geometry = base_geom)
   attr(base_sf_final, "strict_na_cols") <- strict_na_cols
 
