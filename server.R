@@ -1342,8 +1342,8 @@ function(input, output, session) {
   })
 
   # Combined map logic
+  # Combined map logic for species (WITH HEAVY DIAGNOSTICS)
   observeEvent(input$generateCombinedSpeciesMap, {
-    # Get selected calculation methods
     selected_methods <- input$speciesCalculationMethods
 
     if (is.null(selected_methods) || length(selected_methods) == 0) {
@@ -1354,7 +1354,6 @@ function(input, output, session) {
       return()
     }
 
-    # Show modal with spinner
     show_spinner_modal(
       "Generating Combined Map(s)",
       paste(
@@ -1363,20 +1362,35 @@ function(input, output, session) {
         "combined map(s) are being generated..."
       )
     )
-
-    # Add a small delay to ensure the modal is visible
     Sys.sleep(0.5)
 
-    # Get valid configurations
     valid_configs <- natural_resources_valid_configs()
     aoi_data <- filtered_aoi_data()
 
-    # Generate maps using cached individual data
+    # ==========================================
+    # 1. DIAGNOSTIC: WHAT CONFIGS ARE WE USING?
+    # ==========================================
+    print("===========================================")
+    print("===== SPECIES COMBINED MAP DIAGNOSTIC =====")
+    print(paste("Valid configs loaded:", length(valid_configs)))
+    if (length(valid_configs) > 0) {
+      for (i in seq_along(valid_configs)) {
+        print(paste(" -> Config", i, "Layer:", valid_configs[[i]]$layer))
+      }
+    } else {
+      print(
+        "CRITICAL WARNING: valid_configs is empty! Did the user click 'Update Species Maps' first?"
+      )
+    }
+
     all_results <- list()
+
     for (method in selected_methods) {
       tryCatch(
         {
-          # Use cached individual data
+          print(paste("--- Starting Calculation Method:", method, "---"))
+
+          # Build the combined data
           combined_data <- make_combined_map_from_cached_data(
             valid_configs = valid_configs,
             cached_data = individual_processed_data$naturalresources,
@@ -1385,18 +1399,40 @@ function(input, output, session) {
             aoi_data = aoi_data
           )
 
-          # Get score columns for verification
+          # ==========================================
+          # 2. DIAGNOSTIC: DID THE JOIN WORK?
+          # ==========================================
+          print(paste("Grid joined. Total rows:", nrow(combined_data)))
+          print(paste(
+            "All columns present:",
+            paste(names(combined_data), collapse = ", ")
+          ))
+
           score_cols <- names(combined_data)[grep(
             "^Score\\.",
             names(combined_data)
           )]
+          print(paste(
+            "Identified Score Columns for math:",
+            paste(score_cols, collapse = ", ")
+          ))
 
           if (length(score_cols) == 0) {
-            cat("ERROR: No score columns found for calculation\n")
+            print(
+              "CRITICAL ERROR: No score columns found! The math cannot run."
+            )
             next
           }
 
-          # Calculate based on method
+          # ==========================================
+          # 3. DIAGNOSTIC: WHAT ARE THE RAW SCORES?
+          # ==========================================
+          print("Raw Score Summary (Before Math):")
+          # Grab just the score columns and print a quick summary to see if they are mostly NAs or 1s
+          score_df <- as.data.frame(combined_data)[, score_cols, drop = FALSE]
+          print(summary(score_df))
+
+          # Run the Math
           if (method == "geometric_mean") {
             combined_data <- calculate_geometric_mean(combined_data)
           } else if (method == "lowest") {
@@ -1405,7 +1441,9 @@ function(input, output, session) {
             combined_data <- calculate_product_value(combined_data)
           }
 
-          # Verify calculation result
+          # ==========================================
+          # 4. DIAGNOSTIC: DID THE MATH WORK?
+          # ==========================================
           expected_col <- switch(
             method,
             "geometric_mean" = "Geo_mean",
@@ -1413,7 +1451,19 @@ function(input, output, session) {
             "product" = "Product_value"
           )
 
-          # Create the map
+          if (expected_col %in% names(combined_data)) {
+            print(paste("Math successful. Summary of", expected_col, ":"))
+            print(summary(combined_data[[expected_col]]))
+          } else {
+            print(paste(
+              "CRITICAL ERROR: Column",
+              expected_col,
+              "is missing after calculation!"
+            ))
+          }
+
+          # Create Map
+          print("Passing data to create_combined_map()...")
           map_result <- create_combined_map(
             combined_data = combined_data,
             map_title = paste(
@@ -1430,14 +1480,19 @@ function(input, output, session) {
             aoi_bounds = aoi_bounds_cache$current_bounds
           )
 
-          # Store the result
+          if (is.null(map_result)) {
+            print("CRITICAL ERROR: create_combined_map() returned NULL!")
+          } else {
+            print("Map widget created successfully.")
+          }
+
           all_results[[method]] <- list(
             combined_data = combined_data,
             map = map_result
           )
         },
         error = function(e) {
-          cat("ERROR in method", method, ":", e$message, "\n")
+          print(paste("!!! FATAL ERROR in method", method, ":", e$message))
           showNotification(
             paste("Error generating", method, "map:", e$message),
             type = "error"
@@ -1445,7 +1500,10 @@ function(input, output, session) {
         }
       )
     }
+    print("===== END SPECIES DIAGNOSTIC =====")
+    print("===========================================")
 
+    # Store results for UI
     if (
       "geometric_mean" %in%
         selected_methods &&
@@ -1483,12 +1541,9 @@ function(input, output, session) {
       })
     }
 
-    # Set flag to indicate combined map has been generated
     combined_maps_data$species_combined_map_generated <- TRUE
-
-    # Remove modal spinner
     removeModal()
-  }) # END of observeEvent
+  })
 
   # Species/Natural Resources tab export
   output$speciesExportRmd <- downloadHandler(
