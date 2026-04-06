@@ -3568,61 +3568,6 @@ function(input, output, session) {
 
   pin_refresh_trigger <- reactiveVal(0)
 
-  # ==========================================
-  # SERVER-SIDE DATA AUDIT (POSIT CONNECT LOGS)
-  # ==========================================
-  observe({
-    # Wait for the resolution to be determined
-    req(current_resolution())
-    res <- current_resolution()
-
-    print(paste("==========================================="))
-    print(paste("=== STARTING FULL DATA AUDIT FOR", res, "==="))
-
-    # Locate all parquet files in the active directory
-    file_dir <- file.path("data", res)
-    all_files <- list.files(
-      file_dir,
-      pattern = "\\.parquet$",
-      full.names = TRUE
-    )
-
-    for (f in all_files) {
-      tryCatch(
-        {
-          # Read the file and detect the ID column
-          df <- arrow::read_parquet(f, as_data_frame = TRUE)
-          id_col <- grep("^CellID", names(df), value = TRUE)[1]
-
-          if (!is.na(id_col) && !is.null(id_col)) {
-            # Calculate absolute duplicates
-            dups <- sum(duplicated(df[[id_col]]))
-
-            if (dups > 0) {
-              print(paste(
-                "❌ FAIL:",
-                basename(f),
-                "- Found",
-                dups,
-                "duplicate rows for",
-                id_col
-              ))
-            } else {
-              print(paste("✅ PASS:", basename(f)))
-            }
-          } else {
-            print(paste("⚠️ SKIP:", basename(f), "- No CellID column detected."))
-          }
-        },
-        error = function(e) {
-          print(paste("⚠️ ERROR checking", basename(f), ":", e$message))
-        }
-      )
-    }
-    print("=== END FULL DATA AUDIT ===")
-    print(paste("==========================================="))
-  })
-
   output$scenario_table <- DT::renderDT({
     pin_refresh_trigger() # Take a dependency on the trigger
 
@@ -3706,16 +3651,47 @@ function(input, output, session) {
 
     tryCatch(
       {
+        # 1. THE FIX: Grab the full historical ledger manually BEFORE shinystate runs
+        current_history <- tryCatch(
+          {
+            pins::pin_read(app_board, "melissa.widas/sessions")
+          },
+          error = function(e) NULL
+        )
+
+        # 2. Let shinystate do its normal snapshot (which will temporarily overwrite the pin with 1 row)
         app_storage$snapshot(
           session_metadata = list(
             name = input$scenario_name,
             author_display = input$scenario_author,
-            # Force the exact string format just in case
             date_created = format(as.Date(input$scenario_date), "%m/%d/%Y"),
             creator_username = current_user,
             desc = input$scenario_desc
           )
         )
+
+        # 3. THE FIX: Immediately grab that new 1-row save
+        new_save <- tryCatch(
+          {
+            pins::pin_read(app_board, "melissa.widas/sessions")
+          },
+          error = function(e) NULL
+        )
+
+        # 4. THE FIX: Stitch them together and push the fully restored ledger back up!
+        if (!is.null(current_history) && !is.null(new_save)) {
+          # Bind them and remove any exact duplicates based on the URL
+          restored_ledger <- dplyr::bind_rows(current_history, new_save) %>%
+            dplyr::distinct(url, .keep_all = TRUE)
+
+          # Overwrite the pin with the complete history
+          pins::pin_write(
+            app_board,
+            restored_ledger,
+            name = "sessions",
+            type = "rds"
+          )
+        }
 
         showNotification("Scenario saved successfully!", type = "message")
 
