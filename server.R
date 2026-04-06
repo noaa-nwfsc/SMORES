@@ -3568,6 +3568,61 @@ function(input, output, session) {
 
   pin_refresh_trigger <- reactiveVal(0)
 
+  # ==========================================
+  # SERVER-SIDE DATA AUDIT (POSIT CONNECT LOGS)
+  # ==========================================
+  observe({
+    # Wait for the resolution to be determined
+    req(current_resolution())
+    res <- current_resolution()
+
+    print(paste("==========================================="))
+    print(paste("=== STARTING FULL DATA AUDIT FOR", res, "==="))
+
+    # Locate all parquet files in the active directory
+    file_dir <- file.path("data", res)
+    all_files <- list.files(
+      file_dir,
+      pattern = "\\.parquet$",
+      full.names = TRUE
+    )
+
+    for (f in all_files) {
+      tryCatch(
+        {
+          # Read the file and detect the ID column
+          df <- arrow::read_parquet(f, as_data_frame = TRUE)
+          id_col <- grep("^CellID", names(df), value = TRUE)[1]
+
+          if (!is.na(id_col) && !is.null(id_col)) {
+            # Calculate absolute duplicates
+            dups <- sum(duplicated(df[[id_col]]))
+
+            if (dups > 0) {
+              print(paste(
+                "❌ FAIL:",
+                basename(f),
+                "- Found",
+                dups,
+                "duplicate rows for",
+                id_col
+              ))
+            } else {
+              print(paste("✅ PASS:", basename(f)))
+            }
+          } else {
+            print(paste("⚠️ SKIP:", basename(f), "- No CellID column detected."))
+          }
+        },
+        error = function(e) {
+          print(paste("⚠️ ERROR checking", basename(f), ":", e$message))
+        }
+      )
+    }
+    print("=== END FULL DATA AUDIT ===")
+    print(paste("==========================================="))
+  })
+
   output$scenario_table <- DT::renderDT({
     pin_refresh_trigger() # Take a dependency on the trigger
 
