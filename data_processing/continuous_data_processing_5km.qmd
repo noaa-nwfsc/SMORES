@@ -699,6 +699,7 @@ grid_5km <- grid.5km %>%
 # calculate weights
 DSC_5km_weighted <- sf::st_intersection(DSC_2km_scored_spatial, grid_5km) %>%
   mutate(intersect_area = as.numeric(st_area(.))) %>%
+  filter(intersect_area > 0) %>%
   st_drop_geometry() %>%
   group_by(CellID_5km) %>%
   # weighted average: Sum(Score * Area) / Sum(Area)
