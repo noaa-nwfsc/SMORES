@@ -65,12 +65,15 @@ DSC.RobustHigh <- sf::st_read(
 DSC.2km_intersect <- sf::st_intersection(DSC.RobustHigh, grid_2km) %>%
   mutate(intersect_area = st_area(.)) %>%
   group_by(CellID_2km, cell_area, gridcode) %>%
-  mutate(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
+  summarize(total_intersect_area = sum(intersect_area), .groups = "drop") %>%
   mutate(
     coverage_pct = as.numeric(total_intersect_area) / as.numeric(cell_area)
   ) %>%
   # keep cells with greater than or equal to 50% coverage
   filter(coverage_pct >= 0.5) %>%
+  group_by(CellID_2km) %>%
+  slice_max(order_by = coverage_pct, n = 1, with_ties = FALSE) %>%
+  ungroup() %>%
   select(CellID_2km, gridcode)
 
 # drop geometry to run the Z-membership math efficiently
