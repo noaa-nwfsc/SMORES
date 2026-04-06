@@ -5263,7 +5263,7 @@
       "checksum": "aa140d850a954d774eda25daccdc9d9b"
     },
     "data/2km/DSC_RH_z_membership_scored_full.parquet": {
-      "checksum": "b0c6e14e14e0829a3658f02053c4ee1a"
+      "checksum": "d3fceedab049eb1e418cab2274c66bc8"
     },
     "data/2km/EFHCA_700_scored_full.parquet": {
       "checksum": "63c61aa4fb716e36ef0a36ee69cdf4d5"
@@ -5464,7 +5464,7 @@
       "checksum": "a4b46d5a6782d9e9f52a01d0686ca738"
     },
     "data_processing/continuous_data_processing_2km.qmd": {
-      "checksum": "e6eefa9686c7ec8fb3d6a02a239519cb"
+      "checksum": "e09873b883c2e6b348e07d45551adc85"
     },
     "data_processing/continuous_data_processing_5km.qmd": {
       "checksum": "5ebf05e3108aad0570a509962a0db4b8"
