@@ -74,13 +74,10 @@ make_combined_map_from_cached_data <- function(
 
         score_columns_added <- c(score_columns_added, unique_col_name)
 
-        # IDENTIFY SPECIAL LAYERS
+        # identify masking layers aka trawl fisheries
         is_trawl <- grepl("Trawl Fisheries", config$layer, ignore.case = TRUE)
-        is_coral_z <- (config$layer ==
-          "Deep Sea Coral Robust High Suitability" &&
-          config$score == "Z Membership")
 
-        if (is_trawl || is_coral_z) {
+        if (is_trawl) {
           strict_na_cols <- c(strict_na_cols, unique_col_name)
         }
       }

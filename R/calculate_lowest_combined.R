@@ -3,6 +3,9 @@ calculate_lowest_value <- function(combined_data) {
 
   if (length(score_cols) > 0) {
     strict_cols <- attr(combined_data, "strict_na_cols")
+    if (is.null(strict_cols)) {
+      strict_cols <- character(0)
+    }
 
     if ("sf" %in% class(combined_data)) {
       score_df <- sf::st_drop_geometry(combined_data)[,
@@ -13,23 +16,32 @@ calculate_lowest_value <- function(combined_data) {
       score_df <- combined_data[, score_cols, drop = FALSE]
     }
 
-    # Hybrid Imputation
-    score_df[] <- lapply(names(score_df), function(col_name) {
-      x <- score_df[[col_name]]
-      if (is.list(x)) {
-        x <- unlist(x)
-      }
-      x <- as.numeric(x)
+    score_matrix <- as.matrix(score_df)
+    mode(score_matrix) <- "numeric"
 
-      # Only fill NAs with 1 if it is NOT a strict column
-      if (!col_name %in% strict_cols) {
-        x[is.na(x)] <- 1
-      }
-      return(x)
-    })
+    # 1. Identify Standard vs Strict (Mask) columns
+    std_cols_indices <- which(!colnames(score_matrix) %in% strict_cols)
 
-    # Use na.rm = TRUE to ignore the Strict NAs (masked layers)
-    combined_data$Lowest_value <- do.call(pmin, c(score_df, list(na.rm = TRUE)))
+    # 2. Impute 1 ONLY for Standard columns
+    if (length(std_cols_indices) > 0) {
+      sub_mat <- score_matrix[, std_cols_indices, drop = FALSE]
+      sub_mat[is.na(sub_mat)] <- 1
+      score_matrix[, std_cols_indices] <- sub_mat
+    }
+
+    # 3. Detect completely empty rows
+    all_na_mask <- rowSums(!is.na(score_matrix)) == 0
+
+    # 4. Math execution (na.rm = TRUE ignores the Trawl NAs)
+    lowest_vals <- suppressWarnings(
+      do.call(pmin, c(as.data.frame(score_matrix), list(na.rm = TRUE)))
+    )
+
+    # 5. strict NA cleanup (Fixes Inf converting to colors in Leaflet)
+    lowest_vals[all_na_mask] <- NA
+    lowest_vals[is.infinite(lowest_vals)] <- NA
+
+    combined_data$Lowest_value <- lowest_vals
   }
 
   return(combined_data)

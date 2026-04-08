@@ -5677,16 +5677,16 @@
       "checksum": "fdc4548d6cfa00ad4920abad9c769030"
     },
     "R/calculate_geometric_mean_combined.R": {
-      "checksum": "5cc1343622fcd3e77f5bbc5ad018c96e"
+      "checksum": "61a3c81e87d43c3fea139a757a762de4"
     },
     "R/calculate_geometric_mean_full.R": {
       "checksum": "e6af759ede8a4f6ef085872eed070df0"
     },
     "R/calculate_lowest_combined.R": {
-      "checksum": "2a3d0d61ebd8f19846bee757e2977002"
+      "checksum": "b157be550171c6f44d1d3442d8d799ca"
     },
     "R/calculate_product_combined.R": {
-      "checksum": "6bb7768d2e5972673806e17f6ab3a9b0"
+      "checksum": "50ad3c0789b215585248769b0ae98837"
     },
     "R/calculate_submodel_geometric_mean.R": {
       "checksum": "06dd26ecc24b3a17d11b437a0682aac2"
@@ -5782,7 +5782,7 @@
       "checksum": "b32a2aeef1d479978263aa49e7b5cc45"
     },
     "R/make_combined_map_from_cached_data.R": {
-      "checksum": "952f6b7539b24d8f4eb5e4abedc0a2ff"
+      "checksum": "f4693d827d4d230b05862130acca2fe9"
     },
     "R/modal.R": {
       "checksum": "cb8bd4822fb8011ae303d8a1ef1aa601"

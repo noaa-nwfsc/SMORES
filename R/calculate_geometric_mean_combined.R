@@ -2,8 +2,10 @@ calculate_geometric_mean <- function(combined_data) {
   score_cols <- names(combined_data)[grep("^Score\\.", names(combined_data))]
 
   if (length(score_cols) > 0) {
-    # Get the list of strict columns we attached earlier
     strict_cols <- attr(combined_data, "strict_na_cols")
+    if (is.null(strict_cols)) {
+      strict_cols <- character(0)
+    }
 
     if ("sf" %in% class(combined_data)) {
       score_df <- sf::st_drop_geometry(combined_data)[,
@@ -17,34 +19,36 @@ calculate_geometric_mean <- function(combined_data) {
     score_matrix <- as.matrix(score_df)
     mode(score_matrix) <- "numeric"
 
-    # Identify columns that are NOT strict (aka not trawl or coral z)
+    # 1. Identify Standard vs Strict (Mask) columns
     std_cols_indices <- which(!colnames(score_matrix) %in% strict_cols)
 
+    # 2. Impute 1 ONLY for Standard columns
     if (length(std_cols_indices) > 0) {
-      # subset matrix to standard columns
       sub_mat <- score_matrix[, std_cols_indices, drop = FALSE]
-      # Replace NA with 1
       sub_mat[is.na(sub_mat)] <- 1
-      # Put it back
       score_matrix[, std_cols_indices] <- sub_mat
     }
 
-    # Check for zeros (overrides NA)
+    # 3. Detect completely empty rows (e.g., Only Trawl selected, and it's NA)
+    all_na_mask <- rowSums(!is.na(score_matrix)) == 0
+
+    # 4. Math execution
     has_zeros <- rowSums(score_matrix == 0, na.rm = TRUE) > 0
     has_neg <- rowSums(score_matrix < 0, na.rm = TRUE) > 0
 
     log_matrix <- suppressWarnings(log(score_matrix))
     log_matrix[is.infinite(log_matrix) | is.nan(log_matrix)] <- NA
 
-    # Calculate Mean of Logs (na.rm=TRUE ignores the Strict NAs)
-    # This prevents Trawl=NA from diluting the score of the other layers
-    mean_log <- rowMeans(log_matrix, na.rm = TRUE)
-
+    # Calculate Mean of Logs (na.rm=TRUE naturally ignores the Trawl NAs!)
+    mean_log <- suppressWarnings(rowMeans(log_matrix, na.rm = TRUE))
     geo_mean <- exp(mean_log)
+
+    # 5. strict NA cleanup (Fixes the Leaflet coloring bug!)
     geo_mean[has_zeros] <- 0
     geo_mean[has_neg] <- NA
+    geo_mean[all_na_mask] <- NA # Force completely empty rows to NA
+    geo_mean[is.nan(geo_mean)] <- NA # Convert NaN to strict NA
 
-    # Assign result
     combined_data$Geo_mean <- geo_mean
   } else {
     cat("No score columns found\n")
