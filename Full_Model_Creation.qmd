@@ -11,49 +11,47 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
 
 ## Step 1: Select your area of interest
 
-Navigate to the Area of Interest tab and select a region you would like your analyses to focus on.
+Navigate to the Area of Interest tab and select a region you would like your analyses to focus on. Geographically smaller areas (Wind Energy Areas, and CA Suitable Sea Space) will be loaded throughout the app using data processed with the 2km grid cell size. Geographically larger areas (OCS Planning Areas) will be loaded throughout the app using data processed with the 5km grid cell size. By selecting an area of interest, all maps generated in the application will be cropped to this area.
 
-![]()
 To select a different area of interest, you will click on the desired area's button. 
 
-By selecting an area of interest, the maps will be set to crop the data to this area. 
+:::{layout-ncol=2}
 
-![]()
+![Smaller geographic area selected](www/Images/area_interest_2km_selection.png)
+
+![Larger geographic area selected](www/Images/area_interest_5km_selection.png)
+
+:::
 
 ## Step 2: Configure a component for a submodel (habitat used as an example)
 
 Navigate to the Natural Resources Submodel Tab.
 
-![]()
-
-
 You will start at the Habitat sub-tab and select the scores you would like in this model run.
+
+![](www/Images/habitat_opener.png)
 
 To select a score for a layer, you will first check the box next to the layer to initialize it. Once you have initialized the layer, you will select a score from the drop down menu.
 
-![]()
+![](www/Images/habitat_score_selector.png)
 
 Scores typically range from 0 (exclude, very unsuitable) to 1 (most suitable). Some layers due to their structure will have alternative options such as the z-membership scores or a very limited option pool. If you have questions about which scores are represented on this app, please reference the methods section. 
 
-As you configure the individual layers you will see white boxes appear to the right. 
+Once you have configured the data layers you are interested in including you will click the 'Generate Habitat Maps' button. Clicking this button will generate individual maps for each data layer you configured. 
 
-![]()
+![](www/Images/habitat_individual_maps.png)
 
-Each of these white boxes is where an individual map will generate once you select `generate maps`.
-
-![]()
-
-Each of these individual maps is dynamic. The maps can be zoomed in or zoomed out and will show the full spread of the data if you continue to zoom out. Additionally, you can move the area of focus by dragging the map. 
+Each of these individual maps is dynamic. The maps can be zoomed in or zoomed out, and cells with scores are selectable to have a pop-up that details the score of the cell appear on the map. Additionally, you can move the area of focus by dragging the map. 
 
 *Note: if you initialized the layer but selected `None` for the score, the map will not generate
 
-Once you have configured your individual layer scores you will select the calculation method you would like used to combine these layers (geometric mean, lowest value, product). You will then select the `Generate Combined Map(s)` This will generate your combined maps.
+Once you have configured your individual layer scores you will select the calculation method you would like used to combine these layers (geometric mean, lowest value, product). You will then select the 'Generate Combined Map(s)' button. This will generate your combined maps.
 
-![]()
+![](www/Images/habitat_combined_map.png)
 
-You can opt to export a copy of your results by selecting the `Export` button at the bottom of the page.When you select `Export` a loading screen will show on the app to indicate that the report is generating. 
+You can opt to export a copy of your results by selecting the 'Export Habitat Component Report' button at the bottom of the page. When you select the button a loading screen will show on the app to indicate that the report is generating. When the report has completed generating it will be available in your downloads folder. A component report will include information about the data visualized, individual maps, and the combined maps selected. Here is an example of an individual component report. 
 
-![]()
+<iframe src="www\\Habitat_Component_Natural_Resources_Submodel_Report_2026-04-10_20-44-46.html" width="100%" height="500px"></iframe>
 
 ## Step 3: Configure a second component for a submodel (species used as an example)
 

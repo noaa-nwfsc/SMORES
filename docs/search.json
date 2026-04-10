@@ -116,14 +116,14 @@
     "href": "Full_Model_Creation.html#step-1-select-your-area-of-interest",
     "title": "Executing a Model Run",
     "section": "Step 1: Select your area of interest",
-    "text": "Step 1: Select your area of interest\nNavigate to the Area of Interest tab and select a region you would like your analyses to focus on.\n To select a different area of interest, you will click on the desired area’s button.\nBy selecting an area of interest, the maps will be set to crop the data to this area."
+    "text": "Step 1: Select your area of interest\nNavigate to the Area of Interest tab and select a region you would like your analyses to focus on. Geographically smaller areas (Wind Energy Areas, and CA Suitable Sea Space) will be loaded throughout the app using data processed with the 2km grid cell size. Geographically larger areas (OCS Planning Areas) will be loaded throughout the app using data processed with the 5km grid cell size. By selecting an area of interest, all maps generated in the application will be cropped to this area.\nTo select a different area of interest, you will click on the desired area’s button.\n\n\n\n\n\n\nSmaller geographic area selected\n\n\n\n\n\n\n\nLarger geographic area selected"
   },
   {
     "objectID": "Full_Model_Creation.html#step-2-configure-a-component-for-a-submodel-habitat-used-as-an-example",
     "href": "Full_Model_Creation.html#step-2-configure-a-component-for-a-submodel-habitat-used-as-an-example",
     "title": "Executing a Model Run",
     "section": "Step 2: Configure a component for a submodel (habitat used as an example)",
-    "text": "Step 2: Configure a component for a submodel (habitat used as an example)\nNavigate to the Natural Resources Submodel Tab.\n\nYou will start at the Habitat sub-tab and select the scores you would like in this model run.\nTo select a score for a layer, you will first check the box next to the layer to initialize it. Once you have initialized the layer, you will select a score from the drop down menu.\n\nScores typically range from 0 (exclude, very unsuitable) to 1 (most suitable). Some layers due to their structure will have alternative options such as the z-membership scores or a very limited option pool. If you have questions about which scores are represented on this app, please reference the methods section.\nAs you configure the individual layers you will see white boxes appear to the right.\n\nEach of these white boxes is where an individual map will generate once you select generate maps.\n\nEach of these individual maps is dynamic. The maps can be zoomed in or zoomed out and will show the full spread of the data if you continue to zoom out. Additionally, you can move the area of focus by dragging the map.\n*Note: if you initialized the layer but selected None for the score, the map will not generate\nOnce you have configured your individual layer scores you will select the calculation method you would like used to combine these layers (geometric mean, lowest value, product). You will then select the Generate Combined Map(s) This will generate your combined maps.\n\nYou can opt to export a copy of your results by selecting the Export button at the bottom of the page.When you select Export a loading screen will show on the app to indicate that the report is generating."
+    "text": "Step 2: Configure a component for a submodel (habitat used as an example)\nNavigate to the Natural Resources Submodel Tab.\nYou will start at the Habitat sub-tab and select the scores you would like in this model run.\n\nTo select a score for a layer, you will first check the box next to the layer to initialize it. Once you have initialized the layer, you will select a score from the drop down menu.\n\nScores typically range from 0 (exclude, very unsuitable) to 1 (most suitable). Some layers due to their structure will have alternative options such as the z-membership scores or a very limited option pool. If you have questions about which scores are represented on this app, please reference the methods section.\nOnce you have configured the data layers you are interested in including you will click the ‘Generate Habitat Maps’ button. Clicking this button will generate individual maps for each data layer you configured.\n\nEach of these individual maps is dynamic. The maps can be zoomed in or zoomed out, and cells with scores are selectable to have a pop-up that details the score of the cell appear on the map. Additionally, you can move the area of focus by dragging the map.\n*Note: if you initialized the layer but selected None for the score, the map will not generate\nOnce you have configured your individual layer scores you will select the calculation method you would like used to combine these layers (geometric mean, lowest value, product). You will then select the ‘Generate Combined Map(s)’ button. This will generate your combined maps.\n\nYou can opt to export a copy of your results by selecting the ‘Export Habitat Component Report’ button at the bottom of the page. When you select the button a loading screen will show on the app to indicate that the report is generating. When the report has completed generating it will be available in your downloads folder. A component report will include information about the data visualized, individual maps, and the combined maps selected. Here is an example of an individual component report."
   },
   {
     "objectID": "Full_Model_Creation.html#step-3-configure-a-second-component-for-a-submodel-species-used-as-an-example",
@@ -362,6 +362,41 @@
     "title": "SMORES Access Guide",
     "section": "",
     "text": "Here are a few tips for accessing the SMORES app and where to look if you have questions regarding the code.\n\nHow can I access the SMORES app?\nThere are 2 main avenues for accessing the SMORES App. The first option is accessing SMORES on the NOAA NMFS Posit Connect Test Instance. The App is hosted at this link. The second option is to clone the SMORES Github repository and run the app on your local machine from R Studio. The repository contains all data, and code necessary to run the app. After you clone the repository you will select Run App after opening 1 of the following 3 files: ui.R, server.R, or global.R.\n\n\nWhat is the NOAA NMFS Posit Connect Test Instance?\nPosit Connect is a publishing platform for R and Python-associated products. Products can be hosted publicly or internally, accessible to NOAA staff only.\n\n\nHow do I get onto the Posit Connect Test Instance to use the app?\nThe Post Connect Test Instance is able to be accessed if you have a NOAA email account. It is important to note that in order to log in you must be connected to a NOAA network. This means you will either need to be on site and connected to WiFi/Ethernet or connected to the NOAA VPN. If you are not connected to these, the app will not load and you will get a message that states the request timed out.\n\n\nWhere can I see the back-end code of this app?\nThe code for this application is stored on the NMFS NWFSC Github Enterprise."
+  },
+  {
+    "objectID": "Delete_Scenario.html",
+    "href": "Delete_Scenario.html",
+    "title": "Remove a Scenario",
+    "section": "",
+    "text": "*Note: In order to delete a scenario you have to be the creator of the scenario or have admin privileges for the SMORES application. The creator of the scenario must log into SMORES from the same Posit Connect Account that was used to create the scenario. If you need a scenario removed but the author is no longer available to remove it please create an issue of Github that details the scenario to be removed and the reasoning. Admin of the SMORES app will then move forward with updating the scenarios."
+  },
+  {
+    "objectID": "Delete_Scenario.html#step-1-navigate-to-the-scenario-management-tab",
+    "href": "Delete_Scenario.html#step-1-navigate-to-the-scenario-management-tab",
+    "title": "Remove a Scenario",
+    "section": "Step 1: Navigate to the Scenario Management Tab",
+    "text": "Step 1: Navigate to the Scenario Management Tab"
+  },
+  {
+    "objectID": "Delete_Scenario.html#step-2-select-the-scenario-to-delete",
+    "href": "Delete_Scenario.html#step-2-select-the-scenario-to-delete",
+    "title": "Remove a Scenario",
+    "section": "Step 2: Select the Scenario to Delete",
+    "text": "Step 2: Select the Scenario to Delete\nPlease move your attention to the card titled ‘Scenario Library’. You will see a table that contains previously created scenarios. Select the scenario that you have authored and would like to be removed. *Note a selected scenario will highlight to be dark blue."
+  },
+  {
+    "objectID": "Delete_Scenario.html#step-3-delete-the-scenario",
+    "href": "Delete_Scenario.html#step-3-delete-the-scenario",
+    "title": "Remove a Scenario",
+    "section": "Step 3: Delete the Scenario",
+    "text": "Step 3: Delete the Scenario\nOnce you have selected a scenario that you have authored the ‘Delete Selected’ button in the bottom right corner will go from a muted red to a vibrant red color. The button changing color indicates that you have permission to delete that scenario. You will click the ‘Delete Selected’ button. A pop-up will generate confirming that you would like to permanently delete the scenario for all users."
+  },
+  {
+    "objectID": "Delete_Scenario.html#step-4-confirm-deletion",
+    "href": "Delete_Scenario.html#step-4-confirm-deletion",
+    "title": "Remove a Scenario",
+    "section": "Step 4: Confirm Deletion",
+    "text": "Step 4: Confirm Deletion\nYou will select the ‘Yes, Delete’ button. After that button is selected you will be shown the scenario management tab once again. As you view the tab you will see that the deleted scenario is no longer available as an option to select."
   },
   {
     "objectID": "Functions.html",

@@ -197,29 +197,46 @@ ul.task-list li input[type="checkbox"] {
 <p>Each sub-tab contains further detail on scoring suggestions and cues to generate the layers of your choice.</p>
 <section id="step-1-select-your-area-of-interest" class="level2">
 <h2 class="anchored" data-anchor-id="step-1-select-your-area-of-interest">Step 1: Select your area of interest</h2>
-<p>Navigate to the Area of Interest tab and select a region you would like your analyses to focus on.</p>
-<p><img src=".png" class="img-fluid"> To select a different area of interest, you will click on the desired area’s button.</p>
-<p>By selecting an area of interest, the maps will be set to crop the data to this area.</p>
-<p><img src=".png" class="img-fluid"></p>
+<p>Navigate to the Area of Interest tab and select a region you would like your analyses to focus on. Geographically smaller areas (Wind Energy Areas, and CA Suitable Sea Space) will be loaded throughout the app using data processed with the 2km grid cell size. Geographically larger areas (OCS Planning Areas) will be loaded throughout the app using data processed with the 5km grid cell size. By selecting an area of interest, all maps generated in the application will be cropped to this area.</p>
+<p>To select a different area of interest, you will click on the desired area’s button.</p>
+<div class="quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="www/Images/area_interest_2km_selection.png" class="img-fluid figure-img"></p>
+<figcaption>Smaller geographic area selected</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="www/Images/area_interest_5km_selection.png" class="img-fluid figure-img"></p>
+<figcaption>Larger geographic area selected</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section id="step-2-configure-a-component-for-a-submodel-habitat-used-as-an-example" class="level2">
 <h2 class="anchored" data-anchor-id="step-2-configure-a-component-for-a-submodel-habitat-used-as-an-example">Step 2: Configure a component for a submodel (habitat used as an example)</h2>
 <p>Navigate to the Natural Resources Submodel Tab.</p>
-<p><img src=".png" class="img-fluid"></p>
 <p>You will start at the Habitat sub-tab and select the scores you would like in this model run.</p>
+<p><img src="www/Images/habitat_opener.png" class="img-fluid"></p>
 <p>To select a score for a layer, you will first check the box next to the layer to initialize it. Once you have initialized the layer, you will select a score from the drop down menu.</p>
-<p><img src=".png" class="img-fluid"></p>
+<p><img src="www/Images/habitat_score_selector.png" class="img-fluid"></p>
 <p>Scores typically range from 0 (exclude, very unsuitable) to 1 (most suitable). Some layers due to their structure will have alternative options such as the z-membership scores or a very limited option pool. If you have questions about which scores are represented on this app, please reference the methods section.</p>
-<p>As you configure the individual layers you will see white boxes appear to the right.</p>
-<p><img src=".png" class="img-fluid"></p>
-<p>Each of these white boxes is where an individual map will generate once you select <code>generate maps</code>.</p>
-<p><img src=".png" class="img-fluid"></p>
-<p>Each of these individual maps is dynamic. The maps can be zoomed in or zoomed out and will show the full spread of the data if you continue to zoom out. Additionally, you can move the area of focus by dragging the map.</p>
+<p>Once you have configured the data layers you are interested in including you will click the ‘Generate Habitat Maps’ button. Clicking this button will generate individual maps for each data layer you configured.</p>
+<p><img src="www/Images/habitat_individual_maps.png" class="img-fluid"></p>
+<p>Each of these individual maps is dynamic. The maps can be zoomed in or zoomed out, and cells with scores are selectable to have a pop-up that details the score of the cell appear on the map. Additionally, you can move the area of focus by dragging the map.</p>
 <p>*Note: if you initialized the layer but selected <code>None</code> for the score, the map will not generate</p>
-<p>Once you have configured your individual layer scores you will select the calculation method you would like used to combine these layers (geometric mean, lowest value, product). You will then select the <code>Generate Combined Map(s)</code> This will generate your combined maps.</p>
-<p><img src=".png" class="img-fluid"></p>
-<p>You can opt to export a copy of your results by selecting the <code>Export</code> button at the bottom of the page.When you select <code>Export</code> a loading screen will show on the app to indicate that the report is generating.</p>
-<p><img src=".png" class="img-fluid"></p>
+<p>Once you have configured your individual layer scores you will select the calculation method you would like used to combine these layers (geometric mean, lowest value, product). You will then select the ‘Generate Combined Map(s)’ button. This will generate your combined maps.</p>
+<p><img src="www/Images/habitat_combined_map.png" class="img-fluid"></p>
+<p>You can opt to export a copy of your results by selecting the ‘Export Habitat Component Report’ button at the bottom of the page. When you select the button a loading screen will show on the app to indicate that the report is generating. When the report has completed generating it will be available in your downloads folder. A component report will include information about the data visualized, individual maps, and the combined maps selected. Here is an example of an individual component report.</p>
+<iframe src="www\\Habitat_Component_Natural_Resources_Submodel_Report_2026-04-10_20-44-46.html" width="100%" height="500px">
+</iframe>
 </section>
 <section id="step-3-configure-a-second-component-for-a-submodel-species-used-as-an-example" class="level2">
 <h2 class="anchored" data-anchor-id="step-3-configure-a-second-component-for-a-submodel-species-used-as-an-example">Step 3: Configure a second component for a submodel (species used as an example)</h2>
