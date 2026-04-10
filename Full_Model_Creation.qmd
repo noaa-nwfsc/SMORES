@@ -57,23 +57,28 @@ You can opt to export a copy of your results by selecting the 'Export Habitat Co
 
 Navigate to the Species tab and repeat the process you used for the Habitat tab.
 
-![]()
+![](www/Images/species_opener.png)
 
 ## Step 4: Configure the natural resources submodel
 
 Navigate to the Combined Submodel tab. 
 
-![]()
+![](www/Images/nat_res_combined_opener.png)
 
-You will select which calculation method (geometric mean, product, or lowest) for each component should be used in the calculation to generate the combined submodel. The app will indicate which components have been configured for use in the combined submodel calcualtions. You will then click on the Generate Combined Submodel button, which will produce 2 maps.
+You will select which calculation method (geometric mean, product, or lowest) for each component should be used in the calculation to generate the combined submodel. The app will indicate which components have been configured for use in the combined submodel calculations.
+
+
+ You will then click on the Generate Combined Submodel button, which will produce 2 maps.
 
 - The first map will represent the combined submodel score for the selected area of interest. 
 
 - The second map will show the combined submodel score for the area of interest normalized using a minimum maximum normalization to emphasis score differences for visual inspection. 
 
-![]()
+![](www/Images/nat_res_combined_generated.png)
 
-You can opt to export a copy of your results by selecting the `Export` button at the bottom of the page.
+You can opt to export a copy of your results by selecting the 'Export Natural Resources Combined Submodel Report' button at the bottom of the page. When you select the button a loading screen will show on the app to indicate that the report is generating. When the report has completed generating it will be available in your downloads folder. A component report will include information about the data visualized, individual maps, and the combined maps selected. Here is an example of a combined submodel report. 
+
+<iframe src="www\\Natural_Resources_Combined_Submodel_Report_2026-04-10_22-12-27.html" width="100%" height="500px"></iframe>
 
 *At this stage the Natural Resources Submodel that will be included in the Full Model has been generated.*
 
@@ -81,19 +86,15 @@ You can opt to export a copy of your results by selecting the `Export` button at
 
 Repeat steps 2-4 for the Fisheries Submodel, which will include selecting scores for two components. The first component is fisheries. 
 
-
-![]()
+![](www/Images/fisheries_opener.png)
 
 The second component is trawl fisheries.
 
-
-![]()
+![](www/Images/trawl_opener.png)
 
 *Note that when you combine the fisheries layers with the trawl fishery layers the trawl fishery score will replace the score in grid cells within the top 75% of the trawl fisheries' ranked importance values. This is a different methodology than previous sections.
 
-![]()
-
-At this stage the Fisheries Submodel that will be included in the Full Model will be generated. If you choose to not configure a submodel's components you will not be able to generate a combined map. The app will display an error message like the one shown above. 
+At this stage the Fisheries Submodel that will be included in the Full Model will be generated. If you choose to not configure a submodel's components you will not be able to generate a combined map.
 
 ## Step 6: Configure the industry and operations submodel
 
@@ -103,7 +104,6 @@ Repeat steps 2-4 for the Industry & Operations Submodel. The Industry & Operatio
 
 The second component is submarine cable lines. 
 
-![]()
 ![]()
 
 At this stage the Industry & Operations Submodel that will be included in the Full Model has been generated.
