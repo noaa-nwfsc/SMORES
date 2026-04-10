@@ -4,8 +4,6 @@ title: ""
 
 Welcome to the documentation guide for the SMORES Shiny App. 
 
-![](www/Images/main_page.png)
-
 # What does SMORES stand for?
 
 SMORES is an acronym for the Suitability Modeling for Offshore Resources and Energy Siting.

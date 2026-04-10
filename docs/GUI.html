@@ -175,80 +175,80 @@ ul.task-list li input[type="checkbox"] {
 
 <p>The dashboard is organized by the navigation bar at the top with the following tabs: Area of Interest, Natural Resources Submodel, Fisheries Submodel, Industry &amp; Operations Submodel, Full Model, Methods, and Data. The Overview tab provides an overview of how to use the application, and the Methods and Data tabs provide information and app functions and input data, respectively.</p>
 <p>To generate a full model run you will move through the tabs from left to right.</p>
-<p><img src="www/Images/main_page.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"></p>
 <p>Each sub-tab contains further detail on scoring suggestions and cues to generate the layers of your choice.</p>
 <section id="step-1-select-your-area-of-interest" class="level2">
 <h2 class="anchored" data-anchor-id="step-1-select-your-area-of-interest">Step 1: Select your area of interest</h2>
 <p>Navigate to the Area of Interest tab and select a region you would like your analyses to focus on.</p>
-<p><img src="www/Images/area_of_interest.png" class="img-fluid"> To select a different area of interest, you will click on the desired area’s button.</p>
+<p><img src=".png" class="img-fluid"> To select a different area of interest, you will click on the desired area’s button.</p>
 <p>By selecting an area of interest, the maps will be set to crop the data to this area.</p>
-<p><img src="www/Images/area_of_interest_wa_or_selected.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"></p>
 </section>
 <section id="step-2-configure-a-component-for-a-submodel-habitat-used-as-an-example" class="level2">
 <h2 class="anchored" data-anchor-id="step-2-configure-a-component-for-a-submodel-habitat-used-as-an-example">Step 2: Configure a component for a submodel (habitat used as an example)</h2>
 <p>Navigate to the Natural Resources Submodel Tab.</p>
-<p><img src="www/Images/nat_res_habitat_opener.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"></p>
 <p>You will start at the Habitat sub-tab and select the scores you would like in this model run.</p>
 <p>To select a score for a layer, you will first check the box next to the layer to initialize it. Once you have initialized the layer, you will select a score from the drop down menu.</p>
-<p><img src="www/Images/score_selection.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"></p>
 <p>Scores typically range from 0 (exclude, very unsuitable) to 1 (most suitable). Some layers due to their structure will have alternative options such as the z-membership scores or a very limited option pool. If you have questions about which scores are represented on this app, please reference the methods section.</p>
 <p>As you configure the individual layers you will see white boxes appear to the right.</p>
-<p><img src="www/Images/nat_res_habitat_ind_configured.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"></p>
 <p>Each of these white boxes is where an individual map will generate once you select <code>generate maps</code>.</p>
-<p><img src="www/Images/nat_res_habitat_ind_button_pushed.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"></p>
 <p>Each of these individual maps is dynamic. The maps can be zoomed in or zoomed out and will show the full spread of the data if you continue to zoom out. Additionally, you can move the area of focus by dragging the map.</p>
 <p>*Note: if you initialized the layer but selected <code>None</code> for the score, the map will not generate</p>
 <p>Once you have configured your individual layer scores you will select the calculation method you would like used to combine these layers (geometric mean, lowest value, product). You will then select the <code>Generate Combined Map(s)</code> This will generate your combined maps.</p>
-<p><img src="www/Images/nat_res_habitat_comb_button_pushed.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"></p>
 <p>You can opt to export a copy of your results by selecting the <code>Export</code> button at the bottom of the page.When you select <code>Export</code> a loading screen will show on the app to indicate that the report is generating.</p>
 <p><img src="www/Images/generating report.png" class="img-fluid"></p>
 </section>
 <section id="step-3-configure-a-second-component-for-a-submodel-species-used-as-an-example" class="level2">
 <h2 class="anchored" data-anchor-id="step-3-configure-a-second-component-for-a-submodel-species-used-as-an-example">Step 3: Configure a second component for a submodel (species used as an example)</h2>
 <p>Navigate to the Species tab and repeat the process you used for the Habitat tab.</p>
-<p><img src="www/Images/nat_res_species_opener.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"></p>
 </section>
 <section id="step-4-configure-the-natural-resources-submodel" class="level2">
 <h2 class="anchored" data-anchor-id="step-4-configure-the-natural-resources-submodel">Step 4: Configure the natural resources submodel</h2>
 <p>Navigate to the Combined Submodel tab.</p>
-<p><img src="www/Images/nat_res_combined_opener.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"></p>
 <p>You will select which calculation method (geometric mean, product, or lowest) for each component should be used in the calculation to generate the combined submodel. The app will indicate which components have been configured for use in the combined submodel calcualtions. You will then click on the Generate Combined Submodel button, which will produce 2 maps.</p>
 <ul>
 <li><p>The first map will represent the combined submodel score for the selected area of interest.</p></li>
 <li><p>The second map will show the combined submodel score for the area of interest normalized using a minimum maximum normalization to emphasis score differences for visual inspection.</p></li>
 </ul>
-<p><img src="www/Images/nat_res_comb_button_pushed.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"></p>
 <p>You can opt to export a copy of your results by selecting the <code>Export</code> button at the bottom of the page.</p>
 <p><em>At this stage the Natural Resources Submodel that will be included in the Full Model has been generated.</em></p>
 </section>
 <section id="step-5-configure-the-fisheries-submodel" class="level2">
 <h2 class="anchored" data-anchor-id="step-5-configure-the-fisheries-submodel">Step 5: Configure the fisheries submodel</h2>
 <p>Repeat steps 2-4 for the Fisheries Submodel, which will include selecting scores for two components. The first component is fisheries.</p>
-<p><img src="www/Images/fisheries_fisheries_opener.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"></p>
 <p>The second component is trawl fisheries.</p>
-<p><img src="www/Images/fisheries_trawl_opener.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"></p>
 <p>*Note that when you combine the fisheries layers with the trawl fishery layers the trawl fishery score will replace the score in grid cells within the top 75% of the trawl fisheries’ ranked importance values. This is a different methodology than previous sections.</p>
-<p><img src="www/Images/fisheries_comb_opener.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"></p>
 <p>At this stage the Fisheries Submodel that will be included in the Full Model will be generated. If you choose to not configure a submodel’s components you will not be able to generate a combined map. The app will display an error message like the one shown above.</p>
 </section>
 <section id="step-6-configure-the-industry-and-operations-submodel" class="level2">
 <h2 class="anchored" data-anchor-id="step-6-configure-the-industry-and-operations-submodel">Step 6: Configure the industry and operations submodel</h2>
 <p>Repeat steps 2-4 for the Industry &amp; Operations Submodel. The Industry &amp; Operations Submodel is comprised of two components. The first component is scientific surveys.</p>
-<p><img src="www/Images/ind_op_ss_opener.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"></p>
 <p>The second component is submarine cable lines.</p>
-<p><img src="www/Images/ind_op_cable_opener.png" class="img-fluid"> <img src="www/Images/ind_op_comb_opener.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"> <img src=".png" class="img-fluid"></p>
 <p>At this stage the Industry &amp; Operations Submodel that will be included in the Full Model has been generated.</p>
 </section>
 <section id="step-7-configure-and-visualize-a-full-model-run" class="level2">
 <h2 class="anchored" data-anchor-id="step-7-configure-and-visualize-a-full-model-run">Step 7: Configure and visualize a full model run</h2>
 <p>Navigate to the Full Model Tab.</p>
-<p><img src="www/Images/full_opener.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"></p>
 <p>The sidebar on the left-hand side includes messaging indicating which submodels have been configured within the app and are available to be included in the full model calculation. Once you have selected the submodels you would like included, by selecting the check-box next to the submodel, you have the option to select a submodel weight to be applied to that submodel.</p>
-<p><img src="www/Images/full_weighting.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"></p>
 <p>Once you have configured your submodels, you will click on the <code>Generate Full Model</code> button, which will produce a full model map.</p>
-<p><img src="www/Images/full_combined_map.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"></p>
 <p>You can opt to export a copy of your results by selecting the <code>Export</code> button at the bottom of the page. The report will be a HTML based report.</p>
-<p><img src="www/Images/full_model_table_layout.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"></p>
 
 
 </section>
