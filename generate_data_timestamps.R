@@ -1,8 +1,6 @@
 data_files <- c(
-  "canyon_scored_full.parquet",
+  "Canyon_scored_full.parquet",
   "DSC_RH_scored_full.parquet",
-  "Surveys_fixed_scored_full.parquet",
-  "Surveys_periodic_scored_full.parquet",
   "Seeps_scored_full.parquet",
   "ShlfBrk_scored_full.parquet",
   "EFHCA_scored_full.parquet",
@@ -10,9 +8,9 @@ data_files <- c(
   "HAPCaoi_scored_full.parquet",
   "HAPCreef_scored_full.parquet",
   "killer_whale_scored_full.parquet",
-  "leatherback_turtle_scored_full.parquet",
-  "humpback_whale_scored_full.parquet",
-  "blue_whale_scored_full.parquet",
+  "Leatherback_turtle_scored_full.parquet",
+  "Humpback_whale_scored_full.parquet",
+  "Blue_whale_scored_full.parquet",
   "ASH_scored_full.parquet",
   "SSH_scored_full.parquet",
   "GFBT_scored_full.parquet",
@@ -22,15 +20,15 @@ data_files <- c(
   "CRAB_scored_full.parquet",
   "ALCO_scored_full.parquet",
   "ALCH_scored_full.parquet",
-  "trawl_fisheries_scored_full.parquet",
-  "submarine_cable_scored_full.parquet"
+  "Trawl_fisheries_scored_full.parquet",
+  "Surveys_fixed_scored_full.parquet",
+  "Surveys_periodic_scored_full.parquet",
+  "Submarine_cable_scored_full.parquet"
 )
 
 dataset_names <- c(
   "Canyon",
   "Deep Sea Coral Robust High Suitability",
-  "Fixed Surveys",
-  "Periodic Surveys",
   "Seeps",
   "Shelf Break",
   "EFHCA",
@@ -51,14 +49,14 @@ dataset_names <- c(
   "Commercial Troll/Hook and Line Albacore",
   "Charter Vessel Albacore Troll/Hook and Line",
   "Trawl Fisheries @ 75%",
+  "Fixed Surveys",
+  "Periodic Surveys",
   "Submarine Cables"
 )
 
 descriptions <- c(
   "Submarine canyons",
   "Deep sea coral areas with robust high suitability",
-  "Scientific survey locations with fixed monitoring stations",
-  "Scientific survey areas with periodic monitoring schedules",
   "Methane Seeps",
   "Continental shelf break features important for marine habitat",
   "Essential Fish Habitat Conservation Areas",
@@ -79,6 +77,8 @@ descriptions <- c(
   "Commercial Troll/Hook and Line Albacore",
   "Charter Vessel Albacore Troll/Hook and Line",
   "Grid cells contained within the top 75% of the ranked importance values for the four trawl fisheries",
+  "Scientific survey locations with fixed monitoring stations",
+  "Scientific survey areas with periodic monitoring schedules",
   "Submarine Cables"
 )
 
@@ -95,17 +95,17 @@ data_types <- c(
   "Discrete",
   "Discrete",
   "Discrete",
+  "Continuous (*Discrete if static score is selected)",
+  "Continuous (*Discrete if static score is selected)",
+  "Continuous (*Discrete if static score is selected)",
+  "Continuous (*Discrete if static score is selected)",
+  "Continuous (*Discrete if static score is selected)",
+  "Continuous (*Discrete if static score is selected)",
+  "Continuous (*Discrete if static score is selected)",
+  "Continuous (*Discrete if static score is selected)",
+  "Continuous (*Discrete if static score is selected)",
   "Discrete",
   "Discrete",
-  "Continuous (*Discrete if static score is selected)",
-  "Continuous (*Discrete if static score is selected)",
-  "Continuous (*Discrete if static score is selected)",
-  "Continuous (*Discrete if static score is selected)",
-  "Continuous (*Discrete if static score is selected)",
-  "Continuous (*Discrete if static score is selected)",
-  "Continuous (*Discrete if static score is selected)",
-  "Continuous (*Discrete if static score is selected)",
-  "Continuous (*Discrete if static score is selected)",
   "Discrete",
   "Discrete"
 )
