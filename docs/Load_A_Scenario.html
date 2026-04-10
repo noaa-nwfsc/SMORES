@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>SMORES Access Guide – SMORES Documentation</title>
+<title>Loading a Model Run from a Saved Scenario – SMORES Documentation</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -95,7 +95,7 @@ ul.task-list li input[type="checkbox"] {
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./Access.html" aria-current="page"> 
+    <a class="nav-link" href="./Access.html"> 
 <span class="menu-text">SMORES Access Guide</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -160,10 +160,11 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#how-can-i-access-the-smores-app" id="toc-how-can-i-access-the-smores-app" class="nav-link active" data-scroll-target="#how-can-i-access-the-smores-app">How can I access the SMORES app?</a></li>
-  <li><a href="#what-is-the-noaa-nmfs-posit-connect-test-instance" id="toc-what-is-the-noaa-nmfs-posit-connect-test-instance" class="nav-link" data-scroll-target="#what-is-the-noaa-nmfs-posit-connect-test-instance">What is the NOAA NMFS Posit Connect Test Instance?</a></li>
-  <li><a href="#how-do-i-get-onto-the-posit-connect-test-instance-to-use-the-app" id="toc-how-do-i-get-onto-the-posit-connect-test-instance-to-use-the-app" class="nav-link" data-scroll-target="#how-do-i-get-onto-the-posit-connect-test-instance-to-use-the-app">How do I get onto the Posit Connect Test Instance to use the app?</a></li>
-  <li><a href="#where-can-i-see-the-back-end-code-of-this-app" id="toc-where-can-i-see-the-back-end-code-of-this-app" class="nav-link" data-scroll-target="#where-can-i-see-the-back-end-code-of-this-app">Where can I see the back-end code of this app?</a></li>
+  <li><a href="#step-1-navigate-to-the-scenario-management-tab" id="toc-step-1-navigate-to-the-scenario-management-tab" class="nav-link active" data-scroll-target="#step-1-navigate-to-the-scenario-management-tab">Step 1: Navigate to the Scenario Management Tab</a></li>
+  <li><a href="#step-2-select-the-scenario-of-interest" id="toc-step-2-select-the-scenario-of-interest" class="nav-link" data-scroll-target="#step-2-select-the-scenario-of-interest">Step 2: Select the Scenario of Interest</a></li>
+  <li><a href="#step-3-load-scenario-of-interest" id="toc-step-3-load-scenario-of-interest" class="nav-link" data-scroll-target="#step-3-load-scenario-of-interest">Step 3: Load Scenario of Interest</a></li>
+  <li><a href="#step-4-navigate-to-the-area-of-interest-tab" id="toc-step-4-navigate-to-the-area-of-interest-tab" class="nav-link" data-scroll-target="#step-4-navigate-to-the-area-of-interest-tab">Step 4: Navigate to the Area of Interest Tab</a></li>
+  <li><a href="#step-5-generate-maps-and-model-outputs" id="toc-step-5-generate-maps-and-model-outputs" class="nav-link" data-scroll-target="#step-5-generate-maps-and-model-outputs">Step 5: Generate Maps and Model Outputs</a></li>
   </ul>
 </nav>
     </div>
@@ -172,7 +173,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">SMORES Access Guide</h1>
+<h1 class="title">Loading a Model Run from a Saved Scenario</h1>
 </div>
 
 
@@ -189,22 +190,28 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Here are a few tips for accessing the SMORES app and where to look if you have questions regarding the code.</p>
-<section id="how-can-i-access-the-smores-app" class="level1">
-<h1>How can I access the SMORES app?</h1>
-<p>There are 2 main avenues for accessing the SMORES App. The first option is accessing SMORES on the NOAA NMFS Posit Connect Test Instance. The App is hosted at this <a href="https://test-connect.fisheries.noaa.gov/connect/#/apps/3e44db0d-bd12-49b2-bb7e-ace703306b12">link</a>. The second option is to clone the SMORES Github <a href="https://github.com/noaa-nwfsc/SMORES" target="_blank">repository</a> and run the app on your local machine from R Studio. The repository contains all data, and code necessary to run the app. After you clone the repository you will select <code>Run App</code> after opening 1 of the following 3 files: ui.R, server.R, or global.R.</p>
+<section id="step-1-navigate-to-the-scenario-management-tab" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-navigate-to-the-scenario-management-tab">Step 1: Navigate to the Scenario Management Tab</h2>
+<p>When you open the SMORES application please click on the Scenario Management tab.</p>
+<p><img src="www/Images/scenario_management_opener.png" class="img-fluid"></p>
 </section>
-<section id="what-is-the-noaa-nmfs-posit-connect-test-instance" class="level1">
-<h1>What is the NOAA NMFS Posit Connect Test Instance?</h1>
-<p>Posit Connect is a publishing platform for R and Python-associated products. Products can be hosted publicly or internally, accessible to NOAA staff only.</p>
+<section id="step-2-select-the-scenario-of-interest" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-select-the-scenario-of-interest">Step 2: Select the Scenario of Interest</h2>
+<p>Please move your attention to the card titled ‘Scenario Library’. You will see a table that contains pre-loaded scenarios. To select one of the scenarios click on the scenario of interest. *Note when you click on the scenario of interest it should highlight to a dark blue</p>
+<p><img src="www/Images/scenario_management_scenario_selected.png" class="img-fluid"></p>
 </section>
-<section id="how-do-i-get-onto-the-posit-connect-test-instance-to-use-the-app" class="level1">
-<h1>How do I get onto the Posit Connect Test Instance to use the app?</h1>
-<p>The Post Connect Test Instance is able to be accessed if you have a NOAA email account. It is important to note that in order to log in you must be connected to a NOAA network. This means you will either need to be on site and connected to WiFi/Ethernet or connected to the NOAA VPN. If you are not connected to these, the app will not load and you will get a message that states the request timed out.</p>
+<section id="step-3-load-scenario-of-interest" class="level2">
+<h2 class="anchored" data-anchor-id="step-3-load-scenario-of-interest">Step 3: Load Scenario of Interest</h2>
+<p>Once you have selected your scenario of interest you will select the ‘Load Selected’ button at the bottom right-hand side of the page.</p>
+<p><img src="www/Images/scenario_management_loading.png" class="img-fluid"></p>
 </section>
-<section id="where-can-i-see-the-back-end-code-of-this-app" class="level1">
-<h1>Where can I see the back-end code of this app?</h1>
-<p>The <a href="https://github.com/noaa-nwfsc/SMORES" target="_blank">code</a> for this application is stored on the NMFS NWFSC Github Enterprise.</p>
+<section id="step-4-navigate-to-the-area-of-interest-tab" class="level2">
+<h2 class="anchored" data-anchor-id="step-4-navigate-to-the-area-of-interest-tab">Step 4: Navigate to the Area of Interest Tab</h2>
+<p>Once your scenario has completed loading the pop-up will be removed from the screen and you will once again see the scenario management tab. From here you will be free to move through the application and see what options were configured for this scenario. A good place to start is the area of interest tab so you can familiarize yourself with the area that was chosen. After the area of interest tab you can move through the rest of the application or pieces of the application that were configured.</p>
+</section>
+<section id="step-5-generate-maps-and-model-outputs" class="level2">
+<h2 class="anchored" data-anchor-id="step-5-generate-maps-and-model-outputs">Step 5: Generate Maps and Model Outputs</h2>
+<p>It is important to note that loading a scenario means that the application will be configured for loading maps and data. You will still need to select the ‘Generate Maps’ buttons to finalize the outputs you want to run through the combined modeling. The scenario contains the information of all maps initialized, scores selected, combination methods, and weights selected.</p>
 
 
 </section>

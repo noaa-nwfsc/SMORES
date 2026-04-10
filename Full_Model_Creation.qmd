@@ -1,13 +1,11 @@
 ---
-title: "SMORES GUI Quickstart Guide"
+title: "Executing a Model Run"
 format: html
 ---
 
-The dashboard is organized by the navigation bar at the top with the following tabs: Area of Interest, Natural Resources Submodel, Fisheries Submodel, Industry & Operations Submodel, Full Model, Methods, and Data. The Overview tab provides an overview of how to use the application, and the Methods and Data tabs provide information and app functions and input data, respectively.
-
 To generate a full model run you will move through the tabs from left to right. 
 
-![]()
+![](www/Images/overview_tab.png)
 
 Each sub-tab contains further detail on scoring suggestions and cues to generate the layers of your choice.
 
@@ -55,7 +53,7 @@ Once you have configured your individual layer scores you will select the calcul
 
 You can opt to export a copy of your results by selecting the `Export` button at the bottom of the page.When you select `Export` a loading screen will show on the app to indicate that the report is generating. 
 
-![](www/Images/generating report.png)
+![]()
 
 ## Step 3: Configure a second component for a submodel (species used as an example)
 

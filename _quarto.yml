@@ -10,7 +10,12 @@ website:
       - href: index.qmd
         text: Home
       - Access.qmd
-      - GUI.qmd
+      - text: GUI Quickstart Guides
+        menu: 
+          - Full_Model_Creation.qmd
+          - Save_A_Scenario.qmd
+          - Load_A_Scenario.qmd
+          - Delete_Scenario.qmd
       - text: Methods
         menu: 
           - Methods.qmd

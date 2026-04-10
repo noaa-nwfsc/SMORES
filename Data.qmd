@@ -1,7 +1,12 @@
 ---
-title: "Data Sources"
+title: "Data"
 format: html
 ---
+For the most up to date information regarding when data was last processed please see the `Data` tab on the SMORES app. This tab includes the following information: Dataset name, brief description, the data type (discrete/continuous), the date data was last processed for the 2km and 5km grids, and which grid is currently active. 
+
+![](www/Images/data_tab.png)
+
+For information regarding the original data source please see the descriptions below. 
 
 # Area of Interest Layers 
 

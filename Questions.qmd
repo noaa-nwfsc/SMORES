@@ -23,9 +23,9 @@ A: The SMORES app does its best to show data at multiple scales using the mappin
 
 :::{layout-ncol=2}
 
-![Map without zooming in]()
+![Map without zooming in](www/Images/5km_zoom_out.png)
 
-![Map with zooming in]()
+![Map with zooming in](www/Images/5km_zoom_in.png)
 
 :::
 

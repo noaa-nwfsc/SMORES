@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>SMORES GUI Quickstart Guide – SMORES Documentation</title>
+<title>Executing a Model Run – SMORES Documentation</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -98,10 +98,29 @@ ul.task-list li input[type="checkbox"] {
     <a class="nav-link" href="./Access.html"> 
 <span class="menu-text">SMORES Access Guide</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link active" href="./GUI.html" aria-current="page"> 
-<span class="menu-text">SMORES GUI Quickstart Guide</span></a>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-gui-quickstart-guides" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">GUI Quickstart Guides</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-gui-quickstart-guides">    
+        <li>
+    <a class="dropdown-item" href="./Full_Model_Creation.html">
+ <span class="dropdown-text">Executing a Model Run</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./Save_A_Scenario.html">
+ <span class="dropdown-text">Saving a Model Run as a Scenario</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./Load_A_Scenario.html">
+ <span class="dropdown-text">Loading a Model Run from a Saved Scenario</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./Delete_Scenario.html">
+ <span class="dropdown-text">Remove a Scenario</span></a>
+  </li>  
+    </ul>
+  </li>
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-methods" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Methods</span>
@@ -119,7 +138,7 @@ ul.task-list li input[type="checkbox"] {
   </li>
   <li class="nav-item">
     <a class="nav-link" href="./Data.html"> 
-<span class="menu-text">Data Sources</span></a>
+<span class="menu-text">Data</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./Questions.html"> 
@@ -156,7 +175,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">SMORES GUI Quickstart Guide</h1>
+<h1 class="title">Executing a Model Run</h1>
 </div>
 
 
@@ -173,9 +192,8 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>The dashboard is organized by the navigation bar at the top with the following tabs: Area of Interest, Natural Resources Submodel, Fisheries Submodel, Industry &amp; Operations Submodel, Full Model, Methods, and Data. The Overview tab provides an overview of how to use the application, and the Methods and Data tabs provide information and app functions and input data, respectively.</p>
 <p>To generate a full model run you will move through the tabs from left to right.</p>
-<p><img src=".png" class="img-fluid"></p>
+<p><img src="www/Images/overview_tab.png" class="img-fluid"></p>
 <p>Each sub-tab contains further detail on scoring suggestions and cues to generate the layers of your choice.</p>
 <section id="step-1-select-your-area-of-interest" class="level2">
 <h2 class="anchored" data-anchor-id="step-1-select-your-area-of-interest">Step 1: Select your area of interest</h2>
@@ -201,7 +219,7 @@ ul.task-list li input[type="checkbox"] {
 <p>Once you have configured your individual layer scores you will select the calculation method you would like used to combine these layers (geometric mean, lowest value, product). You will then select the <code>Generate Combined Map(s)</code> This will generate your combined maps.</p>
 <p><img src=".png" class="img-fluid"></p>
 <p>You can opt to export a copy of your results by selecting the <code>Export</code> button at the bottom of the page.When you select <code>Export</code> a loading screen will show on the app to indicate that the report is generating.</p>
-<p><img src="www/Images/generating report.png" class="img-fluid"></p>
+<p><img src=".png" class="img-fluid"></p>
 </section>
 <section id="step-3-configure-a-second-component-for-a-submodel-species-used-as-an-example" class="level2">
 <h2 class="anchored" data-anchor-id="step-3-configure-a-second-component-for-a-submodel-species-used-as-an-example">Step 3: Configure a second component for a submodel (species used as an example)</h2>
