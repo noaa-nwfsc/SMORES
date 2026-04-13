@@ -5,8 +5,15 @@ function(input, output, session) {
   # Define who has "Master Keys" to delete any scenario
   ADMIN_USERS <- c("melissa.widas", "curt.whitmire")
 
+  # Track the currently loaded scenario
+  active_loaded_scenario <- reactiveVal("None")
+
   # exclude action buttons from being captured in the bookmarking process
   setBookmarkExclude(c(
+    "scenario_name",
+    "scenario_author",
+    "scenario_date",
+    "scenario_desc",
     "save_scenario_btn",
     "load_scenario_btn",
     "update_habitat_map_btn",
@@ -3915,9 +3922,12 @@ function(input, output, session) {
         # 1. Read directly from pins to get the target URL
         sessions_df <- pins::pin_read(app_board, "melissa.widas/sessions")
         selected_url <- sessions_df$url[selected_row]
+        selected_name <- sessions_df$name[selected_row]
 
-        # 2. Let shinystate do the heavy lifting!
-        # (Download pin -> Unzip to local dir -> trigger refresh)
+        # 2. Update the active scenario tracker
+        active_loaded_scenario(selected_name)
+
+        # 3. Let shinystate do the heavy lifting
         app_storage$restore(url = selected_url)
       },
       error = function(e) {
@@ -3928,6 +3938,15 @@ function(input, output, session) {
         removeModal()
       }
     )
+  })
+
+  # Render the active scenario text
+  output$active_scenario_display <- renderUI({
+    HTML(paste0(
+      "Actively Loaded Scenario: <span style='font-weight: normal; color: #333;'>",
+      active_loaded_scenario(),
+      "</span>"
+    ))
   })
 
   # dynamic delete button for scenarios based on posit connect usernames
