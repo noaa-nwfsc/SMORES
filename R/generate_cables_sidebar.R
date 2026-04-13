@@ -1,7 +1,7 @@
 generate_cables_sidebar <- function(submarine_cables_layer, score_values) {
   # Individual cables tab logic
   # Create inputs for each cable layer - use names() to get the layer names
-  layer_inputs <- lapply(names(submarine_cables_layer), function(layer_name) {
+  layer_inputs <- lapply(submarine_cables_layer, function(layer_name) {
     # Create consistent IDs
     layer_id <- gsub(" ", "_", layer_name)
     layer_id <- gsub("[^A-Za-z0-9_]", "", layer_id)
