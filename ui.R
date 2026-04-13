@@ -358,6 +358,13 @@ function(request) {
       nav_panel(
         title = "Scenario Management",
         icon = icon("floppy-disk"),
+
+        # The new actively loaded scenario indicator at the top of the page
+        div(
+          style = "margin-top: 5px; margin-bottom: 15px; font-size: 16px; font-weight: bold; color: #0056b3;",
+          uiOutput("active_scenario_display")
+        ),
+
         card(
           fill = FALSE,
           card_header("Save Current Configuration"),
@@ -413,11 +420,6 @@ function(request) {
 
             # The table now has the full width of the screen
             DT::DTOutput("scenario_table"),
-            hr(),
-            div(
-              style = "margin-top: 15px; font-weight: bold; color: #0056b3;",
-              uiOutput("active_scenario_display")
-            ),
 
             hr(),
 
