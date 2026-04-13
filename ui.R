@@ -413,6 +413,7 @@ function(request) {
 
             # The table now has the full width of the screen
             DT::DTOutput("scenario_table"),
+            hr(),
             div(
               style = "margin-top: 15px; font-weight: bold; color: #0056b3;",
               uiOutput("active_scenario_display")
