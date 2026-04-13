@@ -2,13 +2,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.27">
+<meta name="generator" content="quarto-1.9.36">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
 <title>Executing a Model Run – SMORES Documentation</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -32,15 +35,14 @@ ul.task-list li input[type="checkbox"] {
 <meta name="quarto:offset" content="./">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-e31584831b205ffbb2d98406f31c2a5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-a0f9fd0d421825b736dc1bbcbcba2219.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -248,6 +250,7 @@ ul.task-list li input[type="checkbox"] {
 <p>Navigate to the Combined Submodel tab.</p>
 <p><img src="www/Images/nat_res_combined_opener.png" class="img-fluid"></p>
 <p>You will select which calculation method (geometric mean, product, or lowest) for each component should be used in the calculation to generate the combined submodel. The app will indicate which components have been configured for use in the combined submodel calculations.</p>
+<p>*Note: If you choose to not configure a submodel’s components you will not be able to include this component in a combined map.</p>
 <p>You will then click on the Generate Combined Submodel button, which will produce 2 maps.</p>
 <ul>
 <li><p>The first map will represent the combined submodel score for the selected area of interest.</p></li>
@@ -266,26 +269,26 @@ ul.task-list li input[type="checkbox"] {
 <p>The second component is trawl fisheries.</p>
 <p><img src="www/Images/trawl_opener.png" class="img-fluid"></p>
 <p>*Note that when you combine the fisheries layers with the trawl fishery layers the trawl fishery score will replace the score in grid cells within the top 75% of the trawl fisheries’ ranked importance values. This is a different methodology than previous sections.</p>
-<p>At this stage the Fisheries Submodel that will be included in the Full Model will be generated. If you choose to not configure a submodel’s components you will not be able to generate a combined map.</p>
+<p><em>At this stage the Fisheries Submodel that will be included in the Full Model will be generated.</em></p>
 </section>
 <section id="step-6-configure-the-industry-and-operations-submodel" class="level2">
 <h2 class="anchored" data-anchor-id="step-6-configure-the-industry-and-operations-submodel">Step 6: Configure the industry and operations submodel</h2>
 <p>Repeat steps 2-4 for the Industry &amp; Operations Submodel. The Industry &amp; Operations Submodel is comprised of two components. The first component is scientific surveys.</p>
-<p><img src=".png" class="img-fluid"></p>
+<p><img src="www/Images/surveys_opener.png" class="img-fluid"></p>
 <p>The second component is submarine cable lines.</p>
 <p><img src=".png" class="img-fluid"></p>
-<p>At this stage the Industry &amp; Operations Submodel that will be included in the Full Model has been generated.</p>
+<p><em>At this stage the Industry &amp; Operations Submodel that will be included in the Full Model has been generated.</em></p>
 </section>
 <section id="step-7-configure-and-visualize-a-full-model-run" class="level2">
 <h2 class="anchored" data-anchor-id="step-7-configure-and-visualize-a-full-model-run">Step 7: Configure and visualize a full model run</h2>
 <p>Navigate to the Full Model Tab.</p>
-<p><img src=".png" class="img-fluid"></p>
-<p>The sidebar on the left-hand side includes messaging indicating which submodels have been configured within the app and are available to be included in the full model calculation. Once you have selected the submodels you would like included, by selecting the check-box next to the submodel, you have the option to select a submodel weight to be applied to that submodel.</p>
-<p><img src=".png" class="img-fluid"></p>
+<p><img src="www/Images/full_model_opener.png" class="img-fluid"></p>
+<p>The sidebar on the left-hand side includes messaging indicating which submodels have been configured within the app and are available to be included in the full model calculation. If a submodel is not selected it will not be included in the full model calculation. Once you have selected the submodels you would like included, by selecting the check-box next to the submodel, you have the option to select a submodel weight to be applied to that submodel. A weight of 1 for all submodels will apply a non-weighted geometric mean in order to calculate the final full model. Model weights not equal to 1 will apply a weighted geometric mean calculation to calculate the final full model. Weights are available in 0.1 increments. For more information on weighting please see the <code>Methods</code> page.</p>
+<p><img src="www/Images/full_model_weights.png" class="img-fluid"></p>
 <p>Once you have configured your submodels, you will click on the <code>Generate Full Model</code> button, which will produce a full model map.</p>
-<p><img src=".png" class="img-fluid"></p>
 <p>You can opt to export a copy of your results by selecting the <code>Export</code> button at the bottom of the page. The report will be a HTML based report.</p>
-<p><img src=".png" class="img-fluid"></p>
+<iframe src="www\Full_Model_Report_2026-04-13_18-04-59.html" width="100%" height="500px">
+</iframe>
 
 
 </section>

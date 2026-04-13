@@ -67,6 +67,7 @@ Navigate to the Combined Submodel tab.
 
 You will select which calculation method (geometric mean, product, or lowest) for each component should be used in the calculation to generate the combined submodel. The app will indicate which components have been configured for use in the combined submodel calculations.
 
+*Note:  If you choose to not configure a submodel's components you will not be able to include this component in a combined map.
 
  You will then click on the Generate Combined Submodel button, which will produce 2 maps.
 
@@ -94,34 +95,33 @@ The second component is trawl fisheries.
 
 *Note that when you combine the fisheries layers with the trawl fishery layers the trawl fishery score will replace the score in grid cells within the top 75% of the trawl fisheries' ranked importance values. This is a different methodology than previous sections.
 
-At this stage the Fisheries Submodel that will be included in the Full Model will be generated. If you choose to not configure a submodel's components you will not be able to generate a combined map.
+*At this stage the Fisheries Submodel that will be included in the Full Model will be generated.*
 
 ## Step 6: Configure the industry and operations submodel
 
 Repeat steps 2-4 for the Industry & Operations Submodel. The Industry & Operations Submodel is comprised of two components. The first component is scientific surveys. 
 
-![]()
+![](www/Images/surveys_opener.png)
 
 The second component is submarine cable lines. 
 
 ![]()
 
-At this stage the Industry & Operations Submodel that will be included in the Full Model has been generated.
+*At this stage the Industry & Operations Submodel that will be included in the Full Model has been generated.*
 
 ## Step 7: Configure and visualize a full model run
 
 Navigate to the Full Model Tab. 
 
-![]()
+![](www/Images/full_model_opener.png)
 
-The sidebar on the left-hand side includes messaging indicating which submodels have been configured within the app and are available to be included in the full model calculation. Once you have selected the submodels you would like included, by selecting the check-box next to the submodel, you have the option to select a submodel weight to be applied to that submodel.
+The sidebar on the left-hand side includes messaging indicating which submodels have been configured within the app and are available to be included in the full model calculation. If a submodel is not selected it will not be included in the full model calculation. Once you have selected the submodels you would like included, by selecting the check-box next to the submodel, you have the option to select a submodel weight to be applied to that submodel. A weight of 1 for all submodels will apply a non-weighted geometric mean in order to calculate the final full model. Model weights not equal to 1 will apply a weighted geometric mean calculation to calculate the final full model. Weights are available in 0.1 increments. For more information on weighting please see the `Methods` page. 
 
-![]()
+![](www/Images/full_model_weights.png)
 
 Once you have configured your submodels, you will click on the `Generate Full Model` button, which will produce a full model map.
 
-![]()
-
 You can opt to export a copy of your results by selecting the `Export` button at the bottom of the page. The report will be a HTML based report. 
 
-![]()
+<iframe src="www\Full_Model_Report_2026-04-13_18-04-59.html" width="100%" height="500px"></iframe>
+
