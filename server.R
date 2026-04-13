@@ -1066,8 +1066,8 @@ function(input, output, session) {
             score_col <- switch(
               local_config$layer,
               # Scientific Surveys layers
-              "Fixed Surveys" = "Score.surveys_fixed",
-              "Periodic Surveys" = "Score.surveys_periodic",
+              "Fixed Surveys" = "Score.surveys.fixed",
+              "Periodic Surveys" = "Score.surveys.periodic",
               # Submarine Cables layer
               "Submarine Cables" = "Score.submarine_cable",
               NULL
