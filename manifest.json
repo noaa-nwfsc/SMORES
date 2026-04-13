@@ -5773,7 +5773,7 @@
       "checksum": "6632365af65e2f075f36258098629304"
     },
     "R/generate_surveys_sidebar.R": {
-      "checksum": "a29bbe60dbaab093c007980cb03e1c92"
+      "checksum": "5c1f0f9a3e78fc36702c284182daf78b"
     },
     "R/generate_trawl_fisheries_sidebar.R": {
       "checksum": "d2c809de0a1272e8adc75f14d1d5c98d"
@@ -5812,7 +5812,7 @@
       "checksum": "f59aa235665a871fc1a6fcc73884e5d0"
     },
     "ui.R": {
-      "checksum": "d808803aa9654845653bf28ee497bdca"
+      "checksum": "273dab8cc349b0c2045244fc2a65be3b"
     },
     "www/documentation_website.png": {
       "checksum": "49e3aa3a552e7d9f3b6b5a9f961186d3"

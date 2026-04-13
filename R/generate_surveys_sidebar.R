@@ -36,7 +36,7 @@ generate_surveys_sidebar <- function(surveys_layers, score_values) {
     hr(),
 
     actionButton(
-      "update_survey_map_btn",
+      "update_surveys_map_btn",
       "Generate Scientific Survey Maps",
       class = "btn-primary btn-block"
     ),
