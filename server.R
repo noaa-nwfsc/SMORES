@@ -3940,13 +3940,16 @@ function(input, output, session) {
     )
   })
 
-  # Render the active scenario text
+  # Render the active scenario banner
   output$active_scenario_display <- renderUI({
-    HTML(paste0(
-      "Actively Loaded Scenario: <span style='font-weight: normal; color: #333;'>",
-      active_loaded_scenario(),
-      "</span>"
-    ))
+    div(
+      class = "alert alert-info",
+      style = "margin-top: 15px; margin-bottom: 15px; background-color: #e7f3fe; border-left: 6px solid #2196F3;",
+      HTML(paste(
+        "ℹ️ <strong>Actively Loaded Scenario:</strong>",
+        active_loaded_scenario()
+      ))
+    )
   })
 
   # dynamic delete button for scenarios based on posit connect usernames
