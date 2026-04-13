@@ -1001,7 +1001,7 @@ function(input, output, session) {
               "Fixed Surveys" = "Score.surveys.fixed",
               "Periodic Surveys" = "Score.surveys.periodic",
               # Submarine Cables layer
-              "Submarine Cables" = "Score.submarine_cable",
+              "Submarine Cables" = "Score.cable",
               NULL
             )
 
