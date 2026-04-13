@@ -535,40 +535,6 @@ function(input, output, session) {
     }
   )
 
-  # Update Industry & Operations Combined Sidebar Labels
-  observe({
-    # Check if maps are generated
-    surveys_ready <- isTRUE(combined_maps_data$surveys_combined_map_generated)
-    cables_ready <- isTRUE(combined_maps_data$cables_combined_map_generated)
-
-    # Dynamically update the label text
-    updateCheckboxInput(
-      session,
-      "includeSurveys",
-      label = HTML(paste(
-        "Include Scientific Surveys Component",
-        if (surveys_ready) {
-          "<span class='text-success'> ✓ Ready</span>"
-        } else {
-          "<span class='text-warning'> ⚠ Generate maps first</span>"
-        }
-      ))
-    )
-
-    updateCheckboxInput(
-      session,
-      "includeCables",
-      label = HTML(paste(
-        "Include Submarine Cables Component",
-        if (cables_ready) {
-          "<span class='text-success'> ✓ Ready</span>"
-        } else {
-          "<span class='text-warning'> ⚠ Generate maps first</span>"
-        }
-      ))
-    )
-  })
-
   # Natural Resources maps
   observeEvent(
     natural_resources_valid_configs(),
@@ -740,40 +706,6 @@ function(input, output, session) {
     ignoreNULL = FALSE,
     ignoreInit = FALSE
   )
-
-  # Update Fisheries Combined Sidebar Labels
-  observe({
-    # Check if maps are generated
-    fish_ready <- isTRUE(combined_maps_data$fisheries_combined_map_generated)
-    trawl_ready <- isTRUE(combined_maps_data$trawl_combined_map_generated)
-
-    # Dynamically update the label text
-    updateCheckboxInput(
-      session,
-      "includeFisheries",
-      label = HTML(paste(
-        "Include Fisheries Component",
-        if (fish_ready) {
-          "<span class='text-success'> ✓ Ready</span>"
-        } else {
-          "<span class='text-warning'> ⚠ Generate maps first</span>"
-        }
-      ))
-    )
-
-    updateCheckboxInput(
-      session,
-      "includeTrawl",
-      label = HTML(paste(
-        "Include Trawl Component",
-        if (trawl_ready) {
-          "<span class='text-success'> ✓ Ready</span>"
-        } else {
-          "<span class='text-warning'> ⚠ Generate maps first</span>"
-        }
-      ))
-    )
-  })
 
   # Fisheries maps
   observeEvent(
@@ -2441,13 +2373,12 @@ function(input, output, session) {
     )
   })
 
-  # Update Natural Resources Combined Sidebar Labels
+  # Update Natural Resources Combined Sidebar Labels and Method Dropdown
   observe({
-    # Check if maps are generated
+    # 1. Update the Checkbox Labels
     hab_ready <- isTRUE(combined_maps_data$habitat_combined_map_generated)
     spec_ready <- isTRUE(combined_maps_data$species_combined_map_generated)
 
-    # Dynamically update the label text on the static UI checkboxes
     updateCheckboxInput(
       session,
       "includeHabitat",
@@ -2473,6 +2404,67 @@ function(input, output, session) {
         }
       ))
     )
+
+    # 2. Update the Dynamic Dropdowns
+    # --- Habitat ---
+    hab_choices <- c()
+    if (!is.null(combined_maps_data$habitat_geo)) {
+      hab_choices <- c(hab_choices, "Geometric Mean" = "geometric_mean")
+    }
+    if (!is.null(combined_maps_data$habitat_lowest)) {
+      hab_choices <- c(hab_choices, "Lowest Value" = "lowest")
+    }
+    if (!is.null(combined_maps_data$habitat_product)) {
+      hab_choices <- c(hab_choices, "Product" = "product")
+    }
+
+    if (length(hab_choices) > 0) {
+      shinyjs::show("habitatCalculationMethod")
+      current_sel <- input$habitatCalculationMethod
+      new_sel <- if (!is.null(current_sel) && current_sel %in% hab_choices) {
+        current_sel
+      } else {
+        hab_choices[1]
+      }
+      updateSelectInput(
+        session,
+        "habitatCalculationMethod",
+        choices = hab_choices,
+        selected = new_sel
+      )
+    } else {
+      shinyjs::hide("habitatCalculationMethod")
+    }
+
+    # --- Species ---
+    spec_choices <- c()
+    if (!is.null(combined_maps_data$species_geo)) {
+      spec_choices <- c(spec_choices, "Geometric Mean" = "geometric_mean")
+    }
+    if (!is.null(combined_maps_data$species_lowest)) {
+      spec_choices <- c(spec_choices, "Lowest Value" = "lowest")
+    }
+    if (!is.null(combined_maps_data$species_product)) {
+      spec_choices <- c(spec_choices, "Product" = "product")
+    }
+
+    if (length(spec_choices) > 0) {
+      shinyjs::show("speciesCalculationMethod")
+      current_sel <- input$speciesCalculationMethod
+      new_sel <- if (!is.null(current_sel) && current_sel %in% spec_choices) {
+        current_sel
+      } else {
+        spec_choices[1]
+      }
+      updateSelectInput(
+        session,
+        "speciesCalculationMethod",
+        choices = spec_choices,
+        selected = new_sel
+      )
+    } else {
+      shinyjs::hide("speciesCalculationMethod")
+    }
   })
 
   # Add this output to handle validation messages
@@ -2729,6 +2721,100 @@ function(input, output, session) {
     }
   )
 
+  # Update Fisheries Combined Sidebar Labels & Dropdowns
+  observe({
+    # 1. Update the Checkbox Labels
+    fish_ready <- isTRUE(combined_maps_data$fisheries_combined_map_generated)
+    trawl_ready <- isTRUE(combined_maps_data$trawl_combined_map_generated)
+
+    updateCheckboxInput(
+      session,
+      "includeFisheries",
+      label = HTML(paste(
+        "Include Fisheries Component",
+        if (fish_ready) {
+          "<span class='text-success'> ✓ Ready</span>"
+        } else {
+          "<span class='text-warning'> ⚠ Generate maps first</span>"
+        }
+      ))
+    )
+
+    updateCheckboxInput(
+      session,
+      "includeTrawl",
+      label = HTML(paste(
+        "Include Trawl Component",
+        if (trawl_ready) {
+          "<span class='text-success'> ✓ Ready</span>"
+        } else {
+          "<span class='text-warning'> ⚠ Generate maps first</span>"
+        }
+      ))
+    )
+
+    # 2. Update the Dynamic Dropdowns
+    # --- Fisheries ---
+    fish_choices <- c()
+    if (!is.null(combined_maps_data$fisheries_geo)) {
+      fish_choices <- c(fish_choices, "Geometric Mean" = "geometric_mean")
+    }
+    if (!is.null(combined_maps_data$fisheries_lowest)) {
+      fish_choices <- c(fish_choices, "Lowest Value" = "lowest")
+    }
+    if (!is.null(combined_maps_data$fisheries_product)) {
+      fish_choices <- c(fish_choices, "Product" = "product")
+    }
+
+    if (length(fish_choices) > 0) {
+      shinyjs::show("fisheriesCalculationMethod")
+      current_sel <- input$fisheriesCalculationMethod
+      new_sel <- if (!is.null(current_sel) && current_sel %in% fish_choices) {
+        current_sel
+      } else {
+        fish_choices[1]
+      }
+      updateSelectInput(
+        session,
+        "fisheriesCalculationMethod",
+        choices = fish_choices,
+        selected = new_sel
+      )
+    } else {
+      shinyjs::hide("fisheriesCalculationMethod")
+    }
+
+    # --- Trawl ---
+    trawl_choices <- c()
+    if (!is.null(combined_maps_data$trawl_geo)) {
+      trawl_choices <- c(trawl_choices, "Geometric Mean" = "geometric_mean")
+    }
+    if (!is.null(combined_maps_data$trawl_lowest)) {
+      trawl_choices <- c(trawl_choices, "Lowest Value" = "lowest")
+    }
+    if (!is.null(combined_maps_data$trawl_product)) {
+      trawl_choices <- c(trawl_choices, "Product" = "product")
+    }
+
+    if (length(trawl_choices) > 0) {
+      shinyjs::show("trawlCalculationMethod")
+      current_sel <- input$trawlCalculationMethod
+      new_sel <- if (!is.null(current_sel) && current_sel %in% trawl_choices) {
+        current_sel
+      } else {
+        trawl_choices[1]
+      }
+      updateSelectInput(
+        session,
+        "trawlCalculationMethod",
+        choices = trawl_choices,
+        selected = new_sel
+      )
+    } else {
+      shinyjs::hide("trawlCalculationMethod")
+    }
+  })
+
   # Add this output to handle validation messages
   output$fisheriesCombinedValidation <- renderUI({
     # Get component selections
@@ -2977,6 +3063,102 @@ function(input, output, session) {
       )
     }
   )
+
+  # Update Industry & Operations Combined Sidebar Labels & Dropdowns
+  observe({
+    # 1. Update the Checkbox Labels
+    surveys_ready <- isTRUE(combined_maps_data$surveys_combined_map_generated)
+    cables_ready <- isTRUE(combined_maps_data$cables_combined_map_generated)
+
+    updateCheckboxInput(
+      session,
+      "includeSurveys",
+      label = HTML(paste(
+        "Include Scientific Surveys Component",
+        if (surveys_ready) {
+          "<span class='text-success'> ✓ Ready</span>"
+        } else {
+          "<span class='text-warning'> ⚠ Generate maps first</span>"
+        }
+      ))
+    )
+
+    updateCheckboxInput(
+      session,
+      "includeCables",
+      label = HTML(paste(
+        "Include Submarine Cables Component",
+        if (cables_ready) {
+          "<span class='text-success'> ✓ Ready</span>"
+        } else {
+          "<span class='text-warning'> ⚠ Generate maps first</span>"
+        }
+      ))
+    )
+
+    # 2. Update the Dynamic Dropdowns
+    # --- Scientific Surveys ---
+    surveys_choices <- c()
+    if (!is.null(combined_maps_data$surveys_geo)) {
+      surveys_choices <- c(surveys_choices, "Geometric Mean" = "geometric_mean")
+    }
+    if (!is.null(combined_maps_data$surveys_lowest)) {
+      surveys_choices <- c(surveys_choices, "Lowest Value" = "lowest")
+    }
+    if (!is.null(combined_maps_data$surveys_product)) {
+      surveys_choices <- c(surveys_choices, "Product" = "product")
+    }
+
+    if (length(surveys_choices) > 0) {
+      shinyjs::show("surveysCalculationMethod")
+      current_sel <- input$surveysCalculationMethod
+      new_sel <- if (
+        !is.null(current_sel) && current_sel %in% surveys_choices
+      ) {
+        current_sel
+      } else {
+        surveys_choices[1]
+      }
+      updateSelectInput(
+        session,
+        "surveysCalculationMethod",
+        choices = surveys_choices,
+        selected = new_sel
+      )
+    } else {
+      shinyjs::hide("surveysCalculationMethod")
+    }
+
+    # --- Submarine Cables ---
+    cables_choices <- c()
+    if (!is.null(combined_maps_data$cables_geo)) {
+      cables_choices <- c(cables_choices, "Geometric Mean" = "geometric_mean")
+    }
+    if (!is.null(combined_maps_data$cables_lowest)) {
+      cables_choices <- c(cables_choices, "Lowest Value" = "lowest")
+    }
+    if (!is.null(combined_maps_data$cables_product)) {
+      cables_choices <- c(cables_choices, "Product" = "product")
+    }
+
+    if (length(cables_choices) > 0) {
+      shinyjs::show("cablesCalculationMethod")
+      current_sel <- input$cablesCalculationMethod
+      new_sel <- if (!is.null(current_sel) && current_sel %in% cables_choices) {
+        current_sel
+      } else {
+        cables_choices[1]
+      }
+      updateSelectInput(
+        session,
+        "cablesCalculationMethod",
+        choices = cables_choices,
+        selected = new_sel
+      )
+    } else {
+      shinyjs::hide("cablesCalculationMethod")
+    }
+  })
 
   # Add this output to handle validation messages
   output$industryOperationsCombinedValidation <- renderUI({
