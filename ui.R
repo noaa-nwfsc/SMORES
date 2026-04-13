@@ -438,14 +438,43 @@ function(request) {
       nav_panel(
         title = "Methods",
         icon = icon("route"),
-        card(
-          card_header("Methods"),
-          card_body(
-            withMathJax(includeMarkdown("markdown/methods.md")) # function within R Shiny to render LaTex equations
+        layout_columns(
+          col_widths = c(6, 6), # 50/50 split for the two cards
+
+          # Card 1: Methods Text
+          card(
+            fill = FALSE, # This stops the vertical stretching
+            card_header("Methods"),
+            card_body(
+              withMathJax(includeMarkdown("markdown/methods.md"))
+            )
+          ),
+
+          # Card 2: Image Link to Documentation
+          card(
+            fill = FALSE, # This stops the vertical stretching
+            card_header("Documentation Website"),
+            card_body(
+              p(
+                "Click the image below to visit our full documentation website:"
+              ),
+
+              # The hyperlink wrapper
+              tags$a(
+                href = "https://noaa-nwfsc.github.io/SMORES/",
+                target = "_blank", # Opens the link in a new tab
+
+                # The image itself
+                tags$img(
+                  src = "www/documentation_website.png",
+                  style = "width: 100%; max-width: 500px; border: 1px solid #ddd; border-radius: 5px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1);",
+                  alt = "Link to Documentation Website"
+                )
+              )
+            )
           )
         )
       ),
-
       # Tab 8: Data
       nav_panel(
         title = "Data",
