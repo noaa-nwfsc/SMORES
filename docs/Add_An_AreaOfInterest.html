@@ -172,8 +172,16 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#step-1-update-the-aoi-dataset" id="toc-step-1-update-the-aoi-dataset" class="nav-link active" data-scroll-target="#step-1-update-the-aoi-dataset">Step 1: Update the AOI Dataset</a></li>
+  <li><a href="#step-2-map-the-grid-resolution" id="toc-step-2-map-the-grid-resolution" class="nav-link" data-scroll-target="#step-2-map-the-grid-resolution">Step 2: Map the Grid Resolution</a></li>
+  <li><a href="#step-3-update-the-ui-sidebar" id="toc-step-3-update-the-ui-sidebar" class="nav-link" data-scroll-target="#step-3-update-the-ui-sidebar">Step 3: Update the UI Sidebar</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -197,8 +205,35 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<p>The SMORES application calculates map boundaries, area cropping, and grid resolutions dynamically based on the selected Area of Interest (AOI).</p>
+<section id="step-1-update-the-aoi-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-update-the-aoi-dataset">Step 1: Update the AOI Dataset</h2>
+<p>The application pulls the spatial bounds and names for all selectable areas directly from a single master file: ‘AOI_Full.parquet’. You must append your new AOI polygon to this dataset. Reference the ‘areas_of_interest.qmd’ that lives within the ‘data_processing/’. This file has the necessary steps written below mapped out and can be added onto. In general the steps are as follows:</p>
+<p>Acquire the Polygon: Load your new AOI shapefile/polygon into R.</p>
+<p>Standardize the CRS: Ensure the polygon is transformed to WGS84.</p>
+<p>Format the Column Name: Add a column specifically named Area_Name and assign it your desired display name (e.g., “Area of Interest Name”).</p>
+<p>Append the Data: Use bind_rows() to append your formatted polygon to the existing Areas_Of_Interest_Full object.</p>
+<p>Save the Parquet: Overwrite the master dataset by executing and saving a new file.</p>
+</section>
+<section id="step-2-map-the-grid-resolution" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-map-the-grid-resolution">Step 2: Map the Grid Resolution</h2>
+<p>When a user selects an AOI, the server needs to know whether to pull the high-resolution (2km) or regional (5km) grid data to execute the math for that specific boundary.</p>
+<p>Open ‘global.R’.</p>
+<p>Locate the <code>resolution_for_aoi</code> named vector.</p>
+<p>Add a new row matching your exact <code>Area_Name</code> to the desired folder resolution (“2km” or “5km”). Resolutions have been selected on a developer basis informed by memory constraints ie. larger spatial areas have larger grid cells applied to lower the memory costs and improve performance and hosting ability for the application.</p>
+<p>Save ‘global.R’.</p>
+</section>
+<section id="step-3-update-the-ui-sidebar" class="level2">
+<h2 class="anchored" data-anchor-id="step-3-update-the-ui-sidebar">Step 3: Update the UI Sidebar</h2>
+<p>The radio buttons are hardcoded, so we must explicitly tell the UI to display the new AOI as a selectable option.</p>
+<p>Open ‘generate_area_of_interest_sidebar.R’.</p>
+<p>Locate the radioButtons block with the ID <code>aoiAreaSelector</code>.</p>
+<p>Inside the choices vector, add a new row for your AOI. The left side is the UI label (name you want shown in the application), and the right side is the exact <code>Area_Name</code> value.</p>
+<p>Example:</p>
+<p>Save ‘generate_area_of_interest_sidebar.R’.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

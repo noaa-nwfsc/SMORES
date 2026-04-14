@@ -357,6 +357,34 @@
     "text": "Submarine Cables\nBrief Description: These data show the general location of commercial and research submarine cables within U.S. waters. The majority of these cables are for telecommunications, and the remaining are for power transmission. The geographic footprint for each cable may vary and is dependent on the original source data. In the near shore, cables are routinely buried below the seabed. Offshore, below a certain water depth, they are placed directly on the seabed. A submarine cable area may contain one or more physical cables, and 30 CFR 585.301 defines a minimum 100-foot-wide right of way grant on each side of a cable.\nData Access: Marine Cadastre, ArcGIS Rest Service\nCitation: Office for Coastal Management, 2025: Submarine Cables, https://www.fisheries.noaa.gov/inport/item/66190."
   },
   {
+    "objectID": "Add_An_AreaOfInterest.html",
+    "href": "Add_An_AreaOfInterest.html",
+    "title": "Add an Area of Interest",
+    "section": "",
+    "text": "The SMORES application calculates map boundaries, area cropping, and grid resolutions dynamically based on the selected Area of Interest (AOI)."
+  },
+  {
+    "objectID": "Add_An_AreaOfInterest.html#step-1-update-the-aoi-dataset",
+    "href": "Add_An_AreaOfInterest.html#step-1-update-the-aoi-dataset",
+    "title": "Add an Area of Interest",
+    "section": "Step 1: Update the AOI Dataset",
+    "text": "Step 1: Update the AOI Dataset\nThe application pulls the spatial bounds and names for all selectable areas directly from a single master file: ‘AOI_Full.parquet’. You must append your new AOI polygon to this dataset. Reference the ‘areas_of_interest.qmd’ that lives within the ‘data_processing/’. This file has the necessary steps written below mapped out and can be added onto. In general the steps are as follows:\nAcquire the Polygon: Load your new AOI shapefile/polygon into R.\nStandardize the CRS: Ensure the polygon is transformed to WGS84.\nFormat the Column Name: Add a column specifically named Area_Name and assign it your desired display name (e.g., “Area of Interest Name”).\nAppend the Data: Use bind_rows() to append your formatted polygon to the existing Areas_Of_Interest_Full object.\nSave the Parquet: Overwrite the master dataset by executing and saving a new file."
+  },
+  {
+    "objectID": "Add_An_AreaOfInterest.html#step-2-map-the-grid-resolution",
+    "href": "Add_An_AreaOfInterest.html#step-2-map-the-grid-resolution",
+    "title": "Add an Area of Interest",
+    "section": "Step 2: Map the Grid Resolution",
+    "text": "Step 2: Map the Grid Resolution\nWhen a user selects an AOI, the server needs to know whether to pull the high-resolution (2km) or regional (5km) grid data to execute the math for that specific boundary.\nOpen ‘global.R’.\nLocate the resolution_for_aoi named vector.\nAdd a new row matching your exact Area_Name to the desired folder resolution (“2km” or “5km”). Resolutions have been selected on a developer basis informed by memory constraints ie. larger spatial areas have larger grid cells applied to lower the memory costs and improve performance and hosting ability for the application.\nSave ‘global.R’."
+  },
+  {
+    "objectID": "Add_An_AreaOfInterest.html#step-3-update-the-ui-sidebar",
+    "href": "Add_An_AreaOfInterest.html#step-3-update-the-ui-sidebar",
+    "title": "Add an Area of Interest",
+    "section": "Step 3: Update the UI Sidebar",
+    "text": "Step 3: Update the UI Sidebar\nThe radio buttons are hardcoded, so we must explicitly tell the UI to display the new AOI as a selectable option.\nOpen ‘generate_area_of_interest_sidebar.R’.\nLocate the radioButtons block with the ID aoiAreaSelector.\nInside the choices vector, add a new row for your AOI. The left side is the UI label (name you want shown in the application), and the right side is the exact Area_Name value.\nExample:\nSave ‘generate_area_of_interest_sidebar.R’."
+  },
+  {
     "objectID": "Access.html",
     "href": "Access.html",
     "title": "SMORES Access Guide",
