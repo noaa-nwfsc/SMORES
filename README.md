@@ -21,29 +21,7 @@ This application was built to create a flexible framework that will allow scient
 
 The dashboard is organized by the navigation bar at the top. There are 6 tabs: Area of Interest, Natural Resources Submodel, Fisheries Submodel, Industry & Operations Submodel, Full Model, Methods, and Data.
 
-To generate a full model run you will move through the first 5 tabs from left to right.
-
-Each sub-tab contains further detail on scoring suggestions and cues to generate the layers of your choice.
-
-**Step 1**: Navigate to the Area of Interest tab and select an area or region you would like your analyses to focus on.
-
-**Step 2**: Navigate to the Natural Resources Submodel Tab. You will start at the Habitat sub-tab and select the scores you would like in this model run. Once you have configured your individual layer scores you will select the `Generate Maps` button to visualize the individual layers you selected. You will then select the calculation method(s) used to combine these layers (geometric mean, lowest value, product). Combined maps will then be generated when you select the `Generate Combined Maps` button. You can opt to export a copy of your results by selecting the `Export` button at the bottom of the page.
-
-**Step 3**: Navigate to the Species tab and repeat the process you used for the habitat tab.
-
-**Step 4**: Navigate to the Combined Submodel Tab. You will select which calculation method you would like for your combined maps to be included in the overall submodel calculation. *Note you are only able to select methods that you previously generated. You will then click on the `Generate Combined Submodel` button which will produce 2 maps. The first map will be the combined submodel score for the area of interest. The second map will show the combined submodel for the area of interest normalized using a minimum maximum normalization. *Note the normalized map is for visual use only and is not used in downstream calculations. You can opt to export a copy of your results by selecting the `Export` button at the bottom of the page.
-
-*At this stage the Natural Resources Submodel that will be included in the Full Model has been generated.*
-
-**Step 5**: Repeat steps 2-4 for the Fisheries Submodel which will include selecting scores for fisheries and trawl fisheries layers. *Note that when you combine the fisheries layers with the trawl fishery layers the trawl fishery score will replace the score in grid cells within the top 75% of the trawl fisheries' ranked importance values. This is a different methodology than previous sections.
-
-*At this stage the Fisheries Submodel that will be included in the Full Model has been generated.*
-
-**Step 6**: Repeat steps 2-4 for the Industry & Operations Submodel which will include selecting scores for scientific surveys and submarine cable layers.
-
-*At this stage the Industry & Operations Submodel that will be included in the Full Model has been generated.*
-
-**Step 7**: Navigate to the Full Model Tab. You will select which submodels you would like to be included in the calculation of the full model and then select the weight you would like applied to each submodel. Once you have configured your submodels you will click on the `Generate Full Model` button which will produce the map of the full model run for the selected area of interest. You can opt to export a copy of your results by selecting the `Export` button at the bottom of the page.
+For directions on how to execute a model run, save a scenario, load a saved scenario, and delete scenarios please see the [GUI Quickstart Guides](https://noaa-nwfsc.github.io/SMORES/) on the SMORES Documentation website.
 
 ## Repository Structure
 <details>
@@ -51,7 +29,137 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
 <summary>To view the repository structure view the collapsed section</summary>
 
 ```{r}
-├── R                                                # Folder containing custom functions used in Shiny App
+.
+├── .gitignore
+├── Full_Model_Report_Template.Rmd
+├── generate_data_timestamps.R
+├── global.R
+├── global_report_generation.R
+├── LICENSE
+├── manifest.json                                                                # file for Posit Connect deployment
+├── README.md
+├── server.R
+├── SMORES.Rproj
+├── Submodel_Combined_Report_Template.Rmd
+├── Submodel_Component_Report_Template.Rmd
+├── ui.R
+├── _brand.yml                                                                   # unified NOAA branding
+├── .quarto/
+├── data/
+│   ├── AOI_Full.parquet
+│   ├── data_timestamps.rds
+│   ├── 2km/                                                                     # geoParquet files for 2km grid cell size
+│   │   ├── ALCH_Ranked_Importance_scored_full.parquet
+│   │   ├── ALCH_scored_full.parquet
+│   │   ├── ALCO_Ranked_Importance_scored_full.parquet
+│   │   ├── ALCO_scored_full.parquet
+│   │   ├── ASH_Ranked_Importance_scored_full.parquet
+│   │   ├── ASH_scored_full.parquet
+│   │   ├── base_grid_df.parquet
+│   │   ├── Blue_whale_scored_full.parquet
+│   │   ├── Canyon_scored_full.parquet
+│   │   ├── CRAB_Ranked_Importance_scored_full.parquet
+│   │   ├── CRAB_scored_full.parquet
+│   │   ├── DSC_RH_scored_full.parquet
+│   │   ├── DSC_RH_z_membership_scored_full.parquet
+│   │   ├── EFHCA_700_scored_full.parquet
+│   │   ├── EFHCA_scored_full.parquet
+│   │   ├── GFBT_Ranked_Importance_scored_full.parquet
+│   │   ├── GFBT_scored_full.parquet
+│   │   ├── GFLL_Ranked_Importance_scored_full.parquet
+│   │   ├── GFLL_scored_full.parquet
+│   │   ├── GFP_Ranked_Importance_scored_full.parquet
+│   │   ├── GFP_scored_full.parquet
+│   │   ├── grid_full.parquet
+│   │   ├── HAPCaoi_scored_full.parquet
+│   │   ├── HAPCreef_scored_full.parquet
+│   │   ├── Humpback_whale_scored_full.parquet
+│   │   ├── Killer_whale_scored_full.parquet
+│   │   ├── Leatherback_turtle_scored_full.parquet
+│   │   ├── PS_Ranked_Importance_scored_full.parquet
+│   │   ├── PS_scored_full.parquet
+│   │   ├── Seeps_scored_full.parquet
+│   │   ├── ShlfBrk_scored_full.parquet
+│   │   ├── SSH_Ranked_Importance_scored_full.parquet
+│   │   ├── SSH_scored_full.parquet
+│   │   ├── Submarine_cable_scored_full.parquet
+│   │   ├── Surveys_fixed_scored_full.parquet
+│   │   ├── Surveys_periodic_scored_full.parquet
+│   │   └── Trawl_fisheries_scored_full.parquet
+│   └── 5km/                                                                     # geoParquet files for 5km grid cell size
+│       ├── ALCH_Ranked_Importance_scored_full.parquet
+│       ├── ALCH_scored_full.parquet
+│       ├── ALCO_Ranked_Importance_scored_full.parquet
+│       ├── ALCO_scored_full.parquet
+│       ├── ASH_Ranked_Importance_scored_full.parquet
+│       ├── ASH_scored_full.parquet
+│       ├── base_grid_df.parquet
+│       ├── Blue_whale_scored_full.parquet
+│       ├── Canyon_scored_full.parquet
+│       ├── CRAB_Ranked_Importance_scored_full.parquet
+│       ├── CRAB_scored_full.parquet
+│       ├── DSC_RH_scored_full.parquet
+│       ├── DSC_RH_z_membership_scored_full.parquet
+│       ├── EFHCA_700_scored_full.parquet
+│       ├── EFHCA_scored_full.parquet
+│       ├── GFBT_Ranked_Importance_scored_full.parquet
+│       ├── GFBT_scored_full.parquet
+│       ├── GFLL_Ranked_Importance_scored_full.parquet
+│       ├── GFLL_scored_full.parquet
+│       ├── GFP_Ranked_Importance_scored_full.parquet
+│       ├── GFP_scored_full.parquet
+│       ├── grid_full.parquet
+│       ├── HAPCaoi_scored_full.parquet
+│       ├── HAPCreef_scored_full.parquet
+│       ├── Humpback_whale_scored_full.parquet
+│       ├── Killer_whale_scored_full.parquet
+│       ├── Leatherback_turtle_scored_full.parquet
+│       ├── PS_Ranked_Importance_scored_full.parquet
+│       ├── PS_scored_full.parquet
+│       ├── Seeps_scored_full.parquet
+│       ├── ShlfBrk_scored_full.parquet
+│       ├── SSH_Ranked_Importance_scored_full.parquet
+│       ├── SSH_scored_full.parquet
+│       ├── Submarine_cable_scored_full.parquet
+│       ├── Surveys_fixed_scored_full.parquet
+│       ├── Surveys_periodic_scored_full.parquet
+│       └── Trawl_fisheries_scored_full.parquet
+├── data_processing/                                                          # data scripts for generating application ready data
+│   ├── areas_of_interest.qmd
+│   ├── binary_data_processing_2km.qmd
+│   ├── binary_data_processing_5km.qmd
+│   ├── continuous_data_processing_2km.qmd
+│   ├── continuous_data_processing_5km.qmd
+│   └── data_production_original.R
+├── markdown/                                                                 # text used on application
+│   ├── area_of_interest.md
+│   ├── cables.md
+│   ├── combined_fisheries_submodel.md
+│   ├── combined_industry_operations_submodel.md
+│   ├── combined_natural_resources_submodel.md
+│   ├── data.md
+│   ├── fisheries.md
+│   ├── full_model.md
+│   ├── habitat.md
+│   ├── methods.md
+│   ├── overview.md
+│   ├── species.md
+│   ├── surveys.md
+│   └── trawl_fisheries.md
+├── quarto_site/                                                               # Documentation website files                                   
+│   ├── .gitignore
+│   ├── Access.qmd
+│   ├── Data.qmd
+│   ├── Functions.qmd
+│   ├── GUI.qmd
+│   ├── index.qmd
+│   ├── Methods.qmd
+│   ├── styles.css
+│   ├── _quarto.yml
+│   ├── docs/                                                                   # GitHub pages access point
+│   └── www/
+│       └── Images/
+├── R/                                                                          # custom functions
 │   ├── apply_calculation_method.R
 │   ├── calculate_geometric_mean_combined.R
 │   ├── calculate_geometric_mean_full.R
@@ -61,14 +169,17 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
 │   ├── check_submodel_status.R
 │   ├── create_aoi_cropped_map.R
 │   ├── create_aoi_cropped_normalized_map.R
+│   ├── create_combined_map.R
+│   ├── create_combined_submodel_map.R
 │   ├── create_continuous_palette.R
 │   ├── create_full_model_map.R
 │   ├── create_individual_map.R
 │   ├── create_maps_container.R
+│   ├── crop_data_to_aoi.R
 │   ├── data_timestamps.R
 │   ├── determine_component_type.R
-│   ├── filter_by_score.R
 │   ├── filtered_data_timestamps.R
+│   ├── filter_by_score.R
 │   ├── generate_area_of_interest_sidebar.R
 │   ├── generate_cables_sidebar.R
 │   ├── generate_combined_map_for_method.R
@@ -76,7 +187,7 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
 │   ├── generate_fisheries_sidebar.R
 │   ├── generate_full_model_report.R
 │   ├── generate_full_model_sidebar.R
-│   ├── generate_habitat_sidebar.R        
+│   ├── generate_habitat_sidebar.R
 │   ├── generate_industry_operations_combined_sidebar.R
 │   ├── generate_natural_resources_combined_sidebar.R
 │   ├── generate_species_sidebar.R
@@ -85,85 +196,17 @@ Each sub-tab contains further detail on scoring suggestions and cues to generate
 │   ├── generate_surveys_sidebar.R
 │   ├── generate_trawl_fisheries_sidebar.R
 │   ├── get_valid_configs_for_tab.R
-│   ├── make_combined_map_dataset.R
+│   ├── make_combined_map_from_cached_data.R
 │   ├── modal.R
 │   ├── preprocess_spatial_data.R
 │   ├── sidebar_helpers.R
 │   ├── submodel_configurations.R
 │   └── submodel_status_display.R
-├── data                                              # Folder containing all data files used throughout the app. All files are in GeoParquet format
-│   ├── 2km_grid_full.parquet
-│   ├── ALCH_Ranked_Importance_scored_full.parquet
-│   ├── ALCH_scored_full.parquet
-│   ├── ALCO_Ranked_Importance_scored_full.parquet
-│   ├── ALCO_scored_full.parquet
-│   ├── ASH_Ranked_Importance_scored_full.parquet
-│   ├── ASH_scored_full.parquet
-│   ├── CRAB_Ranked_Importance_scored_full.parquet
-│   ├── CRAB_scored_full.parquet
-│   ├── DSC_RH_scored_full.parquet
-│   ├── DSC_RH_z_membership_scored_full.parquet
-│   ├── EFHCA_700_scored_full.parquet
-│   ├── EFHCA_scored_full.parquet
-│   ├── GFBT_Ranked_Importance_scored_full.parquet
-│   ├── GFBT_scored_full.parquet
-│   ├── GFLL_Ranked_Importance_scored_full.parquet
-│   ├── GFLL_scored_full.parquet
-│   ├── GFP_Ranked_Importance_scored_full.parquet
-│   ├── GFP_scored_full.parquet
-│   ├── HAPCaoi_scored_full.parquet
-│   ├── HAPCreef_scored_full
-│   ├── PS_Ranked_Importance_scored_full.parquet
-│   ├── PS_scored_full.parquet
-│   ├── SSH_Ranked_Importance_scored_full.parquet
-│   ├── SSH_scored_full.parquet
-│   ├── Seeps_scored_full.parquet
-│   ├── ShlfBrk_scored_full.parquet
-│   ├── Surveys_fixed_score_full.parquet
-│   ├── Surveys_periodic_scored_full.parquet
-│   ├── WEA.parquet
-│   ├── WEA_OCS.parquet
-│   ├── base_grid_df.parquet
-│   ├── blue_whale_scored_full.parquet
-│   ├── canyon_scored_full.parquet
-│   ├── humpback_whale_scored_full.parquet
-│   ├── killer_whale_scored_full.parquet
-│   ├── leatherback_turtle_scored_full.parquet
-│   ├── submarine_cable_scored_full.parquet
-│   └── trawl_fisheries_scored_full.parquet
-├── markdown                                          # Folder containing all markdown files used for text storage throughout the app
-│   ├── area_of_interest.md
-│   ├── cables.md
-│   ├── combined_fisheries_submodel.md
-│   ├── combined_industry_operations_submodel.md
-│   ├── combined_natural_resources_submodel.md
-│   ├── data.md
-│   ├── fisheries.md
-|   ├── full_model.md
-│   ├── habitat.md
-│   ├── methods.md
-│   ├── overview.md
-│   ├── species.md
-│   ├── surveys.md
-│   └── trawl_fisheries.md
-└── www                                               # graphics folder
-    ├── logos
-    |  ├── NOAA_FISHERIES_logoH.png
-    └── styles.css.png
-├── .gitignore
-├── Full_Model_Report_template.Rmd
-├── LICENSE                                           # Apache 2.0
-├── README.md
-├── SMORES.Rproj
-├── Submodel_Combined_Report_Template.Rmd
-├── Submodel_Component_Report_Template.Rmd
-├── _brand.yml                                        # Theming for the app
-├── data_production.R
-├── global.R                                          # global file for app generation where packages and data are loaded through
-├── global_report_generation.R                        # global file for report generation where packages and functions are loaded
-├── manifest.json                                     # JSON file for Posit Connect deployment
-├── server.R
-├── ui.R
+└── www/
+    ├── documentation_website.png
+    ├── styles.css
+    └── logos/
+        └── NOAA_FISHERIES_logoH.png
 ```
 </details>
 
