@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Executing a Model Run – SMORES Documentation</title>
+<title>Add a Data Layer to a Component – SMORES Documentation</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -177,13 +177,14 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#step-1-select-your-area-of-interest" id="toc-step-1-select-your-area-of-interest" class="nav-link active" data-scroll-target="#step-1-select-your-area-of-interest">Step 1: Select your area of interest</a></li>
-  <li><a href="#step-2-configure-a-component-for-a-submodel-habitat-used-as-an-example" id="toc-step-2-configure-a-component-for-a-submodel-habitat-used-as-an-example" class="nav-link" data-scroll-target="#step-2-configure-a-component-for-a-submodel-habitat-used-as-an-example">Step 2: Configure a component for a submodel (habitat used as an example)</a></li>
-  <li><a href="#step-3-configure-a-second-component-for-a-submodel-species-used-as-an-example" id="toc-step-3-configure-a-second-component-for-a-submodel-species-used-as-an-example" class="nav-link" data-scroll-target="#step-3-configure-a-second-component-for-a-submodel-species-used-as-an-example">Step 3: Configure a second component for a submodel (species used as an example)</a></li>
-  <li><a href="#step-4-configure-the-natural-resources-submodel" id="toc-step-4-configure-the-natural-resources-submodel" class="nav-link" data-scroll-target="#step-4-configure-the-natural-resources-submodel">Step 4: Configure the natural resources submodel</a></li>
-  <li><a href="#step-5-configure-the-fisheries-submodel" id="toc-step-5-configure-the-fisheries-submodel" class="nav-link" data-scroll-target="#step-5-configure-the-fisheries-submodel">Step 5: Configure the fisheries submodel</a></li>
-  <li><a href="#step-6-configure-the-industry-and-operations-submodel" id="toc-step-6-configure-the-industry-and-operations-submodel" class="nav-link" data-scroll-target="#step-6-configure-the-industry-and-operations-submodel">Step 6: Configure the industry and operations submodel</a></li>
-  <li><a href="#step-7-configure-and-visualize-a-full-model-run" id="toc-step-7-configure-and-visualize-a-full-model-run" class="nav-link" data-scroll-target="#step-7-configure-and-visualize-a-full-model-run">Step 7: Configure and visualize a full model run</a></li>
+  <li><a href="#step-1-data-preparation" id="toc-step-1-data-preparation" class="nav-link active" data-scroll-target="#step-1-data-preparation">Step 1: Data Preparation</a></li>
+  <li><a href="#step-2-register-the-layer-in-the-ui" id="toc-step-2-register-the-layer-in-the-ui" class="nav-link" data-scroll-target="#step-2-register-the-layer-in-the-ui">Step 2: Register the Layer in the UI</a></li>
+  <li><a href="#step-3-route-the-cache-logic" id="toc-step-3-route-the-cache-logic" class="nav-link" data-scroll-target="#step-3-route-the-cache-logic">Step 3: Route the Cache Logic</a></li>
+  <li><a href="#step-4-map-the-score-column" id="toc-step-4-map-the-score-column" class="nav-link" data-scroll-target="#step-4-map-the-score-column">Step 4: Map the Score Column</a></li>
+  <li><a href="#step-5-update-the-data-tab-ledger" id="toc-step-5-update-the-data-tab-ledger" class="nav-link" data-scroll-target="#step-5-update-the-data-tab-ledger">Step 5: Update the Data Tab Ledger</a></li>
+  <li><a href="#step-6-front-end-documentation-updates" id="toc-step-6-front-end-documentation-updates" class="nav-link" data-scroll-target="#step-6-front-end-documentation-updates">Step 6: Front-End Documentation Updates</a></li>
+  <li><a href="#optional-step-7-push-changes-to-posit-connect" id="toc-optional-step-7-push-changes-to-posit-connect" class="nav-link" data-scroll-target="#optional-step-7-push-changes-to-posit-connect">Optional Step 7: Push Changes to Posit Connect</a></li>
+  <li><a href="#step-8-push-changes-to-github" id="toc-step-8-push-changes-to-github" class="nav-link" data-scroll-target="#step-8-push-changes-to-github">Step 8: Push Changes to Github</a></li>
   </ul>
 </nav>
     </div>
@@ -192,7 +193,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Executing a Model Run</h1>
+<h1 class="title">Add a Data Layer to a Component</h1>
 </div>
 
 
@@ -209,101 +210,70 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>To generate a full model run you will move through the tabs from left to right.</p>
-<p><img src="www/Images/overview_tab.png" class="img-fluid"></p>
-<p>Each sub-tab contains further detail on scoring suggestions and cues to generate the layers of your choice.</p>
-<section id="step-1-select-your-area-of-interest" class="level2">
-<h2 class="anchored" data-anchor-id="step-1-select-your-area-of-interest">Step 1: Select your area of interest</h2>
-<p>Navigate to the Area of Interest tab and select a region you would like your analyses to focus on. Geographically smaller areas (Wind Energy Areas, and CA Suitable Sea Space) will be loaded throughout the app using data processed with the 2km grid cell size. Geographically larger areas (OCS Planning Areas) will be loaded throughout the app using data processed with the 5km grid cell size. By selecting an area of interest, all maps generated in the application will be cropped to this area.</p>
-<p>To select a different area of interest, you will click on the desired area’s button.</p>
-<div class="quarto-layout-panel" data-layout-ncol="2">
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="www/Images/area_interest_2km_selection.png" class="img-fluid figure-img"></p>
-<figcaption>Smaller geographic area selected</figcaption>
-</figure>
-</div>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="www/Images/area_interest_5km_selection.png" class="img-fluid figure-img"></p>
-<figcaption>Larger geographic area selected</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</div>
+<p>The SMORES application is modular. Adding a new data layer to an existing component (e.g., adding a new species to the “Species” tab) using standard scoring methodology requires modifying five specific files in a specific order.</p>
+<section id="step-1-data-preparation" class="level2">
+<h2 class="anchored" data-anchor-id="step-1-data-preparation">Step 1: Data Preparation</h2>
+<p>Before touching the Shiny application code, ensure your spatial data is processed and staged.</p>
+<p>Run the appropriate pre-processing scripts (e.g., data_processing/) to generate the formatted .parquet files for the new layer. You will need to process the data for both the 2km and 5km grid cell size.</p>
+<p>Verify that the files follow the standard naming convention (e.g., New_Layer_scored_full.parquet).</p>
+<p>Place a copy of the processed file into both the data/2km/ and data/5km/ directories.</p>
 </section>
-<section id="step-2-configure-a-component-for-a-submodel-habitat-used-as-an-example" class="level2">
-<h2 class="anchored" data-anchor-id="step-2-configure-a-component-for-a-submodel-habitat-used-as-an-example">Step 2: Configure a component for a submodel (habitat used as an example)</h2>
-<p>Navigate to the Natural Resources Submodel Tab.</p>
-<p>You will start at the Habitat sub-tab and select the scores you would like in this model run.</p>
-<p><img src="www/Images/habitat_opener.png" class="img-fluid"></p>
-<p>To select a score for a layer, you will first check the box next to the layer to initialize it. Once you have initialized the layer, you will select a score from the drop down menu.</p>
-<p><img src="www/Images/habitat_score_selector.png" class="img-fluid"></p>
-<p>Scores typically range from 0 (exclude, very unsuitable) to 1 (most suitable). Some layers due to their structure will have alternative options such as the z-membership scores or a very limited option pool. If you have questions about which scores are represented on this app, please reference the methods section.</p>
-<p>Once you have configured the data layers you are interested in including you will click the ‘Generate Habitat Maps’ button. Clicking this button will generate individual maps for each data layer you configured.</p>
-<p><img src="www/Images/habitat_individual_maps.png" class="img-fluid"></p>
-<p>Each of these individual maps is dynamic. The maps can be zoomed in or zoomed out, and cells with scores are selectable to have a pop-up that details the score of the cell appear on the map. Additionally, you can move the area of focus by dragging the map.</p>
-<p>*Note: if you initialized the layer but selected <code>None</code> for the score, the map will not generate</p>
-<p>Once you have configured your individual layer scores you will select the calculation method you would like used to combine these layers (geometric mean, lowest value, product). You will then select the ‘Generate Combined Map(s)’ button. This will generate your combined maps.</p>
-<p><img src="www/Images/habitat_combined_map.png" class="img-fluid"></p>
-<p>You can opt to export a copy of your results by selecting the ‘Export Habitat Component Report’ button at the bottom of the page. When you select the button a loading screen will show on the app to indicate that the report is generating. When the report has completed generating it will be available in your downloads folder. A component report will include information about the data visualized, individual maps, and the combined maps selected. Here is an example of an individual component report.</p>
-<iframe src="www\\Habitat_Component_Natural_Resources_Submodel_Report_2026-04-10_20-44-46.html" width="100%" height="500px">
-</iframe>
+<section id="step-2-register-the-layer-in-the-ui" class="level2">
+<h2 class="anchored" data-anchor-id="step-2-register-the-layer-in-the-ui">Step 2: Register the Layer in the UI</h2>
+<p>The sidebar dropdowns and checkboxes in the application are dynamically generated from lists stored in the global environment.</p>
+<p>Open ‘global.R’.</p>
+<p>Locate the list for the component you are adding to (e.g., habitat_layer, species_layer, fisheries_layer, surveys_layer, or submarine_cables_layer).</p>
+<p>Add your new layer to the list. The format must be “UI Display Name” = “parquet_base_filename.parquet”.</p>
+<p>Example: “Basking Shark” = “Basking_shark_scored_full.parquet”</p>
+<p>Save the file. The UI will now automatically generate the inclusion checkbox and score dropdown for this layer.</p>
 </section>
-<section id="step-3-configure-a-second-component-for-a-submodel-species-used-as-an-example" class="level2">
-<h2 class="anchored" data-anchor-id="step-3-configure-a-second-component-for-a-submodel-species-used-as-an-example">Step 3: Configure a second component for a submodel (species used as an example)</h2>
-<p>Navigate to the Species tab and repeat the process you used for the Habitat tab.</p>
-<p><img src="www/Images/species_opener.png" class="img-fluid"></p>
+<section id="step-3-route-the-cache-logic" class="level2">
+<h2 class="anchored" data-anchor-id="step-3-route-the-cache-logic">Step 3: Route the Cache Logic</h2>
+<p>The server needs to know which overarching submodel component this new layer belongs to so it can store it in the correct memory cache.</p>
+<p>Open ‘R/determine_component_type.R’.</p>
+<p>Locate the list corresponding to your component (e.g., habitat_layers, species_layers, etc.).</p>
+<p>Add the exact “UI Display Name” you created in Step 2 to this vector.</p>
+<p>Example: species_layers &lt;- c(…, “Biologically Important Area - Blue Whale”, “Basking Shark”)</p>
 </section>
-<section id="step-4-configure-the-natural-resources-submodel" class="level2">
-<h2 class="anchored" data-anchor-id="step-4-configure-the-natural-resources-submodel">Step 4: Configure the natural resources submodel</h2>
-<p>Navigate to the Combined Submodel tab.</p>
-<p><img src="www/Images/nat_res_combined_opener.png" class="img-fluid"></p>
-<p>You will select which calculation method (geometric mean, product, or lowest) for each component should be used in the calculation to generate the combined submodel. The app will indicate which components have been configured for use in the combined submodel calculations.</p>
-<p>*Note: If you choose to not configure a submodel’s components you will not be able to include this component in a combined map.</p>
-<p>You will then click on the Generate Combined Submodel button, which will produce 2 maps.</p>
-<ul>
-<li><p>The first map will represent the combined submodel score for the selected area of interest.</p></li>
-<li><p>The second map will show the combined submodel score for the area of interest normalized using a minimum maximum normalization to emphasis score differences for visual inspection.</p></li>
-</ul>
-<p><img src="www/Images/nat_res_combined_generated.png" class="img-fluid"></p>
-<p>You can opt to export a copy of your results by selecting the ‘Export Natural Resources Combined Submodel Report’ button at the bottom of the page. When you select the button a loading screen will show on the app to indicate that the report is generating. When the report has completed generating it will be available in your downloads folder. A component report will include information about the data visualized, individual maps, and the combined maps selected. Here is an example of a combined submodel report.</p>
-<iframe src="www\\Natural_Resources_Combined_Submodel_Report_2026-04-10_22-12-27.html" width="100%" height="500px">
-</iframe>
-<p><em>At this stage the Natural Resources Submodel that will be included in the Full Model has been generated.</em></p>
+<section id="step-4-map-the-score-column" class="level2">
+<h2 class="anchored" data-anchor-id="step-4-map-the-score-column">Step 4: Map the Score Column</h2>
+<p>When the user clicks “Generate”, the server needs to know exactly which column inside your .parquet file contains the math scores for that specific layer.</p>
+<p>Open ‘server.R’.</p>
+<p>Scroll to the observeEvent block for the submodel you are editing:</p>
+<p>Natural Resources: Search for <code>observeEvent(natural_resources_valid_configs()</code></p>
+<p>Fisheries: Search for <code>observeEvent(fisheries_valid_configs()</code></p>
+<p>Industry &amp; Operations: Search for <code>observeEvent(industry_operations_valid_configs()</code></p>
+<p>Inside that block, look for the <code>score_col &lt;- switch(...)</code> statement.</p>
+<p>Add a new line matching your UI Display Name to the exact column name inside the .parquet file.</p>
+<p>Example: “Basking Shark” = “Score.basking_shark”,</p>
 </section>
-<section id="step-5-configure-the-fisheries-submodel" class="level2">
-<h2 class="anchored" data-anchor-id="step-5-configure-the-fisheries-submodel">Step 5: Configure the fisheries submodel</h2>
-<p>Repeat steps 2-4 for the Fisheries Submodel, which will include selecting scores for two components. The first component is fisheries.</p>
-<p><img src="www/Images/fisheries_opener.png" class="img-fluid"></p>
-<p>The second component is trawl fisheries.</p>
-<p><img src="www/Images/trawl_opener.png" class="img-fluid"></p>
-<p>*Note that when you combine the fisheries layers with the trawl fishery layers the trawl fishery score will replace the score in grid cells within the top 75% of the trawl fisheries’ ranked importance values. This is a different methodology than previous sections.</p>
-<p><em>At this stage the Fisheries Submodel that will be included in the Full Model will be generated.</em></p>
+<section id="step-5-update-the-data-tab-ledger" class="level2">
+<h2 class="anchored" data-anchor-id="step-5-update-the-data-tab-ledger">Step 5: Update the Data Tab Ledger</h2>
+<p>To ensure your new layer shows up on the “Data” tab with its correct metadata and local system timestamp:</p>
+<p>Open ‘R/generate_data_timestamps.R’.</p>
+<p>Append your new layer’s information to the end of the four main setup vectors:</p>
+<p>data_files: Add “Basking_shark_scored_full.parquet”</p>
+<p>dataset_names: Add “Basking Shark”</p>
+<p>descriptions: Add “Habitat suitability model for Basking Sharks”</p>
+<p>data_types: Add “Discrete” (or “Continuous”)</p>
+<p>Run the entire script locally in your R Console. This will execute the <code>file.mtime()</code> checks against your hard drive and overwrite the static ‘data_timestamps.rds’ file inside your data folder.</p>
+<p>When the app boots up, the Data tab will read the newly updated .rds file and display your new layer.</p>
 </section>
-<section id="step-6-configure-the-industry-and-operations-submodel" class="level2">
-<h2 class="anchored" data-anchor-id="step-6-configure-the-industry-and-operations-submodel">Step 6: Configure the industry and operations submodel</h2>
-<p>Repeat steps 2-4 for the Industry &amp; Operations Submodel. The Industry &amp; Operations Submodel is comprised of two components. The first component is scientific surveys.</p>
-<p><img src="www/Images/surveys_opener.png" class="img-fluid"></p>
-<p>The second component is submarine cable lines.</p>
-<p><img src=".png" class="img-fluid"></p>
-<p><em>At this stage the Industry &amp; Operations Submodel that will be included in the Full Model has been generated.</em></p>
+<section id="step-6-front-end-documentation-updates" class="level2">
+<h2 class="anchored" data-anchor-id="step-6-front-end-documentation-updates">Step 6: Front-End Documentation Updates</h2>
+<p>Finally, remember to update the application’s front-end documentation so users understand the new data layer!</p>
+<p>Open the corresponding .md file in the markdown/ directory (e.g., ‘markdown/species.md’).</p>
+<p>Add a brief description of the new dataset, its source, and any relevant caveats regarding its inclusion in the model, and potentially a suggested score.</p>
 </section>
-<section id="step-7-configure-and-visualize-a-full-model-run" class="level2">
-<h2 class="anchored" data-anchor-id="step-7-configure-and-visualize-a-full-model-run">Step 7: Configure and visualize a full model run</h2>
-<p>Navigate to the Full Model Tab.</p>
-<p><img src="www/Images/full_model_opener.png" class="img-fluid"></p>
-<p>The sidebar on the left-hand side includes messaging indicating which submodels have been configured within the app and are available to be included in the full model calculation. If a submodel is not selected it will not be included in the full model calculation. Once you have selected the submodels you would like included, by selecting the check-box next to the submodel, you have the option to select a submodel weight to be applied to that submodel. A weight of 1 for all submodels will apply a non-weighted geometric mean in order to calculate the final full model. Model weights not equal to 1 will apply a weighted geometric mean calculation to calculate the final full model. Weights are available in 0.1 increments. For more information on weighting please see the <code>Methods</code> page.</p>
-<p><img src="www/Images/full_model_weights.png" class="img-fluid"></p>
-<p>Once you have configured your submodels, you will click on the <code>Generate Full Model</code> button, which will produce a full model map.</p>
-<p>You can opt to export a copy of your results by selecting the <code>Export</code> button at the bottom of the page. The report will be a HTML based report.</p>
-<iframe src="www\Full_Model_Report_2026-04-13_18-04-59.html" width="100%" height="500px">
-</iframe>
+<section id="optional-step-7-push-changes-to-posit-connect" class="level2">
+<h2 class="anchored" data-anchor-id="optional-step-7-push-changes-to-posit-connect">Optional Step 7: Push Changes to Posit Connect</h2>
+<p>If you are interested in these changes being pushed to Posit Connect the manifest.json file needs to be updated.</p>
+<p>To update this file run the following code in the console: <code>rsconnect::writeManifest(appDir = ...)</code></p>
+</section>
+<section id="step-8-push-changes-to-github" class="level2">
+<h2 class="anchored" data-anchor-id="step-8-push-changes-to-github">Step 8: Push Changes to Github</h2>
+<p>Add, Commit, and Push changes to Github.</p>
+<p>In Posit Connect open the settings tab and pan to the info section. There will be a blue button that says “Update Now”. Clicking this button tells Posit Connect to check the Github repository for any changes and will load your new updates.</p>
 
 
 </section>

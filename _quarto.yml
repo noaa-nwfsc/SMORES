@@ -22,6 +22,10 @@ website:
           - Functions.qmd
       - Data.qmd
       - Questions.qmd 
+      - text: Developers' Guides
+        menu: 
+          - Add_A_Layer.qmd
+          - Add_An_AreaOfInterest.qmd
   page-footer: 
     right: Made with [Quarto](https://quarto.org/)
 

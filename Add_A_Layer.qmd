@@ -1,0 +1,102 @@
+---
+title: "Add a Data Layer to a Component"
+format: html
+---
+
+The SMORES application is modular. Adding a new data layer to an existing component (e.g., adding a new species to the "Species" tab) using standard scoring methodology requires modifying five specific files in a specific order.
+
+## Step 1: Data Preparation
+
+Before touching the Shiny application code, ensure your spatial data is processed and staged.
+
+Run the appropriate pre-processing scripts (e.g., data_processing/) to generate the formatted .parquet files for the new layer. You will need to process the data for both the 2km and 5km grid cell size. 
+
+Verify that the files follow the standard naming convention (e.g., New_Layer_scored_full.parquet).
+
+Place a copy of the processed file into both the data/2km/ and data/5km/ directories.
+
+## Step 2: Register the Layer in the UI
+
+The sidebar dropdowns and checkboxes in the application are dynamically generated from lists stored in the global environment.
+
+Open 'global.R'.
+
+Locate the list for the component you are adding to (e.g., habitat_layer, species_layer, fisheries_layer, surveys_layer, or submarine_cables_layer).
+
+Add your new layer to the list. The format must be "UI Display Name" = "parquet_base_filename.parquet".
+
+Example: "Basking Shark" = "Basking_shark_scored_full.parquet"
+
+Save the file. The UI will now automatically generate the inclusion checkbox and score dropdown for this layer.
+
+## Step 3: Route the Cache Logic 
+
+The server needs to know which overarching submodel component this new layer belongs to so it can store it in the correct memory cache.
+
+Open 'R/determine_component_type.R'.
+
+Locate the list corresponding to your component (e.g., habitat_layers, species_layers, etc.).
+
+Add the exact "UI Display Name" you created in Step 2 to this vector.
+
+Example: species_layers <- c(..., "Biologically Important Area - Blue Whale", "Basking Shark")
+
+## Step 4: Map the Score Column
+
+When the user clicks "Generate", the server needs to know exactly which column inside your .parquet file contains the math scores for that specific layer.
+
+Open 'server.R'.
+
+Scroll to the observeEvent block for the submodel you are editing:
+
+Natural Resources: Search for `observeEvent(natural_resources_valid_configs()`
+
+Fisheries: Search for `observeEvent(fisheries_valid_configs()`
+
+Industry & Operations: Search for `observeEvent(industry_operations_valid_configs()`
+
+Inside that block, look for the `score_col <- switch(...)` statement.
+
+Add a new line matching your UI Display Name to the exact column name inside the .parquet file.
+
+Example: "Basking Shark" = "Score.basking_shark",
+
+## Step  5: Update the Data Tab Ledger 
+
+To ensure your new layer shows up on the "Data" tab with its correct metadata and local system timestamp:
+
+Open 'R/generate_data_timestamps.R'.
+
+Append your new layer's information to the end of the four main setup vectors:
+
+data_files: Add "Basking_shark_scored_full.parquet"
+
+dataset_names: Add "Basking Shark"
+
+descriptions: Add "Habitat suitability model for Basking Sharks"
+
+data_types: Add "Discrete" (or "Continuous")
+
+Run the entire script locally in your R Console. This will execute the `file.mtime()` checks against your hard drive and overwrite the static 'data_timestamps.rds' file inside your data folder.
+
+When the app boots up, the Data tab will read the newly updated .rds file and display your new layer.
+
+## Step 6: Front-End Documentation Updates
+
+Finally, remember to update the application's front-end documentation so users understand the new data layer!
+
+Open the corresponding .md file in the markdown/ directory (e.g., 'markdown/species.md').
+
+Add a brief description of the new dataset, its source, and any relevant caveats regarding its inclusion in the model, and potentially a suggested score.
+
+## Optional Step 7: Push Changes to Posit Connect
+
+If you are interested in these changes being pushed to Posit Connect the manifest.json file needs to be updated. 
+
+To update this file run the following code in the console: `rsconnect::writeManifest(appDir = ...)`
+
+## Step 8: Push Changes to Github
+
+Add, Commit, and Push changes to Github. 
+
+In Posit Connect open the settings tab and pan to the info section. There will be a blue button that says "Update Now". Clicking this button tells Posit Connect to check the Github repository for any changes and will load your new updates. 
