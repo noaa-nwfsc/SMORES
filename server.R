@@ -60,15 +60,54 @@ function(input, output, session) {
 
     combined_maps_data$full_model_generated <- FALSE
 
+    # ==========================================
+    # --- NEW LOGIC: Recover the Scenario Name ---
+    # ==========================================
+    tryCatch(
+      {
+        # Read the URL query string (e.g., "?_state_id_=abcd123")
+        query_string <- isolate(session$clientData$url_search)
+
+        if (nzchar(query_string) && grepl("_state_id_", query_string)) {
+          # Extract the exact state ID
+          query_parsed <- shiny::parseQueryString(query_string)
+          current_state_id <- query_parsed[["_state_id_"]]
+
+          if (!is.null(current_state_id)) {
+            # Read the pin board and match the ID
+            sessions_df <- pins::pin_read(app_board, "melissa.widas/sessions")
+            match_idx <- grep(current_state_id, sessions_df$url)
+
+            if (length(match_idx) > 0) {
+              # Update the banner with the recovered name!
+              active_loaded_scenario(sessions_df$name[match_idx[1]])
+            }
+          }
+        }
+      },
+      error = function(e) {
+        # Fail silently and leave as "None" if something goes wrong
+      }
+    )
+
     # garbage collection to free up server RAM
     gc()
 
     # warn the user
-    showNotification(
-      "ℹ️ Scenario Configuration Loaded! Please navigate to the component tabs and click 'Generate' to rebuild the maps.",
-      type = "warning",
-      duration = 15 # Keep it on screen for 15 seconds
-    )
+    showModal(modalDialog(
+      title = "✅ Scenario Loaded Successfully",
+      HTML(
+        "Your saved configuration has been loaded into the application.<br><br>
+        <strong>Important Next Steps:</strong>
+        <ol>
+          <li>Please navigate to the <strong>Area of Interest</strong> tab to view the scenarios selected region.</li>
+          <li>Navigate to your desired component tabs and click <strong>'Generate'</strong> to physically rebuild maps. All maps need to be rebuilt from a loaded scenario.</li>
+        </ol>"
+      ),
+      size = "m",
+      easyClose = FALSE, # forces user to close modal box instead of being able to dismiss it
+      footer = modalButton("I Understand")
+    ))
   })
 
   # identify app grid size being called
@@ -3904,6 +3943,7 @@ function(input, output, session) {
   })
 
   # load button
+  # load button
   observeEvent(input$load_scenario_btn, {
     selected_row <- input$scenario_table_rows_selected
 
@@ -3922,12 +3962,10 @@ function(input, output, session) {
         # 1. Read directly from pins to get the target URL
         sessions_df <- pins::pin_read(app_board, "melissa.widas/sessions")
         selected_url <- sessions_df$url[selected_row]
-        selected_name <- sessions_df$name[selected_row]
 
-        # 2. Update the active scenario tracker
-        active_loaded_scenario(selected_name)
+        # (Removed the active_loaded_scenario update from here!)
 
-        # 3. Let shinystate do the heavy lifting
+        # 2. Let shinystate do the heavy lifting (Triggers the refresh)
         app_storage$restore(url = selected_url)
       },
       error = function(e) {
