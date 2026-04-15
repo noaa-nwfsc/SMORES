@@ -110,6 +110,23 @@ function(input, output, session) {
     ))
   })
 
+  # Reset Sidebar Scroll on Tab Change
+  observeEvent(
+    c(
+      input$navbar,
+      input$dataTabs_natural_resources,
+      input$dataTabs_fisheries,
+      input$dataTabs_industry_operations
+    ),
+    {
+      # This JavaScript command finds the bslib sidebar containers and forces the scrollbar to the top
+      shinyjs::runjs(
+        "document.querySelectorAll('aside, .sidebar').forEach(function(el) { el.scrollTop = 0; });"
+      )
+    },
+    ignoreInit = TRUE
+  )
+
   # identify app grid size being called
   current_resolution <- reactive({
     selected_area <- input$aoiAreaSelector
