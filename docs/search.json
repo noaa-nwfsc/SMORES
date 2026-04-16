@@ -368,21 +368,21 @@
     "href": "Add_An_AreaOfInterest.html#step-1-update-the-aoi-dataset",
     "title": "Add an Area of Interest",
     "section": "Step 1: Update the AOI Dataset",
-    "text": "Step 1: Update the AOI Dataset\nThe application pulls the spatial bounds and names for all selectable areas directly from a single master file: ‘AOI_Full.parquet’. You must append your new AOI polygon to this dataset. Reference the ‘areas_of_interest.qmd’ that lives within the ‘data_processing/’. This file has the necessary steps written below mapped out and can be added onto. In general the steps are as follows:\nAcquire the Polygon: Load your new AOI shapefile/polygon into R.\nStandardize the CRS: Ensure the polygon is transformed to WGS84.\nFormat the Column Name: Add a column specifically named Area_Name and assign it your desired display name (e.g., “Area of Interest Name”).\nAppend the Data: Use bind_rows() to append your formatted polygon to the existing Areas_Of_Interest_Full object.\nSave the Parquet: Overwrite the master dataset by executing and saving a new file."
+    "text": "Step 1: Update the AOI Dataset\nThe application pulls the spatial bounds and names for all selectable areas directly from a single master file: ‘AOI_Full.parquet’. You must append your new AOI polygon to this dataset. Reference the areas_of_interest.qmd that lives within the data_processing/. This file has the necessary steps written below mapped out and can be added onto. In general the steps are as follows:\nAcquire the Polygon: Load your new AOI shapefile/polygon into R.\nClean Data: Run qa/qc on dataset to ensure geometry is intact and valid.\nStandardize the CRS: Ensure the polygon is in the correct spatial reference.\nFormat the Column Name: Add a column specifically named Area_Name and assign your polygon a display name that will be used by the application (e.g., Brookings or Washington).\nAppend the Data: add your new polygon to the existing Areas_Of_Interest_Full object.\nSave the Parquet: Overwrite the master dataset by executing and saving a new file."
   },
   {
     "objectID": "Add_An_AreaOfInterest.html#step-2-map-the-grid-resolution",
     "href": "Add_An_AreaOfInterest.html#step-2-map-the-grid-resolution",
     "title": "Add an Area of Interest",
     "section": "Step 2: Map the Grid Resolution",
-    "text": "Step 2: Map the Grid Resolution\nWhen a user selects an AOI, the server needs to know whether to pull the high-resolution (2km) or regional (5km) grid data to execute the math for that specific boundary.\nOpen ‘global.R’.\nLocate the resolution_for_aoi named vector.\nAdd a new row matching your exact Area_Name to the desired folder resolution (“2km” or “5km”). Resolutions have been selected on a developer basis informed by memory constraints ie. larger spatial areas have larger grid cells applied to lower the memory costs and improve performance and hosting ability for the application.\nSave ‘global.R’."
+    "text": "Step 2: Map the Grid Resolution\nWhen a user selects an AOI, the server needs to know which data to use (high-resolution (2km) or regional (5km)).\nOpen global.R.\nLocate the resolution_for_aoi named vector.\nAdd a new row matching your exact Area_Name to the desired folder resolution (“2km” or “5km”). Resolutions have been selected on a developer basis informed by memory constraints ie. larger spatial areas have larger grid cells applied to lower the memory costs and improve performance of the application.\nSave global.R."
   },
   {
     "objectID": "Add_An_AreaOfInterest.html#step-3-update-the-ui-sidebar",
     "href": "Add_An_AreaOfInterest.html#step-3-update-the-ui-sidebar",
     "title": "Add an Area of Interest",
     "section": "Step 3: Update the UI Sidebar",
-    "text": "Step 3: Update the UI Sidebar\nThe radio buttons are hardcoded, so we must explicitly tell the UI to display the new AOI as a selectable option.\nOpen ‘generate_area_of_interest_sidebar.R’.\nLocate the radioButtons block with the ID aoiAreaSelector.\nInside the choices vector, add a new row for your AOI. The left side is the UI label (name you want shown in the application), and the right side is the exact Area_Name value.\nExample:\nSave ‘generate_area_of_interest_sidebar.R’."
+    "text": "Step 3: Update the UI Sidebar\nThe Area of Interest tab opens with radio button selectors for each of the areas of interest. The radio buttons are hardcoded, so we must explicitly tell the UI to display the new AOI as a selectable option.\nOpen generate_area_of_interest_sidebar.R.\nLocate the radioButtons block with the ID aoiAreaSelector.\nInside the choices vector, add a new row for your AOI. The left side is the UI label (name you want shown in the application), and the right side is the exact Area_Name value.\nSave generate_area_of_interest_sidebar.R.\n*You have now added a new area of interest option for users to select. The boundary of this area of interest will be used to crop resulting datasets and outputs."
   },
   {
     "objectID": "Access.html",
@@ -396,63 +396,63 @@
     "href": "Add_A_Layer.html",
     "title": "Add a Data Layer to a Component",
     "section": "",
-    "text": "The SMORES application is modular. Adding a new data layer to an existing component (e.g., adding a new species to the “Species” tab) using standard scoring methodology requires modifying five specific files in a specific order."
+    "text": "The SMORES application is modular. Adding a new data layer to an existing component (e.g., adding a new species to the “Species” tab) using standard scoring methodology requires modifying multiple files. If you are planning on adding a layer that needs a non-standard scoring type (e.g., ranked importance, z-membership, etc.) please reference how fisheries layers, and the deep sea coral robust high z-membership data were handled in the code."
   },
   {
     "objectID": "Add_A_Layer.html#step-1-data-preparation",
     "href": "Add_A_Layer.html#step-1-data-preparation",
     "title": "Add a Data Layer to a Component",
     "section": "Step 1: Data Preparation",
-    "text": "Step 1: Data Preparation\nBefore touching the Shiny application code, ensure your spatial data is processed and staged.\nRun the appropriate pre-processing scripts (e.g., data_processing/) to generate the formatted .parquet files for the new layer. You will need to process the data for both the 2km and 5km grid cell size.\nVerify that the files follow the standard naming convention (e.g., New_Layer_scored_full.parquet).\nPlace a copy of the processed file into both the data/2km/ and data/5km/ directories."
+    "text": "Step 1: Data Preparation\nBefore touching the Shiny application code, ensure your spatial data is processed and staged.\nRun the appropriate pre-processing scripts, these can be found in the data_processing/ to generate the formatted .parquet files for the new layer. You will need to process the data for both the 2km and 5km grid cell size.\nVerify that the files follow the standard naming convention (e.g., New_Layer_scored_full.parquet) and score column naming convention (e.g., layer_name.Scored).\nPlace a copy of the processed file into both the data/2km/ and data/5km/ directories."
   },
   {
     "objectID": "Add_A_Layer.html#step-2-register-the-layer-in-the-ui",
     "href": "Add_A_Layer.html#step-2-register-the-layer-in-the-ui",
     "title": "Add a Data Layer to a Component",
     "section": "Step 2: Register the Layer in the UI",
-    "text": "Step 2: Register the Layer in the UI\nThe sidebar dropdowns and checkboxes in the application are dynamically generated from lists stored in the global environment.\nOpen ‘global.R’.\nLocate the list for the component you are adding to (e.g., habitat_layer, species_layer, fisheries_layer, surveys_layer, or submarine_cables_layer).\nAdd your new layer to the list. The format must be “UI Display Name” = “parquet_base_filename.parquet”.\nExample: “Basking Shark” = “Basking_shark_scored_full.parquet”\nSave the file. The UI will now automatically generate the inclusion checkbox and score dropdown for this layer."
+    "text": "Step 2: Register the Layer in the UI\nThe sidebar dropdowns and checkboxes in the application are dynamically generated from lists stored in the global environment.\nOpen global.R.\nLocate the list for the component you are adding to (e.g., habitat_layer, species_layer, fisheries_layer, surveys_layer, or submarine_cables_layer).\nAdd your new layer to the list. The format must be “UI Display Name” = “parquet_base_filename.parquet”.\nExample: “Basking Shark” = “Basking_shark_scored_full.parquet”\nSave the file. The UI will now automatically generate the inclusion checkbox and score dropdown for this layer."
   },
   {
-    "objectID": "Add_A_Layer.html#step-3-route-the-cache-logic",
-    "href": "Add_A_Layer.html#step-3-route-the-cache-logic",
+    "objectID": "Add_A_Layer.html#step-3-route-the-caching-logic",
+    "href": "Add_A_Layer.html#step-3-route-the-caching-logic",
     "title": "Add a Data Layer to a Component",
-    "section": "Step 3: Route the Cache Logic",
-    "text": "Step 3: Route the Cache Logic\nThe server needs to know which overarching submodel component this new layer belongs to so it can store it in the correct memory cache.\nOpen ‘R/determine_component_type.R’.\nLocate the list corresponding to your component (e.g., habitat_layers, species_layers, etc.).\nAdd the exact “UI Display Name” you created in Step 2 to this vector.\nExample: species_layers &lt;- c(…, “Biologically Important Area - Blue Whale”, “Basking Shark”)"
+    "section": "Step 3: Route the Caching Logic",
+    "text": "Step 3: Route the Caching Logic\nThe server needs to know which overarching submodel component this new layer belongs to so it can store it in the correct memory cache.\nOpen R/determine_component_type.R.\nLocate the list corresponding to your component (e.g., habitat_layers, species_layers, etc.).\nAdd the exact “UI Display Name” you created in Step 2 to this vector.\nExample: species_layers &lt;- c(…, “Biologically Important Area - Blue Whale”, “Basking Shark”)"
   },
   {
     "objectID": "Add_A_Layer.html#step-4-map-the-score-column",
     "href": "Add_A_Layer.html#step-4-map-the-score-column",
     "title": "Add a Data Layer to a Component",
     "section": "Step 4: Map the Score Column",
-    "text": "Step 4: Map the Score Column\nWhen the user clicks “Generate”, the server needs to know exactly which column inside your .parquet file contains the math scores for that specific layer.\nOpen ‘server.R’.\nScroll to the observeEvent block for the submodel you are editing:\nNatural Resources: Search for observeEvent(natural_resources_valid_configs()\nFisheries: Search for observeEvent(fisheries_valid_configs()\nIndustry & Operations: Search for observeEvent(industry_operations_valid_configs()\nInside that block, look for the score_col &lt;- switch(...) statement.\nAdd a new line matching your UI Display Name to the exact column name inside the .parquet file.\nExample: “Basking Shark” = “Score.basking_shark”,"
+    "text": "Step 4: Map the Score Column\nWhen the user clicks ‘Generate’, the server needs to know exactly which column inside your .parquet file contains the math scores for that specific layer.\nOpen server.R.\nScroll to the observeEvent block for the submodel you are editing:\nNatural Resources: Search for observeEvent(natural_resources_valid_configs()\nFisheries: Search for observeEvent(fisheries_valid_configs()\nIndustry & Operations: Search for observeEvent(industry_operations_valid_configs()\nInside that block, look for the score_col &lt;- switch(...) statement.\nAdd a new line matching your UI Display Name to the exact column name inside the .parquet file.\nExample: “Basking Shark” = “Score.basking_shark”,"
   },
   {
-    "objectID": "Add_A_Layer.html#step-5-update-the-data-tab-ledger",
-    "href": "Add_A_Layer.html#step-5-update-the-data-tab-ledger",
+    "objectID": "Add_A_Layer.html#step-5-update-the-data-tab",
+    "href": "Add_A_Layer.html#step-5-update-the-data-tab",
     "title": "Add a Data Layer to a Component",
-    "section": "Step 5: Update the Data Tab Ledger",
-    "text": "Step 5: Update the Data Tab Ledger\nTo ensure your new layer shows up on the “Data” tab with its correct metadata and local system timestamp:\nOpen ‘R/generate_data_timestamps.R’.\nAppend your new layer’s information to the end of the four main setup vectors:\ndata_files: Add “Basking_shark_scored_full.parquet”\ndataset_names: Add “Basking Shark”\ndescriptions: Add “Habitat suitability model for Basking Sharks”\ndata_types: Add “Discrete” (or “Continuous”)\nRun the entire script locally in your R Console. This will execute the file.mtime() checks against your hard drive and overwrite the static ‘data_timestamps.rds’ file inside your data folder.\nWhen the app boots up, the Data tab will read the newly updated .rds file and display your new layer."
+    "section": "Step 5: Update the Data Tab",
+    "text": "Step 5: Update the Data Tab\nTo ensure your new layer shows up on the data tab with its correct metadata and local system timestamp:\nOpen R/generate_data_timestamps.R.\nAdd your new layer’s information to the end of the four main setup vectors:\ndata_files: Add “Basking_shark_scored_full.parquet”\ndataset_names: Add “Basking Shark”\ndescriptions: Add “Habitat suitability model for Basking Sharks”\ndata_types: Add “Discrete” (or “Continuous”)\nRun the entire script locally in your R Console. This will execute the file.mtime() checks against your hard drive and overwrite the static data_timestamps.rds file inside your data folder.\nWhen the app boots up, the Data tab will read the newly updated .rds file and display your new layer."
   },
   {
-    "objectID": "Add_A_Layer.html#step-6-front-end-documentation-updates",
-    "href": "Add_A_Layer.html#step-6-front-end-documentation-updates",
+    "objectID": "Add_A_Layer.html#step-6-documentation-updates",
+    "href": "Add_A_Layer.html#step-6-documentation-updates",
     "title": "Add a Data Layer to a Component",
-    "section": "Step 6: Front-End Documentation Updates",
-    "text": "Step 6: Front-End Documentation Updates\nFinally, remember to update the application’s front-end documentation so users understand the new data layer!\nOpen the corresponding .md file in the markdown/ directory (e.g., ‘markdown/species.md’).\nAdd a brief description of the new dataset, its source, and any relevant caveats regarding its inclusion in the model, and potentially a suggested score."
+    "section": "Step 6: Documentation Updates",
+    "text": "Step 6: Documentation Updates\nFinally, remember to update the application’s front-end documentation so users understand the new data layer!\nOpen the corresponding .md file in the markdown/ directory (e.g., markdown/species.md).\nAdd a brief description of the new dataset, its source, and any relevant caveats regarding its inclusion in the model, and potentially a suggested score."
   },
   {
     "objectID": "Add_A_Layer.html#optional-step-7-push-changes-to-posit-connect",
     "href": "Add_A_Layer.html#optional-step-7-push-changes-to-posit-connect",
     "title": "Add a Data Layer to a Component",
     "section": "Optional Step 7: Push Changes to Posit Connect",
-    "text": "Optional Step 7: Push Changes to Posit Connect\nIf you are interested in these changes being pushed to Posit Connect the manifest.json file needs to be updated.\nTo update this file run the following code in the console: rsconnect::writeManifest(appDir = ...)"
+    "text": "Optional Step 7: Push Changes to Posit Connect\nIf you are interested in these changes being pushed to Posit Connect the manifest.json file needs to be updated.\nTo update this file run the following code in the console: rsconnect::writeManifest(appDir = ...). This code will overwrite your manifest.json file and communicate with Posit Connect for how the application should be deployed."
   },
   {
     "objectID": "Add_A_Layer.html#step-8-push-changes-to-github",
     "href": "Add_A_Layer.html#step-8-push-changes-to-github",
     "title": "Add a Data Layer to a Component",
     "section": "Step 8: Push Changes to Github",
-    "text": "Step 8: Push Changes to Github\nAdd, Commit, and Push changes to Github.\nIn Posit Connect open the settings tab and pan to the info section. There will be a blue button that says “Update Now”. Clicking this button tells Posit Connect to check the Github repository for any changes and will load your new updates."
+    "text": "Step 8: Push Changes to Github\nAdd, Commit, and Push changes to Github.\nIn Posit Connect open the settings tab and pan to the info section. There will be a blue button that says ‘Update Now’. Clicking this button tells Posit Connect to check the Github repository for any changes and will load your new updates."
   },
   {
     "objectID": "Delete_Scenario.html",

@@ -179,10 +179,10 @@ ul.task-list li input[type="checkbox"] {
   <ul>
   <li><a href="#step-1-data-preparation" id="toc-step-1-data-preparation" class="nav-link active" data-scroll-target="#step-1-data-preparation">Step 1: Data Preparation</a></li>
   <li><a href="#step-2-register-the-layer-in-the-ui" id="toc-step-2-register-the-layer-in-the-ui" class="nav-link" data-scroll-target="#step-2-register-the-layer-in-the-ui">Step 2: Register the Layer in the UI</a></li>
-  <li><a href="#step-3-route-the-cache-logic" id="toc-step-3-route-the-cache-logic" class="nav-link" data-scroll-target="#step-3-route-the-cache-logic">Step 3: Route the Cache Logic</a></li>
+  <li><a href="#step-3-route-the-caching-logic" id="toc-step-3-route-the-caching-logic" class="nav-link" data-scroll-target="#step-3-route-the-caching-logic">Step 3: Route the Caching Logic</a></li>
   <li><a href="#step-4-map-the-score-column" id="toc-step-4-map-the-score-column" class="nav-link" data-scroll-target="#step-4-map-the-score-column">Step 4: Map the Score Column</a></li>
-  <li><a href="#step-5-update-the-data-tab-ledger" id="toc-step-5-update-the-data-tab-ledger" class="nav-link" data-scroll-target="#step-5-update-the-data-tab-ledger">Step 5: Update the Data Tab Ledger</a></li>
-  <li><a href="#step-6-front-end-documentation-updates" id="toc-step-6-front-end-documentation-updates" class="nav-link" data-scroll-target="#step-6-front-end-documentation-updates">Step 6: Front-End Documentation Updates</a></li>
+  <li><a href="#step-5-update-the-data-tab" id="toc-step-5-update-the-data-tab" class="nav-link" data-scroll-target="#step-5-update-the-data-tab">Step 5: Update the Data Tab</a></li>
+  <li><a href="#step-6-documentation-updates" id="toc-step-6-documentation-updates" class="nav-link" data-scroll-target="#step-6-documentation-updates">Step 6: Documentation Updates</a></li>
   <li><a href="#optional-step-7-push-changes-to-posit-connect" id="toc-optional-step-7-push-changes-to-posit-connect" class="nav-link" data-scroll-target="#optional-step-7-push-changes-to-posit-connect">Optional Step 7: Push Changes to Posit Connect</a></li>
   <li><a href="#step-8-push-changes-to-github" id="toc-step-8-push-changes-to-github" class="nav-link" data-scroll-target="#step-8-push-changes-to-github">Step 8: Push Changes to Github</a></li>
   </ul>
@@ -210,35 +210,35 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>The SMORES application is modular. Adding a new data layer to an existing component (e.g., adding a new species to the “Species” tab) using standard scoring methodology requires modifying five specific files in a specific order.</p>
+<p>The SMORES application is modular. Adding a new data layer to an existing component (e.g., adding a new species to the “Species” tab) using standard scoring methodology requires modifying multiple files. If you are planning on adding a layer that needs a non-standard scoring type (e.g., ranked importance, z-membership, etc.) please reference how fisheries layers, and the deep sea coral robust high z-membership data were handled in the code.</p>
 <section id="step-1-data-preparation" class="level2">
 <h2 class="anchored" data-anchor-id="step-1-data-preparation">Step 1: Data Preparation</h2>
 <p>Before touching the Shiny application code, ensure your spatial data is processed and staged.</p>
-<p>Run the appropriate pre-processing scripts (e.g., data_processing/) to generate the formatted .parquet files for the new layer. You will need to process the data for both the 2km and 5km grid cell size.</p>
-<p>Verify that the files follow the standard naming convention (e.g., New_Layer_scored_full.parquet).</p>
-<p>Place a copy of the processed file into both the data/2km/ and data/5km/ directories.</p>
+<p>Run the appropriate pre-processing scripts, these can be found in the <code>data_processing/</code> to generate the formatted .parquet files for the new layer. You will need to process the data for both the 2km and 5km grid cell size.</p>
+<p>Verify that the files follow the standard naming convention (e.g., New_Layer_scored_full.parquet) and score column naming convention (e.g., layer_name.Scored).</p>
+<p>Place a copy of the processed file into both the <code>data/2km/</code> and <code>data/5km/</code> directories.</p>
 </section>
 <section id="step-2-register-the-layer-in-the-ui" class="level2">
 <h2 class="anchored" data-anchor-id="step-2-register-the-layer-in-the-ui">Step 2: Register the Layer in the UI</h2>
 <p>The sidebar dropdowns and checkboxes in the application are dynamically generated from lists stored in the global environment.</p>
-<p>Open ‘global.R’.</p>
+<p>Open <code>global.R</code>.</p>
 <p>Locate the list for the component you are adding to (e.g., habitat_layer, species_layer, fisheries_layer, surveys_layer, or submarine_cables_layer).</p>
 <p>Add your new layer to the list. The format must be “UI Display Name” = “parquet_base_filename.parquet”.</p>
 <p>Example: “Basking Shark” = “Basking_shark_scored_full.parquet”</p>
 <p>Save the file. The UI will now automatically generate the inclusion checkbox and score dropdown for this layer.</p>
 </section>
-<section id="step-3-route-the-cache-logic" class="level2">
-<h2 class="anchored" data-anchor-id="step-3-route-the-cache-logic">Step 3: Route the Cache Logic</h2>
+<section id="step-3-route-the-caching-logic" class="level2">
+<h2 class="anchored" data-anchor-id="step-3-route-the-caching-logic">Step 3: Route the Caching Logic</h2>
 <p>The server needs to know which overarching submodel component this new layer belongs to so it can store it in the correct memory cache.</p>
-<p>Open ‘R/determine_component_type.R’.</p>
+<p>Open <code>R/determine_component_type.R</code>.</p>
 <p>Locate the list corresponding to your component (e.g., habitat_layers, species_layers, etc.).</p>
 <p>Add the exact “UI Display Name” you created in Step 2 to this vector.</p>
 <p>Example: species_layers &lt;- c(…, “Biologically Important Area - Blue Whale”, “Basking Shark”)</p>
 </section>
 <section id="step-4-map-the-score-column" class="level2">
 <h2 class="anchored" data-anchor-id="step-4-map-the-score-column">Step 4: Map the Score Column</h2>
-<p>When the user clicks “Generate”, the server needs to know exactly which column inside your .parquet file contains the math scores for that specific layer.</p>
-<p>Open ‘server.R’.</p>
+<p>When the user clicks ‘Generate’, the server needs to know exactly which column inside your .parquet file contains the math scores for that specific layer.</p>
+<p>Open <code>server.R</code>.</p>
 <p>Scroll to the observeEvent block for the submodel you are editing:</p>
 <p>Natural Resources: Search for <code>observeEvent(natural_resources_valid_configs()</code></p>
 <p>Fisheries: Search for <code>observeEvent(fisheries_valid_configs()</code></p>
@@ -247,33 +247,33 @@ ul.task-list li input[type="checkbox"] {
 <p>Add a new line matching your UI Display Name to the exact column name inside the .parquet file.</p>
 <p>Example: “Basking Shark” = “Score.basking_shark”,</p>
 </section>
-<section id="step-5-update-the-data-tab-ledger" class="level2">
-<h2 class="anchored" data-anchor-id="step-5-update-the-data-tab-ledger">Step 5: Update the Data Tab Ledger</h2>
-<p>To ensure your new layer shows up on the “Data” tab with its correct metadata and local system timestamp:</p>
-<p>Open ‘R/generate_data_timestamps.R’.</p>
-<p>Append your new layer’s information to the end of the four main setup vectors:</p>
-<p>data_files: Add “Basking_shark_scored_full.parquet”</p>
-<p>dataset_names: Add “Basking Shark”</p>
-<p>descriptions: Add “Habitat suitability model for Basking Sharks”</p>
-<p>data_types: Add “Discrete” (or “Continuous”)</p>
-<p>Run the entire script locally in your R Console. This will execute the <code>file.mtime()</code> checks against your hard drive and overwrite the static ‘data_timestamps.rds’ file inside your data folder.</p>
+<section id="step-5-update-the-data-tab" class="level2">
+<h2 class="anchored" data-anchor-id="step-5-update-the-data-tab">Step 5: Update the Data Tab</h2>
+<p>To ensure your new layer shows up on the data tab with its correct metadata and local system timestamp:</p>
+<p>Open <code>R/generate_data_timestamps.R</code>.</p>
+<p>Add your new layer’s information to the end of the four main setup vectors:</p>
+<p><code>data_files</code>: Add “Basking_shark_scored_full.parquet”</p>
+<p><code>dataset_names</code>: Add “Basking Shark”</p>
+<p><code>descriptions</code>: Add “Habitat suitability model for Basking Sharks”</p>
+<p><code>data_types</code>: Add “Discrete” (or “Continuous”)</p>
+<p>Run the entire script locally in your R Console. This will execute the <code>file.mtime()</code> checks against your hard drive and overwrite the static <code>data_timestamps.rds</code> file inside your data folder.</p>
 <p>When the app boots up, the Data tab will read the newly updated .rds file and display your new layer.</p>
 </section>
-<section id="step-6-front-end-documentation-updates" class="level2">
-<h2 class="anchored" data-anchor-id="step-6-front-end-documentation-updates">Step 6: Front-End Documentation Updates</h2>
+<section id="step-6-documentation-updates" class="level2">
+<h2 class="anchored" data-anchor-id="step-6-documentation-updates">Step 6: Documentation Updates</h2>
 <p>Finally, remember to update the application’s front-end documentation so users understand the new data layer!</p>
-<p>Open the corresponding .md file in the markdown/ directory (e.g., ‘markdown/species.md’).</p>
+<p>Open the corresponding .md file in the <code>markdown/</code> directory (e.g., <code>markdown/species.md</code>).</p>
 <p>Add a brief description of the new dataset, its source, and any relevant caveats regarding its inclusion in the model, and potentially a suggested score.</p>
 </section>
 <section id="optional-step-7-push-changes-to-posit-connect" class="level2">
 <h2 class="anchored" data-anchor-id="optional-step-7-push-changes-to-posit-connect">Optional Step 7: Push Changes to Posit Connect</h2>
 <p>If you are interested in these changes being pushed to Posit Connect the manifest.json file needs to be updated.</p>
-<p>To update this file run the following code in the console: <code>rsconnect::writeManifest(appDir = ...)</code></p>
+<p>To update this file run the following code in the console: <code>rsconnect::writeManifest(appDir = ...)</code>. This code will overwrite your manifest.json file and communicate with Posit Connect for how the application should be deployed.</p>
 </section>
 <section id="step-8-push-changes-to-github" class="level2">
 <h2 class="anchored" data-anchor-id="step-8-push-changes-to-github">Step 8: Push Changes to Github</h2>
 <p>Add, Commit, and Push changes to Github.</p>
-<p>In Posit Connect open the settings tab and pan to the info section. There will be a blue button that says “Update Now”. Clicking this button tells Posit Connect to check the Github repository for any changes and will load your new updates.</p>
+<p>In Posit Connect open the settings tab and pan to the info section. There will be a blue button that says ‘Update Now’. Clicking this button tells Posit Connect to check the Github repository for any changes and will load your new updates.</p>
 
 
 </section>

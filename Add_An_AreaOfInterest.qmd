@@ -7,40 +7,42 @@ The SMORES application calculates map boundaries, area cropping, and grid resolu
 
 ## Step 1: Update the AOI Dataset
 
-The application pulls the spatial bounds and names for all selectable areas directly from a single master file: 'AOI_Full.parquet'. You must append your new AOI polygon to this dataset. Reference the 'areas_of_interest.qmd' that lives within the 'data_processing/'. This file has the necessary steps written below mapped out and can be added onto. In general the steps are as follows:
+The application pulls the spatial bounds and names for all selectable areas directly from a single master file: 'AOI_Full.parquet'. You must append your new AOI polygon to this dataset. Reference the `areas_of_interest.qmd` that lives within the `data_processing/`. This file has the necessary steps written below mapped out and can be added onto. In general the steps are as follows:
 
 Acquire the Polygon: Load your new AOI shapefile/polygon into R.
 
-Standardize the CRS: Ensure the polygon is transformed to WGS84.
+Clean Data: Run qa/qc on dataset to ensure geometry is intact and valid.
 
-Format the Column Name: Add a column specifically named Area_Name and assign it your desired display name (e.g., "Area of Interest Name").
+Standardize the CRS: Ensure the polygon is in the correct spatial reference.
 
-Append the Data: Use bind_rows() to append your formatted polygon to the existing Areas_Of_Interest_Full object.
+Format the Column Name: Add a column specifically named Area_Name and assign your polygon a display name that will be used by the application (e.g., Brookings or Washington).
+
+Append the Data: add your new polygon to the existing Areas_Of_Interest_Full object.
 
 Save the Parquet: Overwrite the master dataset by executing and saving a new file. 
 
 ## Step 2: Map the Grid Resolution 
 
-When a user selects an AOI, the server needs to know whether to pull the high-resolution (2km) or regional (5km) grid data to execute the math for that specific boundary.
+When a user selects an AOI, the server needs to know which data to use (high-resolution (2km) or regional (5km)).
 
-Open 'global.R'.
+Open `global.R`.
 
 Locate the `resolution_for_aoi` named vector.
 
-Add a new row matching your exact `Area_Name` to the desired folder resolution ("2km" or "5km"). Resolutions have been selected on a developer basis informed by memory constraints ie. larger spatial areas have larger grid cells applied to lower the memory costs and improve performance and hosting ability for the application. 
+Add a new row matching your exact Area_Name to the desired folder resolution ("2km" or "5km"). Resolutions have been selected on a developer basis informed by memory constraints ie. larger spatial areas have larger grid cells applied to lower the memory costs and improve performance of the application. 
 
-Save 'global.R'.
+Save `global.R`.
 
 ## Step 3: Update the UI Sidebar
 
-The radio buttons are hardcoded, so we must explicitly tell the UI to display the new AOI as a selectable option.
+The Area of Interest tab opens with radio button selectors for each of the areas of interest. The radio buttons are hardcoded, so we must explicitly tell the UI to display the new AOI as a selectable option.
 
-Open 'generate_area_of_interest_sidebar.R'.
+Open `generate_area_of_interest_sidebar.R`.
 
 Locate the radioButtons block with the ID `aoiAreaSelector`.
 
-Inside the choices vector, add a new row for your AOI. The left side is the UI label (name you want shown in the application), and the right side is the exact `Area_Name` value.
+Inside the choices vector, add a new row for your AOI. The left side is the UI label (name you want shown in the application), and the right side is the exact Area_Name value.
 
-Example:
+Save `generate_area_of_interest_sidebar.R`.
 
-Save 'generate_area_of_interest_sidebar.R'.
+*You have now added a new area of interest option for users to select. The boundary of this area of interest will be used to crop resulting datasets and outputs. 
