@@ -10,9 +10,9 @@ that could be used as part of the marine spatial planning process when
 determining new areas of offshore development on the West Coast of the
 United States.
 
-The dashboard is organized by the navigation bar at the top. There are 6
+The dashboard is organized by the navigation bar at the top. There are 7
 tabs: Area of Interest, Natural Resources Submodel, Fisheries Submodel,
-Industry & Operations Submodel, Full Model, Methods, and Data.
+Industry & Operations Submodel, Full Model, Scenario Management, Methods, and Data.
 
 **To generate a full model run you will move through the first 5 tabs
 from left to right.**
@@ -78,3 +78,28 @@ model scores for the area of interest you previously selected. The third
 map will show the full model for the area of interest normalized using a
 minimum maximum normalization.You can opt to export a copy of your
 results by selecting the Export button at the bottom of the page.
+
+**To save a scenario navigate to the Scenario Management tab after you have made your selections within the app.**
+
+*Note: you can save a scenario at any portion of the app process. Including prior to creating a full model run (e.g., after you have configured only the habitat component, fisheries submodel, etc.).
+
+Step 1: Enter the information for your saved scenario including title, author, date, and description.
+
+Step 2: Click 'Save to Cloud' button.
+
+Step 3 (Optional): Watch the table at the bottom of the scenario management tab update with the new entry. 
+
+**To load a scenario navigate to the Scenario Management tab at any point**
+
+Step 1: Select the scenario you would like the app to be configured by clicking on the row in the table. 
+
+Step 2: Click 'Load Scenario' button.
+
+Step 3: App will reload and a pop-up will come across the center of the screen with directions for how to move forward. 
+
+Step 4: Navigate to the Area of Interest tab or tab that you would like to see first. If a scenario was configured for that tab you will see that layers, scores, and potentially combination methods have been selected. 
+
+*Note: a scenario tracks the configurations selected not the maps themselves. In order to view maps or the final model run you must manually generate the maps for each of the components, sumbmodels, and final model you are interested in.
+
+Step 5: Generate maps and view what someone has logged as a scenario of interest. 
+
