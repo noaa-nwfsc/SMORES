@@ -5,6 +5,8 @@ project:
 website:
   title: "SMORES Documentation"
   search: true
+  repo-url: https://github.com/noaa-nwfsc/SMORES
+  repo-actions: [issue]
   navbar:
     left:
       - href: index.qmd
