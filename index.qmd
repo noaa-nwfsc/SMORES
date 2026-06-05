@@ -23,7 +23,7 @@ The SMORES Shiny Application was built in RStudio and is hosted on the NOAA NWFS
 ![](www/Images/smores_github.png)
 
 
-The Application is available on the Posit Connect Test Instance. For more information about accessing the SMORES app please visit the SMORES Access Guide page. 
+The Application is available on the Posit Connect Test Instance. For more information about accessing the SMORES app please visit the SMORES [Access](https://noaa-nwfsc.github.io/SMORES/Access.html) page. 
 
 
 # How do I report issues or bugs in the app?

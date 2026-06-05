@@ -7,7 +7,7 @@ Here are a few tips for accessing the SMORES app and where to look if you have q
 
 # How can I access the SMORES app?
 
-There are 2 main avenues for accessing the SMORES App. The first option is accessing SMORES on the NOAA NMFS Posit Connect Test Instance. The App is hosted at this [link](https://test-connect.fisheries.noaa.gov/connect/#/apps/3e44db0d-bd12-49b2-bb7e-ace703306b12). The second option is to clone the SMORES Github [repository](https://github.com/noaa-nwfsc/SMORES){target="_blank"} and run the app on your local machine from R Studio. The repository contains all data, and code necessary to run the app. After you clone the repository you will select `Run App` after opening 1 of the following 3 files: ui.R, server.R, or global.R.
+SMORES is accessed via the NOAA NMFS Posit Connect Test Instance. The App is hosted at this [link](https://test-connect.fisheries.noaa.gov/connect/#/apps/3e44db0d-bd12-49b2-bb7e-ace703306b12).
 
 # What is the NOAA NMFS Posit Connect Test Instance?
 
@@ -20,5 +20,3 @@ The Post Connect Test Instance is able to be accessed if you have a NOAA email a
 # Where can I see the back-end code of this app?
 
 The [code](https://github.com/noaa-nwfsc/SMORES){target="_blank"} for this application is stored on the NMFS NWFSC Github Enterprise.
-
-Test
